@@ -91,6 +91,7 @@ app.use('/api', rateLimiter);
 // ================================
 // ROUTES
 // ================================
+// Root URL landing page
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
@@ -100,6 +101,7 @@ app.get('/', (req, res) => {
   });
 });
 
+// Explicit health check path
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
