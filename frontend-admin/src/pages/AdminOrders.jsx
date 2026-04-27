@@ -1,0 +1,105 @@
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../api/client';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import PaginationControls from '../components/PaginationControls';
+
+const STATUSES = ['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED','REFUNDED'];
+
+export default function AdminOrders() {
+  const [status, setStatus] = useState('');
+  const [page, setPage] = useState(1);
+  const qc = useQueryClient();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-orders', status, page],
+    queryFn: () => api.get('/orders/admin/all', { params: { status: status || undefined, page, limit: 20 } }).then(r => r.data),
+  });
+
+  const statusMut = useMutation({
+    mutationFn: ({id, status}) => api.patch('/orders/' + id + '/status', { status }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-orders'] }); toast.success('Status updated'); },
+    onError: (e) => toast.error(e?.response?.data?.message || 'Error'),
+  });
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
+          <p className="text-gray-400 text-sm">{data?.meta?.total || 0} total orders</p>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {['', ...STATUSES].map(s => (
+            <button key={s} onClick={() => {setStatus(s); setPage(1);}}
+              className={'px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
+                (status === s ? 'bg-brand-primary text-white border-brand-primary' : 'border-gray-200 text-gray-600 hover:border-brand-secondary')}>
+              {s || 'All'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-100">
+                {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Details'].map(h => (
+                  <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {isLoading ? Array(8).fill(0).map((_, i) => (
+                <tr key={i}>{Array(8).fill(0).map((_, j) => (
+                  <td key={j} className="px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>
+                ))}</tr>
+              )) : data?.data?.map(order => (
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 text-sm font-mono font-semibold text-gray-700">{order.orderNumber}</td>
+                  <td className="px-4 py-3 text-sm">
+                    <p className="font-medium text-gray-800">{order.user?.name}</p>
+                    <p className="text-xs text-gray-400">{order.user?.email}</p>
+                  </td>
+                  <td className="px-4 py-3 text-sm font-bold text-gray-800">₹{Number(order.total).toLocaleString('en-IN')}</td>
+                  <td className="px-4 py-3 text-xs">
+                    <span className={'badge-status ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
+                      {order.payment?.status || 'Pending'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-xs">
+                    <span className={'badge-status ' + order.status.toLowerCase()}>{order.status}</span>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {new Date(order.createdAt).toLocaleDateString('en-IN')}
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
+                      className="input-field py-1 text-xs w-36"
+                      value={order.status}
+                      onChange={e => statusMut.mutate({ id: order.id, status: e.target.value })}>
+                      {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline">
+                      View
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <PaginationControls
+          page={page}
+          total={data?.meta?.total || 0}
+          limit={20}
+          onPageChange={setPage}
+        />
+      </div>
+    </div>
+  );
+}

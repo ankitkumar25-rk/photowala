@@ -1,0 +1,40 @@
+Project Overview: Gifts, Trophies & Momentos E-commerce Platform
+
+1. Introduction
+This project is a comprehensive and secure e-commerce platform specifically designed for selling premium gifts, trophies, and mementos. It consists of a robust backend API, a customer-facing storefront, and an administrative dashboard for managing the business.
+
+2. Architecture & Tech Stack
+- Backend: Node.js with Express.js framework.
+- Database: PostgreSQL managed via Prisma ORM for type-safe database access.
+- Authentication: Highly secure stateless PASETO tokens and Google OAuth social login.
+- File Storage: Cloudinary integration for scalable product image management.
+- Email Service: Resend SDK for transactional emails (order confirmations, password resets).
+- Payment Gateway: Razorpay integration for digital payments and webhooks, along with Cash on Delivery (COD).
+- Frontend (Store & Admin): React Single Page Applications built with Vite.
+- Styling: Tailwind CSS configured with a premium brand theme (deep browns, gold accents, and elegant neutrals).
+- State & Data: Zustand, Context API, and React Query.
+
+3. Key Features
+- Advanced User Accounts: Email/Password login, Google OAuth, Email Verification, and password recovery.
+- Catalog Management: Hierarchical categories and products with dynamic filtering and sorting.
+- Order & Inventory Management: Transactional checkout process, automatic stock tracking, and Razorpay webhook validation.
+- Returns Processing: Complete customer-to-admin lifecycle for processing order returns and distributing refunds.
+- Security & Performance: Custom Redis-backed rate limiters, Helmet.js for secure HTTP headers, strictly defined CORS policies, and centralized error handling.
+- Admin Capabilities: Dedicated role-based routes for modifying homepage banners, tracking sales and inventory analytics, and responding to customer support tickets.
+
+4. Frontend Store Pages
+- Home Page: Showcases promotional banners, featured gift categories, new arrivals, and customer testimonials.
+- Shop / Products Listing: A comprehensive catalog with dynamic filters (by category, price range) and sorting options.
+- Product Details: Displays high-quality product images, descriptions, stock availability, customer ratings, and an "Add to Cart" action.
+- Cart & Checkout: Allows users to review selected items, apply delivery details, and securely complete their purchase via digital payment or COD.
+- User Dashboard: A personalized area where customers can view their order history, manage return requests, and update profile settings.
+- Authentication Pages: Includes sleek interfaces for sign-up, secure login, and password recovery.
+- Support Center: A dedicated page for users to submit queries and track support tickets.
+
+5. Admin Dashboard Pages
+- Admin Overview: A central hub displaying main analytics, sales reports, and revenue breakdowns.
+- Products & Categories Management: Interfaces for administrators to create, edit, or remove store inventory and categories.
+- Orders Management: Allows tracking of customer orders, updating order statuses (Processing, Shipped, Delivered), and viewing deep details.
+- Returns & Refunds Queue: A dedicated dashboard for admins to process customer return requests, validate them, and trigger refunds.
+- CMS & Banners Management: Internal tools to update homepage content, active promotions, and custom banners dynamically.
+- Support Dashboard: Interface for admins to efficiently view, respond to, and close out customer support tickets.
