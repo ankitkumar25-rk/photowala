@@ -30,6 +30,12 @@ if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set in production');
 }
 
+// Render (and similar platforms) terminate TLS at a proxy. Trusting the first
+// proxy allows secure session cookies to work correctly behind HTTPS.
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // ================================
 // SECURITY MIDDLEWARE
 // ================================
@@ -85,6 +91,15 @@ app.use('/api', rateLimiter);
 // ================================
 // ROUTES
 // ================================
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'photowala-backend',
+    message: 'Service is live',
+    health: '/api/health'
+  });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
