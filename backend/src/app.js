@@ -18,8 +18,8 @@ const cartRoutes = require('./routes/cart.routes');
 const orderRoutes = require('./routes/order.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const userRoutes = require('./routes/user.routes');
-const adminRoutes   = require('./routes/admin.routes');
-const uploadRoutes  = require('./routes/upload.routes');
+const adminRoutes = require('./routes/admin.routes');
+const uploadRoutes = require('./routes/upload.routes');
 const returnsRoutes = require('./routes/returns.routes');
 const supportRoutes = require('./routes/support.routes');
 
@@ -40,8 +40,8 @@ if (process.env.NODE_ENV === 'production') {
 // SECURITY MIDDLEWARE
 // ================================
 const allowedOrigins = [
-  process.env.CLIENT_URL,
-  process.env.ADMIN_URL,
+  process.env.CLIENT_URL?.replace(/\/$/, ''),
+  process.env.ADMIN_URL?.replace(/\/$/, ''),
   'http://localhost:5173',
   'http://localhost:5174'
 ].filter(Boolean);
@@ -123,17 +123,17 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.use('/api/auth',       authRoutes);
-app.use('/api/products',   productRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/cart',       cartRoutes);
-app.use('/api/orders',     orderRoutes);
-app.use('/api/payments',   paymentRoutes);
-app.use('/api/users',      userRoutes);
-app.use('/api/admin',      adminRoutes);
-app.use('/api/uploads',    uploadRoutes);
-app.use('/api/returns',    returnsRoutes);
-app.use('/api/support',    supportRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/uploads', uploadRoutes);
+app.use('/api/returns', returnsRoutes);
+app.use('/api/support', supportRoutes);
 
 // ================================
 // 404 HANDLER
