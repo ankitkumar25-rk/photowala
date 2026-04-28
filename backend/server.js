@@ -1,4 +1,19 @@
 require('dotenv').config();
+
+function requireEnv(name, message) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(message || `${name} must be set`);
+  }
+  return value;
+}
+
+requireEnv('DATABASE_URL', 'DATABASE_URL must be set');
+const pasetoSecret = requireEnv('PASETO_SECRET_KEY', 'PASETO_SECRET_KEY must be set');
+if (pasetoSecret.length < 64) {
+  throw new Error('PASETO_SECRET_KEY must be 64 hex chars (32 bytes)');
+}
+
 const app    = require('./src/app');
 const prisma = require('./src/config/database');
 
