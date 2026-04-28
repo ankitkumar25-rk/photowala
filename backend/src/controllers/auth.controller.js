@@ -98,7 +98,18 @@ exports.login = async (req, res, next) => {
       console.debug('[auth] login attempt for email:', `${String(email).slice(0, 3)}***@***`);
     } catch (_) {}
 
-    const user = await prisma.user.findFirst({ where: { email } });
+    let user;
+    try {
+      user = await prisma.user.findFirst({ where: { email } });
+    } catch (err) {
+      console.error('[auth] prisma lookup by email failed', {
+        email,
+        message: err?.message,
+        code: err?.code,
+        meta: err?.meta,
+      });
+      throw err;
+    }
     if (!user || !user.passwordHash) throw createError('Invalid credentials', 401);
 
     const valid = await bcrypt.compare(password, user.passwordHash);
