@@ -9,6 +9,7 @@
     "prestart": "npx prisma db push --accept-data-loss && npx prisma generate",
     "start": "node server.js",
     "seed": "node src/utils/seed.js",
+    "reset:admin-password": "node src/utils/reset-admin-password.js",
     "images:migrate:cloudinary": "node src/utils/migrate-images-to-cloudinary.js",
     "db:push": "npx prisma db push",
     "db:studio": "npx prisma studio",
