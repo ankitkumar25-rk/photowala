@@ -37,12 +37,12 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-cream-100 px-4">
       <div className="w-full max-w-sm">
-        <div className="card bg-cream-50 p-8">
-          <div className="text-center mb-7">
-            <div className="w-20 h-20 bg-[#f7efe5] rounded-2xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
-              <img src={adminLogo} alt="Premium Admin" className="w-14 h-14 object-contain" />
+        <div className="card bg-cream-50 p-7 sm:p-8">
+          <div className="text-center mb-6">
+            <div className="w-full h-24 bg-[#f7efe5] rounded-[1.75rem] flex items-center justify-center mx-auto mb-5 overflow-hidden px-6">
+              <img src={adminLogo} alt="Admin logo" className="w-28 h-14 sm:w-32 sm:h-16 object-contain" />
             </div>
-            <p className="text-brand-secondary text-sm mt-1 font-medium">Sign in to manage your store</p>
+            <p className="text-brand-secondary text-sm font-medium">Sign in to manage your store</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
