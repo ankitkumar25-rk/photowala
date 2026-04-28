@@ -118,6 +118,16 @@ app.get('/', (req, res) => {
   });
 });
 
+// Base API entrypoint for health checks and browser testing
+app.get('/api', (req, res) => {
+  res.status(200).json({
+    success: true,
+    service: 'photowala-backend',
+    message: 'API is live',
+    health: '/api/health',
+  });
+});
+
 // Explicit health check path
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
