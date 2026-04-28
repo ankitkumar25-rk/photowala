@@ -10,6 +10,8 @@ export default function Register() {
   const register = useAuthStore((s) => s.register);
   const isLoading = useAuthStore((s) => s.isLoading);
   const navigate = useNavigate();
+  const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
+  const googleAuthUrl = `${apiBaseUrl}/auth/google`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +39,7 @@ export default function Register() {
 
           {/* Google OAuth */}
           <a
-            href="/api/auth/google"
+            href={googleAuthUrl}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-cream-300 rounded-xl text-gray-700 font-semibold text-sm hover:bg-cream-100 transition-colors mb-6"
           >
             <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" />

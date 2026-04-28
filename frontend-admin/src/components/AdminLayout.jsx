@@ -19,6 +19,7 @@ const NAV = [
 export default function AdminLayout() {
   const { user, logout } = useAdminStore();
   const navigate = useNavigate();
+  const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -64,7 +65,7 @@ export default function AdminLayout() {
         {/* Top bar */}
         <header className="glass-surface sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-brand-primary/15 px-4 sm:px-6">
           <div className="ml-auto flex items-center gap-3">
-            <a href="http://localhost:5173" target="_blank" rel="noreferrer" className="hidden rounded-full border border-brand-primary/20 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-primary transition-colors hover:bg-brand-surface sm:inline-block">
+            <a href={storeUrl} target="_blank" rel="noreferrer" className="hidden rounded-full border border-brand-primary/20 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-primary transition-colors hover:bg-brand-surface sm:inline-block">
               View Store ↗
             </a>
             {user?.avatarUrl ? (
