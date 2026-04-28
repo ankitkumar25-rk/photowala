@@ -45,12 +45,12 @@ export default function AdminOrderDetail() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Order Detail</h1>
           <p className="text-gray-400 text-sm mt-0.5">{order.orderNumber}</p>
         </div>
-        <Link to="/orders" className="btn-primary">Back to Orders</Link>
+        <Link to="/orders" className="btn-primary w-full justify-center sm:w-auto">Back to Orders</Link>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
@@ -122,17 +122,17 @@ export default function AdminOrderDetail() {
           <div className="card p-4 space-y-3">
             <h2 className="font-semibold text-gray-800">Tracking</h2>
             <p className="text-xs text-gray-500">Current: {order.trackingNumber || 'Not set'}</p>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
-                className="input-field py-2 text-sm"
+                className="input-field py-2 text-sm w-full"
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
                 placeholder="Enter tracking number"
               />
               <button
                 type="button"
-                className="btn-primary py-2 px-4 text-sm"
+                className="btn-primary py-2 px-4 text-sm w-full sm:w-auto"
                 disabled={trackingMut.isPending}
                 onClick={() => {
                   if (!trackingNumber.trim()) {

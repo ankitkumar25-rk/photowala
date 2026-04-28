@@ -52,7 +52,79 @@ export default function AdminProducts() {
           </div>
         </div>
 
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="md:hidden divide-y divide-gray-100">
+          {isLoading ? (
+            Array(6).fill(0).map((_, i) => (
+              <div key={i} className="p-4 space-y-2">
+                <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+                <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+                <div className="h-8 bg-gray-100 rounded animate-pulse w-full" />
+              </div>
+            ))
+          ) : filtered.map((product) => (
+            <div key={product.id} className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                    {product.images?.[0] ? (
+                      <img src={product.images[0].url} alt="" className="w-full h-full object-cover" />
+                    ) : <Package className="w-4 h-4 text-gray-400" />}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 truncate">{product.name}</p>
+                    <p className="text-xs text-gray-400">{product.sku || product.unit || 'No SKU'}</p>
+                  </div>
+                </div>
+                <StatusBadge stock={product.stock} lowAlert={product.lowStockAlert} />
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">Price</p>
+                  <p className="text-sm font-semibold text-gray-800">₹{product.price}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">MRP</p>
+                  <p className="text-sm text-gray-400 line-through">₹{product.mrp}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">Stock</p>
+                  <p className="text-sm text-gray-700">{product.stock}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-gray-500 truncate">{product.category?.name || 'Uncategorized'}</p>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!product.id) {
+                        toast.error('This product cannot be edited because its id is missing');
+                        return;
+                      }
+                      navigate('/products/id/' + product.id + '/edit');
+                    }}
+                    className="btn-ghost p-2 text-blue-500 hover:bg-blue-50"
+                    aria-label="Edit product"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { if(confirm('Deactivate this product?')) deleteMut.mutate(product.id); }}
+                    className="btn-ghost p-2 text-red-400 hover:bg-red-50"
+                    aria-label="Deactivate product"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {!isLoading && filtered.length === 0 && (
+            <p className="p-4 text-sm text-gray-500">No products found.</p>
+          )}
+        </div>
+
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead>
               <tr className="border-b border-gray-100">

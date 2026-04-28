@@ -32,21 +32,21 @@ export default function AdminCustomerDetail() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Customer Profile</h1>
           <p className="text-gray-400 text-sm mt-0.5">Manage customer account and recent activity</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex w-full flex-col gap-2 sm:flex-row md:w-auto md:justify-end">
           <button
             type="button"
-            className="btn-ghost"
+            className="btn-ghost w-full justify-center sm:w-auto"
             onClick={() => banMut.mutate()}
             disabled={banMut.isPending}
           >
             {banMut.isPending ? 'Updating...' : 'Record Ban Action'}
           </button>
-          <Link to="/customers" className="btn-primary">Back to Customers</Link>
+          <Link to="/customers" className="btn-primary w-full justify-center sm:w-auto">Back to Customers</Link>
         </div>
       </div>
 
@@ -72,7 +72,34 @@ export default function AdminCustomerDetail() {
           <h2 className="font-semibold text-gray-800">Recent Orders</h2>
           <span className="text-xs text-gray-400">{data.orders?.length || 0} orders loaded</span>
         </div>
-        <div className="overflow-x-auto">
+        <div className="md:hidden divide-y divide-gray-100">
+          {data.orders?.length ? data.orders.map((o) => (
+            <div key={o.id} className="p-4 space-y-2">
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-xs font-mono font-semibold text-gray-700 break-all">{o.orderNumber}</p>
+                <span className={'badge-status ' + o.status.toLowerCase()}>{o.status}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">Total</p>
+                  <p className="text-sm font-semibold text-gray-800">₹{Number(o.total || 0).toLocaleString('en-IN')}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">Payment</p>
+                  <p className="text-gray-700">{o.payment?.status || 'Pending'}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">Date</p>
+                  <p className="text-gray-700">{new Date(o.createdAt).toLocaleDateString('en-IN')}</p>
+                </div>
+              </div>
+            </div>
+          )) : (
+            <p className="px-4 py-6 text-sm text-gray-500">No orders found.</p>
+          )}
+        </div>
+
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100">
