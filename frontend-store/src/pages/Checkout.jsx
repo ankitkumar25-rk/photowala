@@ -46,7 +46,7 @@ function QuickAddressModal({ onClose, onSave }) {
               >{l}</button>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Full Name *</label>
               <input name="fullName" value={form.fullName} onChange={handle} required className="input-field" placeholder="John Doe" />
@@ -64,7 +64,7 @@ function QuickAddressModal({ onClose, onSave }) {
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Address Line 2</label>
             <input name="line2" value={form.line2} onChange={handle} className="input-field" placeholder="Area, Landmark (optional)" />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">City *</label>
               <input name="city" value={form.city} onChange={handle} required className="input-field" placeholder="Mumbai" />
@@ -146,7 +146,9 @@ export default function Checkout() {
       setAddresses(data.data);
       const def = data.data.find((a) => a.isDefault) || data.data[0];
       if (def && !selectedAddr) setSelectedAddr(def.id);
-    } catch {}
+    } catch (err) {
+      console.error('Failed to load addresses:', err);
+    }
   };
 
   const addAddress = async (form) => {
@@ -584,10 +586,10 @@ export default function Checkout() {
               {/* Trust badges */}
               <div className="px-4 pb-4 grid grid-cols-3 gap-2">
                 {[
-                  { icon: Shield, label: 'Secure\nPayment' },
-                  { icon: Truck, label: 'Fast\nDelivery' },
-                  { icon: Package, label: 'Easy\nReturns' },
-                ].map(({ icon: Icon, label }) => (
+                  { Icon: Shield, label: 'Secure\nPayment' },
+                  { Icon: Truck, label: 'Fast\nDelivery' },
+                  { Icon: Package, label: 'Easy\nReturns' },
+                ].map(({ Icon, label }) => (
                   <div key={label} className="flex flex-col items-center gap-1 p-2 bg-cream-50 rounded-xl">
                     <Icon className="w-5 h-5 text-brand-secondary" />
                     <p className="text-[10px] text-gray-500 font-medium text-center leading-tight whitespace-pre-line">{label}</p>

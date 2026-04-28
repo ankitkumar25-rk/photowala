@@ -22,31 +22,31 @@ export default function AdminReturns() {
   return (
     <div className="space-y-5">
       <div><h1 className="text-2xl font-bold text-gray-800">Returns</h1></div>
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         {['', 'PENDING', 'APPROVED', 'REJECTED', 'REFUNDED'].map(s => (
           <button key={s} onClick={() => { setStatus(s); setPage(1); }}
-            className={'px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
+            className={'px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
               (status === s ? 'bg-brand-primary text-white border-brand-primary' : 'border-gray-200 text-gray-600 hover:border-brand-secondary')}>
             {s || 'All'}
           </button>
         ))}
       </div>
       <div className="card">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full min-w-[700px]">
             <thead><tr className="border-b border-gray-100">{['Customer', 'Order', 'Reason', 'Status', 'Date', 'Actions'].map(h =>
-              <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 py-3">{h}</th>)}</tr></thead>
+              <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>)}</tr></thead>
             <tbody className="divide-y divide-gray-50">
               {isLoading ? Array(5).fill(0).map((_, i) => <tr key={i}>{Array(6).fill(0).map((_,j) =>
-                <td key={j} className="px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>)}</tr>)
+                <td key={j} className="px-3 sm:px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>)}</tr>)
               : data?.data?.map(r => (
                 <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-semibold text-gray-800">{r.user?.name}</td>
-                  <td className="px-4 py-3 text-sm font-mono text-gray-600">{r.order?.orderNumber}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{r.reason}</td>
-                  <td className="px-4 py-3 text-xs"><span className={'badge-status ' + r.status.toLowerCase()}>{r.status}</span></td>
-                  <td className="px-4 py-3 text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString('en-IN')}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">{r.user?.name}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm font-mono text-gray-600">{r.order?.orderNumber}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{r.reason}</td>
+                  <td className="px-3 sm:px-4 py-3 text-xs"><span className={'badge-status ' + r.status.toLowerCase()}>{r.status}</span></td>
+                  <td className="px-3 sm:px-4 py-3 text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString('en-IN')}</td>
+                  <td className="px-3 sm:px-4 py-3">
                     {r.status === 'PENDING' && (
                       <div className="flex gap-1">
                         <button onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}

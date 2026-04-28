@@ -1,9 +1,9 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { createElement } from 'react';
+import { createElement, useState } from 'react';
 import { useAdminStore } from '../App';
 import {
   LayoutDashboard, Package, ShoppingCart, Users,
-  RotateCcw, BarChart3, MessageSquare, LogOut
+  RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X
 } from 'lucide-react';
 
 const NAV = [
@@ -20,13 +20,16 @@ export default function AdminLayout() {
   const { user, logout } = useAdminStore();
   const navigate = useNavigate();
   const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <div className="min-h-screen bg-cream-100 text-gray-900 grid grid-cols-[280px_1fr]">
+    <div className="min-h-screen bg-cream-100 text-gray-900 grid grid-cols-1 lg:grid-cols-[280px_1fr]">
       {/* Sidebar */}
-      <aside className="w-[280px] border-r border-brand-primary/15 bg-[#4a2f23] text-slate-100">
+      <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] border-r border-brand-primary/15 bg-[#4a2f23] text-slate-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
         <div className="flex h-full flex-col">
           {/* Nav */}
           <nav className="flex-1 space-y-1 px-3 py-5">
@@ -60,10 +63,26 @@ export default function AdminLayout() {
         </div>
       </aside>
 
+      {/* Mobile backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main area */}
       <div className="flex min-w-0 flex-col lg:min-h-screen">
         {/* Top bar */}
         <header className="glass-surface sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-brand-primary/15 px-4 sm:px-6">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100 transition-colors"
+            aria-label="Toggle sidebar"
+          >
+            {sidebarOpen ? <X className="w-5 h-5 text-gray-700" /> : <Menu className="w-5 h-5 text-gray-700" />}
+          </button>
+
           <div className="ml-auto flex items-center gap-3">
             <a href={storeUrl} target="_blank" rel="noreferrer" className="hidden rounded-full border border-brand-primary/20 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-primary transition-colors hover:bg-brand-surface sm:inline-block">
               View Store ↗

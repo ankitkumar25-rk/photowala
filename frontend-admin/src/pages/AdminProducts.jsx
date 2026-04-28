@@ -33,31 +33,31 @@ export default function AdminProducts() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Products</h1>
           <p className="text-gray-400 text-sm mt-0.5">{data?.meta?.total || 0} total products</p>
         </div>
-        <Link to="/products/new" className="btn-primary">
+        <Link to="/products/new" className="btn-primary justify-center w-full sm:w-auto">
           <Plus className="w-4 h-4" /> Add Product
         </Link>
       </div>
 
       <div className="card">
         <div className="p-4 border-b border-gray-100">
-          <div className="relative w-72">
+          <div className="relative w-full sm:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input type="text" placeholder="Search products..." value={search}
-              onChange={e => setSearch(e.target.value)} className="input-field pl-9 py-2 text-sm" />
+              onChange={e => setSearch(e.target.value)} className="input-field pl-9 py-2 text-sm w-full" />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full min-w-[600px]">
             <thead>
               <tr className="border-b border-gray-100">
                 {['Product', 'Category', 'Price', 'MRP', 'Stock', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                  <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -72,7 +72,7 @@ export default function AdminProducts() {
                 ))
               ) : filtered.map(product => (
                 <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
                         {product.images?.[0] ? (
@@ -85,13 +85,13 @@ export default function AdminProducts() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{product.category?.name}</td>
-                  <td className="px-4 py-3 text-sm font-semibold text-gray-800">₹{product.price}</td>
-                  <td className="px-4 py-3 text-sm text-gray-400 line-through">₹{product.mrp}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{product.stock}</td>
-                  <td className="px-4 py-3"><StatusBadge stock={product.stock} lowAlert={product.lowStockAlert} /></td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1">
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{product.category?.name}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">₹{product.price}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-400 line-through">₹{product.mrp}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{product.stock}</td>
+                  <td className="px-3 sm:px-4 py-3"><StatusBadge stock={product.stock} lowAlert={product.lowStockAlert} /></td>
+                  <td className="px-3 sm:px-4 py-3">
+                    <div className="flex items-center gap-1 flex-wrap">
                       <button
                         type="button"
                         onClick={() => {

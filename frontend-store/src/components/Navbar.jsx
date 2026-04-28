@@ -30,7 +30,10 @@ export default function Navbar() {
       try {
         const { data } = await productsApi.search(searchQuery);
         setSearchResults(data.data || []);
-      } catch {} finally {
+      } catch (err) {
+        console.error('Search failed:', err);
+        setSearchResults([]);
+      } finally {
         setIsSearching(false);
       }
     }, 300);
@@ -80,6 +83,15 @@ export default function Navbar() {
               </Link>
             ))}
           </nav>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMenuOpen(!isMenuOpen)}
+            className="md:hidden btn-ghost p-2"
+            aria-label="Menu"
+          >
+            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
 
           {/* Actions */}
           <div className="flex items-center gap-2">
@@ -187,7 +199,47 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu */}
+      {/* Mobile Navigation Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-cream-50 border-t border-brand-primary/10 p-4 space-y-2">
+          {navLinks.map((l) => (
+            <Link
+              key={l.to}
+              to={l.to}
+              onClick={() => setMenuOpen(false)}
+              className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+            >
+              {l.label}
+            </Link>
+          ))}
+          {user && (
+            <>
+              <Link
+                to="/account"
+                onClick={() => setMenuOpen(false)}
+                className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+              >
+                My Account
+              </Link>
+              <button
+                onClick={() => { logout(); setMenuOpen(false); }}
+                className="w-full text-left px-4 py-2 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          )}
+          {!user && (
+            <Link
+              to="/login"
+              onClick={() => setMenuOpen(false)}
+              className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+            >
+              Sign In
+            </Link>
+          )}
+        </div>
+      )}
         {isMenuOpen && (
           <div className="md:hidden pb-4 border-t border-cream-300 pt-2">
             {navLinks.map((l) => (

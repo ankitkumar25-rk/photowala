@@ -25,7 +25,7 @@ export default function AdminOrders() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
           <p className="text-gray-400 text-sm">{data?.meta?.total || 0} total orders</p>
@@ -33,7 +33,7 @@ export default function AdminOrders() {
         <div className="flex gap-2 flex-wrap">
           {['', ...STATUSES].map(s => (
             <button key={s} onClick={() => {setStatus(s); setPage(1);}}
-              className={'px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
+              className={'px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
                 (status === s ? 'bg-brand-primary text-white border-brand-primary' : 'border-gray-200 text-gray-600 hover:border-brand-secondary')}>
               {s || 'All'}
             </button>
@@ -42,12 +42,12 @@ export default function AdminOrders() {
       </div>
 
       <div className="card">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-gray-100">
                 {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Details'].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 py-3">{h}</th>
+                  <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -58,32 +58,32 @@ export default function AdminOrders() {
                 ))}</tr>
               )) : data?.data?.map(order => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-sm font-mono font-semibold text-gray-700">{order.orderNumber}</td>
-                  <td className="px-4 py-3 text-sm">
+                  <td className="px-3 sm:px-4 py-3 text-sm font-mono font-semibold text-gray-700">{order.orderNumber}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm">
                     <p className="font-medium text-gray-800">{order.user?.name}</p>
                     <p className="text-xs text-gray-400">{order.user?.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-sm font-bold text-gray-800">₹{Number(order.total).toLocaleString('en-IN')}</td>
-                  <td className="px-4 py-3 text-xs">
+                  <td className="px-3 sm:px-4 py-3 text-sm font-bold text-gray-800">₹{Number(order.total).toLocaleString('en-IN')}</td>
+                  <td className="px-3 sm:px-4 py-3 text-xs">
                     <span className={'badge-status ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
                       {order.payment?.status || 'Pending'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-xs">
+                  <td className="px-3 sm:px-4 py-3 text-xs">
                     <span className={'badge-status ' + order.status.toLowerCase()}>{order.status}</span>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-400">
+                  <td className="px-3 sm:px-4 py-3 text-xs text-gray-400">
                     {new Date(order.createdAt).toLocaleDateString('en-IN')}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3">
                     <select
-                      className="input-field py-1 text-xs w-36"
+                      className="input-field py-1 text-xs w-32 sm:w-36"
                       value={order.status}
                       onChange={e => statusMut.mutate({ id: order.id, status: e.target.value })}>
                       {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3">
                     <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline">
                       View
                     </Link>
