@@ -59,8 +59,9 @@ if (googleConfigured) {
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
   try {
+    if (!id) return done(null, false);
     const user = await prisma.user.findUnique({ where: { id } });
-    done(null, user);
+    done(null, user || false);
   } catch (err) {
     done(err);
   }

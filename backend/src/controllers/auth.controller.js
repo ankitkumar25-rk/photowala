@@ -87,6 +87,17 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
+    // Defensive guard: ensure email is a defined string before calling Prisma
+    if (typeof email !== 'string' || !email) {
+      console.error('[auth] login called with invalid email:', email);
+      throw createError('Invalid credentials', 401);
+    }
+
+    // Log the incoming email (masked) to help diagnose malformed requests in production
+    try {
+      console.debug('[auth] login attempt for email:', `${String(email).slice(0, 3)}***@***`);
+    } catch (_) {}
+
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user || !user.passwordHash) throw createError('Invalid credentials', 401);
 

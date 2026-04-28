@@ -35,15 +35,9 @@ async function authenticate(req, res, next) {
     // Some legacy tokens may not carry role/email claims.
     // Hydrate from DB so authorization checks remain reliable.
     if (!role || !email) {
-      const user = await prisma.user.findUnique({
-        where: { id: payload.sub },
-        select: { email: true, role: true },
-      });
-
-      if (!user) {
-        return next(createError('User not found', 401));
-      }
-
+      if (!payload.sub) return next(createError('Invalid token payload', 401));
+      const user = await prisma.user.findUnique({ where: { id: payload.sub }, select: { email: true, role: true } });
+      if (!user) return next(createError('User not found', 401));
       role = role || user.role;
       email = email || user.email;
     }
