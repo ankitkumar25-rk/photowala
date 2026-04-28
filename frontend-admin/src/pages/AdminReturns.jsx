@@ -21,7 +21,10 @@ export default function AdminReturns() {
   });
   return (
     <div className="space-y-5">
-      <div><h1 className="text-2xl font-bold text-gray-800">Returns</h1></div>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">Returns</h1>
+        <p className="text-gray-400 text-sm mt-0.5">{data?.meta?.total || 0} return requests</p>
+      </div>
       <div className="flex gap-2 flex-wrap">
         {['', 'PENDING', 'APPROVED', 'REJECTED', 'REFUNDED'].map(s => (
           <button key={s} onClick={() => { setStatus(s); setPage(1); }}
@@ -32,7 +35,56 @@ export default function AdminReturns() {
         ))}
       </div>
       <div className="card">
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="md:hidden divide-y divide-gray-100">
+          {isLoading ? Array(5).fill(0).map((_, i) => (
+            <div key={i} className="p-4 space-y-2">
+              <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+              <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+            </div>
+          ))
+          : data?.data?.map((r) => (
+            <div key={r.id} className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-800 truncate">{r.user?.name || 'Unknown customer'}</p>
+                  <p className="text-xs text-gray-400 font-mono truncate">{r.order?.orderNumber || 'No order id'}</p>
+                </div>
+                <span className={'badge-status ' + r.status.toLowerCase()}>{r.status}</span>
+              </div>
+
+              <div>
+                <p className="text-[11px] text-gray-400 uppercase tracking-wider">Reason</p>
+                <p className="text-sm text-gray-600 mt-1 break-words">{r.reason}</p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString('en-IN')}</p>
+                {r.status === 'PENDING' && (
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}
+                      className="px-2 py-1 rounded bg-green-600 text-white text-xs font-semibold hover:bg-green-700"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => rejectMut.mutate({ id: r.id })}
+                      className="px-2 py-1 rounded bg-red-500 text-white text-xs font-semibold hover:bg-red-600"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {!isLoading && (!data?.data || data.data.length === 0) && (
+            <p className="p-4 text-sm text-gray-500">No return requests found.</p>
+          )}
+        </div>
+
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full min-w-[700px]">
             <thead><tr className="border-b border-gray-100">{['Customer', 'Order', 'Reason', 'Status', 'Date', 'Actions'].map(h =>
               <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>)}</tr></thead>

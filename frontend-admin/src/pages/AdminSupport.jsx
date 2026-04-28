@@ -22,11 +22,14 @@ export default function AdminSupport() {
   const [replies, setReplies] = useState({});
   return (
     <div className="space-y-5">
-      <div><h1 className="text-2xl font-bold text-gray-800">Support Tickets</h1><p className="text-gray-400 text-sm">{data?.meta?.total || 0} tickets</p></div>
-      <div className="flex gap-2">
-        {['', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map(s => (
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">Support Tickets</h1>
+        <p className="text-gray-400 text-sm mt-0.5">{data?.meta?.total || 0} tickets</p>
+      </div>
+      <div className="flex gap-2 flex-wrap">
+        {['', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'].map((s) => (
           <button key={s} onClick={() => { setStatus(s); setPage(1); }}
-            className={'px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
+            className={'px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
               (status === s ? 'bg-brand-primary text-white border-brand-primary' : 'border-gray-200 text-gray-600 hover:border-brand-secondary')}>
             {s || 'All'}
           </button>
@@ -63,7 +66,7 @@ export default function AdminSupport() {
                     </button>
                   ))}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                 <input type="text" placeholder="Type your reply..." value={replies[t.id] || ''} onChange={e => setReplies(p => ({...p, [t.id]: e.target.value}))} className="input-field py-2 text-sm" />
                 <button onClick={() => {
                   if (!(replies[t.id] || '').trim()) {
@@ -71,7 +74,7 @@ export default function AdminSupport() {
                     return;
                   }
                   replyMut.mutate({ id: t.id, adminReply: replies[t.id] });
-                }} className="btn-primary py-2 px-4 text-sm whitespace-nowrap">Send Reply</button>
+                }} className="btn-primary py-2 px-4 text-sm whitespace-nowrap w-full sm:w-auto">Send Reply</button>
                 </div>
               </div>
             )}

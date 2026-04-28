@@ -84,15 +84,6 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setMenuOpen(!isMenuOpen)}
-            className="md:hidden btn-ghost p-2"
-            aria-label="Menu"
-          >
-            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-
           {/* Actions */}
           <div className="flex items-center gap-2">
             {/* Search */}
@@ -105,7 +96,7 @@ export default function Navbar() {
                 <Search className="w-5 h-5" />
               </button>
               {showSearch && (
-                <div className="absolute right-0 top-12 w-80 bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 p-3 z-50">
+                <div className="absolute right-0 top-12 w-[min(92vw,20rem)] bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 p-3 z-50">
                   <input
                     autoFocus
                     type="text"
@@ -192,7 +183,8 @@ export default function Navbar() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMenuOpen(!isMenuOpen)}
-              className="btn-ghost p-2 md:hidden!"
+              className="btn-ghost p-2 md:hidden"
+              aria-label="Menu"
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -240,25 +232,6 @@ export default function Navbar() {
           )}
         </div>
       )}
-        {isMenuOpen && (
-          <div className="md:hidden pb-4 border-t border-cream-300 pt-2">
-            {navLinks.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-3 text-sm font-semibold text-brand-primary hover:bg-brand-surface rounded-xl"
-              >
-                {l.label}
-              </Link>
-            ))}
-            {!user && (
-              <Link to="/login" onClick={() => setMenuOpen(false)} className="btn-primary mt-2 w-full justify-center">
-                Login / Register
-              </Link>
-            )}
-          </div>
-        )}
       </div>
     </header>
   );

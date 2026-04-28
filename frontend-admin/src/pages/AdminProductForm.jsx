@@ -205,12 +205,12 @@ export default function AdminProductForm() {
 
   return (
     <div className="space-y-5 max-w-4xl">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">{isEdit ? 'Edit Product' : 'Add Product'}</h1>
           <p className="text-gray-400 text-sm mt-0.5">{isEdit ? 'Update product details and stock settings' : 'Create a new catalog item'}</p>
         </div>
-        <Link to="/products" className="btn-ghost">Back to Products</Link>
+        <Link to="/products" className="btn-ghost w-full justify-center sm:w-auto">Back to Products</Link>
       </div>
 
       <form onSubmit={onSubmit} className="card p-5 space-y-5">
