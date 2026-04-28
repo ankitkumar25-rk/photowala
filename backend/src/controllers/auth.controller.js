@@ -56,7 +56,7 @@ exports.register = async (req, res, next) => {
   try {
     const { name, email, password, phone } = registerSchema.parse(req.body);
 
-    const exists = await prisma.user.findUnique({ where: { email } });
+    const exists = await prisma.user.findFirst({ where: { email } });
     if (exists) throw createError('Email already registered', 409);
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -98,7 +98,7 @@ exports.login = async (req, res, next) => {
       console.debug('[auth] login attempt for email:', `${String(email).slice(0, 3)}***@***`);
     } catch (_) {}
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({ where: { email } });
     if (!user || !user.passwordHash) throw createError('Invalid credentials', 401);
 
     const valid = await bcrypt.compare(password, user.passwordHash);
@@ -163,7 +163,7 @@ exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = z.object({ email: z.string().email() }).parse(req.body);
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({ where: { email } });
     // Always 200 to prevent email enumeration
     if (!user) return res.json({ success: true, message: 'If that email exists, a reset link was sent.' });
 
