@@ -21,6 +21,10 @@ const Login         = lazy(() => import('./pages/Login'));
 const Register      = lazy(() => import('./pages/Register'));
 const Category      = lazy(() => import('./pages/Category'));
 const AuthSuccess   = lazy(() => import('./pages/AuthSuccess'));
+const TrackOrder    = lazy(() => import('./pages/TrackOrder'));
+const Returns       = lazy(() => import('./pages/Returns'));
+const FAQ           = lazy(() => import('./pages/FAQ'));
+const Privacy       = lazy(() => import('./pages/Privacy'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword  = lazy(() => import('./pages/ResetPassword'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
@@ -47,13 +51,16 @@ function PageLoader() {
 
 export default function App() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
-  const fetchCart = useCartStore((s) => s.fetchCart);
+  const resetCart = useCartStore((s) => s.resetCart);
   const token = useAuthStore((s) => s.accessToken);
 
   useEffect(() => {
-    if (token) fetchMe();
-    fetchCart();
-  }, []);
+    if (token) {
+      fetchMe();
+    } else {
+      resetCart();
+    }
+  }, [token, fetchMe, resetCart]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -73,7 +80,7 @@ export default function App() {
               <Route path="products"      element={<Products />} />
               <Route path="products/:slug" element={<ProductDetail />} />
               <Route path="categories/:slug" element={<Category />} />
-              <Route path="cart"          element={<Cart />} />
+              <Route path="cart"          element={<ProtectedRoute><Cart /></ProtectedRoute>} />
               <Route path="login"         element={<Login />} />
               <Route path="register"      element={<Register />} />
 
@@ -85,6 +92,10 @@ export default function App() {
 
               {/* Auth flow routes */}
               <Route path="auth/success"     element={<AuthSuccess />} />
+              <Route path="track-order"      element={<TrackOrder />} />
+              <Route path="returns"          element={<Returns />} />
+              <Route path="faq"              element={<FAQ />} />
+              <Route path="privacy"          element={<Privacy />} />
               <Route path="forgot-password"  element={<ForgotPassword />} />
               <Route path="reset-password"   element={<ResetPassword />} />
 

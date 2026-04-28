@@ -130,10 +130,10 @@ export default function Cart() {
   const user      = useAuthStore((s) => s.user);
 
   const subtotal = subtotalFn();
-  const shipping = subtotal >= 500 ? 0 : 49;
+  const shipping = subtotal >= 1000 ? 0 : 49;
   const total    = subtotal + shipping;
-  const freeShipRemaining = 500 - subtotal;
-  const freeShipProgress  = Math.min((subtotal / 500) * 100, 100);
+  const freeShipRemaining = 1000 - subtotal;
+  const freeShipProgress  = Math.min((subtotal / 1000) * 100, 100);
 
   const handleClear = async () => {
     if (!confirm('Clear all items from cart?')) return;

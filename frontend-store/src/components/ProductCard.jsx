@@ -1,11 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Star, Leaf } from 'lucide-react';
-import { useCartStore } from '../store';
+import { useAuthStore, useCartStore } from '../store';
 import toast from 'react-hot-toast';
 
 export default function ProductCard({ product }) {
   const addItem = useCartStore((s) => s.addItem);
+  const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const discountPct = product.mrp
     ? Math.round(((Number(product.mrp) - Number(product.price)) / Number(product.mrp)) * 100)
@@ -16,6 +18,10 @@ export default function ProductCard({ product }) {
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!user) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
+      return;
+    }
     try {
       await addItem(product.id, 1);
       toast.success(`${product.name} added to cart!`, {

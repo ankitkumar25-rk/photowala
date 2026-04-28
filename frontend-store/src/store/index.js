@@ -22,7 +22,8 @@ export const useAuthStore = create(
           set({ user: data.data.user, accessToken: data.data.accessToken, isLoading: false });
           localStorage.setItem('access_token', data.data.accessToken);
           // Merge guest cart into user cart
-          cartApi.merge().catch(() => {});
+          await cartApi.merge().catch(() => {});
+          await useCartStore.getState().fetchCart();
           return data;
         } catch (err) {
           set({ isLoading: false });
@@ -36,6 +37,8 @@ export const useAuthStore = create(
           const { data } = await authApi.register(userData);
           set({ user: data.data.user, accessToken: data.data.accessToken, isLoading: false });
           localStorage.setItem('access_token', data.data.accessToken);
+          await cartApi.merge().catch(() => {});
+          await useCartStore.getState().fetchCart();
           return data;
         } catch (err) {
           set({ isLoading: false });
@@ -47,15 +50,19 @@ export const useAuthStore = create(
         await authApi.logout().catch(() => {});
         localStorage.removeItem('access_token');
         set({ user: null, accessToken: null });
+        useCartStore.getState().resetCart();
       },
 
       fetchMe: async () => {
         try {
           const { data } = await authApi.getMe();
           set({ user: data.data });
+          await useCartStore.getState().fetchCart();
+          return data.data;
         } catch {
           set({ user: null, accessToken: null });
           localStorage.removeItem('access_token');
+          useCartStore.getState().resetCart();
         }
       },
 
@@ -74,13 +81,18 @@ export const useCartStore = create((set, get) => ({
   isLoading: false,
 
   fetchCart: async () => {
+    const authState = useAuthStore.getState();
+    if (!authState.user && !authState.accessToken) {
+      set({ items: [], isLoading: false });
+      return;
+    }
 
     set({ isLoading: true });
     try {
       const { data } = await cartApi.get();
       set({ items: data.data?.items || [], isLoading: false });
     } catch {
-      set({ isLoading: false });
+      set({ items: [], isLoading: false });
     }
   },
 
@@ -102,6 +114,10 @@ export const useCartStore = create((set, get) => ({
   clearCart: async () => {
     await cartApi.clear();
     set({ items: [] });
+  },
+
+  resetCart: () => {
+    set({ items: [], isLoading: false });
   },
 
   itemCount: () => get().items.reduce((sum, item) => sum + item.quantity, 0),

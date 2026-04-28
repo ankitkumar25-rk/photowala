@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  MapPin, Plus, Check, CreditCard, Truck, Package,
+  MapPin, Plus, Check, Truck, Package,
   ShoppingBag, ArrowLeft, X, ChevronDown, ChevronUp,
   Shield, Tag, Info
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useCartStore } from '../store';
-import { usersApi, ordersApi, paymentsApi } from '../api';
+import { usersApi, ordersApi } from '../api';
 
 /* ── Mini address form modal ── */
 function QuickAddressModal({ onClose, onSave }) {
@@ -97,23 +97,11 @@ function QuickAddressModal({ onClose, onSave }) {
   );
 }
 
-/* ── Load Razorpay script ── */
-function loadRazorpay() {
-  return new Promise((resolve) => {
-    if (window.Razorpay) return resolve(true);
-    const s = document.createElement('script');
-    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
-    document.head.appendChild(s);
-  });
-}
-
 /* ── Steps ── */
 const STEPS = [
   { id: 1, label: 'Address' },
   { id: 2, label: 'Review' },
-  { id: 3, label: 'Payment' },
+  { id: 3, label: 'COD' },
 ];
 
 export default function Checkout() {
@@ -131,7 +119,7 @@ export default function Checkout() {
   const [showItems, setShowItems] = useState(false);
 
   const subtotal = items.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
-  const shipping = subtotal >= 500 ? 0 : 49;
+  const shipping = subtotal >= 1000 ? 0 : 49;
   const total = subtotal + shipping;
 
   useEffect(() => { loadAddresses(); }, []);
@@ -164,82 +152,24 @@ export default function Checkout() {
     }
   };
 
-  /* ── Place order & pay ── */
-  const placeOrder = async () => {
-    if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
-    setPlacing(true);
-
-    try {
-      // 1. Create order
-      const { data: orderRes } = await ordersApi.create({ addressId: selectedAddr, notes });
-      const order = orderRes.data;
-
-      // 2. Create Razorpay payment order
-      const { data: payRes } = await paymentsApi.createOrder(order.id);
-      const { razorpayOrderId, amount, currency, key } = payRes.data;
-
-      // 3. Load Razorpay SDK
-      const ok = await loadRazorpay();
-      if (!ok) throw new Error('Razorpay failed to load');
-
-      // 4. Open Razorpay
-      await new Promise((resolve, reject) => {
-        const rzp = new window.Razorpay({
-          key,
-          amount,
-          currency,
-          order_id: razorpayOrderId,
-          name: 'Manufact Awards',
-          description: `Order ${order.orderNumber}`,
-          theme: { color: '#2d6a4f' },
-          handler: async (response) => {
-            try {
-              await paymentsApi.verifyPayment({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                orderId: order.id,
-              });
-              resolve();
-            } catch { reject(new Error('Payment verification failed')); }
-          },
-          modal: {
-            ondismiss: () => reject(new Error('Payment cancelled')),
-          },
-        });
-        rzp.open();
-      });
-
-      // 5. Success
-      await clearCart();
-      await fetchCart();
-      toast.success('🎉 Order placed & payment done!');
-      navigate(`/orders/${order.id}`);
-    } catch (err) {
-      const msg = err.message || err.response?.data?.message || 'Something went wrong';
-      if (msg === 'Payment cancelled') {
-        toast('Payment cancelled — try again to complete your order', { icon: 'ℹ️' });
-      } else {
-        toast.error(msg);
-      }
-    } finally {
-      setPlacing(false);
-    }
-  };
-
-  /* ── COD option (backend doesn't need payment) ── */
+  /* ── Place order with COD ── */
   const placeOrderCOD = async () => {
     if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
     setPlacing(true);
+
     try {
-      const { data } = await ordersApi.create({ addressId: selectedAddr, notes });
+      // Create order as cash on delivery
+      const { data: orderRes } = await ordersApi.create({ addressId: selectedAddr, notes });
+      const order = orderRes.data;
       await clearCart();
       await fetchCart();
       toast.success('🎉 Order placed! Pay on delivery.');
-      navigate(`/orders/${data.data.id}`);
+      navigate(`/orders/${order.id}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to place order');
-    } finally { setPlacing(false); }
+    } finally {
+      setPlacing(false);
+    }
   };
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddr);
@@ -336,7 +266,7 @@ export default function Checkout() {
                             <p className="text-xs text-gray-500 mt-0.5">{a.phone}</p>
                           </div>
                           {selectedAddr === a.id && (
-                            <Check className="w-5 h-5 text-brand-primary flex-shrink-0 mt-0.5" />
+                            <Check className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
                           )}
                         </label>
                       ))}
@@ -407,14 +337,14 @@ export default function Checkout() {
                           <img
                             src={item.product?.images?.[0]?.url || 'https://placehold.co/64x64/d8f3dc/2d6a4f?text=🏆'}
                             alt={item.product?.name}
-                            className="w-14 h-14 rounded-xl object-cover bg-cream-100 flex-shrink-0"
+                            className="w-14 h-14 rounded-xl object-cover bg-cream-100 shrink-0"
                           />
                           <div className="flex-1 min-w-0">
                             <p className="font-semibold text-gray-900 text-sm truncate">{item.product?.name}</p>
                             {item.product?.unit && <p className="text-xs text-gray-500">{item.product.unit}</p>}
                             <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity}</p>
                           </div>
-                          <p className="font-bold text-gray-900 flex-shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                          <p className="font-bold text-gray-900 shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
                         </div>
                       ))}
                     </div>
@@ -434,53 +364,24 @@ export default function Checkout() {
               </div>
             )}
 
-            {/* STEP 3 — Payment */}
+            {/* STEP 3 — Cash on Delivery */}
             {step >= 3 && (
               <div className="card">
                 <div className="p-4 border-b border-cream-200">
                   <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-brand-surface text-brand-primary flex items-center justify-center text-sm font-bold">3</div>
-                    Payment Method
+                    Cash on Delivery
                   </h2>
                 </div>
                 <div className="p-4 space-y-4">
-                  {/* Razorpay */}
-                  <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
-                    <div className="flex items-start gap-3">
-                      <CreditCard className="w-8 h-8 text-blue-600 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-bold text-gray-900">Pay Online</p>
-                        <p className="text-sm text-gray-500 mt-0.5">Credit/Debit Card, UPI, Netbanking, Wallets</p>
-                        <div className="flex items-center gap-1 mt-2 text-xs text-green-600 font-semibold">
-                          <Shield className="w-3 h-3" /> 100% Secure — Powered by Razorpay
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={placeOrder}
-                      disabled={placing}
-                      className="btn-primary w-full justify-center mt-4"
-                    >
-                      {placing ? (
-                        <span className="flex items-center gap-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          Processing...
-                        </span>
-                      ) : (
-                        `Pay ₹${total.toFixed(2)} →`
-                      )}
-                    </button>
-                  </div>
-
-                  {/* COD */}
                   <div className="p-4 rounded-2xl bg-cream-100 border border-cream-300">
                     <div className="flex items-start gap-3">
-                      <Package className="w-8 h-8 text-brand-secondary flex-shrink-0 mt-0.5" />
+                      <Package className="w-8 h-8 text-brand-secondary shrink-0 mt-0.5" />
                       <div>
                         <p className="font-bold text-gray-900">Cash on Delivery</p>
                         <p className="text-sm text-gray-500 mt-0.5">Pay when your order arrives</p>
                         <div className="flex items-center gap-1 mt-1 text-xs text-brand-secondary font-semibold">
-                          <Info className="w-3 h-3" /> Available only on select pincodes
+                          <Info className="w-3 h-3" /> Available on all orders
                         </div>
                       </div>
                     </div>
@@ -489,7 +390,7 @@ export default function Checkout() {
                       disabled={placing}
                       className="btn-secondary w-full justify-center mt-4"
                     >
-                      {placing ? 'Placing...' : 'Place Order (COD)'}
+                      {placing ? 'Placing...' : `Place Order (COD) - ₹${total.toFixed(2)}`}
                     </button>
                   </div>
 
@@ -527,7 +428,7 @@ export default function Checkout() {
                 <div className="p-4 divide-y divide-cream-200 max-h-72 overflow-y-auto">
                   {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-3 py-2.5 first:pt-0">
-                      <div className="relative flex-shrink-0">
+                      <div className="relative shrink-0">
                         <img
                           src={item.product?.images?.[0]?.url || 'https://placehold.co/48x48/d8f3dc/2d6a4f?text=🏆'}
                           alt={item.product?.name}
@@ -541,7 +442,7 @@ export default function Checkout() {
                         <p className="font-semibold text-gray-900 text-xs leading-tight truncate">{item.product?.name}</p>
                         {item.product?.unit && <p className="text-[10px] text-gray-400">{item.product.unit}</p>}
                       </div>
-                      <p className="font-bold text-gray-900 text-sm flex-shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                      <p className="font-bold text-gray-900 text-sm shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -569,7 +470,7 @@ export default function Checkout() {
                 {shipping > 0 && (
                   <div className="bg-brand-surface p-2.5 rounded-xl text-xs text-brand-secondary font-medium flex items-center gap-2">
                     <Tag className="w-3.5 h-3.5" />
-                    Add ₹{(500 - subtotal).toFixed(2)} more to get free shipping!
+                    Add ₹{(1000 - subtotal).toFixed(2)} more to get free shipping!
                   </div>
                 )}
 

@@ -13,7 +13,7 @@ export default function CartDrawer() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const shipping = subtotal() >= 500 ? 0 : 49;
+  const shipping = subtotal() >= 1000 ? 0 : 49;
   const total    = subtotal() + shipping;
 
   return (
@@ -131,7 +131,7 @@ export default function CartDrawer() {
 
             {shipping > 0 && (
               <p className="text-xs text-brand-secondary bg-brand-surface px-3 py-2 rounded-lg">
-                💡 Add ₹{(500 - subtotal()).toFixed(0)} more for free shipping!
+                💡 Add ₹{(1000 - subtotal()).toFixed(0)} more for free shipping!
               </p>
             )}
 

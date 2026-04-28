@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, Heart, Share2, Star, Leaf, Shield,
   Truck, RefreshCw, ChevronRight, ChevronLeft, Plus,
@@ -122,7 +122,7 @@ function ImageGallery({ images, name }) {
             <button
               key={img.id}
               onClick={() => setActive(i)}
-              className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+              className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
                 i === active ? 'border-brand-secondary shadow-md' : 'border-cream-200 hover:border-brand-secondary'
               }`}
             >
@@ -169,7 +169,7 @@ function ReviewCard({ review }) {
           {review.user?.avatarUrl ? (
             <img src={review.user.avatarUrl} alt={review.user.name} className="w-9 h-9 rounded-full object-cover" />
           ) : (
-            <div className="w-9 h-9 rounded-full bg-brand-surface text-brand-primary flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-brand-surface text-brand-primary flex items-center justify-center text-sm font-bold shrink-0">
               {review.user?.name?.[0]?.toUpperCase() || 'U'}
             </div>
           )}
@@ -259,6 +259,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const addItem  = useCartStore((s) => s.addItem);
   const user     = useAuthStore((s) => s.user);
+  const location = useLocation();
 
   const [product, setProduct]   = useState(null);
   const [loading, setLoading]   = useState(true);
@@ -285,7 +286,7 @@ export default function ProductDetail() {
       toast.error('Product not found');
       navigate('/products');
     } finally { setLoading(false); }
-  }, [slug]);
+  }, [slug, navigate]);
 
   useEffect(() => { fetchProduct(); setQty(1); }, [fetchProduct]);
 
@@ -298,6 +299,10 @@ export default function ProductDetail() {
   }, [user, product?.id]);
 
   const handleAddToCart = async () => {
+    if (!user) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
+      return;
+    }
     setAddingToCart(true);
     try {
       await addItem(product.id, qty);
@@ -391,7 +396,7 @@ export default function ProductDetail() {
               </>
             )}
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-gray-900 font-medium truncate max-w-[160px]">{product.name}</span>
+            <span className="text-gray-900 font-medium truncate max-w-40">{product.name}</span>
           </nav>
         </div>
       </div>
@@ -561,7 +566,7 @@ export default function ProductDetail() {
             <div className="grid grid-cols-3 gap-3 pt-2 border-t border-cream-200">
               {[
                 { icon: Shield, label: 'Secure Payment', sub: 'SSL encrypted' },
-                { icon: Truck,  label: 'Fast Delivery',  sub: 'Free above ₹500' },
+                { icon: Truck,  label: 'Fast Delivery',  sub: 'Free above ₹999' },
                 { icon: RefreshCw, label: 'Easy Returns', sub: '7-day policy' },
               ].map(({ icon: Icon, label, sub }) => (
                 <div key={label} className="flex flex-col items-center text-center gap-1 p-3 bg-cream-50 rounded-2xl">
@@ -652,7 +657,7 @@ export default function ProductDetail() {
                 {/* Rating summary */}
                 {product.reviews?.length > 0 && (
                   <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8 p-5 bg-brand-surface rounded-2xl">
-                    <div className="text-center sm:text-left flex flex-col items-center sm:items-start text-center">
+                    <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                       <p className="text-5xl font-extrabold text-brand-primary">{avg.toFixed(1)}</p>
                       <StarRating rating={Math.round(avg)} size="sm" />
                       <p className="text-xs text-gray-500 mt-1">{product._count?.reviews} reviews</p>
@@ -665,7 +670,7 @@ export default function ProductDetail() {
                         return (
                           <div key={n} className="flex items-center gap-2 text-xs">
                             <span className="w-3 text-gray-600 font-medium">{n}</span>
-                            <Star className="w-3 h-3 text-brand-secondary fill-amber-400 flex-shrink-0" />
+                            <Star className="w-3 h-3 text-brand-secondary fill-amber-400 shrink-0" />
                             <div className="flex-1 h-1.5 bg-cream-200 rounded-full overflow-hidden">
                               <div className="h-full bg-brand-secondary rounded-full transition-all" style={{ width: `${pct}%` }} />
                             </div>

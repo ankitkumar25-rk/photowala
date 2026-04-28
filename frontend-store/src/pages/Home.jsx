@@ -109,7 +109,7 @@ function CategoryGrid({ categories }) {
 function TrustBadges() {
   const badges = [
     { icon: Shield, label: 'Premium Quality Assured', desc: 'Sustainably crafted & highly rated' },
-    { icon: Truck, label: 'Free Delivery above ₹500', desc: 'Pan-India secure delivery in 2-5 days' },
+    { icon: Truck, label: 'Free Delivery above ₹999', desc: 'Pan-India secure delivery in 2-5 days' },
     { icon: RotateCcw, label: 'Easy 7-Day Returns', desc: 'Hassle-free return policy' },
     { icon: Leaf, label: 'Exquisite Craftsmanship', desc: 'Precision finishes for every award' },
   ];
@@ -120,7 +120,7 @@ function TrustBadges() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {badges.map(({ icon: Icon, label, desc }) => (
             <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-[#e6ccb6]">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300">
                 <Icon className="w-6 h-6 text-[#b88a2f]" />
               </div>
               <div>

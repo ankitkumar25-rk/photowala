@@ -51,7 +51,7 @@ exports.createOrder = async (req, res, next) => {
       });
     }
 
-    const shippingCost = subtotal >= 500 ? 0 : 49; // Free shipping above ₹500
+    const shippingCost = subtotal >= 1000 ? 0 : 49; // Free shipping above ₹999
     const total = subtotal + shippingCost;
 
     // Create order + decrement stock atomically
