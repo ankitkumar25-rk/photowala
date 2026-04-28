@@ -58,7 +58,7 @@ export default function Navbar() {
         🚚 Free shipping on orders above ₹500 | 🎁 Personalized gifts crafted for memorable moments
       </div>
 
-      <div className="max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16">
+      <div className="relative max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="flex items-center justify-between h-20 md:h-24 gap-6">
           {/* Logo */}
           <Link to="/" className="flex items-center shrink-0">
@@ -181,57 +181,60 @@ export default function Navbar() {
             )}
 
             {/* Mobile menu toggle */}
-            <button
-              onClick={() => setMenuOpen(!isMenuOpen)}
-              className="btn-ghost p-2 md:hidden"
-              aria-label="Menu"
-            >
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+            <div className="md:hidden">
+              <button
+                onClick={() => setMenuOpen(!isMenuOpen)}
+                className="btn-ghost p-2"
+                aria-label="Menu"
+                aria-expanded={isMenuOpen}
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
         </div>
 
-      {/* Mobile Navigation Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-cream-50 border-t border-brand-primary/10 p-4 space-y-2">
-          {navLinks.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              onClick={() => setMenuOpen(false)}
-              className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
-            >
-              {l.label}
-            </Link>
-          ))}
-          {user && (
-            <>
+        {/* Mobile Navigation Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden absolute left-0 right-0 top-full z-40 border-t border-brand-primary/10 bg-cream-50 p-4 shadow-[0_18px_40px_-24px_rgba(91,63,47,0.35)] space-y-2">
+            {navLinks.map((l) => (
               <Link
-                to="/account"
+                key={l.to}
+                to={l.to}
                 onClick={() => setMenuOpen(false)}
                 className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
               >
-                My Account
+                {l.label}
               </Link>
-              <button
-                onClick={() => { logout(); setMenuOpen(false); }}
-                className="w-full text-left px-4 py-2 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+            ))}
+            {user && (
+              <>
+                <Link
+                  to="/account"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+                >
+                  My Account
+                </Link>
+                <button
+                  onClick={() => { logout(); setMenuOpen(false); }}
+                  className="w-full text-left px-4 py-2 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+            {!user && (
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
               >
-                Logout
-              </button>
-            </>
-          )}
-          {!user && (
-            <Link
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-              className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
-            >
-              Sign In
-            </Link>
-          )}
-        </div>
-      )}
+                Sign In
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

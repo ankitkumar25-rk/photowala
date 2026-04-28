@@ -39,10 +39,9 @@ export default function AdminLogin() {
       <div className="w-full max-w-sm">
         <div className="card bg-cream-50 p-8">
           <div className="text-center mb-7">
-            <div className="w-12 h-12 bg-[#f7efe5] rounded-xl flex items-center justify-center mx-auto mb-3 overflow-hidden">
-              <img src={adminLogo} alt="Premium Admin" className="w-9 h-9 object-contain" />
+            <div className="w-20 h-20 bg-[#f7efe5] rounded-2xl flex items-center justify-center mx-auto mb-4 overflow-hidden">
+              <img src={adminLogo} alt="Premium Admin" className="w-14 h-14 object-contain" />
             </div>
-            <h1 className="font-display text-2xl font-bold text-brand-primary">Admin Portal</h1>
             <p className="text-brand-secondary text-sm mt-1 font-medium">Sign in to manage your store</p>
           </div>
 
