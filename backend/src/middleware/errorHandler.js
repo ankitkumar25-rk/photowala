@@ -20,6 +20,12 @@ function errorHandler(err, req, res, next) {
       message: 'Record not found.',
     });
   }
+  if (err.code === 'P2021') {
+    return res.status(500).json({
+      success: false,
+      message: 'Database schema is missing a required table. Run Prisma deploy/push against the production database.',
+    });
+  }
 
   // Validation errors (Zod)
   if (err.name === 'ZodError') {

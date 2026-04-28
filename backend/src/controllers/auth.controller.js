@@ -34,14 +34,19 @@ async function issueTokens(user) {
     signRefreshToken(payload),
   ]);
 
-  // Store refresh token in DB
-  await prisma.refreshToken.create({
-    data: {
-      token: refreshToken,
-      userId: user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    },
-  });
+  // Store refresh token in DB when the schema is available.
+  // Login should still succeed if this persistence layer is unavailable.
+  try {
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
+  } catch (err) {
+    console.error('[auth] refresh token persistence failed:', err.message);
+  }
 
   return { accessToken, refreshToken };
 }
