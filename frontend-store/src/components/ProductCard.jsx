@@ -1,5 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Star, Leaf } from 'lucide-react';
+import { Heart, ShoppingCart, Star, Leaf } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { usersApi } from '../api';
 import { useAuthStore, useCartStore } from '../store';
 import toast from 'react-hot-toast';
 
@@ -8,6 +10,36 @@ export default function ProductCard({ product }) {
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
+
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ['wishlist'],
+    queryFn: () => usersApi.getWishlist().then((r) => r.data.data),
+    enabled: !!user,
+  });
+
+  const isWishlisted = wishlist.some((w) => w.productId === product.id);
+
+  const toggleWishlist = useMutation({
+    mutationFn: () => isWishlisted ? usersApi.removeWishlist(product.id) : usersApi.addToWishlist(product.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['wishlist']);
+      toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+    },
+    onError: () => {
+      toast.error('Failed to update wishlist');
+    }
+  });
+
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
+      return;
+    }
+    toggleWishlist.mutate();
+  };
 
   const discountPct = product.mrp
     ? Math.round(((Number(product.mrp) - Number(product.price)) / Number(product.mrp)) * 100)
@@ -49,7 +81,21 @@ export default function ProductCard({ product }) {
           </div>
         )}
 
-        {/* Badges */}
+        {/* Badges and Actions */}
+        <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+          <button
+            onClick={handleWishlistClick}
+            disabled={toggleWishlist.isPending}
+            className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-all ${
+              isWishlisted
+                ? 'bg-red-50 text-red-500 shadow-sm'
+                : 'bg-white/70 text-gray-500 hover:bg-white hover:text-red-500'
+            }`}
+          >
+            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+          </button>
+        </div>
+
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.isFeatured && (
             <span className="badge-featured">

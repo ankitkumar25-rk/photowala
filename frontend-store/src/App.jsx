@@ -17,6 +17,7 @@ const Checkout      = lazy(() => import('./pages/Checkout'));
 const Orders        = lazy(() => import('./pages/Orders'));
 const OrderDetail   = lazy(() => import('./pages/OrderDetail'));
 const Account       = lazy(() => import('./pages/Account'));
+const Wishlist      = lazy(() => import('./pages/Wishlist'));
 const Login         = lazy(() => import('./pages/Login'));
 const Register      = lazy(() => import('./pages/Register'));
 const Category      = lazy(() => import('./pages/Category'));
@@ -89,6 +90,7 @@ export default function App() {
               <Route path="orders"    element={<ProtectedRoute><Orders /></ProtectedRoute>} />
               <Route path="orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
               <Route path="account"   element={<ProtectedRoute><Account /></ProtectedRoute>} />
+              <Route path="wishlist"  element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
               {/* Auth flow routes */}
               <Route path="auth/success"     element={<AuthSuccess />} />

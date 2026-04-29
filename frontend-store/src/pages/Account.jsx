@@ -19,18 +19,17 @@ const TABS = [
 /* ── Status badge ── */
 function StatusBadge({ status }) {
   const map = {
-    PENDING:    { bg: 'bg-brand-secondary',   text: 'text-brand-secondary',  dot: 'bg-brand-secondary',  label: 'Pending' },
-    CONFIRMED:  { bg: 'bg-blue-100',    text: 'text-blue-700',   dot: 'bg-blue-500',   label: 'Confirmed' },
-    PROCESSING: { bg: 'bg-purple-100',  text: 'text-purple-700', dot: 'bg-purple-500', label: 'Processing' },
-    SHIPPED:    { bg: 'bg-indigo-100',  text: 'text-indigo-700', dot: 'bg-indigo-500', label: 'Shipped' },
-    DELIVERED:  { bg: 'bg-green-100',   text: 'text-green-700',  dot: 'bg-green-500',  label: 'Delivered' },
-    CANCELLED:  { bg: 'bg-red-100',     text: 'text-red-700',    dot: 'bg-red-500',    label: 'Cancelled' },
-    REFUNDED:   { bg: 'bg-gray-100',    text: 'text-gray-700',   dot: 'bg-gray-500',   label: 'Refunded' },
+    PENDING:    { bg: 'bg-[#b88a2f]', text: 'text-white', label: 'Pending' },
+    CONFIRMED:  { bg: 'bg-blue-500', text: 'text-white', label: 'Confirmed' },
+    PROCESSING: { bg: 'bg-purple-500', text: 'text-white', label: 'Processing' },
+    SHIPPED:    { bg: 'bg-indigo-500', text: 'text-white', label: 'Shipped' },
+    DELIVERED:  { bg: 'bg-green-500', text: 'text-white', label: 'Delivered' },
+    CANCELLED:  { bg: 'bg-red-500', text: 'text-white', label: 'Cancelled' },
+    REFUNDED:   { bg: 'bg-gray-500', text: 'text-white', label: 'Refunded' },
   };
   const s = map[status] || map.PENDING;
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${s.bg} ${s.text}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
+    <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold ${s.bg} ${s.text}`}>
       {s.label}
     </span>
   );
@@ -308,49 +307,51 @@ export default function Account() {
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-800 to-forest-600 text-white">
+      <div className="bg-cream-100 text-gray-900">
         <div className="max-w-6xl mx-auto px-4 py-10">
-          <div className="flex items-center gap-5">
-            <div className="relative">
-              {user.avatarUrl ? (
-                <img src={user.avatarUrl} alt={user.name} className="w-20 h-20 rounded-2xl object-cover ring-4 ring-white/30" />
-              ) : (
-                <div className="w-20 h-20 rounded-2xl bg-white/20 flex items-center justify-center text-3xl font-bold text-white ring-4 ring-white/30">
-                  {user.name?.[0]?.toUpperCase()}
-                </div>
-              )}
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold" style={{ fontFamily: 'Fraunces, serif' }}>
-                Hello, {user.name?.split(' ')[0]} 👋
-              </h1>
-              <p className="text-cream-50/80 flex items-center gap-1.5 mt-1 text-sm">
-                <Mail className="w-4 h-4" /> {user.email}
-              </p>
-              {user.phone && (
-                <p className="text-cream-50/80 flex items-center gap-1.5 mt-0.5 text-sm">
-                  <Phone className="w-4 h-4" /> {user.phone}
+          <div className="flex flex-wrap items-center gap-5 justify-between">
+            <div className="flex items-center gap-5">
+              <div className="relative">
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt={user.name} className="w-24 h-24 rounded-2xl object-cover shadow-sm" />
+                ) : (
+                  <div className="w-24 h-24 rounded-2xl bg-[#f43f5e] flex items-center justify-center text-4xl font-normal text-white shadow-sm">
+                    {user.name?.[0]?.toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>
+                  Hello, {user.name?.split(' ')[0]?.toUpperCase()} 👋
+                </h1>
+                <p className="text-gray-700 flex items-center gap-1.5 mt-1 text-sm">
+                  <Mail className="w-4 h-4 text-gray-600" /> {user.email}
                 </p>
-              )}
+                {user.phone && (
+                  <p className="text-gray-700 flex items-center gap-1.5 mt-0.5 text-sm">
+                    <Phone className="w-4 h-4 text-gray-600" /> {user.phone}
+                  </p>
+                )}
+              </div>
             </div>
             <button
               onClick={handleLogout}
-              className="ml-auto flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl text-sm font-semibold transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#c26e27] hover:bg-[#a85f22] text-white rounded-xl text-sm font-semibold transition-colors"
             >
               <LogOut className="w-4 h-4" /> Logout
             </button>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mt-8 bg-white/10 rounded-2xl p-1 overflow-x-auto">
+          <div className="flex gap-2 mt-12 overflow-x-auto pb-2">
             {TABS.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => setTab(id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
                   tab === id
-                    ? 'bg-white text-brand-primary shadow-sm'
-                    : 'text-white/80 hover:bg-white/10'
+                    ? 'bg-white text-gray-900 shadow-sm border border-gray-100'
+                    : 'text-gray-700 hover:bg-white/50'
                 }`}
               >
                 <Icon className="w-4 h-4" /> {label}
@@ -375,25 +376,25 @@ export default function Account() {
                     <input
                       value={profile.name}
                       onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))}
-                      className="input-field"
+                      className="input-field text-gray-900"
                       placeholder="Your full name"
                     />
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Email</label>
-                    <input value={user.email} disabled className="input-field opacity-60 cursor-not-allowed" />
+                    <input value={user.email} disabled className="input-field opacity-60 cursor-not-allowed text-gray-900" />
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Phone</label>
                     <input
                       value={profile.phone}
                       onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
-                      className="input-field"
+                      className="input-field text-gray-900"
                       placeholder="Your phone number"
                     />
                   </div>
-                  <button type="submit" disabled={saving} className="btn-primary w-full justify-center mt-2">
-                    {saving ? 'Saving...' : 'Save Changes'}
+                  <button type="submit" disabled={saving} className="btn-primary w-full justify-center mt-4 py-3" style={{ background: '#c26e27', boxShadow: 'none' }}>
+                    {saving ? 'SAVING...' : 'SAVE CHANGES'}
                   </button>
                 </form>
               </div>

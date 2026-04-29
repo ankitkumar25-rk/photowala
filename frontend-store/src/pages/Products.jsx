@@ -40,13 +40,7 @@ export default function Products() {
           <p className="text-gray-400 text-sm mt-1">{data?.meta?.total || 0} products found</p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden btn-primary flex items-center justify-center gap-2 px-3 py-2 flex-1 sm:flex-none"
-          >
-            <SlidersHorizontal className="w-4 h-4" />
-            Filters
-          </button>
+
           <select
             value={sortValue}
             onChange={(e) => setSortValue(e.target.value)}
@@ -114,12 +108,7 @@ export default function Products() {
                   </label>
                 </div>
               </div>
-              <button
-                onClick={() => setShowFilters(false)}
-                className="md:hidden w-full mt-4 btn-primary py-3 justify-center rounded-xl"
-              >
-                Apply Filters
-              </button>
+
             </div>
           </div>
         </aside>
