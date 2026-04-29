@@ -1,30 +1,55 @@
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Shield, Truck, RotateCcw } from 'lucide-react';
 import { productsApi, categoriesApi } from '../api';
 import ProductCard from '../components/ProductCard';
 
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2040&auto=format&fit=crop', // Replace with your image
+  'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1932&auto=format&fit=crop', // Replace with your image
+  'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=2080&auto=format&fit=crop', // Replace with your image
+];
+
 // ── Hero Section ─────────────────────────────────────────────
 function HeroSection() {
-  return (
-    <section className="relative overflow-hidden bg-[linear-gradient(135deg,#5a3f2f_0%,#684534_40%,#8b502f_72%,#b25d1f_100%)] text-white luxury-grain">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+  const [currentImage, setCurrentImage] = useState(0);
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 relative">
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="relative overflow-hidden text-white min-h-[600px] flex flex-col justify-center">
+      {/* Slider Images */}
+      {HERO_IMAGES.map((src, index) => (
+        <div
+          key={src}
+          className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImage ? 'opacity-100' : 'opacity-0'
+            }`}
+        >
+          <img src={src} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
+        </div>
+      ))}
+
+      {/* Gradient Overlay for Text Visibility */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/10" />
+      <div className="absolute inset-0 bg-[#5a3f2f]/30" /> {/* Brand tint overlay */}
+      <div className="absolute inset-0 opacity-[0.05] luxury-grain" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 relative z-10 w-full">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-pill bg-[#b88a2f]/28 border border-[#d7b071]/60 text-[#fff2e6] text-sm font-semibold mb-6">
-            <Leaf className="w-4 h-4 animate-leaf" /> Handcrafted Photogifts For Every Occasion
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-pill bg-black/30 backdrop-blur-md border border-white/20 text-[#fff2e6] text-sm font-semibold mb-6">
+            <Leaf className="w-4 h-4 animate-leaf text-[#d0a13f]" /> Handcrafted Photogifts For Every Occasion
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg" style={{ fontFamily: 'Playfair Display, serif' }}>
             Turn Memories Into<br />
             <span className="text-[#d0a13f]">Gift-Worthy Stories</span>
           </h1>
-          <p className="text-[#ffe7d6] text-lg md:text-xl leading-relaxed mb-8 max-w-lg">
+          <p className="text-[#ffe7d6] text-lg md:text-xl leading-relaxed mb-8 max-w-lg drop-shadow-md">
             Discover premium trophies, mementos, and personalized photogifts designed to celebrate wins, milestones, and people you love.
           </p>
           <div className="flex flex-wrap gap-4">
@@ -35,7 +60,7 @@ function HeroSection() {
             >
               Shop Now <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link to="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-pill bg-transparent border-2 border-white/45 text-white font-bold hover:bg-white/10 transition-all">
+            <Link to="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-pill bg-black/30 backdrop-blur-md border-2 border-white/45 text-white font-bold hover:bg-white/20 transition-all">
               Our Categories
             </Link>
           </div>
@@ -46,12 +71,12 @@ function HeroSection() {
           {[
             ['500+', 'Premium Products'],
             ['10K+', 'Happy Customers'],
-            ['5★',   'Average Rating'],
-            ['48h',  'Turnaround Time'],
+            ['5★', 'Average Rating'],
+            ['48h', 'Turnaround Time'],
           ].map(([num, label]) => (
             <div key={label}>
-              <div className="text-2xl font-bold text-[#fff4ea]">{num}</div>
-              <div className="text-[#d0a13f] text-sm">{label}</div>
+              <div className="text-2xl font-bold text-white drop-shadow-md">{num}</div>
+              <div className="text-[#d0a13f] text-sm font-semibold drop-shadow-md">{label}</div>
             </div>
           ))}
         </div>
