@@ -45,6 +45,7 @@ export default function Navbar() {
     { to: '/categories/trophies', label: 'Trophies' },
     { to: '/categories/corporate-gifts', label: 'Corporate Gifts' },
     { to: '/categories/momentos', label: 'Momentos' },
+    { to: '#', label: 'Our Service', badge: 'Coming soon' },
   ];
 
   return (
@@ -72,14 +73,22 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-2">
             {navLinks.map((l) => (
               <Link
-                key={l.to}
+                key={l.label}
                 to={l.to}
-                className="px-3 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+                onClick={(e) => {
+                  if (l.to === '#') e.preventDefault();
+                }}
+                className="relative px-3 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors flex items-center"
               >
                 {l.label}
+                {l.badge && (
+                  <span className="absolute -top-1 -right-3 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
+                    {l.badge}
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
@@ -200,12 +209,20 @@ export default function Navbar() {
           <div className="md:hidden absolute left-0 right-0 top-full z-40 border-t border-brand-primary/10 bg-cream-50 p-4 shadow-[0_18px_40px_-24px_rgba(91,63,47,0.35)] space-y-2">
             {navLinks.map((l) => (
               <Link
-                key={l.to}
+                key={l.label}
                 to={l.to}
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+                onClick={(e) => {
+                  if (l.to === '#') e.preventDefault();
+                  else setMenuOpen(false);
+                }}
+                className="flex items-center justify-between px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
               >
                 {l.label}
+                {l.badge && (
+                  <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
+                    {l.badge}
+                  </span>
+                )}
               </Link>
             ))}
             {user && (
