@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { ShoppingCart, Search, Menu, X, User, Heart } from 'lucide-react';
 import { useAuthStore, useCartStore } from '../store';
-import { productsApi } from '../api';
+import { productsApi, usersApi } from '../api';
 import { brandAssets } from '../data/assets';
 
 export default function Navbar() {
@@ -16,6 +17,13 @@ export default function Navbar() {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const itemCount = useCartStore((s) => s.itemCount());
+
+  const { data: wishlist = [] } = useQuery({
+    queryKey: ['wishlist'],
+    queryFn: () => usersApi.getWishlist().then((r) => r.data.data),
+    enabled: !!user,
+  });
+  const wishlistCount = wishlist.length;
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -143,8 +151,13 @@ export default function Navbar() {
 
             {/* Wishlist */}
             {user && (
-              <Link to="/wishlist" className="btn-ghost p-2 hidden sm:flex" aria-label="Wishlist">
+              <Link to="/wishlist" className="btn-ghost p-2 relative hidden sm:flex" aria-label="Wishlist">
                 <Heart className="w-5 h-5" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                  </span>
+                )}
               </Link>
             )}
 
@@ -179,7 +192,6 @@ export default function Navbar() {
                 <div className="absolute right-0 top-12 w-48 bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <Link to="/account"  className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Account</Link>
                   <Link to="/orders"   className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Orders</Link>
-                  <Link to="/wishlist" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">Wishlist</Link>
                   <hr className="my-1 border-brand-primary/20" />
                   <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Logout</button>
                 </div>
@@ -233,13 +245,6 @@ export default function Navbar() {
                   className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
                 >
                   My Account
-                </Link>
-                <Link
-                  to="/wishlist"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
-                >
-                  Wishlist
                 </Link>
                 <button
                   onClick={() => { logout(); setMenuOpen(false); }}
