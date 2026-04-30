@@ -80,12 +80,28 @@ export default function AdminOrderDetail() {
                     {item.customizationImageUrl && (
                       <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
                         <span className="text-blue-600 text-xs">🖼️</span>
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wide mb-1">Custom Image / Logo</p>
                           <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer">
                             <img src={item.customizationImageUrl} alt="Customer customization" className="w-20 h-20 object-cover rounded-lg border border-blue-200 hover:scale-105 transition-transform" />
                           </a>
-                          <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 underline mt-1 block">Open full size</a>
+                          <div className="flex gap-2 mt-2 flex-wrap">
+                            <a
+                              href={item.customizationImageUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                            >
+                              ↗ Open Full Size
+                            </a>
+                            <a
+                              href={item.customizationImageUrl}
+                              download={`customization-${item.id}.jpg`}
+                              className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                            >
+                              ⬇ Download & Print
+                            </a>
+                          </div>
                         </div>
                       </div>
                     )}

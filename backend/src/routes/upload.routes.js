@@ -29,6 +29,7 @@ router.use((req, res, next) => {
   next();
 });
 
+// Admin-only product image routes
 router.post('/image',
   authenticate,
   authorize('ADMIN', 'SUPER_ADMIN'),
@@ -47,6 +48,14 @@ router.delete('/image/:publicId',
   authenticate,
   authorize('ADMIN', 'SUPER_ADMIN'),
   uploadController.deleteImage
+);
+
+// Customer route: upload a customization logo/image (authenticated users only)
+router.post('/customization',
+  authenticate,
+  (req, res, next) => { req.uploadFolder = 'photowala/customizations'; next(); },
+  upload.single('image'),
+  uploadController.uploadImage
 );
 
 module.exports = router;

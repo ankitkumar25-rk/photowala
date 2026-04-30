@@ -85,5 +85,12 @@ export const uploadApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+  uploadCustomization: (file) => {
+    const fd = new FormData();
+    fd.append('image', file);
+    return api.post('/uploads/customization', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
   deleteImage: (publicId) => api.delete(`/uploads/image/${encodeURIComponent(publicId)}`),
 };

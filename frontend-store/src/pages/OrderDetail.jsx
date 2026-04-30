@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Package, MapPin, CreditCard, Truck,
-  Clock, CheckCircle, XCircle, RefreshCw, Copy, Check
+  Clock, CheckCircle, XCircle, RefreshCw, Copy, Check,
+  Pencil, Download
 } from 'lucide-react';
 import { ordersApi } from '../api';
 import toast from 'react-hot-toast';
@@ -235,6 +236,36 @@ export default function OrderDetail() {
                       <p className="text-xs text-gray-500 mt-0.5">{item.productUnit}</p>
                     )}
                     <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity}</p>
+
+                    {/* Customization details */}
+                    {item.customizationText && (
+                      <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                        <Pencil className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Your Custom Text</p>
+                          <p className="text-sm font-semibold text-amber-900">{item.customizationText}</p>
+                        </div>
+                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0 ml-auto mt-0.5" />
+                      </div>
+                    )}
+                    {item.customizationImageUrl && (
+                      <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
+                        <img src={item.customizationImageUrl} alt="Custom" className="w-12 h-12 object-cover rounded-lg border border-blue-200 shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Your Custom Logo/Image</p>
+                          <a
+                            href={item.customizationImageUrl}
+                            download
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs text-blue-600 font-semibold underline mt-0.5"
+                          >
+                            <Download className="w-3 h-3" /> View / Download
+                          </a>
+                        </div>
+                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                      </div>
+                    )}
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-gray-900">₹{Number(item.total).toFixed(2)}</p>

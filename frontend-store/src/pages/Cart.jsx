@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Plus, Minus, ArrowRight,
-  Tag, Truck, Package, Gift, ChevronRight, RefreshCw
+  Tag, Truck, Package, Gift, ChevronRight, RefreshCw,
+  Pencil, Image as ImageIcon, CheckCircle
 } from 'lucide-react';
 import { useCartStore, useAuthStore } from '../store';
 import toast from 'react-hot-toast';
@@ -78,6 +79,30 @@ function CartItem({ item }) {
           <p className="text-sm text-gray-500 mt-0.5">{item.product.unit}</p>
         )}
         <p className="text-brand-primary font-bold mt-1">₹{Number(item.price).toFixed(2)}<span className="text-xs font-normal text-gray-400 ml-1">each</span></p>
+
+        {/* Customization badge */}
+        {item.customizationText && (
+          <div className="mt-2 flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">
+            <Pencil className="w-3 h-3 text-amber-600 shrink-0" />
+            <div className="min-w-0">
+              <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Custom Text · </span>
+              <span className="text-xs font-semibold text-amber-900 truncate">{item.customizationText}</span>
+            </div>
+            <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 ml-auto" />
+          </div>
+        )}
+        {item.customizationImageUrl && (
+          <div className="mt-2 flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1.5">
+            <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="shrink-0">
+              <img src={item.customizationImageUrl} alt="Custom logo" className="w-8 h-8 object-cover rounded-md border border-blue-200" />
+            </a>
+            <div className="min-w-0">
+              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wide block">Custom Logo/Image</span>
+              <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 underline">View image</a>
+            </div>
+            <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 ml-auto" />
+          </div>
+        )}
 
         <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
           <QtyControl item={item} />

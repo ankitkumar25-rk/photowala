@@ -374,9 +374,9 @@ export default function ProductDetail() {
     if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB'); return; }
     setUploadingImage(true);
     try {
-      const { data } = await uploadApi.uploadImage(file, 'customizations');
+      const { data } = await uploadApi.uploadCustomization(file);
       setCustomizationImage({ url: data.data.url, publicId: data.data.publicId });
-      toast.success('Image uploaded!');
+      toast.success('Image uploaded to Cloudinary ✓');
     } catch {
       toast.error('Failed to upload image');
     } finally {
