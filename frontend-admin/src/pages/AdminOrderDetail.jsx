@@ -62,12 +62,35 @@ export default function AdminOrderDetail() {
             </div>
             <div className="divide-y divide-gray-50">
               {order.items?.map((item) => (
-                <div key={item.id} className="p-4 flex items-center justify-between gap-4">
-                  <div>
+                <div key={item.id} className="p-4 flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-800">{item.productName || item.product?.name}</p>
                     <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity} · Unit: {item.productUnit || item.product?.unit || 'N/A'}</p>
+
+                    {/* Customization info */}
+                    {item.customizationText && (
+                      <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                        <span className="text-amber-600 text-xs">✏️</span>
+                        <div>
+                          <p className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Custom Text</p>
+                          <p className="text-sm font-medium text-amber-900 break-words">{item.customizationText}</p>
+                        </div>
+                      </div>
+                    )}
+                    {item.customizationImageUrl && (
+                      <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                        <span className="text-blue-600 text-xs">🖼️</span>
+                        <div>
+                          <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wide mb-1">Custom Image / Logo</p>
+                          <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer">
+                            <img src={item.customizationImageUrl} alt="Customer customization" className="w-20 h-20 object-cover rounded-lg border border-blue-200 hover:scale-105 transition-transform" />
+                          </a>
+                          <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] text-blue-600 underline mt-1 block">Open full size</a>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-sm font-semibold text-gray-800">₹{Number(item.total || 0).toLocaleString('en-IN')}</p>
+                  <p className="text-sm font-semibold text-gray-800 shrink-0">₹{Number(item.total || 0).toLocaleString('en-IN')}</p>
                 </div>
               ))}
             </div>

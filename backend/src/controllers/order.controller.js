@@ -48,6 +48,8 @@ exports.createOrder = async (req, res, next) => {
         total: itemTotal,
         productName: product.name,
         productUnit: product.unit,
+        customizationText: item.customizationText || null,
+        customizationImageUrl: item.customizationImageUrl || null,
       });
     }
 

@@ -96,8 +96,8 @@ export const useCartStore = create((set, get) => ({
     }
   },
 
-  addItem: async (productId, quantity = 1) => {
-    await cartApi.add({ productId, quantity });
+  addItem: async (productId, quantity = 1, customization = {}) => {
+    await cartApi.add({ productId, quantity, ...customization });
     get().fetchCart();
   },
 

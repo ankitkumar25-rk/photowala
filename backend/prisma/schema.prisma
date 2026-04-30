@@ -215,14 +215,16 @@ model Cart {
 }
 
 model CartItem {
-  id        String   @id @default(uuid())
-  cartId    String
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int      @default(1)
-  price     Decimal  @db.Decimal(10, 2)  // snapshot at time of add
-  createdAt DateTime @default(now())
+  id                    String   @id @default(uuid())
+  cartId                String
+  cart                  Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId             String
+  product               Product  @relation(fields: [productId], references: [id])
+  quantity              Int      @default(1)
+  price                 Decimal  @db.Decimal(10, 2)  // snapshot at time of add
+  customizationText     String?  // brand/school/institute name from customer
+  customizationImageUrl String?  // uploaded image URL from customer
+  createdAt             DateTime @default(now())
 
   @@unique([cartId, productId])
   @@map("cart_items")
@@ -258,16 +260,18 @@ model Order {
 
 
 model OrderItem {
-  id          String   @id @default(uuid())
-  orderId     String
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id])
-  quantity    Int
-  price       Decimal  @db.Decimal(10, 2)
-  total       Decimal  @db.Decimal(10, 2)
-  productName String   // snapshot
-  productUnit String   // snapshot
+  id                    String   @id @default(uuid())
+  orderId               String
+  order                 Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId             String
+  product               Product  @relation(fields: [productId], references: [id])
+  quantity              Int
+  price                 Decimal  @db.Decimal(10, 2)
+  total                 Decimal  @db.Decimal(10, 2)
+  productName           String   // snapshot
+  productUnit           String   // snapshot
+  customizationText     String?  // brand/school/institute name from customer
+  customizationImageUrl String?  // uploaded image URL from customer
 
   @@map("order_items")
 }

@@ -35,9 +35,11 @@ exports.getCart = async (req, res, next) => {
 
 exports.addToCart = async (req, res, next) => {
   try {
-    const { productId, quantity } = z.object({
+    const { productId, quantity, customizationText, customizationImageUrl } = z.object({
       productId: z.string().uuid(),
       quantity: z.number().int().positive().default(1),
+      customizationText: z.string().optional(),
+      customizationImageUrl: z.string().url().optional(),
     }).parse(req.body);
 
     const product = await prisma.product.findUnique({ where: { id: productId } });
@@ -74,11 +76,16 @@ exports.addToCart = async (req, res, next) => {
     if (existing) {
       await prisma.cartItem.update({
         where: { cartId_productId: { cartId: cart.id, productId } },
-        data: { quantity: { increment: quantity } },
+        data: {
+          quantity: { increment: quantity },
+          // Update customization if newly provided
+          ...(customizationText !== undefined && { customizationText }),
+          ...(customizationImageUrl !== undefined && { customizationImageUrl }),
+        },
       });
     } else {
       await prisma.cartItem.create({
-        data: { cartId: cart.id, productId, quantity, price: product.price },
+        data: { cartId: cart.id, productId, quantity, price: product.price, customizationText, customizationImageUrl },
       });
     }
 

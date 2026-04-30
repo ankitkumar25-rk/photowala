@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, Heart, Share2, Star, Leaf, Shield,
   Truck, RefreshCw, ChevronRight, ChevronLeft, Plus,
   Minus, Check, Award, Package, AlertCircle, ZoomIn,
-  MessageSquare, ThumbsUp, ArrowLeft
+  MessageSquare, ThumbsUp, ArrowLeft, Pencil, ImagePlus, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { productsApi, usersApi, categoriesApi } from '../api';
+import { productsApi, usersApi, categoriesApi, uploadApi } from '../api';
 import { useCartStore, useAuthStore } from '../store';
 import ProductCard from '../components/ProductCard';
 
@@ -271,6 +271,14 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState('description');
   const [reviewsShown, setReviewsShown] = useState(4);
 
+  // Customization state
+  const [customizeEnabled, setCustomizeEnabled] = useState(false);
+  const [customizeMode, setCustomizeMode]       = useState('text'); // 'text' | 'image'
+  const [customizationText, setCustomizationText] = useState('');
+  const [customizationImage, setCustomizationImage] = useState(null);   // { url, publicId }
+  const [uploadingImage, setUploadingImage]     = useState(false);
+  const fileInputRef = useRef(null);
+
   const fetchProduct = useCallback(async () => {
     setLoading(true);
     try {
@@ -303,9 +311,25 @@ export default function ProductDetail() {
       navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
       return;
     }
+    // Validate customization if enabled
+    if (customizeEnabled) {
+      if (customizeMode === 'text' && !customizationText.trim()) {
+        toast.error('Please enter your brand/name for customization');
+        return;
+      }
+      if (customizeMode === 'image' && !customizationImage) {
+        toast.error('Please upload an image for customization');
+        return;
+      }
+    }
     setAddingToCart(true);
     try {
-      await addItem(product.id, qty);
+      const customization = customizeEnabled
+        ? (customizeMode === 'text'
+            ? { customizationText: customizationText.trim() }
+            : { customizationImageUrl: customizationImage.url })
+        : {};
+      await addItem(product.id, qty, customization);
       toast.success(
         <div className="flex items-center gap-2">
           <Check className="w-4 h-4 text-green-600" />
@@ -342,6 +366,30 @@ export default function ProductDetail() {
       navigator.clipboard.writeText(window.location.href);
       toast.success('Link copied!');
     }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5MB'); return; }
+    setUploadingImage(true);
+    try {
+      const { data } = await uploadApi.uploadImage(file, 'customizations');
+      setCustomizationImage({ url: data.data.url, publicId: data.data.publicId });
+      toast.success('Image uploaded!');
+    } catch {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeCustomizationImage = async () => {
+    if (customizationImage?.publicId) {
+      uploadApi.deleteImage(customizationImage.publicId).catch(() => {});
+    }
+    setCustomizationImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   /* ─── Loading skeleton ─── */
@@ -487,6 +535,90 @@ export default function ProductDetail() {
                 </div>
               )}
             </div>
+
+            {/* Customization Section */}
+            {inStock && (
+              <div className="rounded-2xl border-2 border-dashed border-brand-primary/30 bg-brand-surface/40 p-4 space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <div
+                    onClick={() => setCustomizeEnabled((v) => !v)}
+                    className={`relative w-10 h-6 rounded-full transition-colors ${customizeEnabled ? 'bg-brand-primary' : 'bg-gray-300'}`}
+                  >
+                    <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${customizeEnabled ? 'left-5' : 'left-1'}`} />
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-900 text-sm">Add Customization / Personalization</p>
+                    <p className="text-xs text-gray-500">Add your brand, school, institute name or logo</p>
+                  </div>
+                </label>
+
+                {customizeEnabled && (
+                  <div className="space-y-3 pt-1">
+                    {/* Mode toggle */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setCustomizeMode('text')}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 transition-all ${customizeMode === 'text' ? 'border-brand-primary bg-brand-primary text-white' : 'border-cream-300 text-gray-600 hover:border-brand-primary'}`}
+                      >
+                        <Pencil className="w-3.5 h-3.5" /> Enter Text
+                      </button>
+                      <button
+                        onClick={() => setCustomizeMode('image')}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border-2 transition-all ${customizeMode === 'image' ? 'border-brand-primary bg-brand-primary text-white' : 'border-cream-300 text-gray-600 hover:border-brand-primary'}`}
+                      >
+                        <ImagePlus className="w-3.5 h-3.5" /> Upload Image
+                      </button>
+                    </div>
+
+                    {/* Text input */}
+                    {customizeMode === 'text' && (
+                      <div>
+                        <input
+                          type="text"
+                          value={customizationText}
+                          onChange={(e) => setCustomizationText(e.target.value)}
+                          className="input-field text-sm"
+                          placeholder="Enter brand/school/institute name to print..."
+                          maxLength={120}
+                        />
+                        <p className="text-[11px] text-gray-400 mt-1">{customizationText.length}/120 characters</p>
+                      </div>
+                    )}
+
+                    {/* Image upload */}
+                    {customizeMode === 'image' && (
+                      <div>
+                        {customizationImage ? (
+                          <div className="relative inline-block">
+                            <img src={customizationImage.url} alt="Customization" className="w-24 h-24 object-cover rounded-xl border-2 border-brand-primary" />
+                            <button
+                              onClick={removeCustomizationImage}
+                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploadingImage}
+                            className="flex items-center gap-2 px-4 py-2.5 border-2 border-dashed border-brand-primary/40 rounded-xl text-sm font-semibold text-brand-primary hover:bg-brand-surface transition-colors w-full justify-center"
+                          >
+                            {uploadingImage ? (
+                              <><div className="w-4 h-4 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" /> Uploading...</>
+                            ) : (
+                              <><ImagePlus className="w-4 h-4" /> Click to upload logo / image</>
+                            )}
+                          </button>
+                        )}
+                        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                        <p className="text-[11px] text-gray-400 mt-1">PNG, JPG, SVG — max 5MB</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Qty + add to cart */}
             {inStock && (
