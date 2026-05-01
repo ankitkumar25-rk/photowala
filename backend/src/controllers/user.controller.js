@@ -98,6 +98,15 @@ exports.addAddress = async (req, res, next) => {
 exports.updateAddress = async (req, res, next) => {
   try {
     const data = addressSchema.partial().parse(req.body);
+
+    // If marking this address as default, first unset all other defaults for this user
+    if (data.isDefault) {
+      await prisma.address.updateMany({
+        where: { userId: req.user.id, id: { not: req.params.id } },
+        data: { isDefault: false },
+      });
+    }
+
     const address = await prisma.address.update({
       where: { id: req.params.id, userId: req.user.id },
       data,
