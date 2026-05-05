@@ -28,6 +28,7 @@ const FAQ           = lazy(() => import('./pages/FAQ'));
 const Privacy       = lazy(() => import('./pages/Privacy'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword  = lazy(() => import('./pages/ResetPassword'));
+const Services      = lazy(() => import('./pages/Services'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -53,15 +54,12 @@ function PageLoader() {
 export default function App() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
   const resetCart = useCartStore((s) => s.resetCart);
-  const token = useAuthStore((s) => s.accessToken);
 
   useEffect(() => {
-    if (token) {
-      fetchMe();
-    } else {
+    fetchMe().catch(() => {
       resetCart();
-    }
-  }, [token, fetchMe, resetCart]);
+    });
+  }, [fetchMe, resetCart]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -97,6 +95,7 @@ export default function App() {
               <Route path="track-order"      element={<TrackOrder />} />
               <Route path="returns"          element={<Returns />} />
               <Route path="faq"              element={<FAQ />} />
+              <Route path="services"         element={<Services />} />
               <Route path="privacy"          element={<Privacy />} />
               <Route path="forgot-password"  element={<ForgotPassword />} />
               <Route path="reset-password"   element={<ResetPassword />} />

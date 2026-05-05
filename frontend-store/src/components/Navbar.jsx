@@ -53,7 +53,7 @@ export default function Navbar() {
     { to: '/categories/trophies', label: 'Trophies' },
     { to: '/categories/corporate-gifts', label: 'Corporate Gifts' },
     { to: '/categories/momentos', label: 'Momentos' },
-    { to: '#', label: 'Our Service', badge: 'Coming soon' },
+    { to: '/services', label: 'Services' },
   ];
 
   return (
@@ -197,7 +197,7 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <Link to="/login" className="btn-primary py-2 px-4 text-sm hidden sm:inline-flex">
+              <Link to="/login" className="btn-primary py-2 rounded-3xl px-4 text-sm hidden sm:inline-flex">
                 <User className="w-4 h-4" /> Login
               </Link>
             )}
