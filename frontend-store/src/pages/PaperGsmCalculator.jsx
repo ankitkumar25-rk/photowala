@@ -56,9 +56,10 @@ export default function PaperGsmCalculator() {
 
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
-      <div className="bg-linear-to-br from-forest-800 to-forest-600 text-white">
-        <div className="max-w-5xl mx-auto px-4 py-10">
-          <div className="flex items-center gap-3">
+      <div className="relative overflow-hidden bg-linear-to-br from-[#7a3218] via-[#a6431a] to-[#d96a22] text-white">
+        <div className="absolute inset-0 opacity-20 luxury-grain" />
+        <div className="max-w-5xl mx-auto px-4 py-12 relative">
+          <div className="flex flex-wrap items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
               <Calculator className="w-6 h-6" />
             </div>
@@ -66,19 +67,26 @@ export default function PaperGsmCalculator() {
               <h1 className="text-3xl font-bold" style={{ fontFamily: 'Fraunces, serif' }}>
                 Paper GSM Calculator
               </h1>
-              <p className="text-cream-50/80 text-sm mt-1">
-                Calculate GSM from sheet size, quantity, and total weight.
+              <p className="text-cream-50/85 text-sm mt-1">
+                Enter sheet dimensions, quantity, and total weight to get GSM instantly.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-10">
-        <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
+      <div className="max-w-5xl mx-auto px-4 py-12">
+        <div className="grid lg:grid-cols-[1.25fr_0.75fr] gap-6">
           <div className="card bg-white p-6">
-            <h2 className="text-lg font-bold text-gray-900">Enter Details</h2>
-            <p className="text-sm text-gray-600 mt-1">All fields are required to calculate GSM.</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Enter Details</h2>
+                <p className="text-sm text-gray-600 mt-1">Fill all fields to calculate GSM.</p>
+              </div>
+              <span className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-brand-secondary/15 text-brand-secondary">
+                Free Tool
+              </span>
+            </div>
 
             <div className="grid sm:grid-cols-2 gap-4 mt-6">
               <div className="sm:col-span-2">
@@ -171,19 +179,20 @@ export default function PaperGsmCalculator() {
 
           <div className="card bg-white p-6 flex flex-col gap-4">
             <h2 className="text-lg font-bold text-gray-900">Result</h2>
-            <div className="rounded-2xl bg-brand-surface border border-brand-secondary/20 p-5">
+            <div className="rounded-2xl bg-linear-to-br from-brand-surface to-white border border-brand-secondary/20 p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-brand-secondary">Calculated GSM</p>
               <p className="text-3xl font-bold text-gray-900 mt-3">
-                {result ? `${result} GSM` : '--'}
+                {submitted && result ? `${result} GSM` : '--'}
               </p>
               <p className="text-xs text-gray-600 mt-2">
                 Formula: GSM = (Weight in KG * 1,000,000) / (Area in mm² * Sheets)
               </p>
             </div>
             <div className="text-sm text-gray-600 leading-relaxed">
-              <p className="font-semibold text-gray-800">Tips</p>
-              <p>Use the total weight for the exact number of sheets entered.</p>
-              <p>Check units before calculating to avoid errors.</p>
+              <p className="font-semibold text-gray-800">Quick Tips</p>
+              <p>Use the exact number of sheets you weighed.</p>
+              <p>Confirm units before calculating for accuracy.</p>
+              <p>Keep weight in kilograms for the formula.</p>
             </div>
           </div>
         </div>
