@@ -7,6 +7,7 @@ import { useAuthStore, useCartStore } from './store';
 import Layout from './components/Layout';
 import { brandAssets } from './data/assets';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
 
 // Pages (lazy loaded)
 import { lazy, Suspense } from 'react';
@@ -66,6 +67,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ScrollToTop />
         <Toaster
           position="top-right"
           toastOptions={{

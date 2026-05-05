@@ -1,4 +1,5 @@
 const prisma = require('../config/database');
+const path = require('path');
 const { createError } = require('../middleware/errorHandler');
 const { uploadRawToCloudinary } = require('../config/cloudinary');
 const { z } = require('zod');
@@ -18,9 +19,10 @@ const statusSchema = z.object({
   status: z.enum(['NEW', 'IN_PROGRESS', 'CLOSED']),
 });
 
-function buildPublicId(serviceType) {
+function buildPublicId(serviceType, originalName) {
   const ts = Date.now();
-  return `service-${serviceType.toLowerCase()}-${ts}`;
+  const ext = path.extname(originalName || '');
+  return `service-${serviceType.toLowerCase()}-${ts}${ext}`;
 }
 
 exports.createServiceRequest = async (req, res, next) => {
@@ -33,7 +35,7 @@ exports.createServiceRequest = async (req, res, next) => {
 
     const upload = await uploadRawToCloudinary(req.file.buffer, {
       folder: 'photowala/service-requests',
-      public_id: buildPublicId(payload.serviceType),
+      public_id: buildPublicId(payload.serviceType, req.file.originalname),
     });
 
     const request = await prisma.serviceRequest.create({

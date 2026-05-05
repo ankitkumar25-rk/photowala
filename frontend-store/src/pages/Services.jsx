@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Calculator, ChevronRight, ChevronLeft, Check, Zap, Drill, Award, CircleDollarSign, Timer, Lightbulb, Settings, Target } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { serviceRequestsApi } from '../api';
+import { useAuthStore } from '../store';
+import { useNavigate } from 'react-router-dom';
 
 const SERVICES = [
   {
@@ -49,6 +51,9 @@ function ServiceFormView({ service, onBack }) {
 
   const handleFile = (e) => {
     const file = e.target.files?.[0] || null;
+    if (file) {
+      toast.success(`File "${file.name}" selected successfully!`);
+    }
     setForm((prev) => ({ ...prev, designFile: file }));
   };
 
@@ -166,6 +171,11 @@ function ServiceFormView({ service, onBack }) {
                 className="input-field py-2"
                 required
               />
+              {form.designFile && (
+                <p className="mt-1.5 text-xs text-[#8F431A] font-medium flex items-center gap-1">
+                  <Check className="w-3 h-3" /> Selected: {form.designFile.name}
+                </p>
+              )}
             </div>
           </div>
 
@@ -219,6 +229,17 @@ function ServiceFormView({ service, onBack }) {
 
 export default function Services() {
   const [selectedService, setSelectedService] = useState(null);
+  const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
+
+  const handleServiceClick = (service) => {
+    if (!user) {
+      toast.error('Please login to use this service');
+      navigate('/login?redirect=/services');
+      return;
+    }
+    setSelectedService(service);
+  };
 
   return (
     <div className="min-h-screen bg-[#F6F4F1] page-enter font-sans flex flex-col">
@@ -289,7 +310,7 @@ export default function Services() {
               {SERVICES.map((service) => (
                 <div
                   key={service.type}
-                  onClick={() => setSelectedService(service)}
+                  onClick={() => handleServiceClick(service)}
                   className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow flex flex-col group cursor-pointer relative"
                 >
                   <div className="flex justify-between items-start mb-8">
