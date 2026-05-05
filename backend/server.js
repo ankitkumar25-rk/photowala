@@ -18,6 +18,7 @@ const app    = require('./src/app');
 const prisma = require('./src/config/database');
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost');
 
 async function main() {
   // Test DB connection
@@ -30,10 +31,11 @@ async function main() {
     process.exit(1);
   }
 
-  const server = app.listen(PORT, () => {
-    console.log(`\n🚀 Server  → http://localhost:${PORT}`);
-    console.log(`📋 API     → http://localhost:${PORT}/api`);
-    console.log(`💚 Health  → http://localhost:${PORT}/api/health`);
+  const server = app.listen(PORT, HOST, () => {
+    const publicUrl = process.env.PUBLIC_URL || `http://${HOST}:${PORT}`;
+    console.log(`\n🚀 Server  → ${publicUrl}`);
+    console.log(`📋 API     → ${publicUrl}/api`);
+    console.log(`💚 Health  → ${publicUrl}/api/health`);
     console.log(`📦 Mode    → ${process.env.NODE_ENV || 'development'}\n`);
   });
 
