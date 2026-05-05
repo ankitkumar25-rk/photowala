@@ -4,6 +4,8 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const Redis = require('ioredis');
+const RedisStore = require('connect-redis').default;
 const path = require('path');
 const passport = require('./config/passport');   // loads Google strategy
 
@@ -25,6 +27,7 @@ const supportRoutes = require('./routes/support.routes');
 
 const app = express();
 const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-session-secret' : '');
+const redisUrl = process.env.REDIS_URL;
 
 if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set in production');
@@ -87,7 +90,20 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // ================================
 // SESSION (for Passport/Google OAuth)
 // ================================
-app.use(session({
+let sessionStore;
+if (redisUrl) {
+  const redis = new Redis(redisUrl, {
+    enableOfflineQueue: true,
+    maxRetriesPerRequest: 2,
+    retryStrategy: (times) => Math.min(times * 200, 2000),
+  });
+  redis.on('error', (err) => {
+    console.warn('[session] Redis error:', err?.message || err);
+  });
+  sessionStore = new RedisStore({ client: redis, prefix: 'sess:' });
+}
+
+const sessionOptions = {
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
@@ -96,7 +112,10 @@ app.use(session({
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   },
-}));
+  ...(sessionStore ? { store: sessionStore } : {}),
+};
+
+app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 
