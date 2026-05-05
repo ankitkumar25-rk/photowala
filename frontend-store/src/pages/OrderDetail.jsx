@@ -113,7 +113,7 @@ export default function OrderDetail() {
         <div className="max-w-5xl mx-auto px-4 py-8">
           <button
             onClick={() => navigate('/orders')}
-            className="flex items-center gap-2 text-cream-50/80 hover:text-white transition-colors text-sm font-medium mb-4"
+            className="flex items-center gap-2 text-gray-600 hover:text-white transition-colors text-sm font-medium mb-4"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Orders
           </button>
@@ -122,8 +122,8 @@ export default function OrderDetail() {
               <h1 className="text-2xl font-bold" style={{ fontFamily: 'Fraunces, serif' }}>
                 Order Details
               </h1>
-              <p className="text-cream-50/80 font-mono text-sm mt-1">{order.orderNumber}</p>
-              <p className="text-cream-50/80 text-xs mt-0.5">{formattedDate}</p>
+              <p className="text-gray-600 font-mono text-sm mt-1">{order.orderNumber}</p>
+              <p className="text-gray-600 text-xs mt-0.5">{formattedDate}</p>
             </div>
             <div className="flex items-center gap-3">
               <StatusBadge status={order.status} />
@@ -131,7 +131,7 @@ export default function OrderDetail() {
                 <button
                   onClick={cancelOrder}
                   disabled={cancelling}
-                  className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-200 rounded-xl text-sm font-semibold transition-colors"
+                  className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-600 rounded-xl text-sm font-semibold transition-colors"
                 >
                   {cancelling ? 'Cancelling...' : 'Cancel Order'}
                 </button>
