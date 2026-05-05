@@ -29,6 +29,7 @@ const Privacy       = lazy(() => import('./pages/Privacy'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword  = lazy(() => import('./pages/ResetPassword'));
 const Services      = lazy(() => import('./pages/Services'));
+const PaperGsmCalculator = lazy(() => import('./pages/PaperGsmCalculator'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -96,6 +97,7 @@ export default function App() {
               <Route path="returns"          element={<Returns />} />
               <Route path="faq"              element={<FAQ />} />
               <Route path="services"         element={<Services />} />
+              <Route path="services/paper-gsm" element={<PaperGsmCalculator />} />
               <Route path="privacy"          element={<Privacy />} />
               <Route path="forgot-password"  element={<ForgotPassword />} />
               <Route path="reset-password"   element={<ResetPassword />} />

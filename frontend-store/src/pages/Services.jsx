@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Calculator } from 'lucide-react';
 
 export default function Services() {
@@ -31,13 +32,12 @@ export default function Services() {
               </p>
             </div>
             <div className="mt-auto">
-              <button
-                type="button"
+              <Link
+                to="/services/paper-gsm"
                 className="btn-secondary w-full justify-center text-sm"
-                disabled
               >
-                Coming Soon
-              </button>
+                Open Calculator
+              </Link>
             </div>
           </div>
         </div>
