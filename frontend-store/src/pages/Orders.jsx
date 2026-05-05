@@ -19,7 +19,7 @@ const STATUS_FILTERS = [
 
 function StatusBadge({ status }) {
   const map = {
-    PENDING:    { bg: 'bg-brand-secondary',   text: 'text-brand-secondary',  icon: Clock,         label: 'Pending' },
+    PENDING:    { bg: 'bg-brand-secondary/15', text: 'text-brand-secondary', icon: Clock,         label: 'Pending' },
     CONFIRMED:  { bg: 'bg-blue-100',    text: 'text-blue-700',   icon: CheckCircle,   label: 'Confirmed' },
     PROCESSING: { bg: 'bg-purple-100',  text: 'text-purple-700', icon: RefreshCw,     label: 'Processing' },
     SHIPPED:    { bg: 'bg-indigo-100',  text: 'text-indigo-700', icon: Truck,         label: 'Shipped' },
@@ -47,16 +47,16 @@ function OrderCard({ order, onCancel }) {
   });
 
   return (
-    <div className="card hover:shadow-lg transition-all duration-200 group">
+    <div className="card bg-white hover:shadow-lg transition-all duration-200 group">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-cream-200">
         <div>
-          <p className="text-xs text-gray-500 font-medium">Order #</p>
+          <p className="text-xs text-gray-600 font-medium">Order #</p>
           <p className="font-bold text-gray-900 font-mono text-sm">{order.orderNumber}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-gray-500">Placed on</p>
-          <p className="text-sm font-semibold text-gray-700">{formattedDate}</p>
+          <p className="text-xs text-gray-600">Placed on</p>
+          <p className="text-sm font-semibold text-gray-800">{formattedDate}</p>
         </div>
         <StatusBadge status={order.status} />
       </div>
@@ -79,12 +79,12 @@ function OrderCard({ order, onCancel }) {
             {firstItem?.productName}
           </p>
           {order.items.length > 1 && (
-            <p className="text-xs text-gray-500 mt-0.5">+{order.items.length - 1} more item{order.items.length > 2 ? 's' : ''}</p>
+            <p className="text-xs text-gray-600 mt-0.5">+{order.items.length - 1} more item{order.items.length > 2 ? 's' : ''}</p>
           )}
-          <p className="text-xs text-gray-500 mt-1">{itemCount} item{itemCount !== 1 ? 's' : ''}</p>
+          <p className="text-xs text-gray-600 mt-1">{itemCount} item{itemCount !== 1 ? 's' : ''}</p>
         </div>
         <div className="text-right flex-shrink-0">
-          <p className="text-xs text-gray-500">Total</p>
+          <p className="text-xs text-gray-600">Total</p>
           <p className="font-bold text-brand-primary text-lg">₹{Number(order.total).toFixed(0)}</p>
           {order.shippingCost === 0 && (
             <p className="text-[10px] text-green-600 font-semibold">Free shipping</p>
@@ -96,12 +96,12 @@ function OrderCard({ order, onCancel }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 border-t border-cream-200 bg-cream-50">
         <div>
           {order.trackingNumber && (
-            <p className="text-xs text-gray-500">
-              Tracking: <span className="font-mono font-semibold text-gray-700">{order.trackingNumber}</span>
+            <p className="text-xs text-gray-600">
+              Tracking: <span className="font-mono font-semibold text-gray-800">{order.trackingNumber}</span>
             </p>
           )}
           {!order.trackingNumber && order.payment && (
-            <p className="text-xs text-gray-500 capitalize">
+            <p className="text-xs text-gray-600 capitalize">
               Payment: <span className={`font-semibold ${order.payment.status === 'PAID' ? 'text-green-600' : 'text-brand-secondary'}`}>
                 {order.payment.status}
               </span>
@@ -132,7 +132,7 @@ function OrderCard({ order, onCancel }) {
 
 function OrderSkeleton() {
   return (
-    <div className="card animate-pulse">
+    <div className="card bg-white animate-pulse">
       <div className="flex items-center justify-between p-4 border-b border-cream-200">
         <div className="space-y-2">
           <div className="h-2 w-16 bg-cream-300 rounded" />
@@ -232,12 +232,12 @@ export default function Orders() {
             {Array.from({ length: 3 }).map((_, i) => <OrderSkeleton key={i} />)}
           </div>
         ) : orders.length === 0 ? (
-          <div className="card p-16 text-center">
-            <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-cream-50/80" />
+          <div className="card p-16 text-center bg-white">
+            <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-500" />
             <h2 className="text-2xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Fraunces, serif' }}>
               {statusFilter ? 'No orders with this status' : 'No orders yet'}
             </h2>
-            <p className="text-gray-500 mb-6">
+            <p className="text-gray-600 mb-6">
               {statusFilter
                 ? 'Try selecting a different status filter'
                 : 'Start shopping to see your orders here'}

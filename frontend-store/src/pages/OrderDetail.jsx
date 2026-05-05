@@ -28,7 +28,7 @@ const STATUS_COLOR = {
 
 function StatusBadge({ status }) {
   const map = {
-    PENDING:    { bg: 'bg-brand-secondary',   text: 'text-brand-secondary',  label: 'Pending' },
+    PENDING:    { bg: 'bg-brand-secondary/15', text: 'text-brand-secondary', label: 'Pending' },
     CONFIRMED:  { bg: 'bg-blue-100',    text: 'text-blue-700',   label: 'Confirmed' },
     PROCESSING: { bg: 'bg-purple-100',  text: 'text-purple-700', label: 'Processing' },
     SHIPPED:    { bg: 'bg-indigo-100',  text: 'text-indigo-700', label: 'Shipped' },
@@ -144,7 +144,7 @@ export default function OrderDetail() {
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         {/* Order Progress (non-cancelled) */}
         {!isCancelled && (
-          <div className="card p-6">
+          <div className="card p-6 bg-white">
             <h2 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
               <Truck className="w-5 h-5 text-brand-primary" /> Order Progress
             </h2>
@@ -169,11 +169,11 @@ export default function OrderDetail() {
                       } ${active ? 'ring-4 ring-brand-secondary' : ''}`}>
                         <Icon className="w-4 h-4" />
                       </div>
-                      <div className={`pt-1 ${done ? 'opacity-100' : 'opacity-40'}`}>
-                        <p className={`font-semibold text-sm ${done ? 'text-gray-900' : 'text-gray-500'}`}>
+                      <div className={`pt-1 ${done ? 'opacity-100' : 'opacity-70'}`}>
+                        <p className={`font-semibold text-sm ${done ? 'text-gray-900' : 'text-gray-700'}`}>
                           {s.label}
                         </p>
-                        <p className="text-xs text-gray-500">{s.desc}</p>
+                        <p className="text-xs text-gray-600">{s.desc}</p>
                       </div>
                     </div>
                   );
@@ -205,14 +205,14 @@ export default function OrderDetail() {
             <XCircle className="w-8 h-8 text-red-500 flex-shrink-0" />
             <div>
               <p className="font-bold text-red-700">Order Cancelled</p>
-              <p className="text-sm text-red-500">This order has been cancelled. Refund will be processed within 5-7 business days if payment was made.</p>
+              <p className="text-sm text-red-600">This order has been cancelled. Refund will be processed within 5-7 business days if payment was made.</p>
             </div>
           </div>
         )}
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Items */}
-          <div className="lg:col-span-2 card p-6">
+          <div className="lg:col-span-2 card p-6 bg-white">
             <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               <Package className="w-5 h-5 text-brand-primary" /> Order Items ({order.items.length})
             </h2>
@@ -233,9 +233,9 @@ export default function OrderDetail() {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 leading-tight">{item.productName}</p>
                     {item.productUnit && (
-                      <p className="text-xs text-gray-500 mt-0.5">{item.productUnit}</p>
+                      <p className="text-xs text-gray-600 mt-0.5">{item.productUnit}</p>
                     )}
-                    <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity}</p>
+                    <p className="text-sm text-gray-600 mt-1">Qty: {item.quantity}</p>
 
                     {/* Customization details */}
                     {item.customizationText && (
@@ -269,7 +269,7 @@ export default function OrderDetail() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="font-bold text-gray-900">₹{Number(item.total).toFixed(2)}</p>
-                    <p className="text-xs text-gray-500">₹{Number(item.price).toFixed(2)} each</p>
+                    <p className="text-xs text-gray-600">₹{Number(item.price).toFixed(2)} each</p>
                   </div>
                 </div>
               ))}
@@ -278,11 +278,11 @@ export default function OrderDetail() {
             {/* Price summary */}
             <div className="mt-4 pt-4 border-t border-cream-200 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-600">Subtotal</span>
                 <span className="font-medium text-gray-900">₹{Number(order.subtotal).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Shipping</span>
+                <span className="text-gray-600">Shipping</span>
                 <span className={`font-medium ${order.shippingCost === 0 ? 'text-green-600' : 'text-gray-900'}`}>
                   {order.shippingCost === 0 ? 'FREE' : `₹${Number(order.shippingCost).toFixed(2)}`}
                 </span>
@@ -298,29 +298,29 @@ export default function OrderDetail() {
           <div className="space-y-4">
             {/* Delivery address */}
             {order.address && (
-              <div className="card p-4">
+              <div className="card p-4 bg-white">
                 <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-brand-primary" /> Delivery Address
                 </h3>
-                <div className="text-sm text-gray-600 space-y-0.5">
+                <div className="text-sm text-gray-700 space-y-0.5">
                   <p className="font-semibold text-gray-900">{order.address.fullName}</p>
                   <p>{order.address.line1}</p>
                   {order.address.line2 && <p>{order.address.line2}</p>}
                   <p>{order.address.city}, {order.address.state} – {order.address.pincode}</p>
-                  <p className="text-gray-500">{order.address.phone}</p>
+                  <p className="text-gray-600">{order.address.phone}</p>
                 </div>
               </div>
             )}
 
             {/* Payment info */}
             {order.payment && (
-              <div className="card p-4">
+              <div className="card p-4 bg-white">
                 <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
                   <CreditCard className="w-4 h-4 text-brand-primary" /> Payment
                 </h3>
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Status</span>
+                    <span className="text-gray-600">Status</span>
                     <span className={`font-semibold ${
                       order.payment.status === 'PAID' ? 'text-green-600' : 'text-brand-secondary'
                     }`}>
@@ -329,12 +329,12 @@ export default function OrderDetail() {
                   </div>
                   {order.payment.method && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Method</span>
-                      <span className="font-medium text-gray-900 capitalize">{order.payment.method}</span>
+                      <span className="text-gray-600">Method</span>
+                      <span className="font-medium text-gray-800 capitalize">{order.payment.method}</span>
                     </div>
                   )}
                   {order.payment.razorpayPaymentId && (
-                    <div className="text-xs text-gray-400 mt-1 font-mono break-all">
+                    <div className="text-xs text-gray-500 mt-1 font-mono break-all">
                       {order.payment.razorpayPaymentId}
                     </div>
                   )}
@@ -344,19 +344,19 @@ export default function OrderDetail() {
 
             {/* Notes */}
             {order.notes && (
-              <div className="card p-4">
+              <div className="card p-4 bg-white">
                 <h3 className="font-bold text-gray-900 text-sm mb-2">Order Notes</h3>
-                <p className="text-sm text-gray-600 italic">"{order.notes}"</p>
+                <p className="text-sm text-gray-700 italic">"{order.notes}"</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Help */}
-        <div className="card p-4 flex items-center justify-between">
+        <div className="card p-4 flex items-center justify-between bg-white">
           <div>
             <p className="font-semibold text-gray-900 text-sm">Need help with this order?</p>
-            <p className="text-xs text-gray-500 mt-0.5">Our support team is ready to assist you</p>
+            <p className="text-xs text-gray-600 mt-0.5">Our support team is ready to assist you</p>
           </div>
           <a
             href="mailto:support@premiumstore.com"
