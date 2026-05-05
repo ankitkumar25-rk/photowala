@@ -10,7 +10,7 @@ export default function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { setUser, setToken } = useAdminStore();
+  const { setUser } = useAdminStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -18,13 +18,12 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/login', form);
-      const { user, accessToken } = data.data;
+      const { user } = data.data;
       if (!['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
         toast.error('Access denied. Admin account required.');
         return;
       }
       setUser(user);
-      setToken(accessToken);
       toast.success(`Welcome, ${user.name}!`);
       navigate('/', { replace: true });
     } catch (err) {
