@@ -66,7 +66,11 @@ enum ServiceType {
 
 enum ServiceRequestStatus {
   NEW
-  IN_PROGRESS
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
   CLOSED
 }
 
@@ -115,6 +119,8 @@ model ServiceRequest {
   timingRange        String
   notes              String?
   status             ServiceRequestStatus @default(NEW)
+  orderNumber        String?              @unique
+  trackingNumber     String?
   userId             String?
   user               User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt          DateTime             @default(now())

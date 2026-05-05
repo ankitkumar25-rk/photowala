@@ -105,4 +105,5 @@ export const serviceRequestsApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+  myRequests: (params) => api.get('/service-requests/my', { params }),
 };

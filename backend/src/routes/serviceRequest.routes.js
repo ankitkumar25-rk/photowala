@@ -19,6 +19,7 @@ const upload = multer({
   },
 });
 
+router.get('/my', optionalAuth, serviceRequestController.listMyServiceRequests);
 router.post('/', optionalAuth, upload.single('designFile'), serviceRequestController.createServiceRequest);
 
 module.exports = router;

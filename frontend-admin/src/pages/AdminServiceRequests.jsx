@@ -14,7 +14,11 @@ const SERVICE_TYPES = [
 const STATUS_OPTIONS = [
   { value: '', label: 'All Status' },
   { value: 'NEW', label: 'New' },
-  { value: 'IN_PROGRESS', label: 'In Progress' },
+  { value: 'CONFIRMED', label: 'Confirmed' },
+  { value: 'PROCESSING', label: 'Processing' },
+  { value: 'SHIPPED', label: 'Shipped' },
+  { value: 'DELIVERED', label: 'Delivered' },
+  { value: 'CANCELLED', label: 'Cancelled' },
   { value: 'CLOSED', label: 'Closed' },
 ];
 
@@ -71,18 +75,19 @@ export default function AdminServiceRequests() {
           <table className="w-full min-w-225">
             <thead>
               <tr className="border-b border-gray-100">
-                {['Service', 'Size (L×B×H)', 'Qty', 'Price Range', 'Timing', 'Design', 'Status', 'Customer', 'Date'].map((h) => (
+                {['Order #', 'Service', 'Size (L×B×H)', 'Qty', 'Price Range', 'Timing', 'Design', 'Status', 'Tracking', 'Customer', 'Date'].map((h) => (
                   <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {isLoading ? Array(8).fill(0).map((_, i) => (
-                <tr key={i}>{Array(9).fill(0).map((_, j) => (
+                <tr key={i}>{Array(11).fill(0).map((_, j) => (
                   <td key={j} className="px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>
                 ))}</tr>
               )) : data?.data?.map((req) => (
                 <tr key={req.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-3 sm:px-4 py-3 text-xs font-bold text-brand-primary">{req.orderNumber || '---'}</td>
                   <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">{req.serviceType.replace('_', ' ')}</td>
                   <td className="px-3 sm:px-4 py-3 text-sm text-gray-700">
                     {req.sizeL} × {req.sizeB} × {req.sizeH}
@@ -104,12 +109,25 @@ export default function AdminServiceRequests() {
                     <select
                       className="input-field py-1 text-xs w-32"
                       value={req.status}
-                      onChange={(e) => statusMut.mutate({ id: req.id, status: e.target.value })}
+                      onChange={(e) => statusMut.mutate({ id: req.id, status: e.target.value, trackingNumber: req.trackingNumber })}
                     >
                       {STATUS_OPTIONS.filter((opt) => opt.value).map((opt) => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                       ))}
                     </select>
+                  </td>
+                  <td className="px-3 sm:px-4 py-3">
+                    <input
+                      type="text"
+                      className="input-field py-1 text-xs w-32"
+                      placeholder="Tracking #"
+                      defaultValue={req.trackingNumber || ''}
+                      onBlur={(e) => {
+                        if (e.target.value !== (req.trackingNumber || '')) {
+                          statusMut.mutate({ id: req.id, status: req.status, trackingNumber: e.target.value });
+                        }
+                      }}
+                    />
                   </td>
                   <td className="px-3 sm:px-4 py-3 text-xs text-gray-600">
                     <p className="font-semibold text-gray-800">{req.user?.name || 'Guest'}</p>
@@ -133,9 +151,15 @@ export default function AdminServiceRequests() {
             </div>
           )) : data?.data?.map((req) => (
             <div key={req.id} className="p-4 space-y-3">
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider">Service</p>
-                <p className="text-sm font-semibold text-gray-800">{req.serviceType.replace('_', ' ')}</p>
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Order #</p>
+                  <p className="text-sm font-bold text-brand-primary">{req.orderNumber || '---'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Service</p>
+                  <p className="text-sm font-semibold text-gray-800">{req.serviceType.replace('_', ' ')}</p>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
@@ -155,24 +179,37 @@ export default function AdminServiceRequests() {
                   <p className="text-gray-700">{req.timingRange}</p>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <a
-                  href={req.designFileUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs font-semibold text-brand-primary hover:underline"
-                >
-                  Download File
-                </a>
-                <select
-                  className="input-field py-1 text-xs w-32"
-                  value={req.status}
-                  onChange={(e) => statusMut.mutate({ id: req.id, status: e.target.value })}
-                >
-                  {STATUS_OPTIONS.filter((opt) => opt.value).map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <select
+                    className="input-field py-1 text-xs flex-1"
+                    value={req.status}
+                    onChange={(e) => statusMut.mutate({ id: req.id, status: e.target.value, trackingNumber: req.trackingNumber })}
+                  >
+                    {STATUS_OPTIONS.filter((opt) => opt.value).map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  <a
+                    href={req.designFileUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-semibold text-brand-primary hover:underline px-3"
+                  >
+                    Download
+                  </a>
+                </div>
+                <input
+                  type="text"
+                  className="input-field py-1 text-xs w-full"
+                  placeholder="Enter Tracking #"
+                  defaultValue={req.trackingNumber || ''}
+                  onBlur={(e) => {
+                    if (e.target.value !== (req.trackingNumber || '')) {
+                      statusMut.mutate({ id: req.id, status: req.status, trackingNumber: e.target.value });
+                    }
+                  }}
+                />
               </div>
             </div>
           ))}

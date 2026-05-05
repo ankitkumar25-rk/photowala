@@ -1,7 +1,7 @@
 const prisma = require('../config/database');
 const path = require('path');
 const { createError } = require('../middleware/errorHandler');
-const { uploadRawToCloudinary } = require('../config/cloudinary');
+const { uploadAutoToCloudinary } = require('../config/cloudinary');
 const { z } = require('zod');
 
 const createSchema = z.object({
@@ -16,13 +16,20 @@ const createSchema = z.object({
 });
 
 const statusSchema = z.object({
-  status: z.enum(['NEW', 'IN_PROGRESS', 'CLOSED']),
+  status: z.enum(['NEW', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'CLOSED']),
+  trackingNumber: z.string().max(100).optional(),
 });
 
 function buildPublicId(serviceType, originalName) {
   const ts = Date.now();
   const ext = path.extname(originalName || '');
   return `service-${serviceType.toLowerCase()}-${ts}${ext}`;
+}
+
+function generateOrderNumber() {
+  const ts = Date.now().toString().slice(-6);
+  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  return `SR-${ts}-${random}`;
 }
 
 exports.createServiceRequest = async (req, res, next) => {
@@ -33,7 +40,7 @@ exports.createServiceRequest = async (req, res, next) => {
       throw createError('Design file is required', 400);
     }
 
-    const upload = await uploadRawToCloudinary(req.file.buffer, {
+    const upload = await uploadAutoToCloudinary(req.file.buffer, {
       folder: 'photowala/service-requests',
       public_id: buildPublicId(payload.serviceType, req.file.originalname),
     });
@@ -50,12 +57,39 @@ exports.createServiceRequest = async (req, res, next) => {
         notes: payload.notes || null,
         designFileUrl: upload.secure_url,
         designFilePublicId: upload.public_id,
+        orderNumber: generateOrderNumber(),
         userId: req.user?.id || null,
       },
       include: { user: { select: { id: true, name: true, email: true } } },
     });
 
     res.status(201).json({ success: true, data: request });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.listMyServiceRequests = async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.json({ success: true, data: [], meta: { total: 0, page: 1 } });
+    }
+
+    const { page = 1, limit = 10, status } = req.query;
+    const where = { userId: req.user.id };
+    if (status) where.status = status;
+
+    const [items, total] = await Promise.all([
+      prisma.serviceRequest.findMany({
+        where,
+        skip: (Number(page) - 1) * Number(limit),
+        take: Number(limit),
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.serviceRequest.count({ where }),
+    ]);
+
+    res.json({ success: true, data: items, meta: { total, page: Number(page) } });
   } catch (err) {
     next(err);
   }
@@ -100,10 +134,10 @@ exports.getServiceRequest = async (req, res, next) => {
 
 exports.updateServiceRequestStatus = async (req, res, next) => {
   try {
-    const { status } = statusSchema.parse(req.body);
+    const { status, trackingNumber } = statusSchema.parse(req.body);
     const request = await prisma.serviceRequest.update({
       where: { id: req.params.id },
-      data: { status },
+      data: { status, trackingNumber },
     });
     res.json({ success: true, data: request });
   } catch (err) {

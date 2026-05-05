@@ -63,10 +63,34 @@ function uploadRawToCloudinary(fileBuffer, options = {}) {
 }
 
 /**
+ * Upload a file buffer to Cloudinary with automatic type detection
+ */
+function uploadAutoToCloudinary(fileBuffer, options = {}) {
+  return new Promise((resolve, reject) => {
+    const uploadOptions = {
+      resource_type: 'auto',
+      folder: 'photowala/service-requests',
+      ...options,
+    };
+
+    const stream = cloudinary.uploader.upload_stream(uploadOptions, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+
+    const { Readable } = require('stream');
+    const readable = new Readable();
+    readable.push(fileBuffer);
+    readable.push(null);
+    readable.pipe(stream);
+  });
+}
+
+/**
  * Delete an image from Cloudinary by public_id
  */
 async function deleteFromCloudinary(publicId) {
   return cloudinary.uploader.destroy(publicId);
 }
 
-module.exports = { cloudinary, uploadToCloudinary, uploadRawToCloudinary, deleteFromCloudinary };
+module.exports = { cloudinary, uploadToCloudinary, uploadRawToCloudinary, uploadAutoToCloudinary, deleteFromCloudinary };
