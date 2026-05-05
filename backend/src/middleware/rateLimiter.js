@@ -5,9 +5,9 @@ const Redis = require('ioredis');
 const redisUrl = process.env.REDIS_URL;
 const redis = redisUrl
   ? new Redis(redisUrl, {
-    enableOfflineQueue: false,
-    maxRetriesPerRequest: 1,
-    retryStrategy: () => null,
+    enableOfflineQueue: true,
+    maxRetriesPerRequest: 2,
+    retryStrategy: (times) => Math.min(times * 200, 2000),
   })
   : null;
 
