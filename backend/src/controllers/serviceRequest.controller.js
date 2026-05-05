@@ -16,7 +16,7 @@ const createSchema = z.object({
 });
 
 const statusSchema = z.object({
-  status: z.enum(['NEW', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'CLOSED']),
+  status: z.enum(['NEW', 'IN_PROGRESS', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'CLOSED']),
   trackingNumber: z.string().max(100).optional(),
 });
 

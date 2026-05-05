@@ -20,6 +20,7 @@ const ORDER_STATUS_FILTERS = [
 const SERVICE_STATUS_FILTERS = [
   { value: '',           label: 'All Requests' },
   { value: 'NEW',        label: 'New' },
+  { value: 'IN_PROGRESS',  label: 'In Progress' },
   { value: 'CONFIRMED',  label: 'Confirmed' },
   { value: 'PROCESSING', label: 'Processing' },
   { value: 'SHIPPED',    label: 'Shipped' },
@@ -32,6 +33,7 @@ function StatusBadge({ status }) {
     // Shared & Order statuses
     PENDING:    { bg: 'bg-brand-secondary/15', text: 'text-brand-secondary', icon: Clock,         label: 'Pending' },
     NEW:        { bg: 'bg-blue-50',     text: 'text-blue-600',   icon: Clock,         label: 'New' },
+    IN_PROGRESS: { bg: 'bg-purple-50',  text: 'text-purple-600', icon: RefreshCw,     label: 'In Progress' },
     CONFIRMED:  { bg: 'bg-blue-100',    text: 'text-blue-700',   icon: CheckCircle,   label: 'Confirmed' },
     PROCESSING: { bg: 'bg-purple-100',  text: 'text-purple-700', icon: RefreshCw,     label: 'Processing' },
     SHIPPED:    { bg: 'bg-indigo-100',  text: 'text-indigo-700', icon: Truck,         label: 'Shipped' },

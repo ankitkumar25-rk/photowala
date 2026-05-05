@@ -66,6 +66,7 @@ enum ServiceType {
 
 enum ServiceRequestStatus {
   NEW
+  IN_PROGRESS
   CONFIRMED
   PROCESSING
   SHIPPED

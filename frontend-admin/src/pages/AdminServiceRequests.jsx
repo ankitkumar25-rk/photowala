@@ -14,6 +14,7 @@ const SERVICE_TYPES = [
 const STATUS_OPTIONS = [
   { value: '', label: 'All Status' },
   { value: 'NEW', label: 'New' },
+  { value: 'IN_PROGRESS', label: 'In Progress' },
   { value: 'CONFIRMED', label: 'Confirmed' },
   { value: 'PROCESSING', label: 'Processing' },
   { value: 'SHIPPED', label: 'Shipped' },
