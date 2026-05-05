@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ShoppingCart, Search, Menu, X, User, Heart } from 'lucide-react';
 import { useAuthStore, useCartStore } from '../store';
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const location = useLocation();
 
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
@@ -82,23 +83,30 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-2">
-            {navLinks.map((l) => (
-              <Link
-                key={l.label}
-                to={l.to}
-                onClick={(e) => {
-                  if (l.to === '#') e.preventDefault();
-                }}
-                className="relative px-3 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors flex items-center"
-              >
-                {l.label}
-                {l.badge && (
-                  <span className="absolute -top-1 -right-3 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
-                    {l.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
+            {navLinks.map((l) => {
+              const isActive = location.pathname.startsWith(l.to);
+              return (
+                <Link
+                  key={l.label}
+                  to={l.to}
+                  onClick={(e) => {
+                    if (l.to === '#') e.preventDefault();
+                  }}
+                  className={`relative px-3 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center ${
+                    isActive
+                      ? 'bg-brand-primary/10 text-brand-secondary'
+                      : 'text-brand-primary hover:bg-brand-surface hover:text-brand-secondary'
+                  }`}
+                >
+                  {l.label}
+                  {l.badge && (
+                    <span className="absolute -top-1 -right-3 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
+                      {l.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Actions */}
@@ -219,24 +227,31 @@ export default function Navbar() {
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
           <div className="md:hidden absolute left-0 right-0 top-full z-40 border-t border-brand-primary/10 bg-cream-50 p-4 shadow-[0_18px_40px_-24px_rgba(91,63,47,0.35)] space-y-2">
-            {navLinks.map((l) => (
-              <Link
-                key={l.label}
-                to={l.to}
-                onClick={(e) => {
-                  if (l.to === '#') e.preventDefault();
-                  else setMenuOpen(false);
-                }}
-                className="flex items-center justify-between px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
-              >
-                {l.label}
-                {l.badge && (
-                  <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
-                    {l.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
+            {navLinks.map((l) => {
+              const isActive = location.pathname.startsWith(l.to);
+              return (
+                <Link
+                  key={l.label}
+                  to={l.to}
+                  onClick={(e) => {
+                    if (l.to === '#') e.preventDefault();
+                    else setMenuOpen(false);
+                  }}
+                  className={`flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-brand-primary/10 text-brand-secondary'
+                      : 'text-brand-primary hover:bg-brand-surface hover:text-brand-secondary'
+                  }`}
+                >
+                  {l.label}
+                  {l.badge && (
+                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
+                      {l.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
             {user && (
               <>
                 <Link

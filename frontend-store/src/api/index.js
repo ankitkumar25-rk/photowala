@@ -94,3 +94,15 @@ export const uploadApi = {
   },
   deleteImage: (publicId) => api.delete(`/uploads/image/${encodeURIComponent(publicId)}`),
 };
+
+export const serviceRequestsApi = {
+  create: (payload) => {
+    const fd = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) fd.append(key, value);
+    });
+    return api.post('/service-requests', fd, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};

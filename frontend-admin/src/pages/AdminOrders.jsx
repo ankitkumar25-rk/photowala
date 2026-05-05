@@ -98,7 +98,7 @@ export default function AdminOrders() {
         </div>
 
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full min-w-[800px]">
+          <table className="w-full min-w-200">
             <thead>
               <tr className="border-b border-gray-100">
                 {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Details'].map(h => (

@@ -32,6 +32,7 @@ const AdminCustomerDetail = lazy(() => import('./pages/AdminCustomerDetail'));
 const AdminReturns    = lazy(() => import('./pages/AdminReturns'));
 const AdminInventory  = lazy(() => import('./pages/AdminInventory'));
 const AdminSupport    = lazy(() => import('./pages/AdminSupport'));
+const AdminServiceRequests = lazy(() => import('./pages/AdminServiceRequests'));
 
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
 
@@ -97,6 +98,7 @@ export default function App() {
               <Route path="returns"     element={<AdminReturns />} />
               <Route path="inventory"   element={<AdminInventory />} />
               <Route path="support"     element={<AdminSupport />} />
+              <Route path="service-requests" element={<AdminServiceRequests />} />
             </Route>
           </Routes>
         </Suspense>

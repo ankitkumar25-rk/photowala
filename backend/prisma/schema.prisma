@@ -58,6 +58,18 @@ enum PaymentMethod {
   WALLET
 }
 
+enum ServiceType {
+  CO2_LASER
+  LASER_MARKING
+  CNC_ROUTER
+}
+
+enum ServiceRequestStatus {
+  NEW
+  IN_PROGRESS
+  CLOSED
+}
+
 // ================================
 // USER & AUTH
 // ================================
@@ -85,8 +97,30 @@ model User {
   passwordResetTokens  PasswordResetToken[]
   returns              Return[]
   supportTickets       SupportTicket[]
+  serviceRequests      ServiceRequest[]
 
   @@map("users")
+}
+
+model ServiceRequest {
+  id                 String               @id @default(uuid())
+  serviceType        ServiceType
+  sizeL              Decimal              @db.Decimal(10, 2)
+  sizeB              Decimal              @db.Decimal(10, 2)
+  sizeH              Decimal              @db.Decimal(10, 2)
+  quantity           Int
+  designFileUrl      String
+  designFilePublicId String
+  priceRange         String
+  timingRange        String
+  notes              String?
+  status             ServiceRequestStatus @default(NEW)
+  userId             String?
+  user               User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@map("service_requests")
 }
 
 model PasswordResetToken {

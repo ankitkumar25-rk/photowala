@@ -3,13 +3,14 @@ import { createElement, useState } from 'react';
 import { useAdminStore } from '../App';
 import {
   LayoutDashboard, Package, ShoppingCart, Users,
-  RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X
+  RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X, ClipboardList
 } from 'lucide-react';
 
 const NAV = [
   { to: '/',          icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/products',  icon: Package,         label: 'Products' },
   { to: '/orders',    icon: ShoppingCart,    label: 'Orders' },
+  { to: '/service-requests', icon: ClipboardList, label: 'Service Requests' },
   { to: '/customers', icon: Users,           label: 'Customers' },
   { to: '/returns',   icon: RotateCcw,       label: 'Returns' },
   { to: '/inventory', icon: BarChart3,       label: 'Inventory' },
@@ -27,7 +28,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-cream-100 text-gray-900 grid grid-cols-1 lg:grid-cols-[280px_1fr]">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] border-r border-brand-primary/15 bg-[#4a2f23] text-slate-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+      <aside className={`fixed inset-y-0 left-0 z-50 w-70 border-r border-brand-primary/15 bg-[#4a2f23] text-slate-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex h-full flex-col">

@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 
 import { useAuthStore, useCartStore } from './store';
 import Layout from './components/Layout';
+import { brandAssets } from './data/assets';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Pages (lazy loaded)
@@ -45,7 +46,7 @@ function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-cream-100">
       <div className="flex flex-col items-center gap-4">
-        <div className="text-4xl animate-leaf">🏆</div>
+        <img src={brandAssets.logo} alt="Loading..." className="h-12 w-auto animate-pulse" />
         <p className="text-brand-primary font-medium">Loading...</p>
       </div>
     </div>

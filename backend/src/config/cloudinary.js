@@ -37,10 +37,36 @@ function uploadToCloudinary(fileBuffer, options = {}) {
 }
 
 /**
+ * Upload a raw file buffer to Cloudinary (e.g., Corel/zip files)
+ * @param {Buffer} fileBuffer
+ * @param {object} options - folder, public_id, etc.
+ */
+function uploadRawToCloudinary(fileBuffer, options = {}) {
+  return new Promise((resolve, reject) => {
+    const uploadOptions = {
+      resource_type: 'raw',
+      folder: 'photowala/service-requests',
+      ...options,
+    };
+
+    const stream = cloudinary.uploader.upload_stream(uploadOptions, (error, result) => {
+      if (error) reject(error);
+      else resolve(result);
+    });
+
+    const { Readable } = require('stream');
+    const readable = new Readable();
+    readable.push(fileBuffer);
+    readable.push(null);
+    readable.pipe(stream);
+  });
+}
+
+/**
  * Delete an image from Cloudinary by public_id
  */
 async function deleteFromCloudinary(publicId) {
   return cloudinary.uploader.destroy(publicId);
 }
 
-module.exports = { cloudinary, uploadToCloudinary, deleteFromCloudinary };
+module.exports = { cloudinary, uploadToCloudinary, uploadRawToCloudinary, deleteFromCloudinary };
