@@ -56,7 +56,7 @@ export default function PaperGsmCalculator() {
 
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
-      <div className="bg-gradient-to-br from-forest-800 to-forest-600 text-white">
+      <div className="bg-linear-to-br from-forest-800 to-forest-600 text-white">
         <div className="max-w-5xl mx-auto px-4 py-10">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">

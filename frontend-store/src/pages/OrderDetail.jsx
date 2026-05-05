@@ -109,7 +109,7 @@ export default function OrderDetail() {
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-800 to-forest-600 text-white">
+      <div className="bg-linear-to-br from-[#a06f20] to-[#d96a22] text-white">
         <div className="max-w-5xl mx-auto px-4 py-8">
           <button
             onClick={() => navigate('/orders')}
@@ -162,7 +162,7 @@ export default function OrderDetail() {
                   const Icon = s.icon;
                   return (
                     <div key={s.key} className="flex items-start gap-4 relative">
-                      <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                      <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all ${
                         done
                           ? 'bg-brand-secondary text-white shadow-md'
                           : 'bg-cream-200 text-gray-400'
@@ -202,7 +202,7 @@ export default function OrderDetail() {
 
         {isCancelled && (
           <div className="card p-6 border-red-200 bg-red-50 flex items-center gap-4">
-            <XCircle className="w-8 h-8 text-red-500 flex-shrink-0" />
+            <XCircle className="w-8 h-8 text-red-500 shrink-0" />
             <div>
               <p className="font-bold text-red-700">Order Cancelled</p>
               <p className="text-sm text-red-600">This order has been cancelled. Refund will be processed within 5-7 business days if payment was made.</p>
@@ -223,10 +223,10 @@ export default function OrderDetail() {
                     <img
                       src={item.product.images[0].url}
                       alt={item.productName}
-                      className="w-16 h-16 rounded-xl object-cover bg-cream-100 flex-shrink-0"
+                      className="w-16 h-16 rounded-xl object-cover bg-cream-100 shrink-0"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-xl bg-brand-surface flex items-center justify-center flex-shrink-0 text-xl">
+                    <div className="w-16 h-16 rounded-xl bg-brand-surface flex items-center justify-center shrink-0 text-xl">
                       🏆
                     </div>
                   )}
@@ -267,7 +267,7 @@ export default function OrderDetail() {
                       </div>
                     )}
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right shrink-0">
                     <p className="font-bold text-gray-900">₹{Number(item.total).toFixed(2)}</p>
                     <p className="text-xs text-gray-600">₹{Number(item.price).toFixed(2)} each</p>
                   </div>

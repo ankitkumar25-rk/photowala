@@ -67,10 +67,10 @@ function OrderCard({ order, onCancel }) {
           <img
             src={firstItem.product.images[0].url}
             alt={firstItem.productName}
-            className="w-16 h-16 rounded-xl object-cover bg-cream-100 flex-shrink-0"
+            className="w-16 h-16 rounded-xl object-cover bg-cream-100 shrink-0"
           />
         ) : (
-          <div className="w-16 h-16 rounded-xl bg-brand-surface flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 rounded-xl bg-brand-surface flex items-center justify-center shrink-0">
             <ShoppingBag className="w-7 h-7 text-brand-secondary" />
           </div>
         )}
@@ -83,7 +83,7 @@ function OrderCard({ order, onCancel }) {
           )}
           <p className="text-xs text-gray-600 mt-1">{itemCount} item{itemCount !== 1 ? 's' : ''}</p>
         </div>
-        <div className="text-right flex-shrink-0">
+        <div className="text-right shrink-0">
           <p className="text-xs text-gray-600">Total</p>
           <p className="font-bold text-brand-primary text-lg">₹{Number(order.total).toFixed(0)}</p>
           {order.shippingCost === 0 && (
@@ -199,7 +199,7 @@ export default function Orders() {
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
       {/* Header */}
-      <div className="bg-gradient-to-br from-forest-800 to-forest-600 text-white">
+      <div className="bg-linear-to-br from-forest-800 to-forest-600 text-white">
         <div className="max-w-5xl mx-auto px-4 py-10">
           <div className="flex items-center gap-3 mb-2">
             <Package className="w-8 h-8" />

@@ -23,7 +23,7 @@ function HeroSection() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden text-white min-h-[600px] flex flex-col justify-center">
+    <section className="relative overflow-hidden text-white min-h-150 flex flex-col justify-center">
       {/* Slider Images */}
       {HERO_IMAGES.map((src, index) => (
         <div
@@ -36,7 +36,7 @@ function HeroSection() {
       ))}
 
       {/* Gradient Overlay for Text Visibility */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/10" />
+      <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/50 to-black/10" />
       <div className="absolute inset-0 bg-[#5a3f2f]/30" /> {/* Brand tint overlay */}
       <div className="absolute inset-0 opacity-[0.05] luxury-grain" />
 
