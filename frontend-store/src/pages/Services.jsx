@@ -4,7 +4,7 @@ import { Calculator } from 'lucide-react';
 export default function Services() {
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
-      <div className="bg-gradient-to-br from-forest-800 to-forest-600 text-white">
+      <div className="bg-gradient-to-br from-[#a06f20] to-[#d96a22] text-white">
         <div className="max-w-6xl mx-auto px-4 py-10">
           <h1 className="text-3xl font-bold" style={{ fontFamily: 'Fraunces, serif' }}>
             Services
