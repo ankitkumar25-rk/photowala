@@ -6,21 +6,14 @@ export const useAuthStore = create(
   persist(
     (set, get) => ({
       user: null,
-      accessToken: null,
       isLoading: false,
 
       setUser: (user) => set({ user }),
-      setToken: (token) => {
-        localStorage.setItem('access_token', token);
-        set({ accessToken: token });
-      },
-
       login: async (credentials) => {
         set({ isLoading: true });
         try {
           const { data } = await authApi.login(credentials);
-          set({ user: data.data.user, accessToken: data.data.accessToken, isLoading: false });
-          localStorage.setItem('access_token', data.data.accessToken);
+          set({ user: data.data.user, isLoading: false });
           // Merge guest cart into user cart
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
@@ -35,8 +28,7 @@ export const useAuthStore = create(
         set({ isLoading: true });
         try {
           const { data } = await authApi.register(userData);
-          set({ user: data.data.user, accessToken: data.data.accessToken, isLoading: false });
-          localStorage.setItem('access_token', data.data.accessToken);
+          set({ user: data.data.user, isLoading: false });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
           return data;
@@ -48,8 +40,7 @@ export const useAuthStore = create(
 
       logout: async () => {
         await authApi.logout().catch(() => {});
-        localStorage.removeItem('access_token');
-        set({ user: null, accessToken: null });
+        set({ user: null });
         useCartStore.getState().resetCart();
       },
 
@@ -60,8 +51,7 @@ export const useAuthStore = create(
           await useCartStore.getState().fetchCart();
           return data.data;
         } catch {
-          set({ user: null, accessToken: null });
-          localStorage.removeItem('access_token');
+          set({ user: null });
           useCartStore.getState().resetCart();
         }
       },
@@ -71,7 +61,7 @@ export const useAuthStore = create(
     }),
     {
       name: 'auth-storage',
-      partialize: (state) => ({ user: state.user, accessToken: state.accessToken }),
+      partialize: (state) => ({ user: state.user }),
     }
   )
 );
@@ -82,7 +72,7 @@ export const useCartStore = create((set, get) => ({
 
   fetchCart: async () => {
     const authState = useAuthStore.getState();
-    if (!authState.user && !authState.accessToken) {
+    if (!authState.user) {
       set({ items: [], isLoading: false });
       return;
     }

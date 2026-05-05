@@ -13,12 +13,10 @@ export const useAdminStore = create(
   persist(
     (set) => ({
       user: null,
-      accessToken: null,
       setUser: (user) => set({ user }),
-      setToken: (token) => { localStorage.setItem('admin_access_token', token); set({ accessToken: token }); },
-      logout: () => { localStorage.removeItem('admin_access_token'); set({ user: null, accessToken: null }); },
+      logout: () => { set({ user: null }); },
     }),
-    { name: 'admin-auth', partialize: (s) => ({ user: s.user, accessToken: s.accessToken }) }
+    { name: 'admin-auth', partialize: (s) => ({ user: s.user }) }
   )
 );
 
@@ -52,30 +50,24 @@ function Loader() {
 
 function RequireAdmin({ children }) {
   const user = useAdminStore((s) => s.user);
-  const token = useAdminStore((s) => s.accessToken);
   const setUser = useAdminStore((s) => s.setUser);
-  const setToken = useAdminStore((s) => s.setToken);
   const logout = useAdminStore((s) => s.logout);
 
-  const { isLoading } = useQuery({
+  const { isLoading, isError } = useQuery({
     queryKey: ['admin-me'],
-    enabled: Boolean(token),
     queryFn: async () => {
       const { data } = await api.get('/auth/me');
       if (!['ADMIN', 'SUPER_ADMIN'].includes(data?.data?.role)) {
         throw new Error('Admin role required');
       }
       setUser(data.data);
-      if (!localStorage.getItem('admin_access_token') && token) {
-        setToken(token);
-      }
       return data.data;
     },
     retry: false,
   });
 
   if (isLoading) return <Loader />;
-  if (!user && token && !isLoading) {
+  if (isError) {
     logout();
     return <Navigate to="/login" replace />;
   }

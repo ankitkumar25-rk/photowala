@@ -6,13 +6,6 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach access token from localStorage if present
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
 // Auto-refresh on 401
 api.interceptors.response.use(
   (response) => response,
@@ -22,13 +15,9 @@ api.interceptors.response.use(
       original._retry = true;
       try {
         const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
-        const { data } = await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
-        const newToken = data.data.accessToken;
-        localStorage.setItem('access_token', newToken);
-        original.headers.Authorization = `Bearer ${newToken}`;
+        await axios.post(`${baseURL}/auth/refresh`, {}, { withCredentials: true });
         return api(original);
       } catch {
-        localStorage.removeItem('access_token');
         window.location.href = '/login';
       }
     }

@@ -49,6 +49,13 @@ const allowedOrigins = [
 console.log('✔ Configuring CORS for origins:', allowedOrigins);
 
 app.use(helmet());
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    const proto = req.headers['x-forwarded-proto'];
+    if (req.secure || proto === 'https') return next();
+    return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
+  });
+}
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
