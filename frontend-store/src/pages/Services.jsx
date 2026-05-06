@@ -89,7 +89,7 @@ function ServiceFormView({ service, onBack }) {
 
   return (
     <div className="max-w-4xl mx-auto px-4 -mt-20 pb-20 relative z-10">
-      <button onClick={onBack} className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-white/90 hover:text-white mb-6 transition-colors">
+      <button onClick={onBack} className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/90 hover:text-white mb-6 transition-colors">
         <ChevronLeft className="w-4 h-4" />
         Back to Services
       </button>
@@ -300,8 +300,41 @@ export default function Services() {
                 </div>
                 
                 <div className="mt-auto">
-                  <div className="w-full py-4 border border-[#4A2511] text-[#4A2511] rounded-[10px] text-xs font-bold uppercase tracking-[0.1em] text-center hover:bg-[#4A2511] hover:text-white transition-colors pointer-events-none">
+                  <div className="w-full py-4 border border-[#4A2511] text-[#4A2511] rounded-[10px] text-xs font-bold uppercase tracking-widest text-center hover:bg-[#4A2511] hover:text-white transition-colors pointer-events-none">
                     Open Calculator
+                  </div>
+                </div>
+              </a>
+
+              <a
+                href="/services/custom-printing"
+                className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow block relative"
+              >
+                <div className="flex justify-between items-start mb-8">
+                  <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A]">
+                    <Drill className="w-6 h-6" strokeWidth={1.5} />
+                  </div>
+                  <span className="inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F4EBE1] text-[#8F431A]">
+                    New
+                  </span>
+                </div>
+
+                <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3" style={{ fontFamily: 'Fraunces, serif' }}>
+                  Custom Printing
+                </h2>
+
+                <p className="text-[#6B7280] text-[15px] mb-8 leading-relaxed pr-4">
+                  Pen, sticker labels, digital paper printing, letter head, garment tag, bill book and envelop services.
+                </p>
+
+                <div className="flex flex-wrap gap-2.5 mb-10">
+                  <span className="px-3.5 py-1.5 bg-[#F4EBE1] text-[#8F431A] text-[10px] font-bold uppercase tracking-wider rounded-full">Laser Printed Pen</span>
+                  <span className="px-3.5 py-1.5 bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-wider rounded-full">More Coming Soon</span>
+                </div>
+
+                <div className="mt-auto">
+                  <div className="w-full py-4 border border-[#4A2511] text-[#4A2511] rounded-[10px] text-xs font-bold uppercase tracking-widest text-center hover:bg-[#4A2511] hover:text-white transition-colors pointer-events-none">
+                    Open Category
                   </div>
                 </div>
               </a>
@@ -337,7 +370,7 @@ export default function Services() {
                   </div>
                   
                   <div className="mt-auto">
-                    <button className="w-full py-4 border border-[#4A2511] text-[#4A2511] rounded-[10px] text-xs font-bold uppercase tracking-[0.1em] text-center hover:bg-[#4A2511] hover:text-white transition-colors pointer-events-none">
+                    <button className="w-full py-4 border border-[#4A2511] text-[#4A2511] rounded-[10px] text-xs font-bold uppercase tracking-widest text-center hover:bg-[#4A2511] hover:text-white transition-colors pointer-events-none">
                       View & Submit
                     </button>
                   </div>
@@ -382,7 +415,7 @@ export default function Services() {
                     <Timer className="w-12 h-12 text-[#5a3f2f]" strokeWidth={1.5} />
                   </div>
                   <h3 className="text-xl font-bold text-white uppercase tracking-widest mb-3">Express Services</h3>
-                  <p className="text-white/80 italic text-[15px] font-serif text-[#5a3f2f]">Always ontime</p>
+                  <p className="italic text-[15px] font-serif text-[#5a3f2f]">Always ontime</p>
                 </div>
               </div>
             </div>

@@ -9,6 +9,30 @@ function generateOrderNumber() {
   return `ORG-${ts}-${rand}`;
 }
 
+function generatePenOrderId() {
+  const ts = Date.now().toString(36).toUpperCase();
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `PWG-${ts}-${rand}`;
+}
+
+const laserPenOrderSchema = z.object({
+  orderName: z.string().min(3).max(120),
+  penType: z.string().min(1).max(20),
+  qty: z.coerce.number().int().positive(),
+  deliveryOption: z.enum(['courier']),
+  fileOption: z.enum(['attach', 'email']),
+  emailForFile: z.string().email().optional(),
+  specialRemark: z.string().max(300).optional(),
+  pricing: z.object({
+    applicableCost: z.coerce.number().nonnegative(),
+    discountPercent: z.coerce.number().min(0).max(100),
+    discountAmt: z.coerce.number().nonnegative(),
+    emailCharge: z.coerce.number().nonnegative(),
+    gst: z.coerce.number().nonnegative(),
+    totalPayable: z.coerce.number().nonnegative(),
+  }),
+});
+
 exports.createOrder = async (req, res, next) => {
   try {
     const { addressId, notes } = z.object({
@@ -211,6 +235,25 @@ exports.updateTracking = async (req, res, next) => {
       data: { trackingNumber, status: 'SHIPPED' },
     });
     res.json({ success: true, data: order });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.createLaserPenOrder = async (req, res, next) => {
+  try {
+    const payload = laserPenOrderSchema.parse(req.body);
+    if (payload.fileOption === 'email' && !payload.emailForFile) {
+      throw createError('Email is required when file option is email', 422);
+    }
+    if (payload.fileOption === 'attach' && payload.emailForFile) {
+      throw createError('Do not provide email for attach file option', 422);
+    }
+
+    // Placeholder order endpoint until a dedicated pen-order table/workflow is added.
+    // We still return a deterministic order reference used by the UI.
+    const orderId = generatePenOrderId();
+    res.status(201).json({ success: true, orderId });
   } catch (err) {
     next(err);
   }

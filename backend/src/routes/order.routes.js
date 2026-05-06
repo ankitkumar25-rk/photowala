@@ -6,6 +6,7 @@ const orderController = require('../controllers/order.controller');
 // Customer routes
 router.post('/',            authenticate, orderController.createOrder);
 router.get('/',             authenticate, orderController.getUserOrders);
+router.post('/pen/laser',   authenticate, orderController.createLaserPenOrder);
 
 // Admin routes
 router.get('/admin/all',        authenticate, authorize('ADMIN', 'SUPER_ADMIN'), orderController.getAllOrders);

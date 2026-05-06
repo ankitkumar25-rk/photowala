@@ -53,6 +53,10 @@ export const paymentsApi = {
   verifyPayment:  (data)    => api.post('/payments/verify', data),
 };
 
+export const penOrdersApi = {
+  createLaserPrintedPenOrder: (data) => api.post('/orders/pen/laser', data),
+};
+
 export const usersApi = {
   getProfile:      ()     => api.get('/users/profile'),
   updateProfile:   (data) => api.put('/users/profile', data),
