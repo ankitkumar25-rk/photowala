@@ -37,7 +37,8 @@ export default function AdminServiceRequests() {
   });
 
   const statusMut = useMutation({
-    mutationFn: ({ id, status: nextStatus }) => api.patch(`/admin/service-requests/${id}/status`, { status: nextStatus }),
+    mutationFn: ({ id, status: nextStatus, trackingNumber }) =>
+      api.patch(`/admin/service-requests/${id}/status`, { status: nextStatus, trackingNumber }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['service-requests'] }); toast.success('Status updated'); },
     onError: (e) => toast.error(e?.response?.data?.message || 'Update failed'),
   });

@@ -21,7 +21,7 @@ export default function AuthSuccess() {
         toast.error('Sign-in failed. Please try again.');
         navigate('/login', { replace: true });
       });
-  }, []);
+  }, [fetchMe, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-cream-100">

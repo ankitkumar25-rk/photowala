@@ -1,7 +1,7 @@
 const prisma = require('../config/database');
 const path = require('path');
 const { createError } = require('../middleware/errorHandler');
-const { uploadAutoToCloudinary } = require('../config/cloudinary');
+const { uploadRawToCloudinary } = require('../config/cloudinary');
 const { z } = require('zod');
 
 const createSchema = z.object({
@@ -40,7 +40,7 @@ exports.createServiceRequest = async (req, res, next) => {
       throw createError('Design file is required', 400);
     }
 
-    const upload = await uploadAutoToCloudinary(req.file.buffer, {
+    const upload = await uploadRawToCloudinary(req.file.buffer, {
       folder: 'photowala/service-requests',
       public_id: buildPublicId(payload.serviceType, req.file.originalname),
     });

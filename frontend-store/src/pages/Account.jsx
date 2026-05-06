@@ -173,7 +173,7 @@ function AddressModal({ addr, onClose, onSave }) {
               type="checkbox"
               checked={form.isDefault}
               onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))}
-              className="w-4 h-4 accent-forest-600 rounded"
+              className="w-4 h-4 accent-brand-primary rounded"
             />
             <span className="text-sm font-medium text-gray-700">Set as default address</span>
           </label>

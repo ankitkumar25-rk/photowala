@@ -98,6 +98,11 @@ exports.addAddress = async (req, res, next) => {
 exports.updateAddress = async (req, res, next) => {
   try {
     const data = addressSchema.partial().parse(req.body);
+    const existing = await prisma.address.findFirst({
+      where: { id: req.params.id, userId: req.user.id },
+      select: { id: true },
+    });
+    if (!existing) throw createError('Address not found', 404);
 
     // If marking this address as default, first unset all other defaults for this user
     if (data.isDefault) {
@@ -108,7 +113,7 @@ exports.updateAddress = async (req, res, next) => {
     }
 
     const address = await prisma.address.update({
-      where: { id: req.params.id, userId: req.user.id },
+      where: { id: req.params.id },
       data,
     });
     res.json({ success: true, data: address });
@@ -119,7 +124,10 @@ exports.updateAddress = async (req, res, next) => {
 
 exports.deleteAddress = async (req, res, next) => {
   try {
-    await prisma.address.delete({ where: { id: req.params.id, userId: req.user.id } });
+    const deleted = await prisma.address.deleteMany({
+      where: { id: req.params.id, userId: req.user.id },
+    });
+    if (deleted.count === 0) throw createError('Address not found', 404);
     res.json({ success: true, message: 'Address deleted' });
   } catch (err) {
     next(err);
@@ -128,9 +136,15 @@ exports.deleteAddress = async (req, res, next) => {
 
 exports.setDefaultAddress = async (req, res, next) => {
   try {
+    const existing = await prisma.address.findFirst({
+      where: { id: req.params.id, userId: req.user.id },
+      select: { id: true },
+    });
+    if (!existing) throw createError('Address not found', 404);
+
     await prisma.$transaction([
       prisma.address.updateMany({ where: { userId: req.user.id }, data: { isDefault: false } }),
-      prisma.address.update({ where: { id: req.params.id, userId: req.user.id }, data: { isDefault: true } }),
+      prisma.address.update({ where: { id: req.params.id }, data: { isDefault: true } }),
     ]);
     res.json({ success: true, message: 'Default address updated' });
   } catch (err) {

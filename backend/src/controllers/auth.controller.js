@@ -145,7 +145,7 @@ exports.logout = async (req, res, next) => {
 
 exports.refresh = async (req, res, next) => {
   try {
-    const token = req.cookies?.refresh_token || req.body?.refreshToken;
+    const token = req.cookies?.refresh_token;
     if (!token) throw createError('Refresh token required', 401);
 
     const payload = await verifyToken(token);

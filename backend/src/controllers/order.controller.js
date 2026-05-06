@@ -16,6 +16,12 @@ exports.createOrder = async (req, res, next) => {
       notes: z.string().optional(),
     }).parse(req.body);
 
+    const address = await prisma.address.findFirst({
+      where: { id: addressId, userId: req.user.id },
+      select: { id: true },
+    });
+    if (!address) throw createError('Invalid delivery address', 400);
+
     // Get user's cart
     const cart = await prisma.cart.findUnique({
       where: { userId: req.user.id },
@@ -70,7 +76,7 @@ exports.createOrder = async (req, res, next) => {
         data: {
           orderNumber: generateOrderNumber(),
           userId: req.user.id,
-          addressId,
+          addressId: address.id,
           subtotal,
           shippingCost,
           total,

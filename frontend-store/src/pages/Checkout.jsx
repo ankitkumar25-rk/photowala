@@ -81,7 +81,7 @@ function QuickAddressModal({ onClose, onSave }) {
           <label className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={form.isDefault}
               onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))}
-              className="w-4 h-4 accent-forest-600 rounded"
+              className="w-4 h-4 accent-brand-primary rounded"
             />
             <span className="text-sm font-medium text-gray-700">Set as default address</span>
           </label>
@@ -253,7 +253,7 @@ export default function Checkout() {
                             value={a.id}
                             checked={selectedAddr === a.id}
                             onChange={() => setSelectedAddr(a.id)}
-                            className="mt-1 accent-forest-600"
+                            className="mt-1 accent-brand-primary"
                           />
                           <div className="flex-1">
                             <div className="flex items-center gap-2">

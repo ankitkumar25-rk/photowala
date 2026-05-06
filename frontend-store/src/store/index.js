@@ -50,9 +50,10 @@ export const useAuthStore = create(
           set({ user: data.data });
           await useCartStore.getState().fetchCart();
           return data.data;
-        } catch {
+        } catch (err) {
           set({ user: null });
           useCartStore.getState().resetCart();
+          throw err;
         }
       },
 

@@ -270,7 +270,7 @@ export default function Orders() {
 
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
-      <div className="bg-linear-to-br from-forest-800 to-forest-600 text-white">
+      <div className="bg-linear-to-br from-brand-primary to-brand-secondary text-white">
         <div className="max-w-5xl mx-auto px-4 pt-10 pb-6">
           <div className="flex items-center gap-3 mb-6">
             <Package className="w-8 h-8" />
@@ -281,13 +281,13 @@ export default function Orders() {
           <div className="flex gap-1 bg-white/10 p-1 rounded-2xl w-fit mb-8">
             <button
               onClick={() => setActiveTab('orders')}
-              className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'orders' ? 'bg-white text-forest-800 shadow-lg' : 'hover:bg-white/10'}`}
+              className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'orders' ? 'bg-white text-brand-primary shadow-lg' : 'hover:bg-white/10'}`}
             >
               Product Orders
             </button>
             <button
               onClick={() => setActiveTab('services')}
-              className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'services' ? 'bg-white text-forest-800 shadow-lg' : 'hover:bg-white/10'}`}
+              className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'services' ? 'bg-white text-brand-primary shadow-lg' : 'hover:bg-white/10'}`}
             >
               Service Requests
             </button>

@@ -11,6 +11,7 @@ const passport = require('./config/passport');   // loads Google strategy
 
 const { errorHandler } = require('./middleware/errorHandler');
 const { rateLimiter } = require('./middleware/rateLimiter');
+const { ensureCsrfCookie, requireCsrf } = require('./middleware/csrf');
 
 // Route imports
 const authRoutes = require('./routes/auth.routes');
@@ -73,7 +74,7 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-CSRF-Token'],
 }));
 
 // ================================
@@ -131,6 +132,8 @@ if (process.env.NODE_ENV !== 'test') {
 // RATE LIMITING
 // ================================
 app.use('/api', rateLimiter);
+app.use('/api', ensureCsrfCookie);
+app.use('/api', requireCsrf);
 
 // ================================
 // ROUTES

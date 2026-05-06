@@ -11,6 +11,14 @@ const razorpay = razorpayConfigured
   })
   : null;
 
+function secureCompareHex(a, b) {
+  if (!a || !b) return false;
+  const left = Buffer.from(String(a), 'utf8');
+  const right = Buffer.from(String(b), 'utf8');
+  if (left.length !== right.length) return false;
+  return crypto.timingSafeEqual(left, right);
+}
+
 exports.createRazorpayOrder = async (req, res, next) => {
   try {
     if (!razorpay) throw createError('Razorpay is not configured', 503);
@@ -92,7 +100,7 @@ exports.verifyPayment = async (req, res, next) => {
       .update(body)
       .digest('hex');
 
-    if (expectedSig !== razorpay_signature) {
+    if (!secureCompareHex(expectedSig, razorpay_signature)) {
       throw createError('Payment verification failed', 400);
     }
 
@@ -130,7 +138,7 @@ exports.webhook = async (req, res, next) => {
       .update(body)
       .digest('hex');
 
-    if (expectedSig !== signature) {
+    if (!secureCompareHex(expectedSig, signature)) {
       return res.status(400).json({ success: false });
     }
 
@@ -139,11 +147,23 @@ exports.webhook = async (req, res, next) => {
     if (event.event === 'payment.captured') {
       const paymentId = event.payload.payment.entity.id;
       const rzpOrderId = event.payload.payment.entity.order_id;
-
-      await prisma.payment.updateMany({
+      const payment = await prisma.payment.findUnique({
         where: { razorpayOrderId: rzpOrderId },
-        data: { razorpayPaymentId: paymentId, status: 'PAID' },
+        select: { orderId: true },
       });
+
+      if (payment) {
+        await prisma.$transaction([
+          prisma.payment.update({
+            where: { razorpayOrderId: rzpOrderId },
+            data: { razorpayPaymentId: paymentId, status: 'PAID' },
+          }),
+          prisma.order.update({
+            where: { id: payment.orderId },
+            data: { status: 'CONFIRMED' },
+          }),
+        ]);
+      }
     }
 
     res.json({ received: true });
