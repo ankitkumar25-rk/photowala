@@ -163,6 +163,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// CSRF bootstrap endpoint (safe GET)
+app.get('/api/csrf', (req, res) => {
+  res.json({ success: true, token: req.cookies?.csrf_token || null });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);

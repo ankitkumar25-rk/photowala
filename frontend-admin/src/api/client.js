@@ -13,7 +13,30 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+let csrfBootstrapPromise = null;
+async function ensureCsrfCookie() {
+  if (readCookie('csrf_token')) return;
+  if (!csrfBootstrapPromise) {
+    const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+    csrfBootstrapPromise = axios.get(`${baseURL}/csrf`, { withCredentials: true })
+      .finally(() => { csrfBootstrapPromise = null; });
+  }
+  await csrfBootstrapPromise;
+}
+
 api.interceptors.request.use((config) => {
+  const method = String(config.method || 'get').toUpperCase();
+  const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
+  if (unsafe && !readCookie('csrf_token')) {
+    return ensureCsrfCookie().then(() => {
+      const csrfToken = readCookie('csrf_token');
+      if (csrfToken) {
+        config.headers = config.headers || {};
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
+      return config;
+    });
+  }
   const csrfToken = readCookie('csrf_token');
   if (csrfToken) {
     config.headers = config.headers || {};
@@ -26,9 +49,10 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const original = err.config;
-    if (err.response?.status === 403 && err.response?.data?.message === 'Invalid CSRF token' && !original?._csrfRetry) {
+    const msg = String(err.response?.data?.message || '').toLowerCase();
+    if (err.response?.status === 403 && msg.includes('csrf') && !original?._csrfRetry) {
       original._csrfRetry = true;
-      await api.get('/health');
+      await api.get('/csrf');
       return api(original);
     }
     // Admin and store apps share backend cookie names. Avoid auto-refresh here,
