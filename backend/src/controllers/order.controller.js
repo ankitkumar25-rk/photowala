@@ -122,7 +122,9 @@ exports.createOrder = async (req, res, next) => {
     // Send confirmation email
     const user = { name: req.user.name || 'Customer', email: req.user.email };
     const tpl = emailTemplates.orderConfirmation(order, user);
-    sendEmail({ to: req.user.email, ...tpl }).catch(console.error);
+    // Notify Admin (non-blocking)
+    const adminTpl = emailTemplates.adminNewOrder(order, user);
+    sendEmail({ to: process.env.EMAIL_FROM, ...adminTpl }).catch(console.error);
 
     res.status(201).json({ success: true, data: order });
   } catch (err) {
@@ -219,8 +221,20 @@ exports.getAllOrders = async (req, res, next) => {
 
 exports.updateOrderStatus = async (req, res, next) => {
   try {
-    const { status } = z.object({ status: z.enum(['CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED','REFUNDED']) }).parse(req.body);
-    const order = await prisma.order.update({ where: { id: req.params.id }, data: { status } });
+    const { status, trackingNumber } = z.object({ 
+      status: z.enum(['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED','REFUNDED']),
+      trackingNumber: z.string().optional(),
+    }).parse(req.body);
+
+    const updateData = { status };
+    if (trackingNumber !== undefined) {
+      updateData.trackingNumber = trackingNumber;
+    }
+
+    const order = await prisma.order.update({ 
+      where: { id: req.params.id }, 
+      data: updateData 
+    });
     res.json({ success: true, data: order });
   } catch (err) {
     next(err);

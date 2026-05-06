@@ -3,6 +3,7 @@ const path = require('path');
 const { createError } = require('../middleware/errorHandler');
 const { uploadRawToCloudinary } = require('../config/cloudinary');
 const { z } = require('zod');
+const { sendEmail, emailTemplates } = require('../config/email');
 
 const createSchema = z.object({
   serviceType: z.enum(['CO2_LASER', 'LASER_MARKING', 'CNC_ROUTER']),
@@ -62,6 +63,10 @@ exports.createServiceRequest = async (req, res, next) => {
       },
       include: { user: { select: { id: true, name: true, email: true } } },
     });
+
+    // Notify Admin (non-blocking)
+    const adminTpl = emailTemplates.adminNewServiceRequest(request, request.user);
+    sendEmail({ to: process.env.EMAIL_FROM, ...adminTpl }).catch(console.error);
 
     res.status(201).json({ success: true, data: request });
   } catch (err) {

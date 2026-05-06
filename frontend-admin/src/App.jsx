@@ -16,7 +16,15 @@ export const useAdminStore = create(
       setUser: (user) => set({ user }),
       logout: () => { set({ user: null }); },
     }),
-    { name: 'admin-auth', partialize: (s) => ({ user: s.user }) }
+    { 
+      name: 'admin-auth', 
+      storage: {
+        getItem: (name) => sessionStorage.getItem(name),
+        setItem: (name, value) => sessionStorage.setItem(name, value),
+        removeItem: (name) => sessionStorage.removeItem(name),
+      },
+      partialize: (s) => ({ user: s.user }) 
+    }
   )
 );
 
@@ -102,8 +110,9 @@ export default function App() {
       localStorage.removeItem('admin-auth');
     };
 
-    window.addEventListener('beforeunload', logoutOnExit);
-    return () => window.removeEventListener('beforeunload', logoutOnExit);
+    // Removed aggressive logout on exit to prevent accidental logouts when switching tabs
+    // window.addEventListener('beforeunload', logoutOnExit);
+    // return () => window.removeEventListener('beforeunload', logoutOnExit);
   }, []);
 
   return (

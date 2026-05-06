@@ -1,4 +1,4 @@
-import React from 'react';
+import { createElement } from 'react';
 import { Shield, Target, Award, Heart, CheckCircle2 } from 'lucide-react';
 
 export default function About() {
@@ -82,10 +82,10 @@ export default function About() {
               { icon: Award, title: 'Precision Customization', desc: 'Using state-of-the-art laser engraving and high-definition printing technology, we ensure that your logos, names, and messages are rendered with absolute clarity and permanence.' },
               { icon: Target, title: 'Design-Led Approach', desc: 'Our catalog features a blend of contemporary "Peak" and "Diamond" crystal designs alongside "Heritage" wooden pieces, ensuring we have the right aesthetic for any ceremony or home style.' },
               { icon: Heart, title: 'Service Excellence', desc: 'We understand the importance of timing in recognition events. We offer specialized quick-turnaround production and secure, break-safe packaging to ensure your awards arrive in gallery-ready condition.' },
-            ].map(({ icon: Icon, title, desc }) => (
+            ].map(({ icon, title, desc }) => (
               <div key={title} className="bg-white p-6 rounded-3xl border border-cream-200 hover:shadow-lg transition-all hover:-translate-y-1">
                 <div className="w-12 h-12 bg-cream-100 rounded-xl flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-brand-secondary" />
+                  {createElement(icon, { className: 'w-6 h-6 text-brand-secondary' })}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>

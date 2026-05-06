@@ -1,4 +1,4 @@
-﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -18,7 +18,7 @@ export default function AdminOrders() {
   });
 
   const statusMut = useMutation({
-    mutationFn: ({id, status}) => api.patch('/orders/' + id + '/status', { status }),
+    mutationFn: ({id, status, trackingNumber}) => api.patch('/orders/' + id + '/status', { status, trackingNumber }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-orders'] }); toast.success('Status updated'); },
     onError: (e) => toast.error(e?.response?.data?.message || 'Error'),
   });
@@ -77,17 +77,30 @@ export default function AdminOrders() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <select
-                  className="input-field py-2 text-xs flex-1"
-                  value={order.status}
-                  onChange={e => statusMut.mutate({ id: order.id, status: e.target.value })}
-                >
-                  {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-                <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline whitespace-nowrap">
-                  View
-                </Link>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <select
+                    className="input-field py-2 text-xs flex-1"
+                    value={order.status}
+                    onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber })}
+                  >
+                    {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline whitespace-nowrap">
+                    View
+                  </Link>
+                </div>
+                <input
+                  type="text"
+                  className="input-field py-1 text-xs w-full"
+                  placeholder="Tracking #"
+                  defaultValue={order.trackingNumber || ''}
+                  onBlur={(e) => {
+                    if (e.target.value !== (order.trackingNumber || '')) {
+                      statusMut.mutate({ id: order.id, status: order.status, trackingNumber: e.target.value });
+                    }
+                  }}
+                />
               </div>
             </div>
           ))}
@@ -101,7 +114,7 @@ export default function AdminOrders() {
           <table className="w-full min-w-200">
             <thead>
               <tr className="border-b border-gray-100">
-                {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Details'].map(h => (
+                {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Tracking #', 'Details'].map(h => (
                   <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>
                 ))}
               </tr>
@@ -134,9 +147,22 @@ export default function AdminOrders() {
                     <select
                       className="input-field py-1 text-xs w-32 sm:w-36"
                       value={order.status}
-                      onChange={e => statusMut.mutate({ id: order.id, status: e.target.value })}>
+                      onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber })}>
                       {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
+                  </td>
+                  <td className="px-3 sm:px-4 py-3">
+                    <input
+                      type="text"
+                      className="input-field py-1 text-xs w-32"
+                      placeholder="Tracking #"
+                      defaultValue={order.trackingNumber || ''}
+                      onBlur={(e) => {
+                        if (e.target.value !== (order.trackingNumber || '')) {
+                          statusMut.mutate({ id: order.id, status: order.status, trackingNumber: e.target.value });
+                        }
+                      }}
+                    />
                   </td>
                   <td className="px-3 sm:px-4 py-3">
                     <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline">

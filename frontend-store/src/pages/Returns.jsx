@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { createElement } from 'react';
 import { RotateCcw, ShieldCheck, Clock3, PackageCheck } from 'lucide-react';
 
 export default function Returns() {
@@ -22,9 +23,9 @@ export default function Returns() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          {points.map(({ icon: Icon, title, text }) => (
+          {points.map(({ icon, title, text }) => (
             <div key={title} className="card p-5">
-              <Icon className="w-6 h-6 text-brand-secondary mb-3" />
+              {createElement(icon, { className: 'w-6 h-6 text-brand-secondary mb-3' })}
               <h2 className="font-bold text-gray-900 mb-2">{title}</h2>
               <p className="text-sm text-gray-600 leading-relaxed">{text}</p>
             </div>

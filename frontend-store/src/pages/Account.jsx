@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User, Lock, MapPin, Heart, Package, ChevronRight,
@@ -216,15 +216,15 @@ export default function Account() {
   }, [tab]);
 
   const loadAddresses = async () => {
-    try { const { data } = await usersApi.getAddresses(); setAddresses(data.data); } catch {}
+    try { const { data } = await usersApi.getAddresses(); setAddresses(data.data); } catch (err) { console.error('Failed to load addresses', err); }
   };
 
   const loadWishlist = async () => {
-    try { const { data } = await usersApi.getWishlist(); setWishlist(data.data); } catch {}
+    try { const { data } = await usersApi.getWishlist(); setWishlist(data.data); } catch (err) { console.error('Failed to load wishlist', err); }
   };
 
   const loadRecentOrders = async () => {
-    try { const { data } = await ordersApi.myOrders({ limit: 3 }); setRecentOrders(data.data); } catch {}
+    try { const { data } = await ordersApi.myOrders({ limit: 3 }); setRecentOrders(data.data); } catch (err) { console.error('Failed to load recent orders', err); }
   };
 
   /* ── Profile save ── */
@@ -293,7 +293,7 @@ export default function Account() {
       await usersApi.removeWishlist(productId);
       setWishlist((w) => w.filter((i) => i.productId !== productId));
       toast.success('Removed from wishlist');
-    } catch {}
+    } catch (err) { toast.error(err?.response?.data?.message || 'Failed to remove from wishlist'); }
   };
 
   const handleLogout = async () => {
@@ -344,7 +344,7 @@ export default function Account() {
 
           {/* Tabs */}
           <div className="flex gap-2 mt-12 overflow-x-auto pb-2">
-            {TABS.map(({ id, label, icon: Icon }) => (
+            {TABS.map(({ id, label, icon }) => (
               <button
                 key={id}
                 onClick={() => setTab(id)}
@@ -354,7 +354,7 @@ export default function Account() {
                     : 'text-gray-700 hover:bg-white/50'
                 }`}
               >
-                <Icon className="w-4 h-4" /> {label}
+                {createElement(icon, { className: 'w-4 h-4' })} {label}
               </button>
             ))}
           </div>

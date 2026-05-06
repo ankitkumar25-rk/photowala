@@ -104,7 +104,7 @@ export default function AdminServiceRequests() {
                       rel="noreferrer"
                       className="text-brand-primary font-semibold hover:underline"
                     >
-                      Download
+                      {req.designFileUrl?.toLowerCase().endsWith('.pdf') ? 'Preview PDF' : 'Download'}
                     </a>
                   </td>
                   <td className="px-3 sm:px-4 py-3">
@@ -198,7 +198,7 @@ export default function AdminServiceRequests() {
                     rel="noreferrer"
                     className="text-xs font-semibold text-brand-primary hover:underline px-3"
                   >
-                    Download
+                    {req.designFileUrl?.toLowerCase().endsWith('.pdf') ? 'Preview PDF' : 'Download'}
                   </a>
                 </div>
                 <input

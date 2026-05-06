@@ -11,7 +11,7 @@ export default function CartDrawer() {
     const handler = (e) => { if (e.key === 'Escape') closeCart(); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [closeCart]);
 
   const shipping = subtotal() >= 1000 ? 0 : 49;
   const total    = subtotal() + shipping;

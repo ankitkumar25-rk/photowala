@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, createElement } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, Heart, Share2, Star, Leaf, Shield,
@@ -7,7 +7,7 @@ import {
   MessageSquare, ThumbsUp, ArrowLeft, Pencil, ImagePlus, X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { productsApi, usersApi, categoriesApi, uploadApi } from '../api';
+import { productsApi, usersApi, uploadApi } from '../api';
 import { useCartStore, useAuthStore } from '../store';
 import ProductCard from '../components/ProductCard';
 
@@ -44,18 +44,22 @@ function ImageGallery({ images, name }) {
   const [active, setActive] = useState(0);
   const [zoomed, setZoomed] = useState(false);
 
-  const prev = () => setActive((a) => (a - 1 + images.length) % images.length);
-  const next = () => setActive((a) => (a + 1) % images.length);
-
   useEffect(() => {
+    if (!images?.length) return;
     const handler = (e) => {
-      if (e.key === 'ArrowLeft') prev();
-      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') {
+        setActive((a) => (a - 1 + images.length) % images.length);
+      }
+      if (e.key === 'ArrowRight') {
+        setActive((a) => (a + 1) % images.length);
+      }
       if (e.key === 'Escape') setZoomed(false);
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [images.length]);
+  const prev = () => setActive((a) => (a - 1 + images.length) % images.length);
+  const next = () => setActive((a) => (a + 1) % images.length);
 
   if (!images?.length) {
     return (
@@ -700,9 +704,9 @@ export default function ProductDetail() {
                 { icon: Shield, label: 'Secure Payment', sub: 'SSL encrypted' },
                 { icon: Truck,  label: 'Fast Delivery',  sub: 'Free above ₹999' },
                 { icon: RefreshCw, label: 'Easy Returns', sub: '7-day policy' },
-              ].map(({ icon: Icon, label, sub }) => (
+              ].map(({ icon, label, sub }) => (
                 <div key={label} className="flex flex-col items-center text-center gap-1 p-3 bg-cream-50 rounded-2xl">
-                  <Icon className="w-5 h-5 text-brand-secondary" />
+                  {createElement(icon, { className: 'w-5 h-5 text-brand-secondary' })}
                   <p className="text-xs font-bold text-gray-800 leading-tight">{label}</p>
                   <p className="text-[10px] text-gray-400">{sub}</p>
                 </div>

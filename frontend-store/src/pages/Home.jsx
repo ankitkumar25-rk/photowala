@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Shield, Truck, RotateCcw } from 'lucide-react';
@@ -143,10 +143,10 @@ function TrustBadges() {
     <section className="bg-[#f5e7d8] py-12 border-y border-[#d8a45f]/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {badges.map(({ icon: Icon, label, desc }) => (
+          {badges.map(({ icon, label, desc }) => (
             <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300">
-                <Icon className="w-6 h-6 text-[#b88a2f]" />
+                {createElement(icon, { className: 'w-6 h-6 text-[#b88a2f]' })}
               </div>
               <div>
                 <p className="font-semibold text-[#5b3f2f] text-sm">{label}</p>

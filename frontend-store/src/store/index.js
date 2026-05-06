@@ -47,6 +47,12 @@ export const useAuthStore = create(
       fetchMe: async () => {
         try {
           const { data } = await authApi.getMe();
+          // Prevent admin leakage: only allow USER role in the store frontend
+          if (data.data.role !== 'USER') {
+            set({ user: null });
+            useCartStore.getState().resetCart();
+            return null;
+          }
           set({ user: data.data });
           await useCartStore.getState().fetchCart();
           return data.data;

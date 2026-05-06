@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, createElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MapPin, Plus, Check, Truck, Package,
@@ -122,13 +122,7 @@ export default function Checkout() {
   const shipping = subtotal >= 1000 ? 0 : 49;
   const total = subtotal + shipping;
 
-  useEffect(() => { loadAddresses(); }, []);
-
-  useEffect(() => {
-    if (items.length === 0 && step !== 3) navigate('/cart');
-  }, [items]);
-
-  const loadAddresses = async () => {
+  const loadAddresses = useCallback(async () => {
     try {
       const { data } = await usersApi.getAddresses();
       setAddresses(data.data);
@@ -137,7 +131,13 @@ export default function Checkout() {
     } catch (err) {
       console.error('Failed to load addresses:', err);
     }
-  };
+  }, [selectedAddr]);
+
+  useEffect(() => { loadAddresses(); }, [loadAddresses]);
+
+  useEffect(() => {
+    if (items.length === 0 && step !== 3) navigate('/cart');
+  }, [items, step, navigate]);
 
   const addAddress = async (form) => {
     try {
@@ -492,7 +492,7 @@ export default function Checkout() {
                   { Icon: Package, label: 'Easy\nReturns' },
                 ].map(({ Icon, label }) => (
                   <div key={label} className="flex flex-col items-center gap-1 p-2 bg-cream-50 rounded-xl">
-                    <Icon className="w-5 h-5 text-brand-secondary" />
+                    {createElement(Icon, { className: 'w-5 h-5 text-brand-secondary' })}
                     <p className="text-[10px] text-gray-500 font-medium text-center leading-tight whitespace-pre-line">{label}</p>
                   </div>
                 ))}

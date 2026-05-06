@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Plus, Minus, ArrowRight,
   Tag, Truck, Package, Gift, ChevronRight, RefreshCw,
@@ -146,7 +146,6 @@ function CartSkeleton() {
 }
 
 export default function Cart() {
-  const navigate = useNavigate();
   const items     = useCartStore((s) => s.items);
   const isLoading = useCartStore((s) => s.isLoading);
   const fetchCart = useCartStore((s) => s.fetchCart);

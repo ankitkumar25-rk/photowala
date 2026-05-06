@@ -65,7 +65,7 @@ export default function OrderDetail() {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, navigate]);
 
   const cancelOrder = async () => {
     if (!confirm('Are you sure you want to cancel this order?')) return;

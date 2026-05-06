@@ -1,15 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, Trash2, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Heart, Trash2, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { usersApi } from '../api';
-import { useAuthStore, useCartStore } from '../store';
+import { useAuthStore } from '../store';
 import ProductCard from '../components/ProductCard';
 
 export default function Wishlist() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const addItem = useCartStore((s) => s.addItem);
   const queryClient = useQueryClient();
 
   const { data: wishlist = [], isLoading } = useQuery({
@@ -26,20 +25,6 @@ export default function Wishlist() {
     },
     onError: () => toast.error('Failed to remove item'),
   });
-
-  const handleAddToCart = async (product, e) => {
-    e.preventDefault();
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    try {
-      await addItem(product.id, 1);
-      toast.success(`${product.name} added to cart!`);
-    } catch (err) {
-      toast.error('Failed to add to cart');
-    }
-  };
 
   if (!user) {
     return (

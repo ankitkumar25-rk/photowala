@@ -168,7 +168,7 @@ function ServiceFormView({ service, onBack }) {
                 type="file"
                 accept=".cdr,.zip,.pdf"
                 onChange={handleFile}
-                className="input-field py-2"
+                className="input-field py-2 outline-2 outline-[#8F431A] outline-offset-2 focus:outline-3"
                 required
               />
               {form.designFile && (

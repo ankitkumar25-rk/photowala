@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { ShieldCheck, Lock, Database, Mail } from 'lucide-react';
 
 export default function Privacy() {
@@ -21,9 +22,9 @@ export default function Privacy() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          {blocks.map(({ icon: Icon, title, text }) => (
+          {blocks.map(({ icon, title, text }) => (
             <div key={title} className="card p-5">
-              <Icon className="w-6 h-6 text-brand-secondary mb-3" />
+              {createElement(icon, { className: 'w-6 h-6 text-brand-secondary mb-3' })}
               <h2 className="font-bold text-gray-900 mb-2">{title}</h2>
               <p className="text-sm text-gray-600 leading-relaxed">{text}</p>
             </div>
