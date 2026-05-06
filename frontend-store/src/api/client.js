@@ -66,7 +66,7 @@ api.interceptors.response.use(
         });
         return api(original);
       } catch {
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
     return Promise.reject(error);

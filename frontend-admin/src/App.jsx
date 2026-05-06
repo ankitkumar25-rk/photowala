@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useQuery } from '@tanstack/react-query';
@@ -78,6 +78,34 @@ function RequireAdmin({ children }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    const readCookie = (name) => {
+      const cookie = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith(`${name}=`));
+      return cookie ? decodeURIComponent(cookie.split('=').slice(1).join('=')) : '';
+    };
+
+    const logoutOnExit = () => {
+      const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+      const csrf = readCookie('csrf_token');
+      fetch(`${baseURL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
+        },
+      }).catch(() => {});
+      useAdminStore.setState({ user: null });
+      localStorage.removeItem('admin-auth');
+    };
+
+    window.addEventListener('beforeunload', logoutOnExit);
+    return () => window.removeEventListener('beforeunload', logoutOnExit);
+  }, []);
+
   return (
     <QueryClientProvider client={qc}>
       <BrowserRouter>

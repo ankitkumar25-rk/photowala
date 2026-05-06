@@ -64,6 +64,35 @@ export default function App() {
     });
   }, [fetchMe, resetCart]);
 
+  useEffect(() => {
+    const readCookie = (name) => {
+      const cookie = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith(`${name}=`));
+      return cookie ? decodeURIComponent(cookie.split('=').slice(1).join('=')) : '';
+    };
+
+    const logoutOnExit = () => {
+      const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+      const csrf = readCookie('csrf_token');
+      fetch(`${baseURL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        keepalive: true,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
+        },
+      }).catch(() => {});
+      useAuthStore.setState({ user: null, isLoading: false });
+      useCartStore.getState().resetCart();
+      localStorage.removeItem('auth-storage');
+    };
+
+    window.addEventListener('beforeunload', logoutOnExit);
+    return () => window.removeEventListener('beforeunload', logoutOnExit);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>

@@ -23,7 +23,7 @@ export default function AdminLayout() {
   const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleLogout = () => { logout(); navigate('/login'); };
+  const handleLogout = () => { logout(); navigate('/'); };
 
   return (
     <div className="min-h-screen bg-cream-100 text-gray-900 grid grid-cols-1 lg:grid-cols-[280px_1fr]">

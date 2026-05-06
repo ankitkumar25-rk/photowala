@@ -59,8 +59,8 @@ api.interceptors.response.use(
     // otherwise admin can accidentally pick up a customer session token.
     if (err.response?.status === 401) {
       localStorage.removeItem('admin-auth');
-      if (window.location.pathname !== '/login') {
-        window.location.href = '/login';
+      if (window.location.pathname !== '/') {
+        window.location.href = '/';
       }
     }
     return Promise.reject(err);

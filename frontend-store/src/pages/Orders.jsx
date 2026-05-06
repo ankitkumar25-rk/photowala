@@ -135,6 +135,7 @@ function ServiceRequestCard({ request }) {
   const formattedDate = new Date(request.createdAt).toLocaleDateString('en-IN', {
     day: '2-digit', month: 'short', year: 'numeric',
   });
+  const serviceTypeLabel = String(request?.serviceType || 'SERVICE_REQUEST').replace(/_/g, ' ');
 
   return (
     <div className="card bg-white hover:shadow-lg transition-all duration-200 group">
@@ -156,7 +157,7 @@ function ServiceRequestCard({ request }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-900 text-sm leading-tight truncate">
-            {request.serviceType.replace('_', ' ')}
+            {serviceTypeLabel}
           </p>
           <p className="text-xs text-gray-600 mt-1">Qty: {request.quantity} | Size: {request.sizeL}x{request.sizeB}x{request.sizeH}</p>
           <p className="text-xs text-gray-400 mt-0.5 truncate">{request.notes || 'No notes provided'}</p>
