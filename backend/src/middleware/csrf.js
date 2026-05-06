@@ -5,6 +5,12 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const EXEMPT_PATHS = new Set([
   '/api/payments/webhook',
 ]);
+const TRUSTED_ORIGINS = [
+  process.env.CLIENT_URL,
+  process.env.ADMIN_URL,
+  'http://localhost:5173',
+  'http://localhost:5174',
+].filter(Boolean).map((origin) => String(origin).replace(/\/$/, ''));
 
 const cookieOptions = {
   httpOnly: false,
@@ -41,9 +47,30 @@ function requireCsrf(req, res, next) {
 
   const cookieToken = req.cookies?.csrf_token;
   const headerToken = req.get('x-csrf-token');
-  if (!secureCompare(cookieToken, headerToken)) {
+  if (secureCompare(cookieToken, headerToken)) {
+    return next();
+  }
+
+  // Fallback for cross-site deployments where browsers may block third-party
+  // CSRF cookies. Only allow unsafe requests from explicitly trusted origins.
+  const origin = String(req.get('origin') || '').replace(/\/$/, '');
+  const referer = req.get('referer');
+  const refererOrigin = (() => {
+    if (!referer) return '';
+    try {
+      return new URL(referer).origin.replace(/\/$/, '');
+    } catch {
+      return '';
+    }
+  })();
+
+  const trusted = (origin && TRUSTED_ORIGINS.includes(origin))
+    || (refererOrigin && TRUSTED_ORIGINS.includes(refererOrigin));
+
+  if (!trusted) {
     return next(createError('Invalid CSRF token', 403));
   }
+
   next();
 }
 
