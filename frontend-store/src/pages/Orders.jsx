@@ -2,25 +2,14 @@
 import { useNavigate } from 'react-router-dom';
 import {
   Package, ChevronRight, Clock, Truck, CheckCircle,
-  XCircle, RefreshCw, Filter, ShoppingBag, Drill
+  XCircle, RefreshCw, Filter, ShoppingBag
 } from 'lucide-react';
-import { ordersApi, serviceRequestsApi } from '../api';
+import { ordersApi } from '../api';
 import toast from 'react-hot-toast';
 
 const ORDER_STATUS_FILTERS = [
   { value: '',           label: 'All Orders' },
   { value: 'PENDING',    label: 'Pending' },
-  { value: 'CONFIRMED',  label: 'Confirmed' },
-  { value: 'PROCESSING', label: 'Processing' },
-  { value: 'SHIPPED',    label: 'Shipped' },
-  { value: 'DELIVERED',  label: 'Delivered' },
-  { value: 'CANCELLED',  label: 'Cancelled' },
-];
-
-const SERVICE_STATUS_FILTERS = [
-  { value: '',           label: 'All Requests' },
-  { value: 'NEW',        label: 'New' },
-  { value: 'IN_PROGRESS',  label: 'In Progress' },
   { value: 'CONFIRMED',  label: 'Confirmed' },
   { value: 'PROCESSING', label: 'Processing' },
   { value: 'SHIPPED',    label: 'Shipped' },
@@ -216,7 +205,6 @@ function OrderSkeleton() {
 }
 
 export default function Orders() {
-  const [activeTab, setActiveTab] = useState('orders'); // 'orders' or 'services'
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
@@ -230,12 +218,8 @@ export default function Orders() {
       const params = { page, limit: LIMIT };
       if (statusFilter) params.status = statusFilter;
       
-      if (activeTab === 'orders') {
+      if (true) {
         const { data } = await ordersApi.myOrders(params);
-        setItems(data.data || []);
-        setTotal(data.meta?.total || 0);
-      } else {
-        const { data } = await serviceRequestsApi.myRequests(params);
         setItems(data.data || []);
         setTotal(data.meta?.total || 0);
       }
@@ -244,12 +228,12 @@ export default function Orders() {
     } finally {
       setLoading(false);
     }
-  }, [page, statusFilter, activeTab]);
+  }, [page, statusFilter]);
 
   useEffect(() => {
     setPage(1);
     setStatusFilter('');
-  }, [activeTab]);
+  }, []);
 
   useEffect(() => {
     fetchItems();
@@ -267,7 +251,7 @@ export default function Orders() {
   };
 
   const totalPages = Math.ceil(total / LIMIT);
-  const currentFilters = activeTab === 'orders' ? ORDER_STATUS_FILTERS : SERVICE_STATUS_FILTERS;
+  const currentFilters = ORDER_STATUS_FILTERS;
 
   return (
     <div className="min-h-screen bg-cream-100 page-enter">
@@ -275,25 +259,9 @@ export default function Orders() {
         <div className="max-w-5xl mx-auto px-4 pt-10 pb-6">
           <div className="flex items-center gap-3 mb-6">
             <Package className="w-8 h-8" />
-            <h1 className="text-3xl font-bold">History & Tracking</h1>
+            <h1 className="text-3xl font-bold">Order History & Tracking</h1>
           </div>
           
-          {/* Tabs */}
-          <div className="flex gap-1 bg-white/10 p-1 rounded-2xl w-fit mb-8">
-            <button
-              onClick={() => setActiveTab('orders')}
-              className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'orders' ? 'bg-white text-brand-primary shadow-lg' : 'hover:bg-white/10'}`}
-            >
-              Product Orders
-            </button>
-            <button
-              onClick={() => setActiveTab('services')}
-              className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'services' ? 'bg-white text-brand-primary shadow-lg' : 'hover:bg-white/10'}`}
-            >
-              Service Requests
-            </button>
-          </div>
-
           {/* Status filter pills */}
           <div className="flex gap-2 flex-wrap">
             {currentFilters.map(({ value, label }) => (

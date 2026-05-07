@@ -53,10 +53,6 @@ export const paymentsApi = {
   verifyPayment:  (data)    => api.post('/payments/verify', data),
 };
 
-export const penOrdersApi = {
-  createLaserPrintedPenOrder: (data) => api.post('/orders/pen/laser', data),
-};
-
 export const usersApi = {
   getProfile:      ()     => api.get('/users/profile'),
   updateProfile:   (data) => api.put('/users/profile', data),
@@ -97,17 +93,4 @@ export const uploadApi = {
     });
   },
   deleteImage: (publicId) => api.delete(`/uploads/image/${encodeURIComponent(publicId)}`),
-};
-
-export const serviceRequestsApi = {
-  create: (payload) => {
-    const fd = new FormData();
-    Object.entries(payload).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) fd.append(key, value);
-    });
-    return api.post('/service-requests', fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  },
-  myRequests: (params) => api.get('/service-requests/my', { params }),
 };

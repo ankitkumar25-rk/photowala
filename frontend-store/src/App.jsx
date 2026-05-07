@@ -36,7 +36,6 @@ const PaperGsmCalculator = lazy(() => import('./pages/PaperGsmCalculator'));
 const CustomPrintingIndex = lazy(() => import('./pages/services/CustomPrinting/CustomPrintingIndex'));
 const PenIndex = lazy(() => import('./pages/services/CustomPrinting/Pen/PenIndex'));
 const LaserPrintedPen = lazy(() => import('./pages/services/CustomPrinting/Pen/LaserPrintedPen'));
-const ServiceRequests = lazy(() => import('./pages/ServiceRequests'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -126,7 +125,6 @@ export default function App() {
                 <Route path="checkout"  element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                 <Route path="orders"    element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
-                <Route path="service-requests" element={<ProtectedRoute><ServiceRequests /></ProtectedRoute>} />
                 <Route path="account"   element={<ProtectedRoute><Account /></ProtectedRoute>} />
                 <Route path="wishlist"  element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
