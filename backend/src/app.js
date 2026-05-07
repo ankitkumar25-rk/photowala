@@ -184,6 +184,7 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/returns', returnsRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
+app.use('/api/printed-pens', require('./modules/printed-pens/routes/printed-pen.routes'));
 
 // ================================
 // 404 HANDLER

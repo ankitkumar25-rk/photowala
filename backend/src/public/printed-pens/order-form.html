@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Printed Pens Order Form</title>
+  <style>
+    /* Styling for dynamic form elements */
+    body { font-family: sans-serif; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Order Printed Pens</h1>
+  <form id="orderForm">
+    <div class="form-group">
+      <label>Product</label>
+      <select id="productSelect">
+        <option value="">--Select--</option>
+        <option value="laser">Laser Printed Pens</option>
+        <option value="single">Single Color Printed Pen</option>
+      </select>
+    </div>
+    
+    <div id="dynamicFormFields">
+      <!-- Dynamic fields (Order Name, Quantity, Pen Type, Delivery, Courier, File Options) injected here based on selection -->
+    </div>
+    
+    <div id="priceCalculator" class="hidden">
+      <h3>Price Breakdown</h3>
+      <p>Applicable Cost: <span id="applicableCost">₹0.00</span></p>
+      <p>GST (18%): <span id="gstAmount">₹0.00</span></p>
+      <p><strong>Amount Payable: <span id="amountPayable">₹0.00</span></strong></p>
+    </div>
+
+    <button type="submit" id="submitBtn">Add Order</button>
+  </form>
+
+  <script>
+    // Logic to toggle dynamic fields based on Product selection, calculate price, and handle form submission
+  </script>
+</body>
+</html>

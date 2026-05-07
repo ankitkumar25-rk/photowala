@@ -85,6 +85,8 @@ model User {
   passwordResetTokens  PasswordResetToken[]
   returns              Return[]
   supportTickets       SupportTicket[]
+  printedPenOrders          PrintedPenOrder[]
+  printedPenServiceRequests PrintedPenServiceRequest[]
 
   @@map("users")
 }
@@ -407,4 +409,182 @@ model WishlistItem {
 
   @@unique([userId, productId])
   @@map("wishlist_items")
+}
+
+// ================================
+// PRINTED PENS MODULE
+// ================================
+
+model PrintedPenProduct {
+  id              String                     @id @default(uuid())
+  name            String
+  basePrice       Decimal                    @db.Decimal(10, 3) // Example: 6.298
+  minQty          Int                        @default(1)
+  hasCourier      Boolean                    @default(false)
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+
+  penTypes        PrintedPenType[]
+  formFields      PrintedPenFormField[]
+  volumeDiscounts PrintedPenVolumeDiscount[]
+  orders          PrintedPenOrder[]
+
+  @@map("printed_pen_products")
+}
+
+model PrintedPenType {
+  id        String            @id @default(uuid())
+  productId String
+  product   PrintedPenProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  code      String            // e.g., 001, 102
+  name      String?           // Optional description
+  
+  orders    PrintedPenOrder[]
+
+  @@map("printed_pen_types")
+}
+
+model PrintedPenCourier {
+  id             String            @id @default(uuid())
+  name           String            // e.g., PUSHPAK RAJASTHAN
+  deliveryCharge Decimal           @default(0) @db.Decimal(10, 2)
+  isActive       Boolean           @default(true)
+
+  orders         PrintedPenOrder[]
+
+  @@map("printed_pen_couriers")
+}
+
+model PrintedPenVolumeDiscount {
+  id         String            @id @default(uuid())
+  productId  String
+  product    PrintedPenProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  minQty     Int
+  maxQty     Int?              // Null means unlimited/5000+
+  discountPct Decimal          @db.Decimal(5, 2) // Percentage
+
+  @@map("printed_pen_volume_discounts")
+}
+
+model PrintedPenFormField {
+  id        String            @id @default(uuid())
+  productId String
+  product   PrintedPenProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  fieldName String
+  fieldType String            // text, number, select
+  isRequired Boolean          @default(false)
+  options   Json?             // For select type
+
+  @@map("printed_pen_form_fields")
+}
+
+enum PrintedPenOrderStatus {
+  PENDING
+  FILE_UPLOADED
+  PAYMENT_PENDING
+  PAYMENT_COMPLETED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model PrintedPenOrder {
+  id               String                @id @default(uuid())
+  orderNumber      String                @unique
+  userId           String
+  user             User                  @relation(fields: [userId], references: [id])
+  orderName        String                // e.g., WCD or jhkk
+  
+  productId        String
+  product          PrintedPenProduct     @relation(fields: [productId], references: [id])
+  
+  penTypeId        String
+  penType          PrintedPenType        @relation(fields: [penTypeId], references: [id])
+  
+  quantity         Int
+  deliveryMethod   String                // Deliver By Courier, Dispatch By Transport
+  
+  courierId        String?
+  courier          PrintedPenCourier?    @relation(fields: [courierId], references: [id])
+  
+  // File upload info
+  fileUrl          String?
+  filePublicId     String?
+  originalFileName String?
+  fileType         String?
+  fileSize         Int?
+  
+  // Pricing
+  baseCost         Decimal               @default(0) @db.Decimal(10, 2)
+  discountAmount   Decimal               @default(0) @db.Decimal(10, 2)
+  applicableCost   Decimal               @default(0) @db.Decimal(10, 2)
+  gstAmount        Decimal               @default(0) @db.Decimal(10, 2)
+  totalAmount      Decimal               @default(0) @db.Decimal(10, 2)
+  
+  status           PrintedPenOrderStatus @default(PENDING)
+  isNew            Boolean               @default(true) // For admin dashboard NEW tag
+  adminRemark      String?
+  
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  payment          PrintedPenPaymentTransaction?
+  activityLogs     PrintedPenOrderActivityLog[]
+  serviceRequests  PrintedPenServiceRequest[]
+
+  @@map("printed_pen_orders")
+}
+
+model PrintedPenPaymentTransaction {
+  id                String          @id @default(uuid())
+  orderId           String          @unique
+  order             PrintedPenOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  razorpayOrderId   String?         @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  status            PaymentStatus   @default(PENDING)
+  amount            Decimal         @db.Decimal(10, 2)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@map("printed_pen_payment_transactions")
+}
+
+model PrintedPenOrderActivityLog {
+  id          String          @id @default(uuid())
+  orderId     String
+  order       PrintedPenOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  action      String          // e.g., STATUS_UPDATED, FILE_UPLOADED
+  description String
+  statusFrom  String?
+  statusTo    String?
+  userId      String?         // Who did this (admin or customer)
+  createdAt   DateTime        @default(now())
+
+  @@map("printed_pen_order_activity_logs")
+}
+
+enum PrintedPenServiceRequestStatus {
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model PrintedPenServiceRequest {
+  id              String                         @id @default(uuid())
+  requestId       String                         @unique
+  userId          String
+  user            User                           @relation(fields: [userId], references: [id])
+  orderId         String?
+  order           PrintedPenOrder?               @relation(fields: [orderId], references: [id])
+  serviceType     String
+  status          PrintedPenServiceRequestStatus @default(CONFIRMED)
+  trackingUpdates Json                           // JSON array for timeline
+  adminNotes      String?
+  createdAt       DateTime                       @default(now())
+  updatedAt       DateTime                       @updatedAt
+
+  @@map("printed_pen_service_requests")
 }
