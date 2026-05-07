@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+﻿import { createElement } from 'react';
 import { ShieldCheck, Lock, Database, Mail } from 'lucide-react';
 
 export default function Privacy() {
@@ -15,7 +15,7 @@ export default function Privacy() {
           <div className="w-16 h-16 mx-auto rounded-2xl bg-brand-surface flex items-center justify-center">
             <ShieldCheck className="w-8 h-8 text-brand-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>Privacy Policy</h1>
+          <h1 className="text-4xl font-bold text-gray-900">Privacy Policy</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             This page explains how we collect and use information when you shop with us.
           </p>
@@ -43,3 +43,4 @@ export default function Privacy() {
     </div>
   );
 }
+

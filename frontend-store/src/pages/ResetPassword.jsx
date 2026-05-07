@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Leaf, Eye, EyeOff, CheckCircle } from 'lucide-react';
@@ -51,7 +51,7 @@ export default function ResetPassword() {
             <div className="w-14 h-14 bg-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
               <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Fraunces, serif' }}>
+            <h1 className="text-2xl font-bold text-gray-800">
               Set New Password
             </h1>
           </div>
@@ -109,3 +109,4 @@ export default function ResetPassword() {
     </div>
   );
 }
+

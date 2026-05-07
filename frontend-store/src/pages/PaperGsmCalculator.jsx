@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { Calculator } from 'lucide-react';
 
 const UNIT_OPTIONS = [
@@ -64,7 +64,7 @@ export default function PaperGsmCalculator() {
               <Calculator className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold" style={{ fontFamily: 'Fraunces, serif' }}>
+              <h1 className="text-3xl font-bold">
                 Paper GSM Calculator
               </h1>
               <p className="text-cream-50/85 text-sm mt-1">
@@ -185,7 +185,7 @@ export default function PaperGsmCalculator() {
                 {submitted && result ? `${result} GSM` : '--'}
               </p>
               <p className="text-xs text-gray-600 mt-2">
-                Formula: GSM = (Weight in KG * 1,000,000) / (Area in mm² * Sheets)
+                Formula: GSM = (Weight in KG * 1,000,000) / (Area in mmÂ² * Sheets)
               </p>
             </div>
             <div className="text-sm text-gray-600 leading-relaxed">
@@ -200,3 +200,4 @@ export default function PaperGsmCalculator() {
     </div>
   );
 }
+

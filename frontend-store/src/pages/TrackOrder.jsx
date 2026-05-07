@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PackageSearch, ArrowRight, Truck, ClipboardList } from 'lucide-react';
 
@@ -19,7 +19,7 @@ export default function TrackOrder() {
           <div className="w-16 h-16 mx-auto rounded-2xl bg-brand-surface flex items-center justify-center">
             <PackageSearch className="w-8 h-8 text-brand-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>Track Order</h1>
+          <h1 className="text-4xl font-bold text-gray-900">Track Order</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Enter your order ID to open the order details page and check the latest status.
           </p>
@@ -61,3 +61,4 @@ export default function TrackOrder() {
     </div>
   );
 }
+

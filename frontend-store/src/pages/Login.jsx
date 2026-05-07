@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store';
 import toast from 'react-hot-toast';
@@ -19,7 +19,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await login(form);
-      toast.success('Welcome back! 🏆');
+      toast.success('Welcome back! ðŸ†');
       navigate(redirect, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Login failed. Please check your credentials.');
@@ -35,7 +35,7 @@ export default function Login() {
             <div className="w-14 h-14 bg-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
               <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Fraunces, serif' }}>Welcome Back</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>
             <p className="text-gray-500 text-sm mt-1">Sign in to your Manufact Awards account</p>
           </div>
 
@@ -77,7 +77,7 @@ export default function Login() {
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   className="input-field pr-12"
-                  placeholder="••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   autoComplete="current-password"
                 />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -103,3 +103,4 @@ export default function Login() {
     </div>
   );
 }
+

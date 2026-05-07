@@ -1,4 +1,4 @@
-import { useState, useEffect, createElement } from 'react';
+﻿import { useState, useEffect, createElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, Shield, Truck, RotateCcw } from 'lucide-react';
@@ -11,7 +11,7 @@ const HERO_IMAGES = [
   'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=2080&auto=format&fit=crop', // Replace with your image
 ];
 
-// ── Hero Section ─────────────────────────────────────────────
+// â”€â”€ Hero Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function HeroSection() {
   const [currentImage, setCurrentImage] = useState(0);
 
@@ -45,7 +45,7 @@ function HeroSection() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-pill bg-black/30 backdrop-blur-md border border-white/20 text-[#fff2e6] text-sm font-semibold mb-6">
             <Leaf className="w-4 h-4 animate-leaf text-[#d0a13f]" /> Handcrafted Photogifts For Every Occasion
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
             Turn Memories Into<br />
             <span className="text-[#d0a13f]">Gift-Worthy Stories</span>
           </h1>
@@ -71,7 +71,7 @@ function HeroSection() {
           {[
             ['500+', 'Premium Products'],
             ['10K+', 'Happy Customers'],
-            ['5★', 'Average Rating'],
+            ['5â˜…', 'Average Rating'],
             ['48h', 'Turnaround Time'],
           ].map(([num, label]) => (
             <div key={label}>
@@ -85,15 +85,15 @@ function HeroSection() {
   );
 }
 
-// ── Category Grid ─────────────────────────────────────────────
+// â”€â”€ Category Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CATEGORY_EMOJIS = {
-  'trophies': '🏆',
-  '3d-models': '🧊',
-  'corporate-gifts': '📛',
-  'momentos': '💎',
-  'others': '🎁',
-  'pen-holders': '🖋️',
-  'temples': '⛩️',
+  'trophies': 'ðŸ†',
+  '3d-models': 'ðŸ§Š',
+  'corporate-gifts': 'ðŸ“›',
+  'momentos': 'ðŸ’Ž',
+  'others': 'ðŸŽ',
+  'pen-holders': 'ðŸ–‹ï¸',
+  'temples': 'â›©ï¸',
 };
 
 function CategoryGrid({ categories }) {
@@ -101,7 +101,7 @@ function CategoryGrid({ categories }) {
     <section className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-[#5b3f2f]" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h2 className="text-3xl font-bold text-[#5b3f2f]">
             Shop by Category
           </h2>
           <p className="text-[#a68971] mt-2">Explore our curated range of premium products and keepsakes</p>
@@ -114,7 +114,7 @@ function CategoryGrid({ categories }) {
               className="group card p-5 flex flex-col items-center text-center gap-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <div className="w-16 h-16 rounded-2xl bg-[#f5e7d8] flex items-center justify-center text-3xl group-hover:bg-[#efe0cf] transition-colors border border-[#d8a45f]/40">
-                {CATEGORY_EMOJIS[cat.slug] || '🏆'}
+                {CATEGORY_EMOJIS[cat.slug] || 'ðŸ†'}
               </div>
               <div>
                 <h3 className="font-semibold text-[#5b3f2f] text-sm leading-snug group-hover:text-[#b88a2f] transition-colors">
@@ -130,11 +130,11 @@ function CategoryGrid({ categories }) {
   );
 }
 
-// ── Trust Badges ──────────────────────────────────────────────
+// â”€â”€ Trust Badges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function TrustBadges() {
   const badges = [
     { icon: Shield, label: 'Premium Quality Assured', desc: 'Sustainably crafted & highly rated' },
-    { icon: Truck, label: 'Free Delivery above ₹999', desc: 'Pan-India secure delivery in 2-5 days' },
+    { icon: Truck, label: 'Free Delivery above â‚¹999', desc: 'Pan-India secure delivery in 2-5 days' },
     { icon: RotateCcw, label: 'Easy 7-Day Returns', desc: 'Hassle-free return policy' },
     { icon: Leaf, label: 'Exquisite Craftsmanship', desc: 'Precision finishes for every award' },
   ];
@@ -160,7 +160,7 @@ function TrustBadges() {
   );
 }
 
-// ── Main Page ─────────────────────────────────────────────────
+// â”€â”€ Main Page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function Home() {
   const { data: featuredData, isLoading: loadingFeatured } = useQuery({
     queryKey: ['featured-products'],
@@ -184,7 +184,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-brand-primary" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h2 className="text-3xl font-bold text-brand-primary">
                 Featured Products
               </h2>
               <p className="text-[#876b5f] mt-1">Handpicked bestsellers loved by our customers</p>
@@ -219,8 +219,8 @@ export default function Home() {
       {/* CTA Banner */}
       <section className="bg-linear-to-r from-[#7a3218] via-[#a6431a] to-[#c85212] py-16 border-t border-[#f6b889]/45">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#fff6f0] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
-            Celebrate Every Moment Better 🎁
+          <h2 className="text-3xl md:text-4xl font-bold text-[#fff6f0] mb-4">
+            Celebrate Every Moment Better ðŸŽ
           </h2>
           <p className="text-[#ffe7d6] mb-8 text-lg max-w-xl mx-auto">
             Join thousands of customers choosing premium photogifts for birthdays, anniversaries, teams, and milestones.
@@ -233,3 +233,4 @@ export default function Home() {
     </div>
   );
 }
+

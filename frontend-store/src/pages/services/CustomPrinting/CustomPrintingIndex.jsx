@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 
 const subCategories = [
   { title: 'Pen', to: '/services/custom-printing/pen', comingSoon: false },
@@ -14,8 +14,8 @@ export default function CustomPrintingIndex() {
   return (
     <div className="min-h-screen bg-cream-100 px-4 py-10">
       <div className="mx-auto max-w-5xl">
-        <p className="text-xs text-gray-500">Home → Our Services → Custom Printing</p>
-        <h1 className="mt-3 text-3xl font-bold text-brand-primary" style={{ fontFamily: 'Fraunces, serif' }}>
+        <p className="text-xs text-gray-500">Home â†’ Our Services â†’ Custom Printing</p>
+        <h1 className="mt-3 text-3xl font-bold text-brand-primary">
           Custom Printing
         </h1>
         <p className="mt-2 text-gray-600">Choose a sub category to place custom printing orders.</p>
@@ -39,3 +39,4 @@ export default function CustomPrintingIndex() {
     </div>
   );
 }
+

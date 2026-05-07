@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+﻿import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { productsApi, categoriesApi } from '../api';
@@ -49,7 +49,7 @@ export default function Products() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800" style={{ fontFamily: 'Fraunces, serif' }}>All Products</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">All Products</h1>
           <p className="text-gray-400 text-sm mt-1">{data?.meta?.total || 0} products found</p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
@@ -108,8 +108,8 @@ export default function Products() {
                 <div>
                   <h3 className="font-bold text-gray-700 mb-3 text-sm uppercase tracking-wide">Price Range</h3>
                   <div className="flex gap-2 flex-col sm:flex-row">
-                    <input type="number" placeholder="Min ₹" className="input-field py-2 text-sm flex-1" onBlur={(e) => e.target.value ? setFilter('minPrice', e.target.value) : clearFilter('minPrice')} />
-                    <input type="number" placeholder="Max ₹" className="input-field py-2 text-sm flex-1" onBlur={(e) => e.target.value ? setFilter('maxPrice', e.target.value) : clearFilter('maxPrice')} />
+                    <input type="number" placeholder="Min â‚¹" className="input-field py-2 text-sm flex-1" onBlur={(e) => e.target.value ? setFilter('minPrice', e.target.value) : clearFilter('minPrice')} />
+                    <input type="number" placeholder="Max â‚¹" className="input-field py-2 text-sm flex-1" onBlur={(e) => e.target.value ? setFilter('maxPrice', e.target.value) : clearFilter('maxPrice')} />
                   </div>
                 </div>
 
@@ -117,7 +117,7 @@ export default function Products() {
                 <div>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={filters.isFeatured === 'true'} onChange={(e) => e.target.checked ? setFilter('isFeatured', 'true') : clearFilter('isFeatured')} className="accent-brand-primary w-4 h-4 rounded" />
-                    <span className="text-sm text-gray-700 font-medium">⭐ Featured Only</span>
+                    <span className="text-sm text-gray-700 font-medium">â­ Featured Only</span>
                   </label>
                 </div>
               </div>
@@ -142,7 +142,7 @@ export default function Products() {
             </div>
           ) : data?.data?.length === 0 ? (
             <div className="text-center py-20">
-              <div className="text-5xl mb-4">🔍</div>
+              <div className="text-5xl mb-4">ðŸ”</div>
               <h3 className="font-bold text-xl text-gray-700">No products found</h3>
               <p className="text-gray-400 mt-2">Try adjusting your filters</p>
             </div>
@@ -177,3 +177,4 @@ export default function Products() {
     </div>
   );
 }
+

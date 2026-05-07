@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Leaf, Mail } from 'lucide-react';
@@ -30,7 +30,7 @@ export default function ForgotPassword() {
             <div className="w-14 h-14 bg-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
               <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800" style={{ fontFamily: 'Fraunces, serif' }}>
+            <h1 className="text-2xl font-bold text-gray-800">
               Reset Password
             </h1>
             <p className="text-gray-500 text-sm mt-1">We'll send a reset link to your email</p>
@@ -75,7 +75,7 @@ export default function ForgotPassword() {
                 {loading ? 'Sending...' : 'Send Reset Link'}
               </button>
               <Link to="/login" className="block text-center text-sm text-gray-500 hover:text-brand-primary">
-                ← Back to Login
+                â† Back to Login
               </Link>
             </form>
           )}
@@ -84,3 +84,4 @@ export default function ForgotPassword() {
     </div>
   );
 }
+

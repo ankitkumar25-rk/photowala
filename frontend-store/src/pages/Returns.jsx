@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { createElement } from 'react';
 import { RotateCcw, ShieldCheck, Clock3, PackageCheck } from 'lucide-react';
 
@@ -16,7 +16,7 @@ export default function Returns() {
           <div className="w-16 h-16 mx-auto rounded-2xl bg-brand-surface flex items-center justify-center">
             <RotateCcw className="w-8 h-8 text-brand-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>Return Policy</h1>
+          <h1 className="text-4xl font-bold text-gray-900">Return Policy</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             We want you to be happy with every order. If something is not right, here is how returns work.
           </p>
@@ -33,7 +33,7 @@ export default function Returns() {
         </div>
 
         <div className="card p-6 space-y-4">
-          <h2 className="font-bold text-xl text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>How to request a return</h2>
+          <h2 className="font-bold text-xl text-gray-900">How to request a return</h2>
           <ol className="space-y-3 text-gray-600 text-sm">
             <li>1. Open <Link to="/orders" className="text-brand-primary font-semibold hover:underline">My Orders</Link> and select the order.</li>
             <li>2. Use the support/contact option or reach out with your order ID.</li>
@@ -45,3 +45,4 @@ export default function Returns() {
     </div>
   );
 }
+

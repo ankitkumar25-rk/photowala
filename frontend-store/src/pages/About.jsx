@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+﻿import { createElement } from 'react';
 import { Shield, Target, Award, Heart, CheckCircle2 } from 'lucide-react';
 
 export default function About() {
@@ -8,7 +8,7 @@ export default function About() {
         
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
             About <span className="text-brand-secondary">Photowalagift</span>
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -21,7 +21,7 @@ export default function About() {
           <div className="w-16 h-16 bg-brand-surface rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Target className="w-8 h-8 text-brand-primary" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Fraunces, serif' }}>Our Mission</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
           <p className="text-gray-700 leading-relaxed text-lg">
             At <strong>Photowalagift</strong>, we believe that every achievement, whether corporate or personal, deserves to be immortalized. We specialize in crafting high-quality awards, trophies, and personalized home decor that transform significant milestones into lasting legacies. Our mission is to provide premium recognition solutions that combine modern aesthetics with timeless craftsmanship.
           </p>
@@ -30,7 +30,7 @@ export default function About() {
         {/* What We Do */}
         <section className="grid md:grid-cols-2 gap-8">
           <div className="bg-brand-primary text-white rounded-3xl p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Fraunces, serif' }}>What We Do</h2>
+            <h2 className="text-2xl font-bold mb-4">What We Do</h2>
             <p className="text-cream-50/80 mb-6">
               We are a premier e-commerce destination for high-grade mementos and customized gifting. Our product range is meticulously curated to serve two distinct worlds:
             </p>
@@ -53,7 +53,7 @@ export default function About() {
           </div>
 
           <div className="bg-brand-secondary text-white rounded-3xl p-8 shadow-sm">
-            <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Fraunces, serif' }}>Our Categories</h2>
+            <h2 className="text-2xl font-bold mb-4">Our Categories</h2>
             <ul className="space-y-6">
               <li className="bg-white/10 p-4 rounded-2xl border border-white/20">
                 <strong className="block text-lg mb-1">Awards & Trophies</strong>
@@ -73,7 +73,7 @@ export default function About() {
 
         {/* Why Choose Us */}
         <section className="space-y-8">
-          <h2 className="text-3xl font-bold text-gray-900 text-center" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h2 className="text-3xl font-bold text-gray-900 text-center">
             Why Choose Photowalagift?
           </h2>
           <div className="grid sm:grid-cols-2 gap-6">
@@ -96,7 +96,7 @@ export default function About() {
 
         {/* Promise */}
         <section className="bg-cream-200 rounded-3xl p-8 md:p-12 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
             The Photowalagift Promise
           </h2>
           <p className="text-gray-700 text-lg leading-relaxed max-w-3xl mx-auto italic">
@@ -108,3 +108,4 @@ export default function About() {
     </div>
   );
 }
+

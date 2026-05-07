@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Trash2, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -30,7 +30,7 @@ export default function Wishlist() {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center bg-cream-100 page-enter">
         <Heart className="w-16 h-16 text-cream-300 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Fraunces, serif' }}>Your Wishlist</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Wishlist</h2>
         <p className="text-gray-500 mb-6">Please log in to view your wishlist.</p>
         <button onClick={() => navigate('/login?redirect=/wishlist')} className="btn-primary">
           Login to Continue
@@ -46,7 +46,7 @@ export default function Wishlist() {
           <button onClick={() => navigate(-1)} className="p-2 hover:bg-cream-200 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6 text-gray-700" />
           </button>
-          <h1 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h1 className="text-3xl font-bold text-gray-900">
             My Wishlist ({wishlist.length})
           </h1>
         </div>
@@ -60,7 +60,7 @@ export default function Wishlist() {
         ) : wishlist.length === 0 ? (
           <div className="card p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
             <Heart className="w-16 h-16 text-cream-300 mb-4" />
-            <h2 className="text-xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Fraunces, serif' }}>Your wishlist is empty</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Your wishlist is empty</h2>
             <p className="text-gray-500 mb-6 text-sm">Save your favorite items here to buy them later.</p>
             <button onClick={() => navigate('/products')} className="btn-primary px-8">
               Explore Products
@@ -90,3 +90,4 @@ export default function Wishlist() {
     </div>
   );
 }
+

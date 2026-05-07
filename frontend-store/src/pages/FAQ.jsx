@@ -1,4 +1,4 @@
-import { HelpCircle } from 'lucide-react';
+﻿import { HelpCircle } from 'lucide-react';
 
 const FAQ_ITEMS = [
   {
@@ -27,7 +27,7 @@ export default function FAQ() {
           <div className="w-16 h-16 mx-auto rounded-2xl bg-brand-surface flex items-center justify-center">
             <HelpCircle className="w-8 h-8 text-brand-primary" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>FAQ</h1>
+          <h1 className="text-4xl font-bold text-gray-900">FAQ</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Answers to common questions about orders, delivery, and returns.
           </p>
@@ -52,3 +52,4 @@ export default function FAQ() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Package, ChevronRight, Clock, Truck, CheckCircle,
@@ -98,7 +98,7 @@ function OrderCard({ order, onCancel }) {
         </div>
         <div className="text-right shrink-0">
           <p className="text-xs text-gray-600">Total</p>
-          <p className="font-bold text-brand-primary text-lg">₹{Number(order.total).toFixed(0)}</p>
+          <p className="font-bold text-brand-primary text-lg">â‚¹{Number(order.total).toFixed(0)}</p>
         </div>
       </div>
 
@@ -275,7 +275,7 @@ export default function Orders() {
         <div className="max-w-5xl mx-auto px-4 pt-10 pb-6">
           <div className="flex items-center gap-3 mb-6">
             <Package className="w-8 h-8" />
-            <h1 className="text-3xl font-bold" style={{ fontFamily: 'Fraunces, serif' }}>History & Tracking</h1>
+            <h1 className="text-3xl font-bold">History & Tracking</h1>
           </div>
           
           {/* Tabs */}
@@ -321,7 +321,7 @@ export default function Orders() {
         ) : items.length === 0 ? (
           <div className="card p-16 text-center bg-white">
             <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-500" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2" style={{ fontFamily: 'Fraunces, serif' }}>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
               {statusFilter ? 'No items with this status' : 'Nothing found'}
             </h2>
             <p className="text-gray-600 mb-6">
@@ -331,7 +331,7 @@ export default function Orders() {
             </p>
             {activeTab === 'orders' && !statusFilter && (
               <a href="/products" className="btn-primary">
-                Shop Products 🏆
+                Shop Products ðŸ†
               </a>
             )}
             {activeTab === 'services' && !statusFilter && (
@@ -358,7 +358,7 @@ export default function Orders() {
                   disabled={page === 1}
                   className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
                 >
-                  ← Prev
+                  â† Prev
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button
@@ -378,7 +378,7 @@ export default function Orders() {
                   disabled={page === totalPages}
                   className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
                 >
-                  Next →
+                  Next â†’
                 </button>
               </div>
             )}
@@ -388,3 +388,4 @@ export default function Orders() {
     </div>
   );
 }
+
