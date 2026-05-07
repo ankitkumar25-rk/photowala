@@ -120,68 +120,6 @@ function OrderCard({ order, onCancel }) {
   );
 }
 
-function ServiceRequestCard({ request }) {
-  const formattedDate = new Date(request.createdAt).toLocaleDateString('en-IN', {
-    day: '2-digit', month: 'short', year: 'numeric',
-  });
-  const serviceTypeLabel = String(request?.serviceType || 'SERVICE_REQUEST').replace(/_/g, ' ');
-
-  return (
-    <div className="card bg-white hover:shadow-lg transition-all duration-200 group">
-      <div className="flex items-center justify-between p-4 border-b border-cream-200">
-        <div>
-          <p className="text-xs text-gray-600 font-medium">Request #</p>
-          <p className="font-bold text-gray-900 font-mono text-sm">{request.orderNumber || 'Pending'}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-gray-600">Requested on</p>
-          <p className="text-sm font-semibold text-gray-800">{formattedDate}</p>
-        </div>
-        <StatusBadge status={request.status} />
-      </div>
-
-      <div className="p-4 flex items-center gap-4">
-        <div className="w-16 h-16 rounded-xl bg-[#FFF4E5] flex items-center justify-center shrink-0">
-          <Drill className="w-7 h-7 text-[#8F431A]" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-900 text-sm leading-tight truncate">
-            {serviceTypeLabel}
-          </p>
-          <p className="text-xs text-gray-600 mt-1">Qty: {request.quantity} | Size: {request.sizeL}x{request.sizeB}x{request.sizeH}</p>
-          <p className="text-xs text-gray-400 mt-0.5 truncate">{request.notes || 'No notes provided'}</p>
-        </div>
-        <div className="text-right shrink-0">
-          <p className="text-xs text-gray-600">Est. Price</p>
-          <p className="font-bold text-[#8F431A] text-sm leading-tight">{request.priceRange}</p>
-        </div>
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 py-3 border-t border-cream-200 bg-cream-50">
-        <div>
-          {request.trackingNumber ? (
-            <p className="text-xs text-gray-600">
-              Tracking: <span className="font-mono font-semibold text-gray-800">{request.trackingNumber}</span>
-            </p>
-          ) : (
-            <p className="text-xs text-gray-400 italic">Tracking details will appear once shipped</p>
-          )}
-        </div>
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          <a
-            href={request.designFileUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1 text-xs font-semibold text-[#8F431A] hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors border border-[#8F431A]/20"
-          >
-            Download Design
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function OrderSkeleton() {
   return (
     <div className="card bg-white animate-pulse">
@@ -293,18 +231,11 @@ export default function Orders() {
               {statusFilter ? 'No items with this status' : 'Nothing found'}
             </h2>
             <p className="text-gray-600 mb-6">
-              {activeTab === 'orders' 
-                ? 'You haven\'t placed any product orders yet.' 
-                : 'You haven\'t made any service requests yet.'}
+              You haven't placed any orders yet. Start shopping to see them here!
             </p>
-            {activeTab === 'orders' && !statusFilter && (
+            {!statusFilter && (
               <a href="/products" className="btn-primary">
-                Shop Products ðŸ†
-              </a>
-            )}
-            {activeTab === 'services' && !statusFilter && (
-              <a href="/services" className="btn-primary">
-                Explore Services
+                Shop Products ðŸ†
               </a>
             )}
           </div>
@@ -312,9 +243,7 @@ export default function Orders() {
           <>
             <div className="space-y-4">
               {items.map((item) => (
-                activeTab === 'orders' 
-                  ? <OrderCard key={item.id} order={item} onCancel={cancelOrder} />
-                  : <ServiceRequestCard key={item.id} request={item} />
+                <OrderCard key={item.id} order={item} onCancel={cancelOrder} />
               ))}
             </div>
 
