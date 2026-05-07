@@ -77,7 +77,7 @@ export default function LaserPrintedPen() {
         </button>
 
         <div className="bg-white rounded-3xl p-8 shadow-lg">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Fraunces, serif' }}>
             Laser Printed Pen
           </h1>
           <p className="text-gray-600 mb-8">Customize premium pens with precision laser engraving</p>
@@ -102,7 +102,7 @@ export default function LaserPrintedPen() {
               <div className="w-full px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed">
                 Laser Printed Pens
               </div>
-              <p className="text-xs text-gray-500 mt-1">Auto-selected â€” only available option</p>
+              <p className="text-xs text-gray-500 mt-1">Auto-selected — only available option</p>
             </div>
 
             {/* 3. SELECT DETAIL */}
@@ -112,7 +112,7 @@ export default function LaserPrintedPen() {
               <div className="grid grid-cols-2 gap-4">
                 {/* Pen Type */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">ðŸ· Pen Type</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">🏷 Pen Type</label>
                   <select
                     value={form.penType}
                     onChange={(e) => setForm({ ...form, penType: e.target.value })}
@@ -124,12 +124,12 @@ export default function LaserPrintedPen() {
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">â‚¹{penType.basePrice} per unit</p>
+                  <p className="text-xs text-gray-500 mt-1">₹{penType.basePrice} per unit</p>
                 </div>
 
                 {/* Quantity */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">ðŸ· Qty.</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">🏷 Qty.</label>
                   <select
                     value={form.quantity}
                     onChange={(e) => setForm({ ...form, quantity: Number(e.target.value) })}
@@ -142,7 +142,7 @@ export default function LaserPrintedPen() {
                     ))}
                   </select>
                   {discountPercent > 0 && (
-                    <p className="text-xs text-green-600 font-medium mt-1">ðŸŽ‰ {discountPercent}% OFF on bulk order!</p>
+                    <p className="text-xs text-green-600 font-medium mt-1">🎉 {discountPercent}% OFF on bulk order!</p>
                   )}
                 </div>
               </div>
@@ -160,7 +160,7 @@ export default function LaserPrintedPen() {
                   onChange={(e) => setForm({ ...form, deliveryOption: e.target.value })}
                   className="accent-orange-600"
                 />
-                <span className="text-sm font-medium text-gray-700">ðŸšš Deliver By Courier â€” Free Delivery</span>
+                <span className="text-sm font-medium text-gray-700">🚚 Deliver By Courier — Free Delivery</span>
               </label>
             </div>
 
@@ -177,7 +177,7 @@ export default function LaserPrintedPen() {
                     onChange={(e) => setForm({ ...form, fileOption: e.target.value })}
                     className="accent-orange-600"
                   />
-                  <span className="text-sm font-medium text-gray-700">â˜ï¸ Attach File Online</span>
+                  <span className="text-sm font-medium text-gray-700">☁️ Attach File Online</span>
                 </label>
 
                 {form.fileOption === 'attach' && (
@@ -201,7 +201,7 @@ export default function LaserPrintedPen() {
                     onChange={(e) => setForm({ ...form, fileOption: e.target.value })}
                     className="accent-orange-600"
                   />
-                  <span className="text-sm font-medium text-gray-700">âœ‰ï¸ Send via Email</span>
+                  <span className="text-sm font-medium text-gray-700">✉️ Send via Email</span>
                 </label>
 
                 {form.fileOption === 'email' && (
@@ -215,7 +215,7 @@ export default function LaserPrintedPen() {
                     />
                     <div className="flex items-start gap-2 p-2 bg-amber-50 border border-amber-200 rounded">
                       <AlertCircle className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
-                      <span className="text-xs text-amber-700">Extra Charges â€“ â‚¹10.00 applicable</span>
+                      <span className="text-xs text-amber-700">Extra Charges – ₹10.00 applicable</span>
                     </div>
                   </div>
                 )}
@@ -224,30 +224,29 @@ export default function LaserPrintedPen() {
 
             {/* COST SUMMARY */}
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 space-y-2">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">COST SUMMARY</h3>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-700">Applicable Cost</span>
-                <span className="font-medium">â‚¹{applicableCost.toFixed(2)}</span>
+                <span className="font-medium">₹{applicableCost.toFixed(2)}</span>
               </div>
               {discountPercent > 0 && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Bulk Discount ({discountPercent}%)</span>
-                  <span className="font-medium">- â‚¹{discountAmt.toFixed(2)}</span>
+                  <span className="font-medium">- ₹{discountAmt.toFixed(2)}</span>
                 </div>
               )}
               {emailCharge > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-700">Email Surcharge</span>
-                  <span className="font-medium">+ â‚¹{emailCharge.toFixed(2)}</span>
+                  <span className="font-medium">+ ₹{emailCharge.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm border-t border-gray-300 pt-2">
                 <span className="text-gray-700">GST (18%)</span>
-                <span className="font-medium">+ â‚¹{gst.toFixed(2)}</span>
+                <span className="font-medium">+ ₹{gst.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold border-t border-gray-300 pt-3">
                 <span>AMOUNT PAYABLE</span>
-                <span className="text-orange-600">â‚¹{totalPayable.toFixed(2)}</span>
+                <span className="text-orange-600">₹{totalPayable.toFixed(2)}</span>
               </div>
             </div>
 
@@ -283,4 +282,3 @@ export default function LaserPrintedPen() {
     </div>
   );
 }
-
