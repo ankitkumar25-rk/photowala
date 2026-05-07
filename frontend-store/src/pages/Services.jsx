@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Calculator, ChevronRight, ChevronLeft, Check, Zap, Drill, Award, CircleDollarSign, Timer, Lightbulb, Settings, Target } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { serviceRequestsApi } from '../api';
@@ -94,7 +94,7 @@ function ServiceFormView({ service, onBack }) {
         Back to Services
       </button>
 
-      <div className="bg-white rounded-[24px] p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+      <div className="bg-white rounded-3xl p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
         <div className="flex items-center gap-5 mb-10 pb-8 border-b border-gray-100">
           <div className="w-16 h-16 rounded-2xl bg-[#FFF4E5] flex items-center justify-center shrink-0">
             <Icon className="w-8 h-8 text-[#8F431A]" />
@@ -271,7 +271,7 @@ export default function Services() {
               {/* Paper GSM Calculator Card */}
               <a
                 href="/services/paper-gsm"
-                className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow block relative"
+                className="bg-white rounded-3xl p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow block relative"
               >
                 <div className="flex justify-between items-start mb-8">
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A]">
@@ -308,7 +308,7 @@ export default function Services() {
 
               <a
                 href="/services/custom-printing"
-                className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow block relative"
+                className="bg-white rounded-3xl p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow block relative"
               >
                 <div className="flex justify-between items-start mb-8">
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A]">
@@ -344,7 +344,7 @@ export default function Services() {
                 <div
                   key={service.type}
                   onClick={() => handleServiceClick(service)}
-                  className="bg-white rounded-[24px] p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow flex flex-col group cursor-pointer relative"
+                  className="bg-white rounded-3xl p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow flex flex-col group cursor-pointer relative"
                 >
                   <div className="flex justify-between items-start mb-8">
                     <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A] group-hover:scale-105 transition-transform duration-300">
@@ -389,7 +389,7 @@ export default function Services() {
               
               <div className="grid md:grid-cols-3 gap-8">
                 {/* Premium Quality */}
-                <div className="bg-[#5a3f2f] text-white rounded-[24px] p-10 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgb(90,63,47,0.3)] transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden">
+                <div className="bg-[#5a3f2f] text-white rounded-3xl p-10 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgb(90,63,47,0.3)] transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
                   <div className="bg-white/10 w-24 h-24 mx-auto rounded-[20px] flex items-center justify-center mb-8 border border-white/10 group-hover:scale-110 transition-transform duration-500">
                     <Award className="w-12 h-12 text-[#E6C47A]" strokeWidth={1.5} />
@@ -399,7 +399,7 @@ export default function Services() {
                 </div>
                 
                 {/* Lowest Price */}
-                <div className="bg-[#d96a22] text-white rounded-[24px] p-10 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgb(217,106,34,0.3)] transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden">
+                <div className="bg-[#d96a22] text-white rounded-3xl p-10 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgb(217,106,34,0.3)] transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
                   <div className="bg-white/15 w-24 h-24 mx-auto rounded-[20px] flex items-center justify-center mb-8 border border-white/20 group-hover:scale-110 transition-transform duration-500">
                     <CircleDollarSign className="w-12 h-12 text-white" strokeWidth={1.5} />
@@ -409,7 +409,7 @@ export default function Services() {
                 </div>
                 
                 {/* Express Services */}
-                <div className="bg-[#d8a45f] text-white rounded-[24px] p-10 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgb(216,164,95,0.3)] transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden">
+                <div className="bg-[#d8a45f] text-white rounded-3xl p-10 text-center shadow-[0_4px_20px_rgb(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgb(216,164,95,0.3)] transition-all duration-300 group hover:-translate-y-2 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
                   <div className="bg-black/5 w-24 h-24 mx-auto rounded-[20px] flex items-center justify-center mb-8 border border-black/5 group-hover:scale-110 transition-transform duration-500">
                     <Timer className="w-12 h-12 text-[#5a3f2f]" strokeWidth={1.5} />
@@ -425,7 +425,7 @@ export default function Services() {
           <div className="py-24 bg-[#F6F4F1]">
             <div className="max-w-6xl mx-auto px-4">
               <div className="grid md:grid-cols-3 gap-8">
-                <div className="bg-white rounded-[24px] p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow relative overflow-hidden group border border-[#8F431A]/5">
+                <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow relative overflow-hidden group border border-[#8F431A]/5">
                   <Lightbulb className="absolute -bottom-8 -right-8 w-40 h-40 text-[#8F431A] opacity-5 group-hover:scale-110 transition-transform duration-700" />
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A] mb-8">
                     <Lightbulb className="w-7 h-7" strokeWidth={1.5} />
@@ -437,7 +437,7 @@ export default function Services() {
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-[24px] p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow relative overflow-hidden group border border-[#8F431A]/5">
+                <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow relative overflow-hidden group border border-[#8F431A]/5">
                   <Settings className="absolute -bottom-8 -right-8 w-40 h-40 text-[#8F431A] opacity-5 group-hover:rotate-45 transition-transform duration-1000" />
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A] mb-8">
                     <Settings className="w-7 h-7" strokeWidth={1.5} />
@@ -449,7 +449,7 @@ export default function Services() {
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-[24px] p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow relative overflow-hidden group border border-[#8F431A]/5">
+                <div className="bg-white rounded-3xl p-8 md:p-10 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-shadow relative overflow-hidden group border border-[#8F431A]/5">
                   <Target className="absolute -bottom-8 -right-8 w-40 h-40 text-[#8F431A] opacity-5 group-hover:scale-110 transition-transform duration-700" />
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A] mb-8">
                     <Target className="w-7 h-7" strokeWidth={1.5} />
@@ -468,3 +468,4 @@ export default function Services() {
     </div>
   );
 }
+

@@ -51,8 +51,6 @@ export const useAdminStore = create(
     }
   )
 );
-  )
-);
 
 // ── Pages ────────────────────────────────────────────────────
 const AdminLogin      = lazy(() => import('./pages/AdminLogin'));

@@ -80,6 +80,7 @@ export const useAuthStore = create(
         
         set({ _fetchMePromise: promise });
         return promise;
+      },
 
       isAuthenticated: () => !!get().user,
       isAdmin: () => ['ADMIN', 'SUPER_ADMIN'].includes(get().user?.role),
