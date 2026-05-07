@@ -100,14 +100,36 @@ export default function LaserPrintedPen() {
           Home → Our Services → Custom Printing → Pen → Laser Printed Pen
         </p>
         <div className="mt-5 grid gap-6 lg:grid-cols-5">
+          <aside className="card p-5 lg:col-span-2">
+            <div className="grid grid-cols-2 gap-2">
+              {['/pen1.jpg', '/pen2.jpg', '/pen3.jpg', '/pen4.jpg'].map((img, i) => (
+                <div key={img} className="h-24 rounded bg-cream-200 text-xs text-gray-500 flex items-center justify-center">
+                  Sample {i + 1}
+                </div>
+              ))}
+            </div>
+            <h1 className="mt-5 text-2xl font-bold text-[#C8622A]" style={{ fontFamily: 'Fraunces, serif' }}>
+              LASER PRINTED PEN
+            </h1>
+            <p className="text-sm text-gray-500">Production Time: 5 days</p>
+            <p className="mt-4 text-sm text-gray-700">
+              Personalize any pen with precision laser engraving - your name, logo, or message etched permanently.
+            </p>
+            <div className="mt-4 space-y-2 text-sm">
+              <p>🎯 Precision Laser Engraving</p>
+              <p>✅ GST Invoice Provided</p>
+              <p>🚚 Free Courier Delivery</p>
+            </div>
+          </aside>
+
           <form onSubmit={submit} className="card space-y-4 p-5 lg:col-span-3">
             <label className="block text-sm font-semibold">
-               Order Name
+              1. Order Name
               <input className="input-field mt-1" value={orderName} onChange={(e) => setOrderName(e.target.value)} placeholder="यहाँ अपने कस्टमर का नाम टाइप करें..." required />
             </label>
 
             <label className="block text-sm font-semibold">
-               Select Product
+              2. Select Product
               <select className="input-field mt-1 bg-gray-100" disabled value="Laser Printed Pens">
                 <option>Laser Printed Pens</option>
               </select>
