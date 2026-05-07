@@ -56,7 +56,9 @@ api.interceptors.response.use(
       await api.get('/csrf');
       return api(original);
     }
-    if (error.response?.status === 401 && !original._retry) {
+    // Only attempt token refresh if this is not a GET request to /auth/me (auth check)
+    // This prevents infinite redirect loops when user is not authenticated
+    if (error.response?.status === 401 && !original._retry && original.url !== '/auth/me') {
       original._retry = true;
       try {
         const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -66,7 +68,11 @@ api.interceptors.response.use(
         });
         return api(original);
       } catch {
-        window.location.href = '/';
+        // Only redirect if refresh failed (means we were previously authenticated)
+        // Don't redirect on initial /auth/me check - just let it fail
+        if (original.url !== '/auth/me') {
+          window.location.href = '/';
+        }
       }
     }
     return Promise.reject(error);

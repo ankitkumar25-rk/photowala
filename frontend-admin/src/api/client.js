@@ -59,7 +59,9 @@ api.interceptors.response.use(
     // otherwise admin can accidentally pick up a customer session token.
     if (err.response?.status === 401) {
       sessionStorage.removeItem('admin-auth');
-      if (window.location.pathname !== '/') {
+      // Don't redirect on initial auth check (GET /auth/me) - let it fail silently
+      // Only redirect if we're already authenticated but token expired on other endpoints
+      if (window.location.pathname !== '/' && original.url !== '/auth/me') {
         window.location.href = '/';
       }
     }
