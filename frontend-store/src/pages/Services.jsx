@@ -1,4 +1,4 @@
-﻿export default function Services() {
+export default function Services() {
   return (
     <div className="min-h-screen bg-cream-100 px-4 py-20 flex items-center justify-center">
       <div className="max-w-2xl text-center">
@@ -18,7 +18,7 @@
           <a href="/">← Back to Home</a>
         </div>
 
-        <div className="mt-16 grid md:grid-cols-3 gap-6">
+        <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white rounded-lg p-6 shadow-sm">
             <div className="text-4xl mb-3">🔥</div>
             <h3 className="font-bold text-gray-900 mb-2">Laser Cutting</h3>
@@ -35,6 +35,12 @@
             <div className="text-4xl mb-3">⚙️</div>
             <h3 className="font-bold text-gray-900 mb-2">CNC Routing</h3>
             <p className="text-sm text-gray-600">Heavy-duty cutting and 3D carving</p>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-brand-primary">
+            <div className="text-4xl mb-3">🖨️</div>
+            <h3 className="font-bold text-gray-900 mb-2">Custom Printing</h3>
+            <p className="text-sm text-gray-600">High-quality printed pens and promotional materials</p>
           </div>
         </div>
       </div>
