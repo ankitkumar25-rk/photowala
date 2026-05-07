@@ -120,6 +120,54 @@ const emailTemplates = {
       </div>
     `,
   }),
+
+  serviceRequestStatusUpdate: (request, user, oldStatus) => {
+    const statusLabels = {
+      NEW: 'New Request',
+      IN_PROGRESS: 'In Progress',
+      CONFIRMED: 'Confirmed',
+      PROCESSING: 'Processing',
+      SHIPPED: 'Shipped',
+      DELIVERED: 'Delivered',
+      CANCELLED: 'Cancelled',
+      CLOSED: 'Closed',
+    };
+
+    let message = '';
+    let emoji = '📦';
+    
+    if (request.status === 'CONFIRMED') message = 'Your request has been confirmed!';
+    else if (request.status === 'PROCESSING') message = 'Your request is now being processed.';
+    else if (request.status === 'SHIPPED') message = `Your order has been shipped! Tracking: ${request.trackingNumber || 'N/A'}`;
+    else if (request.status === 'DELIVERED') message = 'Your order has been delivered!';
+    else if (request.status === 'CANCELLED') { message = 'Your request has been cancelled.'; emoji = '❌'; }
+    else if (request.status === 'CLOSED') message = 'Your request has been closed.';
+    
+    return {
+      subject: `${emoji} Service Request Update #${request.orderNumber}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #5a3f2f; padding: 20px; text-align: center;">
+            <h1 style="color: white; margin: 0;">${emoji} Status Update</h1>
+          </div>
+          <div style="padding: 30px;">
+            <h2>Hi ${user.name},</h2>
+            <p>${message}</p>
+            <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>Order Number:</strong> #${request.orderNumber}</p>
+              <p><strong>Service Type:</strong> ${request.serviceType.replace(/_/g, ' ')}</p>
+              <p><strong>Status:</strong> <span style="color: #ea580c; font-weight: bold;">${statusLabels[request.status]}</span></p>
+              ${request.trackingNumber ? `<p><strong>Tracking Number:</strong> ${request.trackingNumber}</p>` : ''}
+            </div>
+            <a href="${process.env.CLIENT_URL}/service-requests"
+               style="background: #ea580c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 16px;">
+              View Request
+            </a>
+          </div>
+        </div>
+      `,
+    };
+  },
 };
 
 module.exports = { sendEmail, emailTemplates };

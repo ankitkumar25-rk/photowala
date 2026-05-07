@@ -140,10 +140,26 @@ exports.getServiceRequest = async (req, res, next) => {
 exports.updateServiceRequestStatus = async (req, res, next) => {
   try {
     const { status, trackingNumber } = statusSchema.parse(req.body);
+    
+    const existingRequest = await prisma.serviceRequest.findUnique({
+      where: { id: req.params.id },
+      include: { user: { select: { id: true, name: true, email: true } } },
+    });
+    
+    if (!existingRequest) throw createError('Service request not found', 404);
+
     const request = await prisma.serviceRequest.update({
       where: { id: req.params.id },
       data: { status, trackingNumber },
+      include: { user: { select: { id: true, name: true, email: true } } },
     });
+
+    // Send status update email if request has a user and email is available
+    if (request.user?.email) {
+      const emailTpl = emailTemplates.serviceRequestStatusUpdate(request, request.user, existingRequest.status);
+      sendEmail({ to: request.user.email, ...emailTpl }).catch(console.error);
+    }
+
     res.json({ success: true, data: request });
   } catch (err) {
     next(err);
