@@ -17,6 +17,8 @@ export const useAuthStore = create(
           // Merge guest cart into user cart
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
+          // Optionally fetch full user profile to get avatarUrl, phone etc.
+          // (non-critical, can wait for next fetchMe)
           return data;
         } catch (err) {
           set({ isLoading: false });
@@ -45,10 +47,12 @@ export const useAuthStore = create(
       },
 
       fetchMe: async () => {
+        const hadUserBefore = !!get().user; // Capture state before request
         try {
           const { data } = await authApi.getMe();
           // Prevent admin leakage: only allow USER role in the store frontend
-          if (data.data.role !== 'USER') {
+          if (data.data?.role !== 'USER') {
+            console.warn('[Auth] Non-USER role detected:', data.data?.role);
             set({ user: null });
             useCartStore.getState().resetCart();
             return null;
@@ -57,8 +61,13 @@ export const useAuthStore = create(
           await useCartStore.getState().fetchCart();
           return data.data;
         } catch (err) {
-          set({ user: null });
-          useCartStore.getState().resetCart();
+          // Only clear user if we previously thought we were authenticated
+          // (prevents race condition where initial fetchMe overwrites fresh login)
+          if (hadUserBefore) {
+            console.error('[Auth] fetchMe failed, clearing user', err);
+            set({ user: null });
+            useCartStore.getState().resetCart();
+          }
           throw err;
         }
       },

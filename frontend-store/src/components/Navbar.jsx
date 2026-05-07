@@ -182,16 +182,16 @@ export default function Navbar() {
             {/* User */}
             {user ? (
               <div className="relative group">
-                <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-surface transition-colors">
-                  {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-7 h-7 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xs font-bold">
-                      {user.name[0].toUpperCase()}
-                    </div>
-                  )}
-                  <span className="text-sm font-semibold text-brand-primary hidden sm:block">{user.name.split(' ')[0]}</span>
-                </button>
+                 <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-surface transition-colors">
+                   {user.avatarUrl ? (
+                     <img src={user.avatarUrl} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
+                   ) : (
+                     <div className="w-7 h-7 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xs font-bold">
+                       {user.name?.[0]?.toUpperCase() || 'U'}
+                     </div>
+                   )}
+                   <span className="text-sm font-semibold text-brand-primary hidden sm:block">{user.name?.split(' ')[0] || 'User'}</span>
+                 </button>
                 <div className="absolute right-0 top-12 w-48 bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <Link to="/account"  className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Account</Link>
                   <Link to="/orders"   className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Orders</Link>

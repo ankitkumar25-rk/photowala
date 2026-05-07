@@ -60,13 +60,15 @@ function PageLoader() {
 
 export default function App() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
-  const resetCart = useCartStore((s) => s.resetCart);
 
   useEffect(() => {
-    fetchMe().catch(() => {
-      resetCart();
+    // Initial auth check on app mount
+    fetchMe().catch((err) => {
+      // Errors are already handled inside fetchMe (user cleared if previously authenticated)
+      // This catch just logs unexpected errors
+      console.error('Initial auth check failed:', err);
     });
-  }, [fetchMe, resetCart]);
+  }, [fetchMe]);
 
   useEffect(() => {
     const readCookie = (name) => {
