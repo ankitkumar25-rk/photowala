@@ -101,7 +101,7 @@ function ServiceFormView({ service, onBack }) {
             <Icon className="w-8 h-8 text-[#8F431A]" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Fraunces, serif' }}>{service.title}</h2>
+            <h2 className="text-3xl font-bold text-gray-900">{service.title}</h2>
             <p className="text-base text-gray-500 mt-2">{service.desc}</p>
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function Services() {
             <span className="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/30 text-white/90">
               Tools & Utilities
             </span>
-            <h1 className="text-5xl font-bold mt-6 mb-4 leading-tight" style={{ fontFamily: 'Fraunces, serif' }}>
+            <h1 className="text-5xl font-bold mt-6 mb-4 leading-tight">
               {selectedService ? selectedService.title : 'Services'}
             </h1>
             <p className="text-white/85 text-lg leading-relaxed max-w-xl">
@@ -277,7 +277,7 @@ export default function Services() {
                   </span>
                 </div>
                 
-                <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3" style={{ fontFamily: 'Fraunces, serif' }}>
+                <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3">
                   Paper GSM Calculator
                 </h2>
                 
@@ -314,7 +314,7 @@ export default function Services() {
                   </span>
                 </div>
 
-                <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3" style={{ fontFamily: 'Fraunces, serif' }}>
+                <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3">
                   Custom Printing
                 </h2>
 
@@ -348,7 +348,7 @@ export default function Services() {
                     <ChevronRight className="w-5 h-5 text-gray-300 group-hover:translate-x-1 group-hover:text-[#8F431A] transition-all" />
                   </div>
                   
-                  <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3" style={{ fontFamily: 'Fraunces, serif' }}>
+                  <h2 className="text-[26px] font-bold text-[#1A1A1A] mb-3">
                     {service.title}
                   </h2>
                   
@@ -378,7 +378,7 @@ export default function Services() {
           <div className="py-24 mt-auto border-t border-gray-100" style={{ background: 'linear-gradient(180deg, #ffffff 0%, #ffffff 35%, #f3e8df 65%, #e8d0bb 100%)' }}>
             <div className="max-w-6xl mx-auto px-4">
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] mb-6" style={{ fontFamily: 'Fraunces, serif' }}>We Are Dedicated To</h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A1A] mb-6">We Are Dedicated To</h2>
                 <div className="w-16 h-1 bg-[#8F431A] mx-auto rounded-full"></div>
               </div>
               
@@ -425,7 +425,7 @@ export default function Services() {
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A] mb-8">
                     <Lightbulb className="w-7 h-7" strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-[26px] font-bold text-[#1A1A1A] mb-5" style={{ fontFamily: 'Fraunces, serif' }}>Our Vision</h3>
+                  <h3 className="text-[26px] font-bold text-[#1A1A1A] mb-5">Our Vision</h3>
                   <div className="space-y-4 text-[#6B7280] text-[15px] leading-relaxed relative z-10 pr-2">
                     <p>Our vision is to bring all printers Pan India to one platform and unite them to enhance the strength as union.</p>
                     <p>In addition to this we also look forword to extend our services to Printers for their welfare and development.</p>
@@ -437,7 +437,7 @@ export default function Services() {
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A] mb-8">
                     <Settings className="w-7 h-7" strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-[26px] font-bold text-[#1A1A1A] mb-5" style={{ fontFamily: 'Fraunces, serif' }}>Our Policies</h3>
+                  <h3 className="text-[26px] font-bold text-[#1A1A1A] mb-5">Our Policies</h3>
                   <div className="space-y-4 text-[#6B7280] text-[15px] leading-relaxed relative z-10 pr-2">
                     <p>To work as B2B and provide our Best in class services only to Printers & Advertising agencies at least margin and in fixed predefined timeframe.</p>
                     <p>We never compromise with quality and quantity of the product. In other words our customers (Printer & Advertisers) get best Value for money.</p>
@@ -449,7 +449,7 @@ export default function Services() {
                   <div className="w-14 h-14 rounded-[16px] bg-[#FFF4E5] flex items-center justify-center text-[#8F431A] mb-8">
                     <Target className="w-7 h-7" strokeWidth={1.5} />
                   </div>
-                  <h3 className="text-[26px] font-bold text-[#1A1A1A] mb-5" style={{ fontFamily: 'Fraunces, serif' }}>Our Mission</h3>
+                  <h3 className="text-[26px] font-bold text-[#1A1A1A] mb-5">Our Mission</h3>
                   <div className="space-y-4 text-[#6B7280] text-[15px] leading-relaxed relative z-10 pr-2">
                     <p>To make India self dependent and leader in printer technology.</p>
                     <p>To create innovative printing services & products to be available for Indian as well as International customers.</p>
@@ -463,4 +463,5 @@ export default function Services() {
     </div>
   );
 }
+
 
