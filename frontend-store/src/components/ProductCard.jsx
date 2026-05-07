@@ -1,45 +1,36 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingCart, Star, Leaf } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { usersApi } from '../api';
-import { useAuthStore, useCartStore } from '../store';
+import { Heart, ShoppingCart, Star } from 'lucide-react';
+import { useCartStore, useAuthStore } from '../store';
+import { useWishlist } from '../contexts/WishlistContext';
 import toast from 'react-hot-toast';
+import { useCallback, memo } from 'react';
 
-export default function ProductCard({ product }) {
+const ProductCard = memo(function ProductCard({ product }) {
   const addItem = useCartStore((s) => s.addItem);
   const user = useAuthStore((s) => s.user);
   const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
 
-  const { data: wishlist = [] } = useQuery({
-    queryKey: ['wishlist'],
-    queryFn: () => usersApi.getWishlist().then((r) => r.data.data),
-    enabled: !!user,
-  });
+  const { isWishlisted: checkWishlisted, toggleWishlist, isPending } = useWishlist();
+  const productWishlisted = checkWishlisted(product.id);
 
-  const isWishlisted = wishlist.some((w) => w.productId === product.id);
-
-  const toggleWishlist = useMutation({
-    mutationFn: () => isWishlisted ? usersApi.removeWishlist(product.id) : usersApi.addToWishlist(product.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['wishlist']);
-      toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+  const handleWishlistClick = useCallback(
+    async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!user) {
+        navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
+        return;
+      }
+      try {
+        await toggleWishlist({ productId: product.id, isWishlisted: productWishlisted });
+        toast.success(productWishlisted ? 'Removed from wishlist' : 'Added to wishlist ❤️');
+      } catch {
+        toast.error('Failed to update wishlist');
+      }
     },
-    onError: () => {
-      toast.error('Failed to update wishlist');
-    }
-  });
-
-  const handleWishlistClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) {
-      navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
-      return;
-    }
-    toggleWishlist.mutate();
-  };
+    [toggleWishlist, product.id, productWishlisted, user, navigate, location]
+  );
 
   const discountPct = product.mrp
     ? Math.round(((Number(product.mrp) - Number(product.price)) / Number(product.mrp)) * 100)
@@ -47,22 +38,25 @@ export default function ProductCard({ product }) {
 
   const primaryImage = product.images?.find((i) => i.isPrimary) || product.images?.[0];
 
-  const handleAddToCart = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) {
-      navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
-      return;
-    }
-    try {
-      await addItem(product.id, 1);
-      toast.success(`${product.name} added to cart!`, {
-        action: { label: 'View Cart', onClick: () => navigate('/cart') },
-      });
-    } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to add to cart');
-    }
-  };
+  const handleAddToCart = useCallback(
+    async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!user) {
+        navigate(`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`);
+        return;
+      }
+      try {
+        await addItem(product.id, 1);
+        toast.success(`${product.name} added to cart!`, {
+          action: { label: 'View Cart', onClick: () => navigate('/cart') },
+        });
+      } catch (err) {
+        toast.error(err?.response?.data?.message || 'Failed to add to cart');
+      }
+    },
+    [addItem, product.id, product.name, navigate, location, user]
+  );
 
   return (
     <Link to={`/products/${product.slug}`} className="product-card group block">
@@ -74,6 +68,8 @@ export default function ProductCard({ product }) {
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
+            width={300}
+            height={300}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl bg-[#f0e3d7]">
@@ -85,14 +81,14 @@ export default function ProductCard({ product }) {
         <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
           <button
             onClick={handleWishlistClick}
-            disabled={toggleWishlist.isPending}
+            disabled={isPending}
             className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-all ${
-              isWishlisted
+              productWishlisted
                 ? 'bg-red-50 text-red-500 shadow-sm'
                 : 'bg-white/70 text-gray-500 hover:bg-white hover:text-red-500'
             }`}
           >
-            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+            <Heart className={`w-4 h-4 ${productWishlisted ? 'fill-current' : ''}`} />
           </button>
         </div>
 
@@ -161,4 +157,6 @@ export default function ProductCard({ product }) {
       </div>
     </Link>
   );
-}
+});
+
+export default ProductCard;

@@ -63,9 +63,9 @@ export default function CartDrawer() {
                   <div key={item.id} className="flex gap-3 p-4 hover:bg-[#f5e7d8]/55 transition-colors">
                     {/* Product image */}
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#f0e3d7] shrink-0">
-                      {img ? (
-                        <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover" />
-                      ) : (
+                       {img ? (
+                         <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
+                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-2xl">🏆</div>
                       )}
                     </div>

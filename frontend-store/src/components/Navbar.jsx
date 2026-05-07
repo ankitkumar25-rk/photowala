@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { ShoppingCart, Search, Menu, X, User, Heart } from 'lucide-react';
 import { useAuthStore, useCartStore } from '../store';
-import { productsApi, usersApi } from '../api';
+import { productsApi } from '../api';
 import { brandAssets } from '../data/assets';
+import { useWishlist } from '../contexts/WishlistContext';
 
 export default function Navbar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -19,12 +19,7 @@ export default function Navbar() {
   const logout = useAuthStore((s) => s.logout);
   const itemCount = useCartStore((s) => s.itemCount());
 
-  const { data: wishlist = [] } = useQuery({
-    queryKey: ['wishlist'],
-    queryFn: () => usersApi.getWishlist().then((r) => r.data.data),
-    enabled: !!user,
-  });
-  const wishlistCount = wishlist.length;
+  const { wishlistCount } = useWishlist();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -135,16 +130,16 @@ export default function Navbar() {
                   )}
                   {searchResults.length > 0 && (
                     <div className="mt-2 space-y-1 max-h-64 overflow-y-auto">
-                      {searchResults.map((p) => (
-                        <Link
-                          key={p.id}
-                          to={`/products/${p.slug}`}
-                          onClick={() => { setShowSearch(false); setSearchQuery(''); }}
-                          className="flex items-center gap-3 p-2 rounded-xl hover:bg-brand-surface transition-colors"
-                        >
-                          {p.images?.[0] && (
-                            <img src={p.images[0].url} alt={p.name} className="w-10 h-10 rounded-lg object-cover" />
-                          )}
+                       {searchResults.map((p) => (
+                         <Link
+                           key={p.id}
+                           to={`/products/${p.slug}`}
+                           onClick={() => { setShowSearch(false); setSearchQuery(''); }}
+                           className="flex items-center gap-3 p-2 rounded-xl hover:bg-brand-surface transition-colors"
+                         >
+                           {p.images?.[0] && (
+                             <img src={p.images[0].url} alt={p.name} className="w-10 h-10 rounded-lg object-cover" loading="lazy" width={40} height={40} />
+                           )}
                           <div>
                             <p className="text-sm font-semibold text-brand-primary">{p.name}</p>
                             <p className="text-xs text-brand-secondary font-bold">₹{p.price}</p>

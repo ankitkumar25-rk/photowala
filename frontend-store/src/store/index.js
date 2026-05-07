@@ -93,20 +93,20 @@ export const useCartStore = create((set, get) => ({
     }
   },
 
-  addItem: async (productId, quantity = 1, customization = {}) => {
-    await cartApi.add({ productId, quantity, ...customization });
-    get().fetchCart();
-  },
+   addItem: async (productId, quantity = 1, customization = {}) => {
+     await cartApi.add({ productId, quantity, ...customization });
+     await get().fetchCart();
+   },
 
-  updateItem: async (productId, quantity) => {
-    await cartApi.update({ productId, quantity });
-    get().fetchCart();
-  },
+   updateItem: async (productId, quantity) => {
+     await cartApi.update({ productId, quantity });
+     await get().fetchCart();
+   },
 
-  removeItem: async (productId) => {
-    await cartApi.remove({ productId });
-    get().fetchCart();
-  },
+   removeItem: async (productId) => {
+     await cartApi.remove({ productId });
+     await get().fetchCart();
+   },
 
   clearCart: async () => {
     await cartApi.clear();

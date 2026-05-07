@@ -60,9 +60,9 @@ function CartItem({ item }) {
       {/* Image */}
       <Link to={`/products/${item.product?.slug}`} className="shrink-0">
         <div className="w-24 h-24 rounded-2xl overflow-hidden bg-cream-200 border border-cream-300 group-hover:shadow-md transition-shadow">
-          {img ? (
-            <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-          ) : (
+           {img ? (
+             <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" width={96} height={96} />
+           ) : (
             <div className="w-full h-full flex items-center justify-center text-3xl">🏆</div>
           )}
         </div>
@@ -93,9 +93,9 @@ function CartItem({ item }) {
         )}
         {item.customizationImageUrl && (
           <div className="mt-2 flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1.5">
-            <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="shrink-0">
-              <img src={item.customizationImageUrl} alt="Custom logo" className="w-8 h-8 object-cover rounded-md border border-blue-200" />
-            </a>
+             <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="shrink-0">
+               <img src={item.customizationImageUrl} alt="Custom logo" className="w-8 h-8 object-cover rounded-md border border-blue-200" loading="lazy" width={32} height={32} />
+             </a>
             <div className="min-w-0">
               <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wide block">Custom Logo/Image</span>
               <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 underline">View image</a>

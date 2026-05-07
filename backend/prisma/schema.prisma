@@ -223,6 +223,10 @@ model Product {
   reviews       Review[]
   wishlistItems WishlistItem[]
 
+  @@index([isActive])
+  @@index([isFeatured])
+  @@index([categoryId])
+  @@index([isActive, categoryId])
   @@map("products")
 }
 
@@ -296,6 +300,11 @@ model Order {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId, status])
+  @@index([userId, createdAt])
   @@map("orders")
 }
 
@@ -376,6 +385,9 @@ model Return {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
   @@map("returns")
 }
 
@@ -416,6 +428,9 @@ model SupportTicket {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
+  @@index([userId])
+  @@index([status])
+  @@index([userId, status])
   @@map("support_tickets")
 }
 

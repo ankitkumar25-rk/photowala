@@ -9,6 +9,7 @@ import {
 import toast from 'react-hot-toast';
 import { productsApi, usersApi, uploadApi } from '../api';
 import { useCartStore, useAuthStore } from '../store';
+import { useWishlist } from '../contexts/WishlistContext';
 import ProductCard from '../components/ProductCard';
 
 /* ────── helpers ────── */
@@ -43,23 +44,34 @@ function avgRating(reviews) {
 function ImageGallery({ images, name }) {
   const [active, setActive] = useState(0);
   const [zoomed, setZoomed] = useState(false);
+  const imagesRef = useRef(images);
+
+  // Keep ref updated with latest images
+  useEffect(() => {
+    imagesRef.current = images;
+  }, [images]);
 
   useEffect(() => {
     if (!images?.length) return;
     const handler = (e) => {
       if (e.key === 'ArrowLeft') {
-        setActive((a) => (a - 1 + images.length) % images.length);
+        setActive((a) => (a - 1 + imagesRef.current.length) % imagesRef.current.length);
       }
       if (e.key === 'ArrowRight') {
-        setActive((a) => (a + 1) % images.length);
+        setActive((a) => (a + 1) % imagesRef.current.length);
       }
       if (e.key === 'Escape') setZoomed(false);
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [images.length]);
-  const prev = () => setActive((a) => (a - 1 + images.length) % images.length);
-  const next = () => setActive((a) => (a + 1) % images.length);
+  const prev = useCallback(() => {
+    setActive((a) => (a - 1 + imagesRef.current.length) % imagesRef.current.length);
+  }, []);
+
+  const next = useCallback(() => {
+    setActive((a) => (a + 1) % imagesRef.current.length);
+  }, []);
 
   if (!images?.length) {
     return (
@@ -73,12 +85,13 @@ function ImageGallery({ images, name }) {
     <div className="space-y-3">
       {/* Main image */}
       <div className="relative aspect-square rounded-3xl overflow-hidden bg-cream-100 border border-cream-200 group">
-        <img
-          src={images[active]?.url}
-          alt={images[active]?.altText || name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in"
-          onClick={() => setZoomed(true)}
-        />
+         <img
+           src={images[active]?.url}
+           alt={images[active]?.altText || name}
+           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in"
+           onClick={() => setZoomed(true)}
+           loading="lazy"
+         />
         {/* Nav arrows */}
         {images.length > 1 && (
           <>
@@ -130,7 +143,7 @@ function ImageGallery({ images, name }) {
                 i === active ? 'border-brand-secondary shadow-md' : 'border-cream-200 hover:border-brand-secondary'
               }`}
             >
-              <img src={img.url} alt={img.altText || name} className="w-full h-full object-cover" />
+               <img src={img.url} alt={img.altText || name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
             </button>
           ))}
         </div>
@@ -142,12 +155,13 @@ function ImageGallery({ images, name }) {
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           onClick={() => setZoomed(false)}
         >
-          <img
-            src={images[active]?.url}
-            alt={name}
-            className="max-w-full max-h-full object-contain rounded-2xl"
-            onClick={(e) => e.stopPropagation()}
-          />
+           <img
+             src={images[active]?.url}
+             alt={name}
+             className="max-w-full max-h-full object-contain rounded-2xl"
+             onClick={(e) => e.stopPropagation()}
+             loading="lazy"
+           />
           <button
             onClick={() => setZoomed(false)}
             className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors text-xl"
@@ -170,9 +184,9 @@ function ReviewCard({ review }) {
     <div className="p-5 rounded-2xl bg-white border border-cream-200 space-y-2">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          {review.user?.avatarUrl ? (
-            <img src={review.user.avatarUrl} alt={review.user.name} className="w-9 h-9 rounded-full object-cover" />
-          ) : (
+           {review.user?.avatarUrl ? (
+             <img src={review.user.avatarUrl} alt={review.user.name} className="w-9 h-9 rounded-full object-cover" loading="lazy" width={36} height={36} />
+           ) : (
             <div className="w-9 h-9 rounded-full bg-brand-surface text-brand-primary flex items-center justify-center text-sm font-bold shrink-0">
               {review.user?.name?.[0]?.toUpperCase() || 'U'}
             </div>
@@ -264,14 +278,13 @@ export default function ProductDetail() {
   const addItem  = useCartStore((s) => s.addItem);
   const user     = useAuthStore((s) => s.user);
   const location = useLocation();
+  const { isWishlisted, toggleWishlist: triggerWishlist, isPending: isWishlistPending } = useWishlist();
 
   const [product, setProduct]   = useState(null);
   const [loading, setLoading]   = useState(true);
   const [related, setRelated]   = useState([]);
   const [qty, setQty]           = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
-  const [inWishlist, setInWishlist]     = useState(false);
-  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   const [reviewsShown, setReviewsShown] = useState(4);
 
@@ -292,23 +305,18 @@ export default function ProductDetail() {
       if (data.data.category?.slug) {
         productsApi.list({ category: data.data.category.slug, limit: 4 })
           .then((r) => setRelated(r.data.data?.filter((p) => p.id !== data.data.id).slice(0, 4) || []))
-          .catch(() => {});
+          .catch((err) => {
+            console.error('Failed to load related products:', err);
+            setRelated([]);
+          });
       }
     } catch {
       toast.error('Product not found');
       navigate('/products');
     } finally { setLoading(false); }
-  }, [slug, navigate]);
+   }, [slug, navigate]);
 
   useEffect(() => { fetchProduct(); setQty(1); }, [fetchProduct]);
-
-  // Check wishlist
-  useEffect(() => {
-    if (!user) return;
-    usersApi.getWishlist()
-      .then(({ data }) => setInWishlist(data.data?.some((i) => i.productId === product?.id)))
-      .catch(() => {});
-  }, [user, product?.id]);
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -346,21 +354,19 @@ export default function ProductDetail() {
     } finally { setAddingToCart(false); }
   };
 
+  const inWishlist = product ? isWishlisted(product.id) : false;
+
   const toggleWishlist = async () => {
     if (!user) { toast.error('Please login to use wishlist'); navigate('/login'); return; }
-    setWishlistLoading(true);
     try {
       if (inWishlist) {
-        await usersApi.removeWishlist(product.id);
-        setInWishlist(false);
+        await triggerWishlist({ productId: product.id, isWishlisted: true });
         toast.success('Removed from wishlist');
       } else {
-        await usersApi.addToWishlist(product.id);
-        setInWishlist(true);
+        await triggerWishlist({ productId: product.id, isWishlisted: false });
         toast.success('Added to wishlist ❤️');
       }
     } catch { toast.error('Failed to update wishlist'); }
-    finally { setWishlistLoading(false); }
   };
 
   const shareProduct = async () => {
@@ -593,9 +599,9 @@ export default function ProductDetail() {
                     {customizeMode === 'image' && (
                       <div>
                         {customizationImage ? (
-                          <div className="relative inline-block">
-                            <img src={customizationImage.url} alt="Customization" className="w-24 h-24 object-cover rounded-xl border-2 border-brand-primary" />
-                            <button
+                           <div className="relative inline-block">
+                             <img src={customizationImage.url} alt="Customization" className="w-24 h-24 object-cover rounded-xl border-2 border-brand-primary" loading="lazy" width={96} height={96} />
+                             <button
                               onClick={removeCustomizationImage}
                               className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
                             >
@@ -669,7 +675,7 @@ export default function ProductDetail() {
 
                   <button
                     onClick={toggleWishlist}
-                    disabled={wishlistLoading}
+                    disabled={isWishlistPending}
                     className={`w-14 rounded-2xl border-2 flex items-center justify-center transition-all ${
                       inWishlist
                         ? 'border-red-400 bg-red-50 text-red-500 hover:bg-red-100'

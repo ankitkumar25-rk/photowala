@@ -8,6 +8,7 @@ import Layout from './components/Layout';
 import { brandAssets } from './data/assets';
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
+import { WishlistProvider } from './contexts/WishlistContext';
 
 // Pages (lazy loaded)
 import { lazy, Suspense } from 'react';
@@ -99,51 +100,53 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ScrollToTop />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: { fontFamily: 'DM Sans, sans-serif', borderRadius: '14px', border: '1px solid #efd3c1', background: '#fffdfb', color: '#2e211c' },
-            success: { style: { background: '#f1ffe9', color: '#36521f', border: '1px solid #b7d894' } },
-            error:   { style: { background: '#fff1ef', color: '#8f2d1d', border: '1px solid #f0b6aa' } },
-          }}
-        />
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index                element={<Home />} />
-              <Route path="products"      element={<Products />} />
-              <Route path="products/:slug" element={<ProductDetail />} />
-              <Route path="categories/:slug" element={<Category />} />
-              <Route path="cart"          element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-              <Route path="login"         element={<Login />} />
-              <Route path="register"      element={<Register />} />
+        <WishlistProvider>
+          <ScrollToTop />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: { fontFamily: 'DM Sans, sans-serif', borderRadius: '14px', border: '1px solid #efd3c1', background: '#fffdfb', color: '#2e211c' },
+              success: { style: { background: '#f1ffe9', color: '#36521f', border: '1px solid #b7d894' } },
+              error:   { style: { background: '#fff1ef', color: '#8f2d1d', border: '1px solid #f0b6aa' } },
+            }}
+          />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index                element={<Home />} />
+                <Route path="products"      element={<Products />} />
+                <Route path="products/:slug" element={<ProductDetail />} />
+                <Route path="categories/:slug" element={<Category />} />
+                <Route path="cart"          element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                <Route path="login"         element={<Login />} />
+                <Route path="register"      element={<Register />} />
 
-              {/* Protected Routes */}
-              <Route path="checkout"  element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-              <Route path="orders"    element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-              <Route path="orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
-              <Route path="account"   element={<ProtectedRoute><Account /></ProtectedRoute>} />
-              <Route path="wishlist"  element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+                {/* Protected Routes */}
+                <Route path="checkout"  element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                <Route path="orders"    element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+                <Route path="orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+                <Route path="account"   element={<ProtectedRoute><Account /></ProtectedRoute>} />
+                <Route path="wishlist"  element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
-              {/* Auth flow routes */}
-              <Route path="auth/success"     element={<AuthSuccess />} />
-              <Route path="track-order"      element={<TrackOrder />} />
-              <Route path="returns"          element={<Returns />} />
-              <Route path="faq"              element={<FAQ />} />
-              <Route path="services"         element={<Services />} />
-              <Route path="services/paper-gsm" element={<PaperGsmCalculator />} />
-              <Route path="services/custom-printing" element={<CustomPrintingIndex />} />
-              <Route path="services/custom-printing/pen" element={<PenIndex />} />
-              <Route path="services/custom-printing/pen/laser-printed-pen" element={<LaserPrintedPen />} />
-              <Route path="privacy"          element={<Privacy />} />
-              <Route path="forgot-password"  element={<ForgotPassword />} />
-              <Route path="reset-password"   element={<ResetPassword />} />
+                {/* Auth flow routes */}
+                <Route path="auth/success"     element={<AuthSuccess />} />
+                <Route path="track-order"      element={<TrackOrder />} />
+                <Route path="returns"          element={<Returns />} />
+                <Route path="faq"              element={<FAQ />} />
+                <Route path="services"         element={<Services />} />
+                <Route path="services/paper-gsm" element={<PaperGsmCalculator />} />
+                <Route path="services/custom-printing" element={<CustomPrintingIndex />} />
+                <Route path="services/custom-printing/pen" element={<PenIndex />} />
+                <Route path="services/custom-printing/pen/laser-printed-pen" element={<LaserPrintedPen />} />
+                <Route path="privacy"          element={<Privacy />} />
+                <Route path="forgot-password"  element={<ForgotPassword />} />
+                <Route path="reset-password"   element={<ResetPassword />} />
 
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </Suspense>
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </Suspense>
+        </WishlistProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

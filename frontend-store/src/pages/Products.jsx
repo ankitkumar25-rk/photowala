@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { productsApi, categoriesApi } from '../api';
@@ -28,8 +28,21 @@ export default function Products() {
     queryFn:  () => categoriesApi.list().then((r) => r.data.data),
   });
 
-  const setFilter = (key, value) => setFilters((f) => ({ ...f, [key]: value, page: 1 }));
-  const clearFilter = (key) => setFilters((f) => { const n = { ...f }; delete n[key]; return { ...n, page: 1 }; });
+  const setFilter = useCallback((key, value) => {
+    setFilters((f) => ({ ...f, [key]: value, page: 1 }));
+  }, []);
+
+  const clearFilter = useCallback((key) => {
+    setFilters((f) => {
+      const n = { ...f };
+      delete n[key];
+      return { ...n, page: 1 };
+    });
+  }, []);
+
+  const pageNumbers = data?.meta?.totalPages > 1
+    ? Array.from({ length: data.meta.totalPages }, (_, i) => i + 1)
+    : [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
@@ -144,7 +157,7 @@ export default function Products() {
           {/* Pagination */}
           {data?.meta?.totalPages > 1 && (
             <div className="flex justify-center gap-2 mt-8 flex-wrap">
-              {Array.from({ length: data.meta.totalPages }, (_, i) => i + 1).map((page) => (
+              {pageNumbers.map((page) => (
                 <button
                   key={page}
                   onClick={() => setFilters((f) => ({ ...f, page }))}
