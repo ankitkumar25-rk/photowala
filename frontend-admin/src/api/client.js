@@ -58,7 +58,7 @@ api.interceptors.response.use(
     // Admin and store apps share backend cookie names. Avoid auto-refresh here,
     // otherwise admin can accidentally pick up a customer session token.
     if (err.response?.status === 401) {
-      localStorage.removeItem('admin-auth');
+      sessionStorage.removeItem('admin-auth');
       if (window.location.pathname !== '/') {
         window.location.href = '/';
       }

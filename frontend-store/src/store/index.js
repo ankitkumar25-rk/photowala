@@ -50,9 +50,9 @@ export const useAuthStore = create(
         const hadUserBefore = !!get().user; // Capture state before request
         try {
           const { data } = await authApi.getMe();
-          // Prevent admin leakage: only allow USER role in the store frontend
-          if (data.data?.role !== 'USER') {
-            console.warn('[Auth] Non-USER role detected:', data.data?.role);
+          // Prevent admin leakage: only allow CUSTOMER role in the store frontend
+          if (data.data?.role !== 'CUSTOMER') {
+            console.warn('[Auth] Non-CUSTOMER role detected:', data.data?.role);
             set({ user: null });
             useCartStore.getState().resetCart();
             return null;
@@ -62,7 +62,6 @@ export const useAuthStore = create(
           return data.data;
         } catch (err) {
           // Only clear user if we previously thought we were authenticated
-          // (prevents race condition where initial fetchMe overwrites fresh login)
           if (hadUserBefore) {
             console.error('[Auth] fetchMe failed, clearing user', err);
             set({ user: null });
