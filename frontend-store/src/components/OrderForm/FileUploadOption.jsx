@@ -6,6 +6,8 @@ export default function FileUploadOption({
   emailForFile,
   setEmailForFile,
 }) {
+  const FileInput = require('../FileInput').default;
+  
   return (
     <div className="space-y-3">
       <p className="text-sm font-semibold text-gray-800">5. Select File Option</p>
@@ -30,12 +32,10 @@ export default function FileUploadOption({
 
       {fileOption === 'attach' ? (
         <div className="rounded-xl border border-dashed border-cream-300 p-3">
-          <input
-            type="file"
+          <FileInput
             onChange={(e) => setFile(e.target.files?.[0] || null)}
-            className="input-field py-2"
+            selectedFileName={attachedFile?.name}
           />
-          {attachedFile && <p className="mt-2 text-xs text-gray-500">Selected: {attachedFile.name}</p>}
         </div>
       ) : (
         <div className="space-y-2">

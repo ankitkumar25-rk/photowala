@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../api/client';
+import FileInput from '../components/FileInput';
 
 const EMPTY_FORM = {
   name: '',
@@ -337,13 +338,12 @@ export default function AdminProductForm() {
             <label className="block text-sm font-semibold text-gray-700">Product Images</label>
             <span className="text-xs text-gray-400">First image is used as primary</span>
           </div>
-          <input
-            type="file"
+          <FileInput
             accept="image/*"
             multiple
             onChange={handleUploadSelection}
-            className="input-field"
             disabled={uploadMut.isPending}
+            selectedFileCount={selectedFiles.length}
           />
           {uploadMut.isPending && (
             <p className="text-xs text-gray-500">Uploading {selectedFiles.length || 'selected'} image(s)...</p>

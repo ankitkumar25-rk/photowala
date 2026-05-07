@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { serviceRequestsApi } from '../api';
 import { useAuthStore } from '../store';
 import { useNavigate } from 'react-router-dom';
+import FileInput from '../components/FileInput';
 
 const SERVICES = [
   {
@@ -164,18 +165,12 @@ function ServiceFormView({ service, onBack }) {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Design File (.cdr, .zip, .pdf)</label>
-              <input
-                type="file"
+              <FileInput
                 accept=".cdr,.zip,.pdf"
                 onChange={handleFile}
-                className="input-field py-2 outline-2 outline-[#8F431A] outline-offset-2 focus:outline-3"
+                selectedFileName={form.designFile?.name}
                 required
               />
-              {form.designFile && (
-                <p className="mt-1.5 text-xs text-[#8F431A] font-medium flex items-center gap-1">
-                  <Check className="w-3 h-3" /> Selected: {form.designFile.name}
-                </p>
-              )}
             </div>
           </div>
 
