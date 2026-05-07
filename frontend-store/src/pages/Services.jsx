@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calculator, ChevronRight, ChevronLeft, Check, Zap, Drill } from 'lucide-react';
+import { Calculator, ChevronRight, ChevronLeft, Check, Zap, Drill, Award, CircleDollarSign, Timer, Lightbulb, Settings, Target } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { serviceRequestsApi } from '../api';
 import { useAuthStore } from '../store';
