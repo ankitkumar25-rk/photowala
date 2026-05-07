@@ -8,27 +8,36 @@ import api from './api/client';
 
 // ── Auth Store ───────────────────────────────────────────────
 // eslint-disable-next-line react-refresh/only-export-components
+let adminFetchMePromise = null;
 export const useAdminStore = create(
   persist(
     (set, get) => ({
       user: null,
       isFetching: false,
       setUser: (user) => set({ user }),
-      logout: () => { set({ user: null }); },
+      logout: () => { set({ user: null }); adminFetchMePromise = null; },
       
       fetchMe: async () => {
+        // Prevent concurrent fetchMe calls
+        if (adminFetchMePromise) return adminFetchMePromise;
+        
         set({ isFetching: true });
-        try {
-          const { data } = await api.get('/auth/me');
-          if (!['ADMIN', 'SUPER_ADMIN'].includes(data?.data?.role)) {
-            throw new Error('Admin role required');
+        adminFetchMePromise = (async () => {
+          try {
+            const { data } = await api.get('/auth/me');
+            if (!['ADMIN', 'SUPER_ADMIN'].includes(data?.data?.role)) {
+              throw new Error('Admin role required');
+            }
+            set({ user: data.data, isFetching: false });
+            return data.data;
+          } catch (err) {
+            set({ user: null, isFetching: false });
+            throw err;
+          } finally {
+            adminFetchMePromise = null;
           }
-          set({ user: data.data, isFetching: false });
-          return data.data;
-        } catch (err) {
-          set({ user: null, isFetching: false });
-          throw err;
-        }
+        })();
+        return adminFetchMePromise;
       },
     }),
     { 
@@ -40,6 +49,8 @@ export const useAdminStore = create(
       },
       partialize: (s) => ({ user: s.user }) 
     }
+  )
+);
   )
 );
 

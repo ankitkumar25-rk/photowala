@@ -27,10 +27,12 @@ function buildRedisStore(prefix) {
 
 const rateLimiter = rateLimit({
   windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 min
-  max: Number(process.env.RATE_LIMIT_MAX) || 1000,
+  max: Number(process.env.RATE_LIMIT_MAX) || 5000, // Increased from 1000 to 5000
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later.' },
+  // Skip rate limiting for GET /auth/me (authenticated users fetching their profile)
+  skip: (req) => req.method === 'GET' && req.path === '/auth/me',
   ...(redis ? { store: buildRedisStore('rl:global:') } : {}),
 });
 

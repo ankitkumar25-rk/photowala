@@ -7,6 +7,7 @@ export const useAuthStore = create(
     (set, get) => ({
       user: null,
       isLoading: false,
+      _fetchMePromise: null, // Track in-flight fetchMe requests
 
       setUser: (user) => set({ user }),
       login: async (credentials) => {
@@ -42,34 +43,43 @@ export const useAuthStore = create(
 
       logout: async () => {
         await authApi.logout().catch(() => {});
-        set({ user: null });
+        set({ user: null, _fetchMePromise: null });
         useCartStore.getState().resetCart();
       },
 
       fetchMe: async () => {
+        // Prevent concurrent fetchMe calls - return existing promise if one is in flight
+        if (get()._fetchMePromise) return get()._fetchMePromise;
+        
         const hadUserBefore = !!get().user; // Capture state before request
-        try {
-          const { data } = await authApi.getMe();
-          // Prevent admin leakage: only allow CUSTOMER role in the store frontend
-          if (data.data?.role !== 'CUSTOMER') {
-            console.warn('[Auth] Non-CUSTOMER role detected:', data.data?.role);
-            set({ user: null });
-            useCartStore.getState().resetCart();
-            return null;
+        const promise = (async () => {
+          try {
+            const { data } = await authApi.getMe();
+            // Prevent admin leakage: only allow CUSTOMER role in the store frontend
+            if (data.data?.role !== 'CUSTOMER') {
+              console.warn('[Auth] Non-CUSTOMER role detected:', data.data?.role);
+              set({ user: null, _fetchMePromise: null });
+              useCartStore.getState().resetCart();
+              return null;
+            }
+            set({ user: data.data, _fetchMePromise: null });
+            await useCartStore.getState().fetchCart();
+            return data.data;
+          } catch (err) {
+            // Only clear user if we previously thought we were authenticated
+            if (hadUserBefore) {
+              console.error('[Auth] fetchMe failed, clearing user', err);
+              set({ user: null, _fetchMePromise: null });
+              useCartStore.getState().resetCart();
+            } else {
+              set({ _fetchMePromise: null });
+            }
+            throw err;
           }
-          set({ user: data.data });
-          await useCartStore.getState().fetchCart();
-          return data.data;
-        } catch (err) {
-          // Only clear user if we previously thought we were authenticated
-          if (hadUserBefore) {
-            console.error('[Auth] fetchMe failed, clearing user', err);
-            set({ user: null });
-            useCartStore.getState().resetCart();
-          }
-          throw err;
-        }
-      },
+        })();
+        
+        set({ _fetchMePromise: promise });
+        return promise;
 
       isAuthenticated: () => !!get().user,
       isAdmin: () => ['ADMIN', 'SUPER_ADMIN'].includes(get().user?.role),
