@@ -77,7 +77,7 @@ export default function LaserPrintedPen() {
         </button>
 
         <div className="bg-white rounded-3xl p-8 shadow-lg">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Cause, sans-serif' }}>
             Laser Printed Pen
           </h1>
           <p className="text-gray-600 mb-8">Customize premium pens with precision laser engraving</p>
@@ -107,7 +107,7 @@ export default function LaserPrintedPen() {
 
             {/* 3. SELECT DETAIL */}
             <div className="border-2 border-dashed border-orange-200 rounded-xl p-6 bg-orange-50">
-              <h3 className="font-semibold text-gray-900 mb-4">3. SELECT DETAIL</h3>
+              <h3 className="font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Cause, sans-serif' }}>3. SELECT DETAIL</h3>
 
               <div className="grid grid-cols-2 gap-4">
                 {/* Pen Type */}
@@ -224,6 +224,7 @@ export default function LaserPrintedPen() {
 
             {/* COST SUMMARY */}
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 space-y-2">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3" style={{ fontFamily: 'Cause, sans-serif' }}>COST SUMMARY</h3>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-700">Applicable Cost</span>
                 <span className="font-medium">₹{applicableCost.toFixed(2)}</span>
