@@ -131,7 +131,11 @@ if (process.env.NODE_ENV !== 'test') {
 // ================================
 // RATE LIMITING
 // ================================
-app.use('/api', rateLimiter);
+// Exempt OAuth routes from rate limiting (not direct user requests)
+app.use('/api', (req, res, next) => {
+  if (req.path === '/auth/google/callback' || req.path === '/auth/google') return next();
+  rateLimiter(req, res, next);
+});
 app.use('/api', ensureCsrfCookie);
 app.use('/api', requireCsrf);
 

@@ -4,6 +4,8 @@ const { createError } = require('./errorHandler');
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const EXEMPT_PATHS = new Set([
   '/api/payments/webhook',
+  '/api/auth/google',          // Initial OAuth redirect to Google
+  '/api/auth/google/callback', // OAuth callback from Google redirect
 ]);
 const TRUSTED_ORIGINS = [
   process.env.CLIENT_URL,

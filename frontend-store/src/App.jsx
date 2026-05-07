@@ -59,16 +59,14 @@ function PageLoader() {
 }
 
 export default function App() {
-  const fetchMe = useAuthStore((s) => s.fetchMe);
-
   useEffect(() => {
     // Initial auth check on app mount
-    fetchMe().catch((err) => {
+    useAuthStore.getState().fetchMe().catch((err) => {
       // Errors are already handled inside fetchMe (user cleared if previously authenticated)
       // This catch just logs unexpected errors
       console.error('Initial auth check failed:', err);
     });
-  }, [fetchMe]);
+  }, []); // Empty array: run only once on mount
 
   useEffect(() => {
     const readCookie = (name) => {

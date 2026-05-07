@@ -84,14 +84,12 @@ function RequireAdmin({ children }) {
 }
 
 export default function App() {
-  const fetchMe = useAdminStore((s) => s.fetchMe);
-
   useEffect(() => {
     // Initial auth check on app mount (handles Google OAuth callback and page refresh)
-    fetchMe().catch((err) => {
+    useAdminStore.getState().fetchMe().catch((err) => {
       console.error('Initial auth check failed:', err);
     });
-  }, [fetchMe]);
+  }, []); // Empty array: run only once on mount
 
   useEffect(() => {
     const readCookie = (name) => {
