@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { authenticate, authorize } = require('../middleware/auth');
 const adminController = require('../controllers/admin.controller');
-const serviceRequestController = require('../controllers/serviceRequest.controller');
 
 // All admin routes require ADMIN or SUPER_ADMIN role
 router.use(authenticate, authorize('ADMIN', 'SUPER_ADMIN'));
@@ -20,9 +19,6 @@ router.patch('/customers/:id/ban', adminController.banCustomer);
 router.get('/inventory',          adminController.getInventory);
 router.get('/inventory/low-stock', adminController.getLowStockProducts);
 
-// Service Requests
-router.get('/service-requests', serviceRequestController.listServiceRequests);
-router.get('/service-requests/:id', serviceRequestController.getServiceRequest);
-router.patch('/service-requests/:id/status', serviceRequestController.updateServiceRequestStatus);
+
 
 module.exports = router;

@@ -82,7 +82,7 @@ export default function AdminOrders() {
                   <select
                     className="input-field py-2 text-xs flex-1"
                     value={order.status}
-                    onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber })}
+                    onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber ?? undefined })}
                   >
                     {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -97,7 +97,7 @@ export default function AdminOrders() {
                   defaultValue={order.trackingNumber || ''}
                   onBlur={(e) => {
                     if (e.target.value !== (order.trackingNumber || '')) {
-                      statusMut.mutate({ id: order.id, status: order.status, trackingNumber: e.target.value });
+                      statusMut.mutate({ id: order.id, status: order.status, trackingNumber: e.target.value || undefined });
                     }
                   }}
                 />
@@ -147,7 +147,7 @@ export default function AdminOrders() {
                     <select
                       className="input-field py-1 text-xs w-32 sm:w-36"
                       value={order.status}
-                      onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber })}>
+                      onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber ?? undefined })}>
                       {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </td>
@@ -159,7 +159,7 @@ export default function AdminOrders() {
                       defaultValue={order.trackingNumber || ''}
                       onBlur={(e) => {
                         if (e.target.value !== (order.trackingNumber || '')) {
-                          statusMut.mutate({ id: order.id, status: order.status, trackingNumber: e.target.value });
+                          statusMut.mutate({ id: order.id, status: order.status, trackingNumber: e.target.value || undefined });
                         }
                       }}
                     />

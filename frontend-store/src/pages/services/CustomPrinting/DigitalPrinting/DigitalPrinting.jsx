@@ -48,10 +48,7 @@ export default function DigitalPrinting() {
             </Link>
           );})}
         </nav>
-        <div className="space-y-4">
-          <button className="w-full bg-[#9a4b22] hover:bg-[#7e3d1a] text-white font-semibold py-3 rounded-lg shadow transition-colors text-sm">Request Quote</button>
-          <button className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 py-2 text-sm font-medium"><HelpCircle className="w-4 h-4" /> Help Center</button>
-        </div>
+
       </aside>
 
       <main className="flex-1 p-6 md:p-10 lg:p-12">

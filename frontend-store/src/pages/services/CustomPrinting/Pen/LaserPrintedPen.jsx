@@ -1,49 +1,101 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  PenTool, StickyNote, Printer, FileText, Tag, Book, Mail, 
-  HelpCircle, UploadCloud, AlertTriangle, ShieldCheck, Leaf, ShoppingCart
+import {
+  PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
+  HelpCircle, UploadCloud, AlertTriangle, ShieldCheck, Leaf, ShoppingCart, Truck
 } from 'lucide-react';
 import { serviceAssets } from '../../../../data/assets';
 
 const SIDEBAR_LINKS = [
-  { id: 'pen', icon: PenTool, label: 'Pen', active: true, to: '/services/custom-printing/pen' },
-  { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital', icon: Printer, label: 'Digital Paper Printing',  to: '/services/custom-printing/digital-printing' },
-  { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
-  { id: 'garment', icon: Tag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook', icon: Book, label: 'Bill Book',               to: '/services/custom-printing/bill-book' },
-  { id: 'envelop', icon: Mail, label: 'Envelop', to: '/services/custom-printing/envelop' },
+  { id: 'pen',        icon: PenTool,    label: 'Pen',                   to: '/services/custom-printing/pen', active: true },
+  { id: 'sticker',   icon: StickyNote,  label: 'Sticker Labels',        to: '/services/custom-printing/sticker-labels' },
+  { id: 'digital',   icon: Printer,     label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
+  { id: 'letterhead',icon: FileText,    label: 'Letterhead',             to: '/services/custom-printing/letterhead' },
+  { id: 'garment',   icon: Tag,         label: 'Garment Tag',            to: '/services/custom-printing/garment-tag' },
+  { id: 'billbook',  icon: Book,        label: 'Bill Book',              to: '/services/custom-printing/bill-book' },
+  { id: 'envelop',   icon: Mail,        label: 'Envelop',                to: '/services/custom-printing/envelop' },
 ];
 
+// Pen type price per unit (₹)
+const PEN_PRICES = {
+  101: 66,
+  102: 70,
+  103: 83,
+  104: 105,
+  105: 115,
+  106: 115,
+  107: 120,
+  108: 220,
+  109: 225,
+  110: 190,
+};
+
+const PEN_TYPES = Object.keys(PEN_PRICES).map(Number);
+const QTY_OPTIONS = [1, 2, 5, 10, 20, 30, 40, 50, 75, 100];
+const GST_RATE = 0.18;
+
 export default function LaserPrintedPen() {
+  const [orderName, setOrderName]       = useState('');
+  const [penType, setPenType]           = useState('');
+  const [qty, setQty]                   = useState('');
   const [deliveryOption, setDeliveryOption] = useState('courier');
   const [designOption, setDesignOption] = useState('online');
+  const [remark, setRemark]             = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  // Live price calculation
+  const pricing = useMemo(() => {
+    if (!penType || !qty) return null;
+    const unitCost   = PEN_PRICES[Number(penType)];
+    const baseCost   = unitCost * Number(qty);
+    const emailCharge = designOption === 'email' ? 10 : 0;
+    const applicable = baseCost + emailCharge;
+    const gst        = applicable * GST_RATE;
+    const total      = applicable + gst;
+    return {
+      unitCost,
+      baseCost: baseCost.toFixed(2),
+      emailCharge: emailCharge.toFixed(2),
+      applicable: applicable.toFixed(2),
+      gst: gst.toFixed(2),
+      total: total.toFixed(2),
+    };
+  }, [penType, qty, designOption]);
+
+  const canOrder = Boolean(
+    orderName.trim() &&
+    penType &&
+    qty &&
+    (designOption === 'email' || (designOption === 'online' && selectedFile))
+  );
 
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col md:flex-row font-sans">
-      {/* Sidebar */}
+      {/* ── Sidebar ── */}
       <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2>
           <p className="text-xs text-gray-500">Explore categories</p>
         </div>
-
         <nav className="flex-1 space-y-2 mb-8">
           {SIDEBAR_LINKS.map((link) => {
             const Icon = link.icon;
             return (
-              <Link 
-                key={link.id} 
-                to={link.to}
+              <Link key={link.id} to={link.to}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
-                  link.active 
-                    ? 'bg-[#b65e2e] shadow-md text-white' 
+                  link.active
+                    ? 'bg-[#b65e2e] shadow-md text-white'
                     : 'text-gray-600 hover:bg-[#e8dfd5] hover:text-gray-900'
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                {link.label}
+                <Icon className="w-4 h-4" />{link.label}
               </Link>
             );
           })}
@@ -51,7 +103,7 @@ export default function LaserPrintedPen() {
 
       </aside>
 
-      {/* Main Content */}
+      {/* ── Main Content ── */}
       <main className="flex-1 p-6 md:p-10 lg:p-12">
         {/* Breadcrumb */}
         <div className="text-sm font-medium mb-8 flex items-center gap-2">
@@ -68,77 +120,170 @@ export default function LaserPrintedPen() {
         <div className="mb-10">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">Laser Printed Pens</h1>
           <p className="text-gray-600 max-w-3xl leading-relaxed">
-            Precision-etched branding for executive gifts and corporate identity. High-quality metal and matte finishes available for bulk order.
+            Precision-etched branding for executive gifts and corporate identity. Choose your pen model and quantity — price updates live.
           </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Left Column (Form) */}
+          {/* ── Left Column ── */}
           <div className="w-full lg:w-2/3 flex flex-col gap-6">
             <div className="bg-white rounded-2xl border border-[#e8dfd5] p-6 lg:p-8 shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div>
+
+              {/* SELECT PRODUCT */}
+              <div className="mb-8">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Select Product</h3>
+                <select className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] bg-white">
+                  <option>Laser Printed Pens</option>
+                </select>
+              </div>
+
+              {/* SELECT DETAIL */}
+              <div className="border-t border-gray-100 pt-6 mb-8">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-5">Select Detail</h3>
+
+                {/* Order Name */}
+                <div className="mb-5">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Order Name</label>
-                  <input type="text" placeholder="e.g. Quarterly Executive Pens" className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] transition-shadow" />
+                  <input type="text" value={orderName} onChange={(e) => setOrderName(e.target.value)}
+                    placeholder="e.g. Quarterly Executive Pens"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] transition-shadow" />
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Select Product</label>
-                  <select className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] transition-shadow bg-white">
-                    <option>Laser Printed Pens</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Pen Type</label>
-                  <select className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] transition-shadow bg-white">
-                    <option>Select model (101-110)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
-                  <select className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] transition-shadow bg-white">
-                    <option>Select quantity (1-100)</option>
-                  </select>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Pen Type */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-[#3b71ca] mb-2">
+                      <PenTool className="w-3.5 h-3.5" /> Pen Type
+                    </label>
+                    <select value={penType} onChange={(e) => setPenType(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] bg-white">
+                      <option value="">--Select--</option>
+                      {PEN_TYPES.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                    {penType && (
+                      <p className="text-xs text-[#a64d24] mt-1 font-medium">
+                        ₹{PEN_PRICES[Number(penType)]}/pen
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Qty */}
+                  <div>
+                    <label className="flex items-center gap-1.5 text-sm font-semibold text-[#3b71ca] mb-2">
+                      <Tag className="w-3.5 h-3.5" /> Qty.
+                    </label>
+                    <select value={qty} onChange={(e) => setQty(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] bg-white">
+                      <option value="">--Select--</option>
+                      {QTY_OPTIONS.map((q) => (
+                        <option key={q} value={q}>{q}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* Delivery Option */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Delivery Option</label>
-                <div className="flex items-center gap-2 cursor-pointer" onClick={() => setDeliveryOption('courier')}>
-                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${deliveryOption === 'courier' ? 'border-[#b65e2e]' : 'border-gray-300'}`}>
-                    {deliveryOption === 'courier' && <div className="w-2 h-2 rounded-full bg-[#b65e2e]"></div>}
+              {/* LIVE PRICE SUMMARY (shows when both selected) */}
+              {pricing && (
+                <div className="bg-[#fdf8f4] border border-[#e8dfd5] rounded-xl p-5 mb-8 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Base Cost ({qty} × ₹{pricing.unitCost})</span>
+                    <span className="font-semibold text-gray-800">₹{pricing.baseCost}</span>
                   </div>
-                  <span className="text-sm font-medium text-gray-800">Deliver By Courier</span>
+                  {designOption === 'email' && (
+                    <div className="flex justify-between text-sm text-[#a64d24]">
+                      <span>Email Processing Fee</span>
+                      <span className="font-semibold">₹10.00</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>GST (18.00%)</span>
+                    <span className="font-semibold text-gray-800">₹{pricing.gst}</span>
+                  </div>
+                  <div className="flex justify-between text-sm border-t border-[#e8dfd5] pt-2 mt-2">
+                    <span className="font-bold text-gray-900">Amount Payable</span>
+                    <span className="font-bold text-[#a64d24] text-base">₹{pricing.total}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* SELECT DELIVERY OPTION */}
+              <div className="border-t border-gray-100 pt-6 mb-6">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Select Delivery Option</h3>
+                <div className="flex items-start gap-3 cursor-pointer" onClick={() => setDeliveryOption('courier')}>
+                  <div className={`w-4 h-4 mt-0.5 rounded-full border-2 flex items-center justify-center shrink-0 ${deliveryOption === 'courier' ? 'border-[#b65e2e]' : 'border-gray-300'}`}>
+                    {deliveryOption === 'courier' && <div className="w-2 h-2 rounded-full bg-[#b65e2e]" />}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Truck className="w-4 h-4 text-[#3b71ca]" />
+                      <span className="text-sm font-semibold text-gray-800">Deliver By Courier</span>
+                    </div>
+                    <p className="text-xs text-green-600 font-medium mt-0.5">Free Delivery</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Design File */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Design File</label>
-                <div className="flex items-center gap-6 mb-4">
-                  <div className="flex items-center gap-2 cursor-pointer" onClick={() => setDesignOption('online')}>
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${designOption === 'online' ? 'border-[#b65e2e]' : 'border-gray-300'}`}>
-                      {designOption === 'online' && <div className="w-2 h-2 rounded-full bg-[#b65e2e]"></div>}
+              {/* SELECT FILE OPTION */}
+              <div className="border-t border-gray-100 pt-6 mb-6">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Select File Option</h3>
+                <div className="flex items-center gap-6 mb-5">
+                  {['online', 'email'].map((opt) => (
+                    <div key={opt} className="flex items-center gap-2 cursor-pointer" onClick={() => setDesignOption(opt)}>
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${designOption === opt ? 'border-[#b65e2e]' : 'border-gray-300'}`}>
+                        {designOption === opt && <div className="w-2 h-2 rounded-full bg-[#b65e2e]" />}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <UploadCloud className="w-3.5 h-3.5 text-[#3b71ca]" />
+                        <span className="text-sm font-medium text-gray-800">{opt === 'online' ? 'Attach File' : 'Send via Email'}</span>
+                      </div>
                     </div>
-                    <span className="text-sm font-medium text-gray-800">Attach File Online</span>
-                  </div>
-                  <div className="flex items-center gap-2 cursor-pointer" onClick={() => setDesignOption('email')}>
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${designOption === 'email' ? 'border-[#b65e2e]' : 'border-gray-300'}`}>
-                      {designOption === 'email' && <div className="w-2 h-2 rounded-full bg-[#b65e2e]"></div>}
-                    </div>
-                    <span className="text-sm font-medium text-gray-800">Send via Email</span>
-                  </div>
+                  ))}
                 </div>
 
-                {/* Upload Box */}
-                <div className="border-2 border-dashed border-[#d1a88b] bg-[#fffaf5] rounded-xl p-10 flex flex-col items-center justify-center text-center transition-colors hover:bg-[#fbf4ea]">
-                  <UploadCloud className="w-10 h-10 text-[#a64d24] mb-3" />
-                  <p className="text-sm font-bold text-gray-800 mb-1">Drag and drop your logo here</p>
-                  <p className="text-xs text-gray-500 mb-6">SVG, PDF, or High-Res PNG (Max 10MB)</p>
-                  <button className="border border-[#b65e2e] text-[#b65e2e] hover:bg-[#b65e2e] hover:text-white transition-colors font-semibold py-2 px-6 rounded-lg text-sm bg-white">
-                    Choose File
-                  </button>
-                </div>
+                {designOption === 'email' && (
+                  <div className="bg-[#eef2ff] border border-[#c7d2fe] rounded-xl p-4 mb-6 flex items-start gap-3">
+                    <Mail className="w-5 h-5 text-[#3b71ca] mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-800 leading-relaxed font-medium">
+                        Send file to <span className="text-[#3b71ca] font-bold underline">photowalagiftphotowalagift@gmail.com</span>
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1 italic">
+                        (Extra Charges - ₹10.00 is applicable for manual processing)
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {designOption === 'online' && (
+                  <div className="border-2 border-dashed border-[#d1a88b] bg-[#fffaf5] rounded-xl p-8 flex flex-col items-center text-center hover:bg-[#fbf4ea] transition-colors relative">
+                    <input
+                      type="file"
+                      id="pen-file-upload"
+                      className="hidden"
+                      onChange={handleFileChange}
+                      accept=".pdf,.cdr,.psd,.jpg,.jpeg,.png"
+                    />
+                    <UploadCloud className="w-9 h-9 text-[#a64d24] mb-3" />
+                    <p className="text-sm font-bold text-gray-800 mb-1">
+                      {selectedFile ? selectedFile.name : 'Drag and drop your logo here'}
+                    </p>
+                    <p className="text-xs text-gray-500 mb-5">PDF, CDR, PSD, JPG, or PNG (Max 100MB)</p>
+                    <button
+                      onClick={() => document.getElementById('pen-file-upload').click()}
+                      className="border border-[#b65e2e] text-[#b65e2e] hover:bg-[#b65e2e] hover:text-white transition-colors font-semibold py-2 px-6 rounded-lg text-sm bg-white"
+                    >
+                      {selectedFile ? 'Change File' : 'Choose File'}
+                    </button>
+                    {selectedFile && (
+                      <p className="mt-3 text-xs text-green-600 font-medium">
+                        File selected successfully!
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Warning */}
@@ -150,17 +295,15 @@ export default function LaserPrintedPen() {
                 </div>
               </div>
 
-              {/* Remark */}
+              {/* Special Remark */}
               <div>
                 <div className="flex justify-between mb-2">
                   <label className="block text-sm font-semibold text-gray-700">Special Remark</label>
-                  <span className="text-xs text-gray-400">0 / 250</span>
+                  <span className="text-xs text-gray-400">{remark.length} / 250</span>
                 </div>
-                <textarea 
-                  rows="3" 
-                  placeholder="Any specific placement instructions?" 
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] transition-shadow resize-none"
-                ></textarea>
+                <textarea rows="3" maxLength={250} value={remark} onChange={(e) => setRemark(e.target.value)}
+                  placeholder="Any specific placement instructions?"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e] transition-shadow resize-none" />
               </div>
             </div>
 
@@ -187,71 +330,71 @@ export default function LaserPrintedPen() {
             </div>
           </div>
 
-          {/* Right Column (Summary) */}
+          {/* ── Right Column (Summary) ── */}
           <div className="w-full lg:w-1/3 flex flex-col gap-6">
             <div className="bg-[#1c1a19] text-white rounded-2xl overflow-hidden shadow-lg border border-gray-800">
               <div className="relative h-48 w-full">
                 <img src={serviceAssets.penPreview} alt="Pen Preview" className="w-full h-full object-cover opacity-80" />
                 <div className="absolute top-4 right-4 bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">
-                  Bulk Savings Active
+                  Free Delivery
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1c1a19] to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1c1a19] to-transparent" />
               </div>
 
               <div className="p-6">
                 <h3 className="font-bold text-lg mb-6 border-b border-gray-700 pb-3">Order Summary</h3>
-                
+
+                {penType && (
+                  <div className="bg-gray-800 rounded-lg p-3 mb-3 border border-gray-700">
+                    <div className="text-xs text-gray-400 mb-0.5">Pen Type</div>
+                    <div className="font-bold text-[#f0ba9c]">Type {penType} — ₹{PEN_PRICES[Number(penType)]}/pen</div>
+                  </div>
+                )}
+
+                {designOption === 'online' && selectedFile && (
+                  <div className="bg-gray-800 rounded-lg p-3 mb-3 border border-gray-700">
+                    <div className="text-xs text-gray-400 mb-0.5">Attached File</div>
+                    <div className="text-sm font-medium text-white truncate">{selectedFile.name}</div>
+                  </div>
+                )}
+
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Base Cost (50 Units)</span>
-                    <span className="font-medium">$249.50</span>
+                    <span className="text-gray-400">Base Cost</span>
+                    <span className="font-medium">{pricing ? `₹${pricing.baseCost}` : '-'}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-green-400">
-                    <span className="flex items-center gap-1"><Tag className="w-3 h-3" /> Bulk Discount (15%)</span>
-                    <span className="font-bold">-$37.42</span>
-                  </div>
+                  {designOption === 'email' && (
+                    <div className="flex justify-between text-sm text-[#f0ba9c]">
+                      <span className="text-gray-400 italic">Email Charge</span>
+                      <span className="font-medium">₹10.00</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">GST (18%)</span>
-                    <span className="font-medium">$38.17</span>
+                    <span className="text-gray-400">GST (18.00%)</span>
+                    <span className="font-medium">{pricing ? `₹${pricing.gst}` : '-'}</span>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center mb-8 border-t border-gray-700 pt-4">
-                  <span className="font-bold text-lg">Total Amount</span>
-                  <span className="font-bold text-2xl text-white">$250.25</span>
+                  <span className="font-bold text-lg">Amount Payable</span>
+                  <span className={`font-bold text-2xl ${pricing ? 'text-[#f0ba9c]' : 'text-white'}`}>
+                    {pricing ? `₹${pricing.total}` : '-'}
+                  </span>
                 </div>
 
-                <button className="w-full flex items-center justify-center gap-2 bg-[#b65e2e] hover:bg-[#a15024] text-white font-bold py-3.5 rounded-xl transition-colors mb-4">
+                <button disabled={!canOrder}
+                  className={`w-full flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-colors mb-4 ${
+                    canOrder ? 'bg-[#b65e2e] hover:bg-[#a15024] text-white cursor-pointer' : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  }`}>
                   <ShoppingCart className="w-5 h-5" /> Add Order
                 </button>
-                <p className="text-center text-xs text-gray-500 italic">Estimated delivery: 5-7 business days</p>
+                <p className="text-center text-xs text-gray-500 italic">
+                  {canOrder ? 'Free Courier Delivery · Est. 5-7 days' : 'Select pen type & quantity'}
+                </p>
               </div>
             </div>
 
-            {/* Other Pen Styles */}
-            <div className="bg-[#fcfaf8] rounded-2xl border border-[#e8dfd5] p-6 shadow-sm">
-              <h3 className="font-bold text-gray-800 text-sm mb-4">Other Pen Styles</h3>
-              <div className="space-y-3">
-                <div className="border border-[#b65e2e] bg-[#fffaf5] rounded-xl p-3 flex gap-3 cursor-pointer items-center">
-                  <div className="bg-[#f0ece5] p-2 rounded-lg text-[#b65e2e]">
-                    <PenTool className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-xs text-[#a64d24]">Laser Printed Pen</h4>
-                    <p className="text-[10px] text-gray-500">Active & Popular</p>
-                  </div>
-                </div>
-                <div className="border border-gray-200 bg-gray-50 rounded-xl p-3 flex gap-3 items-center opacity-70">
-                  <div className="bg-gray-200 p-2 rounded-lg text-gray-500">
-                    <PenTool className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-xs text-gray-700">Second Pen Style</h4>
-                    <p className="text-[10px] text-gray-500 italic">Coming Soon</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+
           </div>
         </div>
       </main>

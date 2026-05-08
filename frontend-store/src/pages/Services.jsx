@@ -1,46 +1,132 @@
+import { Link } from 'react-router-dom';
+import { PenTool, Printer, Scissors, Settings, CheckCircle2 } from 'lucide-react';
+import { serviceAssets } from '../data/assets';
+
+const SERVICES = [
+  {
+    id: 'co2-laser',
+    title: 'CO2 LASER MACHINE',
+    description: 'Precision cutting and engraving for organic materials like wood, acrylic, and leather. Perfect for intricate giftware and architectural models.',
+    image: serviceAssets.co2Laser,
+    icon: Scissors,
+    badge: 'PREMIUM',
+    badgeColor: 'bg-green-700',
+    link: '#'
+  },
+  {
+    id: 'laser-marking',
+    title: 'Laser Marking Machine',
+    description: 'Permanent, high-speed marking for industrial parts, tools, and metal gifts. Ideal for serial numbers, barcodes, and metal engraving.',
+    image: serviceAssets.laserMarking,
+    icon: Settings,
+    link: '#'
+  },
+  {
+    id: 'cnc-router',
+    title: 'CNC ROUTER MACHINE',
+    description: 'Large-scale 3D carving and profile cutting for signage, furniture, and heavy-duty materials with unmatched structural integrity.',
+    image: serviceAssets.cncRouter,
+    icon: PenTool,
+    link: '#'
+  },
+  {
+    id: 'custom-printing',
+    title: 'Custom Printing',
+    description: 'Personalized merchandise including Laser Printed Pens, stickers, and corporate stationery with high-fidelity finishes.',
+    image: serviceAssets.customPrinting,
+    icon: Printer,
+    badge: 'NEW',
+    badgeColor: 'bg-teal-700',
+    link: '/services/custom-printing/pen'
+  }
+];
+
 export default function Services() {
   return (
-    <div className="min-h-screen bg-cream-100 px-4 py-20 flex items-center justify-center">
-      <div className="max-w-2xl text-center">
-        <div className="mb-8">
-          <div className="inline-block px-6 py-2 bg-orange-100 rounded-full mb-6">
-            <span className="text-sm font-bold text-orange-700 uppercase tracking-wider">Coming Soon</span>
-          </div>
-        </div>
-        
-        <h1 className="text-5xl font-bold text-gray-900 mb-4">Our Services</h1>
-        
-        <p className="text-xl text-gray-600 mb-8">
-          We're working on bringing you premium laser cutting, engraving, and custom printing services. Stay tuned!
+    <div className="min-h-screen bg-[#faf8f5] font-sans pb-20">
+      {/* Header */}
+      <div className="max-w-4xl mx-auto text-center pt-20 pb-16 px-4">
+        <h1 className="text-5xl font-extrabold text-[#8c3a1b] mb-6">Our Professional Services</h1>
+        <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
+          Precision craftsmanship meets creative vision. Discover our range of industrial-grade machinery and personalized printing solutions tailored for your unique needs.
         </p>
+      </div>
 
-        <div className="inline-block px-8 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-opacity-90 transition-all">
-          <a href="/">← Back to Home</a>
+      {/* Services Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+          {SERVICES.map((service) => {
+            const Icon = service.icon;
+            return (
+              <div key={service.id} className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">
+                <div className="relative h-48 overflow-hidden group">
+                  <img src={service.image} alt={service.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  {service.badge && (
+                    <span className={`absolute top-4 right-4 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm tracking-wider ${service.badgeColor}`}>
+                      {service.badge}
+                    </span>
+                  )}
+                </div>
+                
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="text-[#a64d24]">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-bold text-gray-900 text-lg leading-tight">{service.title}</h3>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-8 flex-grow leading-relaxed">
+                    {service.description}
+                  </p>
+                  <Link 
+                    to={service.link}
+                    className="w-full block text-center bg-[#a64d24] hover:bg-[#8c3a1b] text-white font-semibold py-3 rounded-lg transition-colors text-sm"
+                  >
+                    View Details →
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
         </div>
+      </div>
 
-        <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="text-4xl mb-3">🔥</div>
-            <h3 className="font-bold text-gray-900 mb-2">Laser Cutting</h3>
-            <p className="text-sm text-gray-600">Precision cutting for wood, acrylic, and more</p>
-          </div>
-          
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="text-4xl mb-3">✨</div>
-            <h3 className="font-bold text-gray-900 mb-2">Laser Marking</h3>
-            <p className="text-sm text-gray-600">Permanent engraving on metal and other surfaces</p>
-          </div>
-          
-          <div className="bg-white rounded-lg p-6 shadow-sm">
-            <div className="text-4xl mb-3">⚙️</div>
-            <h3 className="font-bold text-gray-900 mb-2">CNC Routing</h3>
-            <p className="text-sm text-gray-600">Heavy-duty cutting and 3D carving</p>
+      {/* Bottom Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#f2eee9] rounded-2xl overflow-hidden flex flex-col lg:flex-row relative">
+          {/* Background pattern */}
+          <div className="absolute -bottom-24 -right-12 text-[#e3dad1] opacity-50 w-96 h-96 pointer-events-none">
+            <Settings className="w-full h-full" strokeWidth={0.5} />
           </div>
 
-          <div className="bg-white rounded-lg p-6 shadow-sm border-2 border-brand-primary">
-            <div className="text-4xl mb-3">🖨️</div>
-            <h3 className="font-bold text-gray-900 mb-2">Custom Printing</h3>
-            <p className="text-sm text-gray-600">High-quality printed pens and promotional materials</p>
+          <div className="p-12 lg:w-1/2 flex flex-col justify-center relative z-10">
+            <h2 className="text-4xl font-extrabold text-[#a64d24] mb-6 leading-tight">
+              Industrial Quality for Creative Projects
+            </h2>
+            <p className="text-gray-700 mb-10 leading-relaxed text-lg">
+              Our workshop bridges the gap between massive industrial production and boutique artisan design. We use high-end machinery to ensure your gifts and branding materials stand out with microscopic detail.
+            </p>
+            
+            <ul className="space-y-4">
+              {[
+                'Precision up to 0.01mm for complex designs',
+                'Material versatility: Metal, Wood, Acrylic, Leather',
+                'Fast turnaround for bulk corporate orders'
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-green-700 shrink-0 mt-0.5" />
+                  <span className="text-gray-800 font-medium">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div className="lg:w-1/2 p-4 lg:p-8 grid grid-cols-2 gap-4">
+            {/* 2x2 Grayscale Images Grid */}
+            <img src={serviceAssets.industrial} alt="Industrial" className="w-full h-48 md:h-64 object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-500" />
+            <img src={serviceAssets.drawing} alt="Drawing" className="w-full h-48 md:h-64 object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-500" />
+            <img src={serviceAssets.machine} alt="Machine" className="w-full h-48 md:h-64 object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-500" />
+            <img src={serviceAssets.material} alt="Material" className="w-full h-48 md:h-64 object-cover rounded-xl grayscale hover:grayscale-0 transition-all duration-500" />
           </div>
         </div>
       </div>

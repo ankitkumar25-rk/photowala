@@ -12,6 +12,17 @@ import goldenShieldExcellenceAwardPlaque from "../assets/products/trophies/golde
 import geometricCrystalTowerAchievementAward from "../assets/products/trophies/geometric-crystal-tower-achievement-award.jpg";
 import starPerformerBlueGlassTrophy from "../assets/products/trophies/star-performer-blue-glass-trophy.jpg";
 
+// Services
+import serviceCo2Laser from "../assets/service_co2_laser.png";
+import serviceLaserMarking from "../assets/service_laser_marking.png";
+import serviceCncRouter from "../assets/service_cnc_router.png";
+import serviceCustomPrinting from "../assets/service_custom_printing.png";
+import serviceIndustrial from "../assets/service_industrial.png";
+import serviceDrawing from "../assets/service_drawing.png";
+import serviceMachine from "../assets/service_machine.png";
+import serviceMaterial from "../assets/service_material.png";
+import servicePenPreview from "../assets/service_pen_preview.png";
+
 // Brand exports
 export const brandAssets = {
   logo,
@@ -49,3 +60,15 @@ export const productImagesBySlug = {
 };
 
 export const getProductImage = (slug) => productImagesBySlug[slug] || productPlaceholder;
+
+export const serviceAssets = {
+  co2Laser: serviceCo2Laser,
+  laserMarking: serviceLaserMarking,
+  cncRouter: serviceCncRouter,
+  customPrinting: serviceCustomPrinting,
+  industrial: serviceIndustrial,
+  drawing: serviceDrawing,
+  machine: serviceMachine,
+  material: serviceMaterial,
+  penPreview: servicePenPreview,
+};

@@ -25,7 +25,6 @@ const adminRoutes = require('./routes/admin.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const returnsRoutes = require('./routes/returns.routes');
 const supportRoutes = require('./routes/support.routes');
-const serviceRequestRoutes = require('./routes/serviceRequest.routes');
 
 const app = express();
 const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-session-secret' : '');
@@ -183,8 +182,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/returns', returnsRoutes);
 app.use('/api/support', supportRoutes);
-app.use('/api/service-requests', serviceRequestRoutes);
-app.use('/api/printed-pens', require('./modules/printed-pens/routes/printed-pen.routes'));
 
 // ================================
 // 404 HANDLER

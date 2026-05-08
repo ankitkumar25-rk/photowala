@@ -223,7 +223,7 @@ exports.updateOrderStatus = async (req, res, next) => {
   try {
     const { status, trackingNumber } = z.object({ 
       status: z.enum(['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED','REFUNDED']),
-      trackingNumber: z.string().optional(),
+      trackingNumber: z.string().nullable().optional(),
     }).parse(req.body);
 
     const updateData = { status };
