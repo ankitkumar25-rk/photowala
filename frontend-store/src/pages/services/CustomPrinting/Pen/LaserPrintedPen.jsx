@@ -9,10 +9,10 @@ import { serviceAssets } from '../../../../data/assets';
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: PenTool, label: 'Pen', active: true, to: '/services/custom-printing/pen' },
   { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital', icon: Printer, label: 'Digital Paper Printing', to: '#' },
+  { id: 'digital', icon: Printer, label: 'Digital Paper Printing',  to: '/services/custom-printing/digital-printing' },
   { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
   { id: 'garment', icon: Tag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook', icon: Book, label: 'Bill Book', to: '#' },
+  { id: 'billbook', icon: Book, label: 'Bill Book',               to: '/services/custom-printing/bill-book' },
   { id: 'envelop', icon: Mail, label: 'Envelop', to: '/services/custom-printing/envelop' },
 ];
 
@@ -25,7 +25,7 @@ export default function LaserPrintedPen() {
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Printing</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2>
           <p className="text-xs text-gray-500">Explore categories</p>
         </div>
 

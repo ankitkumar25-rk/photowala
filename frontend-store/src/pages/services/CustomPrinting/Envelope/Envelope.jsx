@@ -8,10 +8,10 @@ import {
 const SIDEBAR_LINKS = [
   { id: 'pen',        icon: PenTool,    label: 'Pen',                    to: '/services/custom-printing/pen' },
   { id: 'sticker',    icon: StickyNote,  label: 'Sticker Labels',         to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital',   icon: Printer,     label: 'Digital Paper Printing',  to: '#' },
+  { id: 'digital',   icon: Printer,     label: 'Digital Paper Printing',  to: '/services/custom-printing/digital-printing' },
   { id: 'letterhead',icon: FileText,    label: 'Letterhead',              to: '/services/custom-printing/letterhead' },
   { id: 'garment',    icon: Tag,         label: 'Garment Tag',             to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook',  icon: Book,        label: 'Bill Book',               to: '#' },
+  { id: 'billbook',  icon: Book,        label: 'Bill Book',               to: '/services/custom-printing/bill-book' },
   { id: 'envelop',   icon: Mail,        label: 'Envelop',                 to: '/services/custom-printing/envelop', active: true },
 ];
 

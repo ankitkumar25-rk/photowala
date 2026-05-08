@@ -38,6 +38,8 @@ const Letterhead      = lazy(() => import('./pages/services/CustomPrinting/Lette
 const Envelope        = lazy(() => import('./pages/services/CustomPrinting/Envelope/Envelope'));
 const StickerLabels   = lazy(() => import('./pages/services/CustomPrinting/StickerLabels/StickerLabels'));
 const GarmentTag      = lazy(() => import('./pages/services/CustomPrinting/GarmentTag/GarmentTag'));
+const BillBook        = lazy(() => import('./pages/services/CustomPrinting/BillBook/BillBook'));
+const DigitalPrinting = lazy(() => import('./pages/services/CustomPrinting/DigitalPrinting/DigitalPrinting'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -142,6 +144,8 @@ export default function App() {
                 <Route path="services/custom-printing/envelop" element={<Envelope />} />
                 <Route path="services/custom-printing/sticker-labels" element={<StickerLabels />} />
                 <Route path="services/custom-printing/garment-tag" element={<GarmentTag />} />
+                <Route path="services/custom-printing/bill-book" element={<BillBook />} />
+                <Route path="services/custom-printing/digital-printing" element={<DigitalPrinting />} />
                 <Route path="privacy"          element={<Privacy />} />
                 <Route path="forgot-password"  element={<ForgotPassword />} />
                 <Route path="reset-password"   element={<ResetPassword />} />
