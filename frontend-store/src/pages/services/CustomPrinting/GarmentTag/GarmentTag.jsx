@@ -337,3 +337,6 @@ export default function GarmentTag() {
     </div>
   );
 }
+
+
+

@@ -11,7 +11,7 @@ const SERVICES = [
     icon: Scissors,
     badge: 'PREMIUM',
     badgeColor: 'bg-green-700',
-    link: '#'
+    link: '/services/machine-services/co2-laser'
   },
   {
     id: 'laser-marking',
@@ -19,7 +19,7 @@ const SERVICES = [
     description: 'Permanent, high-speed marking for industrial parts, tools, and metal gifts. Ideal for serial numbers, barcodes, and metal engraving.',
     image: serviceAssets.laserMarking,
     icon: Settings,
-    link: '#'
+    link: '/services/machine-services/laser-marking'
   },
   {
     id: 'cnc-router',
@@ -27,7 +27,7 @@ const SERVICES = [
     description: 'Large-scale 3D carving and profile cutting for signage, furniture, and heavy-duty materials with unmatched structural integrity.',
     image: serviceAssets.cncRouter,
     icon: PenTool,
-    link: '#'
+    link: '/services/machine-services/cnc-router'
   },
   {
     id: 'custom-printing',

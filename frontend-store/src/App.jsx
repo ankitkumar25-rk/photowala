@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
@@ -36,10 +36,13 @@ const CustomPrintingIndex = lazy(() => import('./pages/services/CustomPrinting/C
 const LaserPrintedPen = lazy(() => import('./pages/services/CustomPrinting/Pen/LaserPrintedPen'));
 const Letterhead      = lazy(() => import('./pages/services/CustomPrinting/Letterhead/Letterhead'));
 const Envelope        = lazy(() => import('./pages/services/CustomPrinting/Envelope/Envelope'));
-const StickerLabels   = lazy(() => import('./pages/services/CustomPrinting/StickerLabels/StickerLabels'));
+const StickerLabels      = lazy(() => import('./pages/services/CustomPrinting/StickerLabels/StickerLabels'));
 const GarmentTag      = lazy(() => import('./pages/services/CustomPrinting/GarmentTag/GarmentTag'));
 const BillBook        = lazy(() => import('./pages/services/CustomPrinting/BillBook/BillBook'));
 const DigitalPrinting = lazy(() => import('./pages/services/CustomPrinting/DigitalPrinting/DigitalPrinting'));
+const CO2LaserService = lazy(() => import('./pages/services/MachineServices/CO2LaserService'));
+const LaserMarkingService = lazy(() => import('./pages/services/MachineServices/LaserMarkingService'));
+const CNCRouterService = lazy(() => import('./pages/services/MachineServices/CNCRouterService'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -142,10 +145,14 @@ export default function App() {
                 <Route path="services/custom-printing/pen" element={<LaserPrintedPen />} />
                 <Route path="services/custom-printing/letterhead" element={<Letterhead />} />
                 <Route path="services/custom-printing/envelop" element={<Envelope />} />
-                <Route path="services/custom-printing/sticker-labels" element={<StickerLabels />} />
+                <Route path="services/custom-printing/sticker-labels" element={<Navigate to="/services/custom-printing/sticker-labels/no-cut" replace />} />
+                <Route path="services/custom-printing/sticker-labels/:type" element={<StickerLabels />} />
                 <Route path="services/custom-printing/garment-tag" element={<GarmentTag />} />
                 <Route path="services/custom-printing/bill-book" element={<BillBook />} />
                 <Route path="services/custom-printing/digital-printing" element={<DigitalPrinting />} />
+                <Route path="services/machine-services/co2-laser" element={<CO2LaserService />} />
+                <Route path="services/machine-services/laser-marking" element={<LaserMarkingService />} />
+                <Route path="services/machine-services/cnc-router" element={<CNCRouterService />} />
                 <Route path="privacy"          element={<Privacy />} />
                 <Route path="forgot-password"  element={<ForgotPassword />} />
                 <Route path="reset-password"   element={<ResetPassword />} />
