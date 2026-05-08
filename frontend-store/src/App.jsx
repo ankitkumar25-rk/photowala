@@ -32,10 +32,10 @@ const Privacy       = lazy(() => import('./pages/Privacy'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword  = lazy(() => import('./pages/ResetPassword'));
 const Services      = lazy(() => import('./pages/Services'));
-const PaperGsmCalculator = lazy(() => import('./pages/PaperGsmCalculator'));
 const CustomPrintingIndex = lazy(() => import('./pages/services/CustomPrinting/CustomPrintingIndex'));
-const PenIndex = lazy(() => import('./pages/services/CustomPrinting/Pen/PenIndex'));
 const LaserPrintedPen = lazy(() => import('./pages/services/CustomPrinting/Pen/LaserPrintedPen'));
+const Letterhead      = lazy(() => import('./pages/services/CustomPrinting/Letterhead/Letterhead'));
+const Envelope        = lazy(() => import('./pages/services/CustomPrinting/Envelope/Envelope'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -134,10 +134,10 @@ export default function App() {
                 <Route path="returns"          element={<Returns />} />
                 <Route path="faq"              element={<FAQ />} />
                 <Route path="services"         element={<Services />} />
-                <Route path="services/paper-gsm" element={<PaperGsmCalculator />} />
                 <Route path="services/custom-printing" element={<CustomPrintingIndex />} />
-                <Route path="services/custom-printing/pen" element={<PenIndex />} />
-                <Route path="services/custom-printing/pen/laser-printed-pen" element={<LaserPrintedPen />} />
+                <Route path="services/custom-printing/pen" element={<LaserPrintedPen />} />
+                <Route path="services/custom-printing/letterhead" element={<Letterhead />} />
+                <Route path="services/custom-printing/envelop" element={<Envelope />} />
                 <Route path="privacy"          element={<Privacy />} />
                 <Route path="forgot-password"  element={<ForgotPassword />} />
                 <Route path="reset-password"   element={<ResetPassword />} />
