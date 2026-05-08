@@ -10,7 +10,7 @@ const SIDEBAR_LINKS = [
   { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
   { id: 'digital', icon: Printer, label: 'Digital Paper Printing', to: '#' },
   { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead', active: true },
-  { id: 'garment', icon: Tag, label: 'Garment Tag', to: '#' },
+  { id: 'garment', icon: Tag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
   { id: 'billbook', icon: Book, label: 'Bill Book', to: '#' },
   { id: 'envelop', icon: Mail, label: 'Envelop', to: '/services/custom-printing/envelop' },
 ];

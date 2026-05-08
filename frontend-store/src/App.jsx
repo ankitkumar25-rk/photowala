@@ -37,6 +37,7 @@ const LaserPrintedPen = lazy(() => import('./pages/services/CustomPrinting/Pen/L
 const Letterhead      = lazy(() => import('./pages/services/CustomPrinting/Letterhead/Letterhead'));
 const Envelope        = lazy(() => import('./pages/services/CustomPrinting/Envelope/Envelope'));
 const StickerLabels   = lazy(() => import('./pages/services/CustomPrinting/StickerLabels/StickerLabels'));
+const GarmentTag      = lazy(() => import('./pages/services/CustomPrinting/GarmentTag/GarmentTag'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -140,6 +141,7 @@ export default function App() {
                 <Route path="services/custom-printing/letterhead" element={<Letterhead />} />
                 <Route path="services/custom-printing/envelop" element={<Envelope />} />
                 <Route path="services/custom-printing/sticker-labels" element={<StickerLabels />} />
+                <Route path="services/custom-printing/garment-tag" element={<GarmentTag />} />
                 <Route path="privacy"          element={<Privacy />} />
                 <Route path="forgot-password"  element={<ForgotPassword />} />
                 <Route path="reset-password"   element={<ResetPassword />} />
