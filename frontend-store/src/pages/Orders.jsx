@@ -87,7 +87,7 @@ function OrderCard({ order, onCancel }) {
         </div>
         <div className="text-right shrink-0">
           <p className="text-xs text-gray-600">Total</p>
-          <p className="font-bold text-brand-primary text-lg">â‚¹{Number(order.total).toFixed(0)}</p>
+          <p className="font-bold text-brand-primary text-lg">₹{Number(order.total).toFixed(0)}</p>
         </div>
       </div>
 
@@ -255,7 +255,7 @@ export default function Orders() {
                   disabled={page === 1}
                   className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
                 >
-                  â† Prev
+                  ← Prev
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button
@@ -275,7 +275,7 @@ export default function Orders() {
                   disabled={page === totalPages}
                   className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
                 >
-                  Next â†’
+                  Next →
                 </button>
               </div>
             )}

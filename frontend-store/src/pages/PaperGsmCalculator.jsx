@@ -185,7 +185,7 @@ export default function PaperGsmCalculator() {
                 {submitted && result ? `${result} GSM` : '--'}
               </p>
               <p className="text-xs text-gray-600 mt-2">
-                Formula: GSM = (Weight in KG * 1,000,000) / (Area in mmÂ² * Sheets)
+                Formula: GSM = (Weight in KG * 1,000,000) / (Area in mm² * Sheets)
               </p>
             </div>
             <div className="text-sm text-gray-600 leading-relaxed">

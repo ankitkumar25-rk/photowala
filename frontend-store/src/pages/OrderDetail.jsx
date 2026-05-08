@@ -89,7 +89,7 @@ export default function OrderDetail() {
     return (
       <div className="min-h-screen bg-cream-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl animate-leaf mb-4">ðŸ†</div>
+          <div className="text-4xl animate-leaf mb-4">🏆</div>
           <p className="text-brand-primary font-medium">Loading order...</p>
         </div>
       </div>
@@ -227,7 +227,7 @@ export default function OrderDetail() {
                     />
                   ) : (
                     <div className="w-16 h-16 rounded-xl bg-brand-surface flex items-center justify-center shrink-0 text-xl">
-                      ðŸ†
+                      🏆
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -268,8 +268,8 @@ export default function OrderDetail() {
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-bold text-gray-900">â‚¹{Number(item.total).toFixed(2)}</p>
-                    <p className="text-xs text-gray-600">â‚¹{Number(item.price).toFixed(2)} each</p>
+                    <p className="font-bold text-gray-900">₹{Number(item.total).toFixed(2)}</p>
+                    <p className="text-xs text-gray-600">₹{Number(item.price).toFixed(2)} each</p>
                   </div>
                 </div>
               ))}
@@ -279,17 +279,17 @@ export default function OrderDetail() {
             <div className="mt-4 pt-4 border-t border-cream-200 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium text-gray-900">â‚¹{Number(order.subtotal).toFixed(2)}</span>
+                <span className="font-medium text-gray-900">₹{Number(order.subtotal).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Shipping</span>
                 <span className={`font-medium ${order.shippingCost === 0 ? 'text-green-600' : 'text-gray-900'}`}>
-                  {order.shippingCost === 0 ? 'FREE' : `â‚¹${Number(order.shippingCost).toFixed(2)}`}
+                  {order.shippingCost === 0 ? 'FREE' : `₹${Number(order.shippingCost).toFixed(2)}`}
                 </span>
               </div>
               <div className="flex justify-between text-base font-bold pt-2 border-t border-cream-200">
                 <span className="text-gray-900">Total</span>
-                <span className="text-brand-primary text-lg">â‚¹{Number(order.total).toFixed(2)}</span>
+                <span className="text-brand-primary text-lg">₹{Number(order.total).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -306,7 +306,7 @@ export default function OrderDetail() {
                   <p className="font-semibold text-gray-900">{order.address.fullName}</p>
                   <p>{order.address.line1}</p>
                   {order.address.line2 && <p>{order.address.line2}</p>}
-                  <p>{order.address.city}, {order.address.state} â€“ {order.address.pincode}</p>
+                  <p>{order.address.city}, {order.address.state} – {order.address.pincode}</p>
                   <p className="text-gray-600">{order.address.phone}</p>
                 </div>
               </div>

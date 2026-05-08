@@ -19,7 +19,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await login(form);
-      toast.success('Welcome back! ðŸ†');
+      toast.success('Welcome back! 🏆');
       navigate(redirect, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Login failed. Please check your credentials.');
@@ -77,7 +77,7 @@ export default function Login() {
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   className="input-field pr-12"
-                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                  placeholder="••••••••"
                   autoComplete="current-password"
                 />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">

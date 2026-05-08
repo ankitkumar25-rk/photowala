@@ -18,7 +18,7 @@ export default function Register() {
     if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
     try {
       await register(form);
-      toast.success('Welcome to Manufact Awards! ðŸ†');
+      toast.success('Welcome to Manufact Awards! 🏆');
       navigate('/', { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Registration failed. Please try again.');
@@ -34,7 +34,7 @@ export default function Register() {
               <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">Create Account</h1>
-            <p className="text-gray-500 text-sm mt-1">Join the premium revolution ðŸŒ±</p>
+            <p className="text-gray-500 text-sm mt-1">Join the premium revolution 🌱</p>
           </div>
 
           {/* Google OAuth */}

@@ -4,7 +4,7 @@ export default function PenIndex() {
   return (
     <div className="min-h-screen bg-cream-100 px-4 py-10">
       <div className="mx-auto max-w-5xl">
-        <p className="text-xs text-gray-500">Home â†’ Our Services â†’ Custom Printing â†’ Pen</p>
+        <p className="text-xs text-gray-500">Home → Our Services → Custom Printing → Pen</p>
         <h1 className="mt-3 text-3xl font-bold text-brand-primary">
           Pen Printing
         </h1>

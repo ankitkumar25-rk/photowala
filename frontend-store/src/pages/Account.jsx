@@ -16,7 +16,7 @@ const TABS = [
   { id: 'wishlist',  label: 'Wishlist',  icon: Heart },
 ];
 
-/* â”€â”€ Status badge â”€â”€ */
+/* ── Status badge ── */
 function StatusBadge({ status }) {
   const map = {
     PENDING:    { bg: 'bg-[#b88a2f]', text: 'text-white', label: 'Pending' },
@@ -35,7 +35,7 @@ function StatusBadge({ status }) {
   );
 }
 
-/* â”€â”€ Address card â”€â”€ */
+/* ── Address card ── */
 function AddressCard({ addr, onEdit, onDelete, onSetDefault }) {
   return (
     <div className={`relative p-4 rounded-2xl border-2 transition-all ${
@@ -57,9 +57,9 @@ function AddressCard({ addr, onEdit, onDelete, onSetDefault }) {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-900 text-sm">{addr.label} â€” {addr.fullName}</p>
+          <p className="font-semibold text-gray-900 text-sm">{addr.label} — {addr.fullName}</p>
           <p className="text-sm text-gray-600 mt-0.5">{addr.line1}{addr.line2 ? `, ${addr.line2}` : ''}</p>
-          <p className="text-sm text-gray-600">{addr.city}, {addr.state} â€“ {addr.pincode}</p>
+          <p className="text-sm text-gray-600">{addr.city}, {addr.state} – {addr.pincode}</p>
           <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1">
             <Phone className="w-3 h-3" /> {addr.phone}
           </p>
@@ -91,7 +91,7 @@ function AddressCard({ addr, onEdit, onDelete, onSetDefault }) {
   );
 }
 
-/* â”€â”€ Address modal â”€â”€ */
+/* ── Address modal ── */
 function AddressModal({ addr, onClose, onSave }) {
   const [form, setForm] = useState(
     addr || { label: 'Home', fullName: '', phone: '', line1: '', line2: '', city: '', state: '', pincode: '', isDefault: false }
@@ -227,7 +227,7 @@ export default function Account() {
     try { const { data } = await ordersApi.myOrders({ limit: 3 }); setRecentOrders(data.data); } catch (err) { console.error('Failed to load recent orders', err); }
   };
 
-  /* â”€â”€ Profile save â”€â”€ */
+  /* ── Profile save ── */
   const saveProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -240,7 +240,7 @@ export default function Account() {
     } finally { setSaving(false); }
   };
 
-  /* â”€â”€ Password â”€â”€ */
+  /* ── Password ── */
   const changePassword = async (e) => {
     e.preventDefault();
     if (pwForm.newPassword !== pwForm.confirm) { toast.error('Passwords do not match'); return; }
@@ -254,7 +254,7 @@ export default function Account() {
     } finally { setPwSaving(false); }
   };
 
-  /* â”€â”€ Address actions â”€â”€ */
+  /* ── Address actions ── */
   const saveAddress = async (form) => {
     try {
       if (addrModal && typeof addrModal === 'object' && addrModal.id) {
@@ -322,7 +322,7 @@ export default function Account() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Hello, {user.name?.split(' ')[0]?.toUpperCase()} ðŸ‘‹
+                  Hello, {user.name?.split(' ')[0]?.toUpperCase()} 👋
                 </h1>
                 <p className="text-gray-700 flex items-center gap-1.5 mt-1 text-sm">
                   <Mail className="w-4 h-4 text-gray-600" /> {user.email}
@@ -362,7 +362,7 @@ export default function Account() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* â”€â”€ PROFILE TAB â”€â”€ */}
+        {/* ── PROFILE TAB ── */}
         {tab === 'profile' && (
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
@@ -407,7 +407,7 @@ export default function Account() {
                   <Package className="w-4 h-4 text-brand-primary" /> Recent Orders
                 </h3>
                 <button onClick={() => navigate('/orders')} className="text-xs font-semibold text-brand-primary hover:text-brand-primary">
-                  View all â†’
+                  View all →
                 </button>
               </div>
               {recentOrders.length === 0 ? (
@@ -427,7 +427,7 @@ export default function Account() {
                         <p className="text-xs font-bold text-gray-900">{o.orderNumber}</p>
                         <StatusBadge status={o.status} />
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5">â‚¹{Number(o.total).toFixed(2)}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">₹{Number(o.total).toFixed(2)}</p>
                     </button>
                   ))}
                 </div>
@@ -436,7 +436,7 @@ export default function Account() {
           </div>
         )}
 
-        {/* â”€â”€ ADDRESSES TAB â”€â”€ */}
+        {/* ── ADDRESSES TAB ── */}
         {tab === 'addresses' && (
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -472,7 +472,7 @@ export default function Account() {
           </div>
         )}
 
-        {/* â”€â”€ SECURITY TAB â”€â”€ */}
+        {/* ── SECURITY TAB ── */}
         {tab === 'security' && (
           <div className="max-w-lg">
             <div className="card p-6">
@@ -486,7 +486,7 @@ export default function Account() {
                     type="password"
                     value={pwForm.currentPassword}
                     onChange={(e) => setPwForm((f) => ({ ...f, currentPassword: e.target.value }))}
-                    required className="input-field" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                    required className="input-field" placeholder="••••••••"
                   />
                 </div>
                 <div>
@@ -518,7 +518,7 @@ export default function Account() {
           </div>
         )}
 
-        {/* â”€â”€ WISHLIST TAB â”€â”€ */}
+        {/* ── WISHLIST TAB ── */}
         {tab === 'wishlist' && (
           <div>
             <h2 className="font-bold text-xl text-gray-900 mb-6">
@@ -539,7 +539,7 @@ export default function Account() {
                   <div key={product.id} className="card group">
                     <div className="relative aspect-square bg-cream-100 overflow-hidden">
                       <img
-                        src={product.images?.[0]?.url || 'https://placehold.co/300x300/d8f3dc/2d6a4f?text=ðŸ†'}
+                        src={product.images?.[0]?.url || 'https://placehold.co/300x300/d8f3dc/2d6a4f?text=🏆'}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
@@ -552,7 +552,7 @@ export default function Account() {
                     </div>
                     <div className="p-3">
                       <p className="font-semibold text-gray-900 text-sm leading-tight">{product.name}</p>
-                      <p className="text-brand-primary font-bold mt-1">â‚¹{Number(product.price).toFixed(2)}</p>
+                      <p className="text-brand-primary font-bold mt-1">₹{Number(product.price).toFixed(2)}</p>
                       <button
                         onClick={() => navigate(`/products/${product.slug}`)}
                         className="btn-primary w-full justify-center text-sm py-2 mt-2"

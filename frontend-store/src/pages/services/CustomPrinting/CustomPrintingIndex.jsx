@@ -14,7 +14,7 @@ export default function CustomPrintingIndex() {
   return (
     <div className="min-h-screen bg-cream-100 px-4 py-10">
       <div className="mx-auto max-w-5xl">
-        <p className="text-xs text-gray-500">Home â†’ Our Services â†’ Custom Printing</p>
+        <p className="text-xs text-gray-500">Home → Our Services → Custom Printing</p>
         <h1 className="mt-3 text-3xl font-bold text-brand-primary">
           Custom Printing
         </h1>
