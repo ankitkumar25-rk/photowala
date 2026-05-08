@@ -8,7 +8,7 @@ import { serviceAssets } from '../../../../data/assets';
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: PenTool, label: 'Pen', active: true, to: '/services/custom-printing/pen' },
-  { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '#' },
+  { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
   { id: 'digital', icon: Printer, label: 'Digital Paper Printing', to: '#' },
   { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
   { id: 'garment', icon: Tag, label: 'Garment Tag', to: '#' },
