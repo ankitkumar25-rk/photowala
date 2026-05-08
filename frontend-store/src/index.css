@@ -62,7 +62,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Avoid forcing link color globally so section-level text utilities remain visible. */
-a {
+a:not([class*="text-"]) {
   color: inherit;
 }
 
