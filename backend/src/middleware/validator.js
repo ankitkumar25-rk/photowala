@@ -11,15 +11,15 @@ const validate = (schema) => (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === 'ZodError') {
-      const formattedErrors = error.errors.map(err => ({
-        field: err.path.join('.'),
-        message: err.message
-      }));
-      
-      return res.status(400).json({
+      const zodIssues = error.issues || error.errors || [];
+
+      return res.status(422).json({
         success: false,
         message: 'Validation failed',
-        errors: formattedErrors
+        errors: zodIssues.map((e) => ({
+          field: e.path ? e.path.join('.') : 'unknown',
+          message: e.message,
+        })),
       });
     }
     next(error);

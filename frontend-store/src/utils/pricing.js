@@ -6,7 +6,7 @@ const GST_RATE = 0.18;
 const EMAIL_FEE = 10;
 
 function finalizePrice(base, fileSubmission) {
-    const emailFee = fileSubmission === 'EMAIL' ? EMAIL_FEE : 0;
+    const emailFee = fileSubmission === 'EMAIL' || fileSubmission === 'email' ? EMAIL_FEE : 0;
     const subtotal = base + emailFee;
     const gstAmount = Math.round(subtotal * GST_RATE * 100) / 100;
     const totalAmount = Math.round((subtotal + gstAmount) * 100) / 100;
@@ -49,28 +49,31 @@ export const pricingLogic = {
         return finalizePrice(unit * Number(quantity || 0), fileSubmission);
     },
 
-    GARMENT_TAG: ({ tagType, size, quantity, uvVariant, fileSubmission }) => {
+    GARMENT_TAG: ({ tagType, size, quantity, fileSubmission }) => {
         const rates = {
-            'TAG-1': { Small: 1.2, Medium: 1.5, Large: 2.0 },
-            'TAG-2': { Small: 1.5, Medium: 1.8, Large: 2.4 },
-            'TAG-3': { Small: 2.0, Medium: 2.5, Large: 3.2 }
+            'GLOSS': { Small: 1.2, Medium: 1.5, Large: 2.0 },
+            'MATT': { Small: 1.5, Medium: 1.8, Large: 2.4 },
+            'UV': { Small: 2.0, Medium: 2.5, Large: 3.2 },
+            'THREAD': { Small: 0.85, Medium: 0.85, Large: 0.85 }
         };
         const baseRate = rates[tagType]?.[size] || 0;
         let base = baseRate * Number(quantity || 0);
-        
-        if (uvVariant === 'ONE_SIDE') base += 0.40 * Number(quantity || 0);
-        if (uvVariant === 'BOTH_SIDE') base += 0.80 * Number(quantity || 0);
-        
         return finalizePrice(base, fileSubmission);
     },
 
-    BILL_BOOK: ({ product, quantity, fileSubmission }) => {
-        const unit = product === 'A4_BB_2' ? 85 : 120;
+    BILL_BOOK: ({ bookType, quantity, fileSubmission }) => {
+        const unit = bookType === 'A4-2' ? 85 : 120;
         return finalizePrice(unit * Number(quantity || 0), fileSubmission);
     },
 
-    ENVELOPE: ({ paperType, quantity, fileSubmission }) => {
-        const unit = paperType?.includes('100 GSM') ? 2.50 : 1.80;
+    ENVELOPE: ({ product, quantity, fileSubmission }) => {
+        // EN-1 (9x4), EN-3 (10.75x4.75), etc.
+        const rates = {
+            'EN-1': 1.80,
+            'EN-3': 2.50,
+            'EN-4': 2.50
+        };
+        const unit = rates[product] || 2.0;
         return finalizePrice(unit * Number(quantity || 0), fileSubmission);
     },
 
@@ -78,11 +81,12 @@ export const pricingLogic = {
         const rates = {
             'Art Paper 170 GSM': 15,
             'Art Paper 300 GSM': 25,
-            'Sticker Paper': 35
+            'Sticker Paper': 35,
+            'Metallic Paper': 45
         };
         const unit = rates[productType] || 20;
         let base = unit * Number(quantity || 0);
-        if (lamination !== 'None') base += 5 * Number(quantity || 0);
+        if (lamination && lamination !== 'None') base += 5 * Number(quantity || 0);
         return finalizePrice(base, fileSubmission);
     }
 };

@@ -29,15 +29,13 @@ function errorHandler(err, req, res, next) {
 
   // Validation errors (Zod)
   if (err.name === 'ZodError') {
-    const zodIssues = Array.isArray(err.issues)
-      ? err.issues
-      : (Array.isArray(err.errors) ? err.errors : []);
+    const zodIssues = err.issues || err.errors || [];
 
     return res.status(422).json({
       success: false,
       message: 'Validation failed',
       errors: zodIssues.map((e) => ({
-        field: e.path.join('.'),
+        field: e.path ? e.path.join('.') : 'unknown',
         message: e.message,
       })),
     });
