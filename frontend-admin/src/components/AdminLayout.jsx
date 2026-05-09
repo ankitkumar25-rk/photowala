@@ -98,7 +98,7 @@ export default function AdminLayout() {
 
           <div className="ml-auto flex items-center gap-3">
             <a href={storeUrl} target="_blank" rel="noreferrer" className="hidden rounded-full border border-brand-primary/20 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-primary transition-colors hover:bg-brand-surface sm:inline-block">
-              View Store Ã¢â€ â€”
+              View Store ↗
             </a>
             {user?.avatarUrl ? (
               <img src={user.avatarUrl} alt="" className="h-9 w-9 rounded-full border border-brand-primary/20 object-cover" />

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, createElement } from 'react';
+import { useState, useEffect, createElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Truck, RotateCcw, Star, CheckCircle } from 'lucide-react';
@@ -86,15 +86,15 @@ function HeroSection() {
   );
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Category Grid Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ------------------------------------------------------------------------------------------------------------------------------------
 const CATEGORY_EMOJIS = {
-  'trophies': 'Ã°Å¸Ââ€ ',
-  '3d-models': 'Ã°Å¸Â§Å ',
-  'corporate-gifts': 'Ã°Å¸â€œâ€º',
-  'momentos': 'Ã°Å¸â€™Å½',
-  'others': 'Ã°Å¸Å½Â',
-  'pen-holders': 'Ã°Å¸â€“â€¹Ã¯Â¸Â',
-  'temples': 'Ã¢â€ºÂ©Ã¯Â¸Â',
+  'trophies': '🏆',
+  '3d-models': '🧱',
+  'corporate-gifts': '💼',
+  'momentos': '💎',
+  'others': '🎁',
+  'pen-holders': '🖋️',
+  'temples': '🕍',
 };
 
 function CategoryGrid({ categories }) {

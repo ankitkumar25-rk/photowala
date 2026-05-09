@@ -48,7 +48,7 @@ export default function CartDrawer() {
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
-              <div className="text-6xl">Ã°Å¸â€ºâ€™</div>
+              <div className="text-6xl">🛒</div>
               <h3 className="font-bold text-xl text-[#5b3f2f]">Your cart is empty</h3>
               <p className="text-[#a68971] text-sm">Add some personalized magic!</p>
               <Link to="/products" onClick={closeCart} className="btn-primary">
@@ -120,7 +120,7 @@ export default function CartDrawer() {
               <div className="flex justify-between text-sm text-[#7a655c]">
                 <span>Shipping</span>
                 <span className={shipping === 0 ? 'text-brand-primary font-semibold' : ''}>
-                  {shipping === 0 ? 'FREE Ã°Å¸Å½â€°' : `₹${shipping}`}
+                  {shipping === 0 ? 'FREE 🎉' : `₹${shipping}`}
                 </span>
               </div>
               <div className="flex justify-between font-bold text-base border-t border-cream-300 pt-2 mt-2">
@@ -131,7 +131,7 @@ export default function CartDrawer() {
 
             {shipping > 0 && (
               <p className="text-xs text-brand-secondary bg-brand-surface px-3 py-2 rounded-lg">
-                Ã°Å¸â€™Â¡ Add ₹{(1000 - subtotal()).toFixed(0)} more for free shipping!
+                💡 Add ₹{(1000 - subtotal()).toFixed(0)} more for free shipping!
               </p>
             )}
 

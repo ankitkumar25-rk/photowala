@@ -241,7 +241,7 @@ export default function Envelope() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Name</label>
                 <input type="text" value={orderName} onChange={(e)=>setOrderName(e.target.value)}
-                  placeholder="ÃƒÂ Ã‚Â¤Ã‚Â¯ÃƒÂ Ã‚Â¤Ã‚Â¹ÃƒÂ Ã‚Â¤Ã‚Â¾ÃƒÂ Ã‚Â¤Ã‚Â ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¦ÃƒÂ Ã‚Â¤Ã‚ÂªÃƒÂ Ã‚Â¤Ã‚Â¨ÃƒÂ Ã‚Â¥Ã¢â‚¬Â¡ ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¢ÃƒÂ Ã‚Â¤Ã‚Â¸ÃƒÂ Ã‚Â¥Ã‚ÂÃƒÂ Ã‚Â¤Ã…Â¸ÃƒÂ Ã‚Â¤Ã‚Â®ÃƒÂ Ã‚Â¤Ã‚Â° ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¢ÃƒÂ Ã‚Â¤Ã‚Â¾ ÃƒÂ Ã‚Â¤Ã‚Â¨ÃƒÂ Ã‚Â¤Ã‚Â¾ÃƒÂ Ã‚Â¤Ã‚Â® ÃƒÂ Ã‚Â¤Ã…Â¸ÃƒÂ Ã‚Â¤Ã‚Â¾ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¡ÃƒÂ Ã‚Â¤Ã‚Âª ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¢ÃƒÂ Ã‚Â¤Ã‚Â°ÃƒÂ Ã‚Â¥Ã¢â‚¬Â¡ÃƒÂ Ã‚Â¤Ã¢â‚¬Å¡..."
+                  placeholder="ÃƒÂ ¤¯ÃƒÂ ¤¹ÃƒÂ ¤¾ÃƒÂ ¤ ÃƒÂ ¤"¦ÃƒÂ ¤ªÃƒÂ ¤¨ÃƒÂ ¥"¡ ÃƒÂ ¤•ÃƒÂ ¤¸ÃƒÂ ¥ÃƒÂ ¤Ã…Â¸ÃƒÂ ¤®ÃƒÂ ¤° ÃƒÂ ¤•ÃƒÂ ¤¾ ÃƒÂ ¤¨ÃƒÂ ¤¾ÃƒÂ ¤® ÃƒÂ ¤Ã…Â¸ÃƒÂ ¤¾ÃƒÂ ¤"¡ÃƒÂ ¤ª ÃƒÂ ¤•ÃƒÂ ¤°ÃƒÂ ¥"¡ÃƒÂ ¤Ã¢â‚¬Å¡..."
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
 

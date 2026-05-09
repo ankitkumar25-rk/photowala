@@ -256,7 +256,7 @@ export default function LaserPrintedPen() {
               {pricing && (
                 <div className="bg-[#fdf8f4] border border-[#e8dfd5] rounded-xl p-5 mb-8 space-y-2">
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Base Cost ({qty} Ãƒâ€” ₹{pricing.unitCost})</span>
+                    <span>Base Cost ({qty} × ₹{pricing.unitCost})</span>
                     <span className="font-semibold text-gray-800">₹{pricing.baseCost}</span>
                   </div>
                   {designOption === 'email' && (
@@ -456,7 +456,7 @@ export default function LaserPrintedPen() {
                   {loading ? 'Processing...' : 'Add Order'}
                 </button>
                 <p className="text-center text-xs text-gray-500 italic">
-                  {canOrder ? 'Free Courier Delivery Ã‚Â· Est. 5-7 days' : 'Select pen type & quantity'}
+                  {canOrder ? 'Free Courier Delivery · Est. 5-7 days' : 'Select pen type & quantity'}
                 </p>
               </div>
             </div>

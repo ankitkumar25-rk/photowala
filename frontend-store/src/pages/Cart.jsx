@@ -120,7 +120,7 @@ function CartItem({ item }) {
       <div className="text-right shrink-0 hidden sm:block">
         <p className="font-bold text-xl text-gray-900">?{lineTotal}</p>
         {item.quantity > 1 && (
-          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} Ã— ?{Number(item.price).toFixed(2)}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} × ?{Number(item.price).toFixed(2)}</p>
         )}
       </div>
     </div>
@@ -300,7 +300,7 @@ export default function Cart() {
                     {items.map((item) => (
                       <div key={item.id ?? item.productId} className="flex justify-between text-sm">
                         <span className="text-gray-600 truncate mr-2 max-w-[60%]">
-                          {item.product?.name} Ã— {item.quantity}
+                          {item.product?.name} × {item.quantity}
                         </span>
                         <span className="font-semibold text-gray-900 shrink-0">
                           ?{(Number(item.price) * item.quantity).toFixed(2)}

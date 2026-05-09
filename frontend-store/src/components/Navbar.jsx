@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X, User, Heart } from 'lucide-react';
 import { useAuthStore, useCartStore } from '../store';
@@ -60,7 +60,7 @@ export default function Navbar() {
     }`}>
       {/* Top bar */}
       <div className="bg-[#5a3f2f] text-[#fff6ef] text-xs text-center py-2 font-semibold tracking-wide border-b border-[#d8a45f]/25">
-        🚚 Free shipping on orders above ₹999 | Ã°Å¸Å½Â Personalized gifts crafted for memorable moments
+        🚚 Free shipping on orders above ₹999 | 🎁 Personalized gifts crafted for memorable moments
       </div>
 
       <div className="relative max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16">
