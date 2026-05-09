@@ -64,8 +64,6 @@ const AdminCustomerDetail = lazy(() => import('./pages/AdminCustomerDetail'));
 const AdminReturns    = lazy(() => import('./pages/AdminReturns'));
 const AdminInventory  = lazy(() => import('./pages/AdminInventory'));
 const AdminSupport    = lazy(() => import('./pages/AdminSupport'));
-const ServiceOrders   = lazy(() => import('./pages/services/ServiceOrders'));
-const MachineRequests = lazy(() => import('./pages/services/MachineRequests'));
 
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
 
@@ -150,10 +148,6 @@ export default function App() {
               <Route path="returns"     element={<AdminReturns />} />
               <Route path="inventory"   element={<AdminInventory />} />
               <Route path="support"     element={<AdminSupport />} />
-              
-              {/* Service Management Routes */}
-              <Route path="services/custom-printing" element={<ServiceOrders />} />
-              <Route path="services/machine-requests" element={<MachineRequests />} />
 
             </Route>
           </Routes>

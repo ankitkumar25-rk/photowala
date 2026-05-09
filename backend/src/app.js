@@ -25,7 +25,6 @@ const adminRoutes = require('./routes/admin.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const returnsRoutes = require('./routes/returns.routes');
 const supportRoutes = require('./routes/support.routes');
-const serviceRoutes = require('./routes/service.routes');
 
 const app = express();
 const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-session-secret' : '');
@@ -176,7 +175,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
-app.use('/api/orders', serviceRoutes); // Mount service routes before standard order routes to avoid conflicts
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/users', userRoutes);
@@ -184,7 +182,6 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/returns', returnsRoutes);
 app.use('/api/support', supportRoutes);
-app.use('/api/v1/orders/custom-printing', serviceRoutes);
 
 // ================================
 // 404 HANDLER
