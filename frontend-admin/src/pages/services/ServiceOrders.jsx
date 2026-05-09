@@ -109,7 +109,7 @@ export default function ServiceOrders() {
                         {order.serviceType.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-xs font-bold text-gray-700">{order.quantity}</td>
+                    <td className="px-6 py-4 text-xs font-bold text-gray-700">{order.serviceData?.quantity || 'N/A'}</td>
                     <td className="px-6 py-4 text-xs font-black text-[#b65e2e]">₹{Number(order.totalAmount).toLocaleString()}</td>
                     <td className="px-6 py-4">
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${STATUS_CONFIG[order.status].color}`}>
@@ -192,7 +192,7 @@ export default function ServiceOrders() {
                        <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">Service Type</p>
                        <p className="text-xs font-bold text-gray-700">{selectedOrder.serviceType}</p>
                     </div>
-                    {Object.entries(selectedOrder.details).map(([key, val]) => (
+                    {Object.entries(selectedOrder.serviceData || {}).map(([key, val]) => (
                       <div key={key} className="p-3 bg-white border border-gray-100 rounded-xl">
                          <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
                          <p className="text-xs font-bold text-gray-700">{String(val)}</p>

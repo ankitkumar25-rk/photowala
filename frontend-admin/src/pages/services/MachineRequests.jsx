@@ -74,7 +74,7 @@ export default function MachineRequests() {
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-600 font-medium">
                   <Tag className="w-3.5 h-3.5 text-gray-400" />
-                  Qty: {req.quantity}
+                  Qty: {req.serviceData?.quantity || 'N/A'}
                 </div>
               </div>
             </div>
@@ -124,7 +124,7 @@ export default function MachineRequests() {
                 <div>
                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Service Details</h3>
                    <div className="space-y-4">
-                      {Object.entries(selectedReq.specs).map(([key, val]) => (
+                      {Object.entries(selectedReq.serviceData || {}).map(([key, val]) => (
                         <div key={key}>
                            <p className="text-[9px] font-bold text-gray-400 uppercase leading-none mb-1">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
                            <p className="text-xs font-bold text-gray-700">{String(val)}</p>

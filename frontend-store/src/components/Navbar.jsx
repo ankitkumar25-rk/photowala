@@ -195,6 +195,7 @@ export default function Navbar() {
                 <div className="absolute right-0 top-12 w-48 bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <Link to="/account"  className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Account</Link>
                   <Link to="/orders"   className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Orders</Link>
+                  <Link to="/my-services" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Services</Link>
                   <hr className="my-1 border-brand-primary/20" />
                   <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Logout</button>
                 </div>
@@ -255,6 +256,13 @@ export default function Navbar() {
                   className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
                 >
                   My Account
+                </Link>
+                <Link
+                  to="/my-services"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+                >
+                  My Services
                 </Link>
                 <button
                   onClick={() => { logout(); setMenuOpen(false); }}

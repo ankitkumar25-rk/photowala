@@ -183,3 +183,193 @@ exports.cancelOrder = async (req, res, next) => {
         next(error);
     }
 };
+/**
+ * Machine Service Requests
+ */
+exports.createMachineRequest = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const { serviceType, orderName, serviceData } = req.body;
+
+        const requestNumber = generateOrderNumber('MS');
+        
+        const request = await prisma.machineServiceRequest.create({
+            data: {
+                requestNumber,
+                userId,
+                serviceType,
+                orderName,
+                serviceData,
+                status: 'PENDING_QUOTE'
+            }
+        });
+
+        // Notify Admin
+        await sendEmail({
+            to: ADMIN_EMAIL,
+            subject: `🛠️ New Machine Service Request - ${requestNumber}`,
+            html: `
+                <h2>New Machine Request: ${serviceType}</h2>
+                <p><strong>Request #:</strong> ${requestNumber}</p>
+                <p><strong>Customer ID:</strong> ${userId}</p>
+                <p><strong>Details:</strong> ${JSON.stringify(serviceData, null, 2)}</p>
+            `
+        }).catch(err => console.error('Admin email failed:', err));
+
+        res.status(201).json({
+            success: true,
+            message: 'Request submitted successfully. We will provide a quote soon.',
+            request
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Admin: Custom Printing Orders
+ */
+exports.getAdminCustomPrintingOrders = async (req, res, next) => {
+    try {
+        const { page = 1, status, serviceType, limit = 20 } = req.query;
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        
+        const where = {};
+        if (status) where.status = status;
+        if (serviceType) where.serviceType = serviceType;
+
+        const [orders, total] = await Promise.all([
+            prisma.customPrintingOrder.findMany({
+                where,
+                include: { 
+                    user: { select: { name: true, email: true, phone: true } },
+                    files: true
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: parseInt(limit)
+            }),
+            prisma.customPrintingOrder.count({ where })
+        ]);
+
+        res.json({
+            success: true,
+            data: orders,
+            pagination: { total, page: parseInt(page), limit: parseInt(limit) }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateCustomPrintingStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status, adminNotes } = req.body;
+
+        const order = await prisma.customPrintingOrder.update({
+            where: { id },
+            data: { status, adminNotes },
+            include: { user: { select: { email: true, name: true } } }
+        });
+
+        // Notify user of status change
+        await sendEmail({
+            to: order.user.email,
+            subject: `Update on your Order #${order.orderNumber}`,
+            html: `<p>Hi ${order.user.name}, your order status has been updated to <strong>${status}</strong>.</p>`
+        }).catch(err => console.error('Status update email failed:', err));
+
+        res.json({ success: true, message: 'Order updated', order });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Admin: Machine Service Requests
+ */
+exports.getAdminMachineRequests = async (req, res, next) => {
+    try {
+        const { page = 1, status, limit = 20 } = req.query;
+        const skip = (parseInt(page) - 1) * parseInt(limit);
+        
+        const where = {};
+        if (status) where.status = status;
+
+        const [requests, total] = await Promise.all([
+            prisma.machineServiceRequest.findMany({
+                where,
+                include: { user: { select: { name: true, email: true, phone: true } } },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: parseInt(limit)
+            }),
+            prisma.machineServiceRequest.count({ where })
+        ]);
+
+        res.json({
+            success: true,
+            data: requests,
+            pagination: { total, page: parseInt(page), limit: parseInt(limit) }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateMachineRequest = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status, quotedPrice, adminNotes } = req.body;
+
+        const request = await prisma.machineServiceRequest.update({
+            where: { id },
+            data: { status, quotedPrice, adminNotes },
+            include: { user: { select: { email: true, name: true } } }
+        });
+
+        // Notify user
+        if (status === 'QUOTE_SENT') {
+            await sendEmail({
+                to: request.user.email,
+                subject: `Quote for Request #${request.requestNumber}`,
+                html: `<p>Hi ${request.user.name}, we have sent a quote of <strong>₹${quotedPrice}</strong> for your request.</p>`
+            }).catch(err => console.error('Quote email failed:', err));
+        }
+
+        res.json({ success: true, message: 'Request updated', request });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Combined "My Services" for users
+ */
+exports.getMyServiceOrders = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        
+        const [printOrders, machineRequests] = await Promise.all([
+            prisma.customPrintingOrder.findMany({
+                where: { userId },
+                orderBy: { createdAt: 'desc' }
+            }),
+            prisma.machineServiceRequest.findMany({
+                where: { userId },
+                orderBy: { createdAt: 'desc' }
+            })
+        ]);
+
+        res.json({
+            success: true,
+            data: {
+                printOrders,
+                machineRequests
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
