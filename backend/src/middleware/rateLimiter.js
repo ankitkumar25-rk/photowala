@@ -46,4 +46,14 @@ const authRateLimiter = rateLimit({
   ...(redis ? { store: buildRedisStore('rl:auth:') } : {}),
 });
 
-module.exports = { rateLimiter, authRateLimiter };
+// Service order rate limiter: 10 requests per minute
+const serviceRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many order attempts, please try again in a minute.' },
+  ...(redis ? { store: buildRedisStore('rl:services:') } : {}),
+});
+
+module.exports = { rateLimiter, authRateLimiter, serviceRateLimiter };

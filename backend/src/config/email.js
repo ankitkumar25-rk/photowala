@@ -88,17 +88,35 @@ const emailTemplates = {
   }),
 
   adminNewServiceRequest: (request, user) => ({
-    subject: `🛠️ New Service Request #${request.orderNumber}`,
+    subject: `🛠️ New Service Request #${request.requestNumber || request.orderNumber}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2>New Service Request Alert!</h2>
-        <p>Request ID: <strong>#${request.orderNumber}</strong></p>
+        <p>Request ID: <strong>#${request.requestNumber || request.orderNumber}</strong></p>
         <p>Service: <strong>${request.serviceType}</strong></p>
         <p>Customer: <strong>${user?.name || 'Guest'} (${user?.email || 'N/A'})</strong></p>
-        <p>Est. Price: <strong>${request.priceRange}</strong></p>
-        <a href="${process.env.ADMIN_URL}/service-requests" 
+        <p>Quantity: <strong>${request.quantity}</strong></p>
+        <a href="${process.env.ADMIN_URL}/services/machine-requests" 
            style="background: #ea580c; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 16px;">
           View Requests
+        </a>
+      </div>
+    `,
+  }),
+
+  adminNewCustomPrintingOrder: (order, user) => ({
+    subject: `🚨 New Print Order #${order.orderNumber}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>New Custom Printing Order Alert! 📦</h2>
+        <p>Order Number: <strong>#${order.orderNumber}</strong></p>
+        <p>Service: <strong>${order.serviceType}</strong></p>
+        <p>Customer: <strong>${user.name} (${user.email})</strong></p>
+        <p>Total Amount: <strong>₹${order.totalAmount}</strong></p>
+        <p>File Option: <strong>${order.fileOption}</strong></p>
+        <a href="${process.env.ADMIN_URL}/services/custom-printing" 
+           style="background: #b65e2e; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 16px;">
+          View Order in Admin
         </a>
       </div>
     `,

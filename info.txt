@@ -1,0 +1,762 @@
+====================================================================
+         PHOTOWALA - PROJECT OVERVIEW & TECHNICAL STACK
+====================================================================
+Generated: 2026-05-09
+Project Scope: E-commerce for Printing & Machine Services
+
+--------------------------------------------------------------------
+CORE TECHNOLOGIES & ARCHITECTURE
+--------------------------------------------------------------------
+DATABASE & CACHING:
+  - PostgreSQL: Primary relational database for all application data.
+  - Redis: Distributed cache for Session Management, Rate Limiting, and Order Throttling.
+  - Prisma ORM: Modern database toolkit used for schema management and type-safe queries.
+
+BACKEND (REST API):
+  - Node.js (v18+) & Express.js (v5+): Scalable server-side architecture.
+  - Authentication: 
+      * Stateless PASETO (Platform-Agnostic Security Tokens) - Secure JWT alternative.
+      * Passport.js: Multi-strategy authentication (Local & Google OAuth 2.0).
+  - Security: 
+      * Helmet.js: XSS, Clickjacking, and CSP protection.
+      * Redis Rate Limiting: Protection against Brute Force and DDoS.
+      * Zod: Runtime schema validation for all API inputs.
+  - File Handling: Multer for multi-part form data and buffered uploads.
+
+FRONTEND (SPA - Storefront & Admin):
+  - React 19: High-performance UI library.
+  - Vite: Next-generation frontend build tool and dev server.
+  - Styling: Tailwind CSS 4 (Custom brand theme: Deep browns, gold accents).
+  - Routing: React Router Dom 7 (Modern data-driven routing).
+  - State Management: 
+      * Zustand: Minimalist client-side state management.
+      * TanStack React Query: Powerful server-state caching and synchronization.
+  - UI Components: Lucide React (Iconography), React Hot Toast (Notifications), Recharts (Admin Analytics).
+
+THIRD-PARTY ECOSYSTEM:
+  - Razorpay: Payment gateway integration (Payments, Webhooks, Refunds).
+  - Cloudinary: Professional-grade media hosting and dynamic image optimization.
+  - Resend: Transactional email delivery (Receipts, Password Reset, Verification).
+  - Google Cloud Platform: Social login and OAuth integration.
+
+--------------------------------------------------------------------
+KEY PROJECT FEATURES
+--------------------------------------------------------------------
+- ORDER LIFECYCLE: Secure checkout, automated stock tracking, and webhook-validated payments.
+- CUSTOM PRINTING PORTAL: Specialized workflows for Pens, Stickers, Letterheads, Envelopes, and more.
+- MACHINE SERVICES: Technical service request system for CNC, CO2 Laser, and Laser Marking.
+- RETURNS & REFUNDS: End-to-end management for order disputes and automated refund processing.
+- ADMIN DASHBOARD: Role-based access for catalog management, sales analytics, and homepage CMS.
+- SUPPORT SYSTEM: Integrated ticketing for customer assistance and internal tracking.
+- USER ACCOUNTS: Email verification, password recovery, and social login via Google.
+
+--------------------------------------------------------------------
+DIRECTORY STRUCTURE
+--------------------------------------------------------------------
+
+services/
+├── CustomPrinting/
+│   ├── CustomPrintingIndex.jsx       (Redirects to /pen)
+│   ├── BillBook/
+│   │   └── BillBook.jsx
+│   ├── CO2Laser/                     (Empty directory)
+│   ├── DigitalPrinting/
+│   │   └── DigitalPrinting.jsx
+│   ├── Envelope/
+│   │   └── Envelope.jsx
+│   ├── GarmentTag/
+│   │   └── GarmentTag.jsx
+│   ├── Letterhead/
+│   │   └── Letterhead.jsx
+│   ├── Pen/
+│   │   └── LaserPrintedPen.jsx
+│   └── StickerLabels/
+│       └── StickerLabels.jsx
+└── MachineServices/
+    ├── CNCRouterService.jsx
+    ├── CO2LaserService.jsx
+    └── LaserMarkingService.jsx
+
+====================================================================
+SIDEBAR NAVIGATION (Common to all Custom Printing pages)
+====================================================================
+
+Links shown in sidebar:
+  1. Pen              → /services/custom-printing/pen
+  2. Sticker Labels   → /services/custom-printing/sticker-labels
+  3. Digital Printing → /services/custom-printing/digital-printing
+  4. Letterhead       → /services/custom-printing/letterhead
+  5. Garment Tag      → /services/custom-printing/garment-tag
+  6. Bill Book        → /services/custom-printing/bill-book
+  7. Envelop          → /services/custom-printing/envelop
+
+====================================================================
+1. CUSTOM PRINTING INDEX
+====================================================================
+File: CustomPrintingIndex.jsx
+Route: /services/custom-printing
+Behavior: Auto-redirects to /services/custom-printing/pen
+
+====================================================================
+2. LASER PRINTED PEN
+====================================================================
+File: Pen/LaserPrintedPen.jsx
+Route: /services/custom-printing/pen
+
+PEN TYPES & PRICES (per pen):
+  Type 101 → Rs. 66
+  Type 102 → Rs. 70
+  Type 103 → Rs. 83
+  Type 104 → Rs. 105
+  Type 105 → Rs. 115
+  Type 106 → Rs. 115
+  Type 107 → Rs. 120
+  Type 108 → Rs. 220
+  Type 109 → Rs. 225
+  Type 110 → Rs. 190
+
+QUANTITY OPTIONS: 1, 2, 5, 10, 20, 30, 40, 50, 75, 100
+
+DELIVERY OPTIONS:
+  - Deliver By Courier (Free Delivery) [only option]
+
+FILE OPTIONS:
+  - Attach File Online
+  - Send via Email (+ Rs. 10 handling fee)
+
+ACCEPTED FILE FORMATS: PDF, CDR, PSD, JPG, PNG (Max 100MB)
+
+PRICING:
+  - Base Cost = qty × unit price
+  - GST = 18%
+  - Email Charge = Rs. 10 (if email submission)
+  - Total = Base + Email Charge + GST
+
+FORM FIELDS:
+  - Order Name (required)
+  - Pen Type (required)
+  - Quantity (required)
+  - File Upload or Email option
+  - Special Remark (optional, max 250 chars)
+
+ORDER API: POST /orders/laser-pen
+
+====================================================================
+3. STICKER LABELS
+====================================================================
+File: StickerLabels/StickerLabels.jsx
+Route: /services/custom-printing/sticker-labels/:type
+  - /sticker-labels/no-cut     (Code: ST-1, Without Half Cut)
+  - /sticker-labels/round-cut  (Code: ST-2, With Round Cut) [POPULAR]
+  - /sticker-labels/straight-cut (Code: ST-3, With Straight Cut)
+
+SHEET SIZE: 7"x9.5" only
+MINIMUM QUANTITY: 1000
+
+LAMINATION OPTIONS:
+  - Not Required
+  - Gloss Lamination (+Rs. 200)
+
+ROUND CUT OPTIONS (Stickers per sheet):
+  - 1 Round Sticker (170x170 MM)
+  - 2 Round Stickers (115x115 MM)
+  - 6 Round Stickers (75x75 MM)
+  - 12 Round Stickers (55x55 MM)
+  - 20 Round Stickers (40x40 MM)
+  - 35 Round Stickers (30x30 MM)
+
+STRAIGHT CUT OPTIONS (15 options):
+  - 2 Sticker (178x118 MM)
+  - 3 Sticker (178x79 MM)
+  - 4 Sticker (178x59 MM)
+  - 4 Sticker (90x118 MM)
+  - 6 Sticker (178x40 MM)
+  - 6 Sticker (90x80 MM)
+  - 6 Sticker (60x120 MM)
+  - 8 Sticker (90x59 MM)
+  - 9 Sticker (60x80 MM)
+  - 10 Sticker (178x24 MM)
+  - 12 Sticker (90x40 MM)
+  - 12 Sticker (60x60 MM)
+  - 18 Sticker (60x40 MM)
+  - 20 Sticker (90x24 MM)
+  - 30 Sticker (60x24 MM)
+
+DELIVERY OPTIONS:
+  - Deliver By Courier (Free)
+  - Dispatch By Transport
+
+FILE OPTIONS:
+  - Attach File Online
+  - Send via Email (+ Rs. 10 fee)
+
+PRICING:
+  - Base = qty × 1.70
+  - Lamination = +Rs. 200 (if Gloss)
+  - Email Fee = +Rs. 10
+  - GST = 18%
+
+PRODUCTION TIME: Within 7 days from file upload
+
+FORM FIELDS:
+  - Order Name (required)
+  - Quantity (min 1000)
+  - Sheet Size (required)
+  - Lamination (required)
+  - Sticker Count per sheet (for round/straight cut)
+  - Delivery Option
+  - Design File
+  - Special Remark (optional)
+
+SPECIALIZATION:
+  - Komori offset machines (2023 Model)
+  - Advanced Post Printing Unit
+  - Constant quality with reasonable price
+
+ORDER API: POST /orders/laser-pen
+
+====================================================================
+4. DIGITAL PAPER PRINTING
+====================================================================
+File: DigitalPrinting/DigitalPrinting.jsx
+Route: /services/custom-printing/digital-printing
+
+PAPER PRODUCT TYPES:
+  1. LETTER HEAD    (Min: 25)
+     - Deo Paper or Excel Bond Paper
+  2. ART PAPER      (Min: 25)
+     - 120 / 170 / 210 / 250 / 300 / 350 GSM
+     - Lamination available (170+ GSM)
+  3. TEXTURE PAPER  (Min: 25)
+     - 10 options: SBS White (101-106), SBS Natural (107-108),
+       Metallic Golden (41), Metallic Silver (42)
+  4. METALLIC PAPER (Min: 25)
+     - Metallic Golden Code 51
+     - Metallic Silver Code 52
+  5. NT / PVC SHEET (Min: 25)
+     - PVC White (Matt) 180 Micron (13x19)
+     - PVC Semi Transparent 200 Micron (13x19)
+  6. PAPER GUMMING  (Min: 10)
+     - Normal Gumming / Avery Dennison Gumming
+  7. PVC GUMMING    (Min: 10)
+     - White / Transparent / Golden
+  8. ONLY PRINTING  (Min: 1)
+
+SHEET SIZES: 12x18, 13x19
+
+LAMINATION OPTIONS: Matt, Gloss, Not Required
+
+HALFCUT OPTIONS (for Gummed/PVC):
+  - Not Required
+  - Upto 10 Stickers
+  - 11 to 20 Stickers
+  - 21 to 50 Stickers
+  - 51 to 100 Stickers
+
+DELIVERY OPTIONS:
+  - Deliver By Courier (Free)
+  - Dispatch By Transport (Freight charges extra)
+
+FILE OPTIONS:
+  - Attach File Online
+  - Send via Email (+Rs. 10 fee)
+
+PRODUCTION TIME: 1 day
+
+FORM FIELDS:
+  - Order Name
+  - Product selection (grid)
+  - Sub-product type (art, texture, metallic etc.)
+  - Quantity
+  - Size (12x18 or 13x19)
+  - Printing (1 Side / 2 Side)
+  - Lamination (conditional)
+  - Half Cut (for gummed types)
+  - Delivery option
+  - Design file
+
+ORDER API: POST /orders/laser-pen
+
+====================================================================
+5. LETTERHEAD
+====================================================================
+File: Letterhead/Letterhead.jsx
+Route: /services/custom-printing/letterhead
+
+PRODUCTS (14 variants):
+  LH-1 : 70 GSM Maplitho Paper (A4 / Letter Size)
+  LH-2 : 90 GSM Sunshine Paper (A4 / Letter Size)
+  LH-3 : 100 GSM Bond Paper (A4 / Letter Size)
+  LH-4 : 100 GSM Deo Paper (A4 / Letter Size)
+  LH-4A: 100 GSM Deo Paper + UV (A4 / Letter Size)
+  LH-4B: 100 GSM Deo Paper + Gold Foil (A4 / Letter Size)
+  LH-5 : 115 GSM Sunshine Paper (A4 / Letter Size)
+
+SIZES:
+  - A4: 8.26" X 11.69"
+  - Letter Size: 8.5" X 11.0"
+
+PRICING (per unit, GSM-based):
+  LH-1: 1000→₹1.50, 2000→₹1.30 ... 16000→₹0.90
+  LH-2: 1000→₹1.80, 2000→₹1.60 ... 16000→₹1.20
+  LH-3: 1000→₹2.20, 2000→₹2.00 ... 16000→₹1.60
+  LH-4: 1000→₹2.50, 2000→₹2.30 ... 16000→₹0.90
+  LH-4A: 1000→₹3.50 ... 16000→₹2.90
+  LH-4B: 1000→₹4.50 ... 16000→₹3.90
+  LH-5: 1000→₹2.80 ... 16000→₹2.20
+
+QUANTITY OPTIONS: 1000, 2000, 3000, 4000, 8000, 12000, 16000
+
+PRINTING OPTIONS: Single Side, Both Side
+
+BINDING OPTIONS:
+  - Not Required
+  - Pad (10 x 100 letter heads)
+  - Pockets (10 x 100 Letter Heads)
+
+CUTTING OPTIONS (115 GSM only):
+  - Finishing Cut
+  - Without Cutting
+
+SPECIAL FINISHING:
+  - LH-4A: Spot UV (Front Side only)
+  - LH-4B: Gold Foil (Front Side, color: Gold/Silver/Copper)
+
+DELIVERY OPTIONS:
+  - Deliver By Courier (Free)
+  - Dispatch By Transport
+
+FILE OPTIONS:
+  - Attach File Online
+  - Send via Email (+Rs. 10)
+
+ACCEPTED FORMATS: PDF, CDR, PSD, JPG, PNG (Max 50MB)
+
+PRODUCTION TIME:
+  - Standard: Within 48 hours from file upload
+  - Premium (UV/Foil): Within 72 hours from file upload
+
+IMPORTANT: Artwork needs 3mm bleed on all sides, 300 DPI
+
+FORM FIELDS:
+  - Order Name
+  - Select Product
+  - Printing (Single/Both Side)
+  - Binding
+  - Quantity
+  - Cutting Type (conditional for 115 GSM)
+  - Spot UV / Foil options (conditional)
+  - Delivery option
+  - File Option
+  - Special Remark
+
+ORDER API: POST /orders/laser-pen
+
+====================================================================
+6. GARMENT TAG
+====================================================================
+File: GarmentTag/GarmentTag.jsx
+Routes (sub-tabs):
+  - /services/custom-printing/garment-gloss   (Gloss Coated Tags)
+  - /services/custom-printing/garment-matt    (Matt Lamination Tags)
+  - /services/custom-printing/garment-uv      (Matt + UV)
+  - /services/custom-printing/garment-thread  (Garment Threads)
+
+--- GLOSS COATED TAGS (Code: Tag-1) ---
+  Class: Super Gloss Coated
+  Lamination: Hi-Gloss
+  Printing: Single Side with Black Back Printing
+  Sizes: Small, Medium, Large
+  Quantity Options: 2000, 4000, 6000, 8000, 10000
+
+  RATES (per piece):
+    Small:  2000→₹1.20, 4000→₹1.10, 6000→₹1.00, 8000→₹0.95, 10000→₹0.90
+    Medium: 2000→₹1.80, 4000→₹1.65, 6000→₹1.50, 8000→₹1.45, 10000→₹1.40
+    Large:  2000→₹2.50, 4000→₹2.30, 6000→₹2.10, 8000→₹2.00, 10000→₹1.90
+
+  SPECIFICATIONS:
+    Small:  Design W:56mm H:54mm | Matter W:43mm H:43mm | Cut W:48mm H:48mm
+    Medium: Design W:54mm H:90mm | Matter W:40mm H:76mm | Cut W:48mm H:84mm
+    Large:  Design W:56mm H:108mm| Matter W:42mm H:94mm | Cut W:50mm H:102mm
+
+--- MATT LAMINATION TAGS (Code: Tag-2) ---
+  Class: Premium
+  Lamination: Matt
+  Printing: Both Side
+
+  RATES (per piece):
+    Small:  2000→₹1.40, 4000→₹1.30, 6000→₹1.20, 8000→₹1.15, 10000→₹1.10
+    Medium: 2000→₹2.10, 4000→₹1.95, 6000→₹1.80, 8000→₹1.75, 10000→₹1.70
+    Large:  2000→₹2.80, 4000→₹2.60, 6000→₹2.40, 8000→₹2.30, 10000→₹2.20
+
+  SPECIFICATIONS:
+    Small:  Design W:57mm H:59mm | Matter W:44mm H:44mm | Cut W:50mm H:50mm
+    Medium: Design W:57mm H:94mm | Matter W:45mm H:82mm | Cut W:50.5mm H:87.5mm
+    Large:  Design W:58.5mm H:113.5mm | Matter W:46mm H:101mm | Cut W:52mm H:107mm
+
+--- MATT LAMINATION + UV (Code: Tag-3) ---
+  Class: Premium
+  Lamination: Matt
+  Variants:
+    - Single Side Printing + Single Side UV
+    - Both Side Printing + Single Side UV (+₹0.40/pc surcharge)
+    - Both Side Printing + Both Side UV (+₹0.80/pc surcharge)
+
+  BASE RATES (per piece):
+    Small:  2000→₹1.60, 4000→₹1.50, 6000→₹1.40, 8000→₹1.35, 10000→₹1.30
+    Medium: 2000→₹2.40, 4000→₹2.25, 6000→₹2.10, 8000→₹2.05, 10000→₹2.00
+    Large:  2000→₹3.20, 4000→₹3.00, 6000→₹2.80, 8000→₹2.70, 10000→₹2.60
+
+  (Same specs as Matt Lamination Tags)
+
+--- GARMENT THREADS ---
+  Thread Types:
+    - Type A (Thick): Premium Thick Hang Tag Seal Thread
+    - Type B (Slim):  Standard Slim Hang Tag Seal Thread
+    - Type C (PVC):   Durable PVC Coated Hang Tag Seal Thread
+
+  Colors: White, Black, Red, Blue, Brown, Cream, Orange, Green
+
+  Pricing: ₹0.85/piece (base) + 18% GST
+
+DIE SHAPES: Die No. 1 through Die No. 10
+
+COMMON FORM FIELDS (Tags):
+  - Order Name
+  - Select Product (size/type/variant)
+  - Size (Small/Medium/Large)
+  - Printing option
+  - Spot UV (for UV tab)
+  - Quantity
+  - Die Shape
+  - Delivery option (Courier free / Transport)
+  - File option (Online / Email +₹10)
+  - Special Remark
+
+PRODUCTION TIME: 7-10 days from file upload
+
+IMPORTANT: Artwork must follow specified dimensions and bleed areas
+
+ORDER API: POST /orders/laser-pen
+
+====================================================================
+7. BILL BOOK
+====================================================================
+File: BillBook/BillBook.jsx
+Route: /services/custom-printing/bill-book
+
+PRODUCTS:
+  A4_BB_2: A4 Bill Book - 2 Copy  (Rate: ₹85/book, Min Qty: 10)
+  A4_BB_3: A4 Bill Book - 3 Copy  (Rate: ₹120/book, Min Qty: 20)
+
+PAPER QUALITY (1st Copy):
+  - 100 GSM DEO Paper (1 Side Printing)
+  - 100 GSM DEO Paper (2 Side Printing)
+  - 90 GSM Sunshine Paper (1 Side Printing)
+
+2ND COPY COLOR: White, Pink, Yellow
+3RD COPY COLOR (3-Copy only): White, Pink, Yellow
+BINDING OPTIONS: Normal, Premium
+
+DELIVERY OPTIONS:
+  - Deliver By Courier (Free)
+  - Dispatch By Transport
+
+FILE OPTIONS:
+  - Attach File Online
+  - Send via Email (+Rs. 10)
+
+ACCEPTED FORMATS: PDF, CDR, PSD, JPG, PNG (Max 50MB)
+
+PRICING:
+  - 2 Copy: qty × ₹85 + Email Fee + 18% GST
+  - 3 Copy: qty × ₹120 + Email Fee + 18% GST
+
+PRODUCT DETAILS:
+  - Paper Core: Best Binding Quality
+  - 1st Copy: 100 GSM Deo / 90 GSM Sunshine with Multicolor Printing
+  - 2nd/3rd Copy: 56 GSM Maplitho with Single color Printing
+  - Production Time: 5-7 Working Days
+
+IMPORTANT NOTES:
+  - Both Side Printing available only on 100 GSM Deo Paper
+  - Mention starting serial number in CDR or PDF file
+
+FORM FIELDS:
+  - Order Name
+  - Select Product (2-copy/3-copy)
+  - Quantity (min 10 or 20)
+  - 1st Paper Quality
+  - 2nd Copy Color
+  - 3rd Copy Color (3-copy only)
+  - Binding Quality
+  - Delivery option
+  - File option
+  - Special Remark
+
+ORDER API: POST /orders/laser-pen
+
+====================================================================
+8. ENVELOPE
+====================================================================
+File: Envelope/Envelope.jsx
+Route: /services/custom-printing/envelop
+
+PRODUCTS (7 variants):
+  EN-1: Envelopes 9x4       (9"X4")      - Office Letters
+  EN-2: Envelopes 9.70x4.20 (9.7"X4.2") - Executive Office Letters
+  EN-3: Envelopes 10.75x4.75 (10.75"X4.75") - Documents & Large Letters
+  EN-4: Envelopes 5x7       (5"X7")      - Invitations & Cards (no window)
+  EN-5: Envelopes 6x8       (6"X8")      - Catalogues & Booklets (no window)
+  EN-6: Envelopes 8.60x10.60 (8.6"X10.6") - Large Documents & Files
+  EN-7: Envelopes 9.40x12.40 (9.4"X12.4") - Premium Catalogues
+
+PAPER OPTIONS by variant:
+  EN-1: 70 GSM Maplitho, 90 GSM Sunshine, 100 GSM Deo
+  EN-2: 70 GSM Maplitho, 90 GSM Sunshine, 100 GSM Deo
+  EN-3: 90 GSM Sunshine only
+  EN-4: 70 GSM Maplitho, 90 GSM Sunshine, 100 GSM Deo, 100 GSM Deo + UV
+  EN-5: 70 GSM Maplitho, 90 GSM Sunshine, 100 GSM Deo
+  EN-6: 90 GSM Sunshine only
+  EN-7: 90 GSM Art Paper, 115 GSM Art Paper, 170 GSM Art Paper
+
+WINDOW CUTTING (not for EN-4, EN-5):
+  - Not Required
+  - Required
+
+FLAP OPENING:
+  - Short Opening (with center pasting)
+  - Long Opening (with side pasting)
+
+QUANTITY OPTIONS: 1000, 2000, 3000, 4000
+
+PRICING:
+  - 100 GSM paper: ₹2.50/piece
+  - Other paper:   ₹1.80/piece
+  - Email Fee: +₹10
+  - GST: 18%
+  Note: Price discount applicable with increase in Quantity
+
+DELIVERY OPTIONS:
+  - Deliver By Courier (Free)
+  - Dispatch By Transport
+
+FILE OPTIONS:
+  - Attach File Online
+  - Send via Email (+Rs. 10)
+
+ACCEPTED FORMATS: PDF, CDR, PSD, JPG, PNG (Max 50MB)
+
+PRODUCTION TIME: Within 4 days from file upload
+
+FORM FIELDS:
+  - Order Name
+  - Select Product (envelope size)
+  - Paper Type
+  - Window Cutting (if applicable)
+  - Flap Opening
+  - Quantity
+  - Delivery option
+  - File option
+  - Special Remark
+
+ORDER API: POST /orders/laser-pen
+
+====================================================================
+9. CO2 LASER MACHINE SERVICE
+====================================================================
+File: MachineServices/CO2LaserService.jsx
+Route: /services/co2-laser (or similar)
+
+DESCRIPTION: Precision cutting and engraving for organic materials.
+
+MACHINE SPECS:
+  - Bed Size: 1300x900mm
+  - Beam Precision: 0.01mm
+  - Max Thickness: 20mm
+  - Materials: Organic only
+  - Status: Online & Operational
+
+MATERIAL TYPES: Wood, Acrylic, Leather, MDF, Fabric, Paper/Cardboard
+
+MATERIAL THICKNESS: 1mm, 2mm, 3mm, 4mm, 5mm, 6mm, 8mm, 10mm
+
+QUANTITY TIERS:
+  - 1-10 units
+  - 11-50 units
+  - 51-100 units
+  - 100+ units
+
+ACCEPTED FILE FORMATS: PDF, CDR, PSD, JPG, PNG (Max 100MB)
+
+PRODUCTION TIME: 2-3 Days (Quality check included)
+
+ORDER GUIDE:
+  - Vector files (CDR/PDF) preferred for cutting
+  - High-res images OK for engraving only
+  - Premium materials may incur extra charges
+
+FORM FIELDS:
+  - Order Name
+  - Material Type
+  - Material Thickness
+  - Quantity
+  - Dimensions (L x W x H in mm)
+  - Technical Design File (upload)
+  - Special Instructions
+
+====================================================================
+10. CNC ROUTER SERVICE
+====================================================================
+File: MachineServices/CNCRouterService.jsx
+Route: /services/cnc-router (or similar)
+
+DESCRIPTION: Precision 3D carving and large-format profile cutting
+for furniture, signage, and complex architectural components.
+
+MACHINE SPECS:
+  - Bed Capacity: 8ft x 4ft Heavy Duty
+  - 3D Depth: Up to 150mm in solid wood and soft metals
+
+MATERIAL TYPES:
+  - Solid Wood
+  - Plywood / MDF
+  - Acrylic Sheets
+  - Aluminum Composite (ACP)
+  - PVC / Foam Board
+  - Solid Surface (Corian)
+
+CNC PROCESS TYPES:
+  - 2D Profile Cutting
+  - 3D Carving / Bas-Relief
+  - Drilling & Pocketing
+  - V-Groove Folding
+
+QUANTITY TIERS:
+  - 1-5 units
+  - 6-20 units
+  - 21-50 units
+  - 50+ units
+
+ACCEPTED FILE FORMATS: STL, STEP, DXF, DWG, CDR (Max 200MB)
+
+PRODUCTION TIME: 4-5 Days
+
+SAFETY & PRECISION FEATURES:
+  - Vacuum bed for stability
+  - Automatic tool changer
+  - Dust-free processing
+  - Edge banding available
+
+FORM FIELDS:
+  - Project Title (Order Name)
+  - Material Type
+  - CNC Process type
+  - Quantity
+  - Sheet Size / Dimensions (L x W x H in mm)
+  - CAD / 3D Model File (STL, OBJ, STEP, PDF, CDR, DWG, DXF)
+  - Technical Details / Instructions
+
+====================================================================
+11. LASER MARKING SERVICE
+====================================================================
+File: MachineServices/LaserMarkingService.jsx
+Route: /services/laser-marking (or similar)
+
+DESCRIPTION: High-speed fiber laser marking for industrial branding,
+serial numbers, and permanent identification on metals and plastics.
+
+MACHINE SPECS:
+  - Laser Source: 20W/30W Fiber Laser
+  - Marking Speed: Up to 7000mm/s
+  - Durability: Extreme
+  - Standards: MIL-STD-130 Compliant, ISO Certified
+
+MATERIAL TYPES:
+  - Stainless Steel
+  - Aluminum
+  - Brass/Copper
+  - Titanium
+  - Anodized Metal
+  - Industrial Plastics
+
+MARKING TYPES:
+  - Surface Etching
+  - Deep Engraving
+  - Color Annealing (SS)
+  - Carbonizing
+
+QUANTITY TIERS:
+  - 1-20 units
+  - 21-100 units
+  - 101-500 units
+  - 500+ units
+
+ACCEPTED FILE FORMATS: DXF, PLT, PDF, CDR, PNG, CSV, XLSX (Max 50MB)
+
+KEY FEATURES:
+  - Permanent Bond (non-removable)
+  - Resistant to chemicals, abrasion, heat
+  - Ideal for GS1-compliant barcodes, UID, logos
+  - Supports curved or flat surfaces
+  - Deep engraving available
+  - Cylindrical marking available
+
+FORM FIELDS:
+  - Order Name
+  - Material Type
+  - Marking Type
+  - Quantity
+  - Marking Area (L x W in mm)
+  - Artwork/Logo/List File
+  - Special Instructions (serial numbers, QR data, depth)
+
+====================================================================
+COMMON PATTERNS ACROSS ALL CUSTOM PRINTING SERVICES
+====================================================================
+
+EMAIL SUBMISSION:
+  - Email: photowalagift@gmail.com
+  - Manual processing fee: Rs. 10 added to all email orders
+
+GST RATE: 18% applied on all orders
+
+DELIVERY OPTIONS (Standard):
+  - Deliver By Courier → Free Delivery
+  - Dispatch By Transport → Freight extra
+
+FILE UPLOAD RESTRICTIONS:
+  - Allowed: PDF, CDR, PSD, JPEG, JPG, PNG
+  - Max size varies: 25MB to 100MB per service
+
+SPECIALIZATION (shown on most pages):
+  - Printing with latest Komori offset machines (2023 Model)
+  - Innovative, Advanced & Equipped Post Printing Unit
+  - Constant quality with reasonable price
+
+ORDER PORTAL: v2.0
+
+====================================================================
+ROUTING SUMMARY
+====================================================================
+
+/services/custom-printing              → Redirects to pen page
+/services/custom-printing/pen         → Laser Printed Pens
+/services/custom-printing/sticker-labels      → Sticker Labels (no-cut)
+/services/custom-printing/sticker-labels/no-cut
+/services/custom-printing/sticker-labels/round-cut
+/services/custom-printing/sticker-labels/straight-cut
+/services/custom-printing/digital-printing    → Digital Paper Printing
+/services/custom-printing/letterhead          → Letterhead
+/services/custom-printing/garment-tag         → Garment Tag (gloss)
+/services/custom-printing/garment-gloss
+/services/custom-printing/garment-matt
+/services/custom-printing/garment-uv
+/services/custom-printing/garment-thread
+/services/custom-printing/bill-book           → Bill Book
+/services/custom-printing/envelop             → Envelope
+(Machine services routes not defined in these files)
+
+====================================================================
+END OF SERVICES INFORMATION
+====================================================================

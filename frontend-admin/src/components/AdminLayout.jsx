@@ -1,9 +1,11 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { createElement, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import api from '../api/client';
 import { useAdminStore } from '../App';
 import {
   LayoutDashboard, Package, ShoppingCart, Users,
-  RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X, ClipboardList
+  RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X, ClipboardList, Printer, Cpu
 } from 'lucide-react';
 
 const NAV = [
@@ -16,11 +18,33 @@ const NAV = [
   { to: '/support',   icon: MessageSquare,   label: 'Support' },
 ];
 
+const SERVICE_NAV = [
+  { to: '/services/custom-printing', icon: Printer, label: 'Print Orders' },
+  { to: '/services/machine-requests', icon: Cpu, label: 'Machine Quotes' },
+];
+
 export default function AdminLayout() {
   const { user, logout } = useAdminStore();
   const navigate = useNavigate();
   const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Poll for counts every 30 seconds
+  const { data: serviceCounts } = useQuery({
+    queryKey: ['admin-service-counts'],
+    queryFn: async () => {
+      const [{ data: cp }, { data: ms }] = await Promise.all([
+        api.get('/orders/admin/custom-printing', { params: { status: 'PENDING', limit: 1 } }),
+        api.get('/orders/admin/machine-requests', { params: { status: 'PENDING_QUOTE', limit: 1 } })
+      ]);
+      return { 
+        cp: cp?.pagination?.total || 0, 
+        ms: ms?.pagination?.total || 0 
+      };
+    },
+    enabled: !!user && user.role === 'SUPER_ADMIN',
+    refetchInterval: 30000 
+  });
 
   const handleLogout = () => { logout(); navigate('/'); };
 
@@ -45,6 +69,30 @@ export default function AdminLayout() {
                 </Link>
               );
             })}
+
+            {user?.role === 'SUPER_ADMIN' && (
+              <div className="pt-4 mt-4 border-t border-white/10">
+                <p className="px-3 mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#e8caa6]/50">Services</p>
+                {SERVICE_NAV.map(({ to, icon: Icon, label }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    className="group flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-semibold text-[#f6e9da] transition-colors hover:bg-white/10 hover:text-white"
+                  >
+                    <div className="flex items-center gap-3">
+                      {createElement(Icon, { className: 'h-4 w-4 shrink-0' })}
+                      <span>{label}</span>
+                    </div>
+                    {to.includes('custom-printing') && serviceCounts?.cp > 0 && (
+                      <span className="bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md min-w-[18px] text-center">{serviceCounts.cp}</span>
+                    )}
+                    {to.includes('machine-requests') && serviceCounts?.ms > 0 && (
+                      <span className="bg-amber-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md min-w-[18px] text-center">{serviceCounts.ms}</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
           </nav>
 
           {/* User + Logout */}

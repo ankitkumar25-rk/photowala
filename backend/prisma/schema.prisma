@@ -85,6 +85,8 @@ model User {
   passwordResetTokens  PasswordResetToken[]
   returns              Return[]
   supportTickets       SupportTicket[]
+  customPrintingOrders  CustomPrintingOrder[]
+  machineServiceRequests MachineServiceRequest[]
 
   @@map("users")
 }
@@ -407,5 +409,121 @@ model WishlistItem {
 
   @@unique([userId, productId])
   @@map("wishlist_items")
+}
+
+// ================================
+// SERVICES & MACHINE QUOTES
+// ================================
+
+enum ServiceType {
+  PEN
+  STICKER
+  DIGITAL_PRINTING
+  LETTERHEAD
+  GARMENT_TAG
+  BILL_BOOK
+  ENVELOPE
+}
+
+enum MachineServiceType {
+  CO2_LASER
+  CNC_ROUTER
+  LASER_MARKING
+}
+
+enum ServiceOrderStatus {
+  PENDING
+  IN_PRODUCTION
+  DISPATCHED
+  DELIVERED
+  CANCELLED
+}
+
+enum MachineServiceStatus {
+  PENDING_QUOTE
+  QUOTE_SENT
+  COMPLETED
+  CANCELLED
+}
+
+model CustomPrintingOrder {
+  id              String             @id @default(uuid())
+  orderNumber     String             @unique
+  userId          String
+  user            User               @relation(fields: [userId], references: [id])
+  serviceType     ServiceType
+  status          ServiceOrderStatus @default(PENDING)
+  orderName       String
+  quantity        Int
+  deliveryOption  String
+  fileOption      String
+  specialRemark   String?
+  
+  // JSON field to store all dynamic service-specific details
+  details         Json
+  
+  // Pricing
+  baseAmount      Decimal            @db.Decimal(10, 2)
+  emailFee        Decimal            @default(0) @db.Decimal(10, 2)
+  gstAmount       Decimal            @db.Decimal(10, 2)
+  totalAmount     Decimal            @db.Decimal(10, 2)
+  
+  // Admin fields
+  adminNotes      String?
+  
+  // Files
+  files           OrderFile[]
+  
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@map("custom_printing_orders")
+}
+
+model MachineServiceRequest {
+  id              String               @id @default(uuid())
+  requestNumber   String               @unique
+  userId          String
+  user            User                 @relation(fields: [userId], references: [id])
+  serviceType     MachineServiceType
+  status          MachineServiceStatus @default(PENDING_QUOTE)
+  
+  // Common fields
+  orderName       String?
+  projectTitle    String?              // specific to CNC
+  quantity        Int
+  
+  // JSON field for dynamic specs
+  specs           Json
+  
+  // Admin fields
+  quotedPrice     Decimal?             @db.Decimal(10, 2)
+  adminNotes      String?
+  
+  // Files
+  files           OrderFile[]
+  
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@map("machine_service_requests")
+}
+
+model OrderFile {
+  id                      String                 @id @default(uuid())
+  url                     String
+  publicId                String?                // Cloudinary public ID
+  fileName                String?
+  fileType                String?
+  
+  customPrintingOrderId   String?
+  customPrintingOrder     CustomPrintingOrder?   @relation(fields: [customPrintingOrderId], references: [id], onDelete: Cascade)
+  
+  machineServiceRequestId String?
+  machineServiceRequest   MachineServiceRequest? @relation(fields: [machineServiceRequestId], references: [id], onDelete: Cascade)
+  
+  createdAt               DateTime               @default(now())
+
+  @@map("order_files")
 }
 
