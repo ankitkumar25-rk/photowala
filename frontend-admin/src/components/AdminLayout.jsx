@@ -3,7 +3,8 @@ import { createElement, useState } from 'react';
 import { useAdminStore } from '../App';
 import {
   LayoutDashboard, Package, ShoppingCart, Users,
-  RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X, ClipboardList
+  RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X, ClipboardList,
+  Settings, Printer
 } from 'lucide-react';
 
 const NAV = [
