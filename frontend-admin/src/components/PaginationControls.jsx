@@ -1,4 +1,4 @@
-export default function PaginationControls({
+﻿export default function PaginationControls({
   page,
   total,
   limit = 20,

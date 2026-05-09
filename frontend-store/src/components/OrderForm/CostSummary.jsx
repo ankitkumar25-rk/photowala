@@ -1,4 +1,4 @@
-export default function CostSummary({
+﻿export default function CostSummary({
   applicableCost,
   discountPercent,
   discountAmt,

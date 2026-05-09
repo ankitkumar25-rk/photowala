@@ -46,7 +46,7 @@ export default function AdminSupport() {
                   <span className={'badge-status ' + t.status.toLowerCase().replace('_','-')}>{t.status}</span>
                 </div>
                 <p className="font-semibold text-gray-800 mt-1">{t.subject}</p>
-                <p className="text-sm text-gray-500 mt-0.5">{t.user?.name} · {t.user?.email}</p>
+                <p className="text-sm text-gray-500 mt-0.5">{t.user?.name} Â· {t.user?.email}</p>
                 <p className="text-sm text-gray-600 mt-2 bg-gray-50 p-3 rounded-lg">{t.message}</p>
               </div>
               <span className="text-xs text-gray-400 whitespace-nowrap">{new Date(t.createdAt).toLocaleDateString('en-IN')}</span>

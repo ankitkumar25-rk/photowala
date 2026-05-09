@@ -249,7 +249,7 @@ hr {
   }
 }
 
-.animate-leaf {
+.animate-float {
   animation: softFloat 2.4s ease-in-out infinite;
 }
 

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { Share2, MessageCircle, Send, Mail, Phone, MapPin } from 'lucide-react';
 import { brandAssets } from '../data/assets';
 const Instagram = Share2, Facebook = MessageCircle, Twitter = Send;
@@ -10,11 +10,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4">
-            {/* Logo in white card — matches brand badge style */}
+            {/* Logo in white card — matches brand badge style */}
             <div className="inline-flex items-center justify-center bg-white rounded-2xl px-2 py-2 shadow-lg">
               <img
                 src={brandAssets.logo}
-                alt="Photowalagift"
+                alt="Photowala"
                 className="h-20 w-auto object-contain"
               />
             </div>
@@ -77,8 +77,8 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-[#d7c4b0] text-sm">
                 <Mail className="w-4 h-4 shrink-0" />
-                <a href="mailto:support@manufact.in" className="hover:text-white transition-colors">
-                  support@manufact.in
+                <a href="mailto:support@photowala.in" className="hover:text-white transition-colors">
+                  support@photowala.in
                 </a>
               </li>
               <li className="flex items-center gap-2 text-[#d7c4b0] text-sm">
@@ -96,8 +96,8 @@ export default function Footer() {
             <div className="mt-6">
               <p className="text-[#d4b49e] text-xs font-semibold uppercase tracking-wider mb-2">Certifications</p>
               <div className="flex gap-2">
-                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">🏅 Crafted Premium</span>
-                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">🏆 Trusted India</span>
+                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">Ã°Å¸Ââ€¦ Crafted Premium</span>
+                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">Ã°Å¸Ââ€  Trusted India</span>
               </div>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-[#d8a45f]/20 py-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-[#d4b49e] text-xs">
-          <p>© {new Date().getFullYear()} PhotowalaGift. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Photowala. All rights reserved.</p>
           <p className="flex items-center gap-1">Made with <span className="text-red-400">♥</span> in India</p>
         </div>
       </div>

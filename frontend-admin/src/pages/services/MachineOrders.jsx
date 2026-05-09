@@ -105,7 +105,7 @@ export default function MachineOrders() {
       <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-100">
+            <thead className="bg-[#fdfaf7] text-[10px] font-bold uppercase tracking-widest text-brand-primary/60 border-b border-gray-100">
               <tr>
                 <th className="px-6 py-4">Order Details</th>
                 <th className="px-6 py-4">Customer</th>

@@ -6,6 +6,7 @@ import {
   RotateCcw, BarChart3, MessageSquare, LogOut, Menu, X, ClipboardList,
   Settings, Printer
 } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 const NAV = [
   { to: '/',          icon: LayoutDashboard, label: 'Dashboard' },
@@ -30,10 +31,19 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-cream-100 text-gray-900 grid grid-cols-1 lg:grid-cols-[280px_1fr]">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-70 border-r border-brand-primary/15 bg-[#4a2f23] text-slate-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${
+      <aside className={`fixed inset-y-0 left-0 z-50 w-70 border-r border-white/5 bg-[linear-gradient(180deg,#5a3f2f,#3b291f)] text-slate-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 luxury-grain ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="flex h-full flex-col">
+          {/* Logo */}
+          <div className="flex h-20 items-center gap-3 px-6 border-b border-white/5 mb-2">
+             <img src={logo} alt="Logo" className="h-8 w-auto object-contain brightness-0 invert opacity-90" />
+             <div className="flex flex-col">
+                <span className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase leading-none mb-1">Photowala</span>
+                <span className="text-xs font-black tracking-widest text-white leading-none">ADMIN PANEL</span>
+             </div>
+          </div>
+
           {/* Nav */}
           <nav className="flex-1 space-y-1 px-3 py-5">
             {NAV.map(({ to, icon: Icon, label }) => {
@@ -88,7 +98,7 @@ export default function AdminLayout() {
 
           <div className="ml-auto flex items-center gap-3">
             <a href={storeUrl} target="_blank" rel="noreferrer" className="hidden rounded-full border border-brand-primary/20 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-primary transition-colors hover:bg-brand-surface sm:inline-block">
-              View Store ↗
+              View Store Ã¢â€ â€”
             </a>
             {user?.avatarUrl ? (
               <img src={user.avatarUrl} alt="" className="h-9 w-9 rounded-full border border-brand-primary/20 object-cover" />

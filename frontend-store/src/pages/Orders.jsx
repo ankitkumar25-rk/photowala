@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Package, ChevronRight, Clock, Truck, CheckCircle,
@@ -235,7 +235,7 @@ export default function Orders() {
             </p>
             {!statusFilter && (
               <a href="/products" className="btn-primary">
-                Shop Products ðŸ†
+                Shop Products ÃƒÂ°Ã…Â¸" 
               </a>
             )}
           </div>
@@ -255,7 +255,7 @@ export default function Orders() {
                   disabled={page === 1}
                   className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
                 >
-                  ← Prev
+                  Ã¢â€ Â Prev
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button

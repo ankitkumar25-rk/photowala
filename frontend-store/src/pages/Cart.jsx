@@ -8,7 +8,7 @@ import {
 import { useCartStore, useAuthStore } from '../store';
 import toast from 'react-hot-toast';
 
-/* ── Quantity stepper ── */
+/* -- Quantity stepper -- */
 function QtyControl({ item }) {
   const updateItem = useCartStore((s) => s.updateItem);
   const removeItem = useCartStore((s) => s.removeItem);
@@ -41,7 +41,7 @@ function QtyControl({ item }) {
   );
 }
 
-/* ── Single cart row ── */
+/* -- Single cart row -- */
 function CartItem({ item }) {
   const removeItem = useCartStore((s) => s.removeItem);
   const [removing, setRemoving] = useState(false);
@@ -63,7 +63,7 @@ function CartItem({ item }) {
            {img ? (
              <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" width={96} height={96} />
            ) : (
-            <div className="w-full h-full flex items-center justify-center text-3xl">🏆</div>
+            <div className="w-full h-full flex items-center justify-center text-3xl">??</div>
           )}
         </div>
       </Link>
@@ -78,14 +78,14 @@ function CartItem({ item }) {
         {item.product?.unit && (
           <p className="text-sm text-gray-500 mt-0.5">{item.product.unit}</p>
         )}
-        <p className="text-brand-primary font-bold mt-1">₹{Number(item.price).toFixed(2)}<span className="text-xs font-normal text-gray-400 ml-1">each</span></p>
+        <p className="text-brand-primary font-bold mt-1">?{Number(item.price).toFixed(2)}<span className="text-xs font-normal text-gray-400 ml-1">each</span></p>
 
         {/* Customization badge */}
         {item.customizationText && (
           <div className="mt-2 flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">
             <Pencil className="w-3 h-3 text-amber-600 shrink-0" />
             <div className="min-w-0">
-              <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Custom Text · </span>
+              <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Custom Text Â· </span>
               <span className="text-xs font-semibold text-amber-900 truncate">{item.customizationText}</span>
             </div>
             <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 ml-auto" />
@@ -118,16 +118,16 @@ function CartItem({ item }) {
 
       {/* Line total */}
       <div className="text-right shrink-0 hidden sm:block">
-        <p className="font-bold text-xl text-gray-900">₹{lineTotal}</p>
+        <p className="font-bold text-xl text-gray-900">?{lineTotal}</p>
         {item.quantity > 1 && (
-          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} × ₹{Number(item.price).toFixed(2)}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} Ã— ?{Number(item.price).toFixed(2)}</p>
         )}
       </div>
     </div>
   );
 }
 
-/* ── Skeleton loader ── */
+/* -- Skeleton loader -- */
 function CartSkeleton() {
   return (
     <div className="animate-pulse space-y-0">
@@ -210,9 +210,9 @@ export default function Cart() {
             <div className="lg:col-span-2 card h-64 animate-pulse bg-cream-100" />
           </div>
         ) : items.length === 0 ? (
-          /* ── Empty state ── */
+          /* -- Empty state -- */
           <div className="card p-16 text-center max-w-lg mx-auto">
-            <div className="text-7xl mb-5">🛒</div>
+            <div className="text-7xl mb-5">??</div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               Your cart is empty
             </h2>
@@ -233,10 +233,10 @@ export default function Cart() {
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Browse Categories</p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {[
-                  ['🏆 Trophies', '/categories/trophies'],
-                  ['🎁 Corporate Gifts', '/categories/corporate-gifts'],
-                  ['💎 Momentos', '/categories/momentos'],
-                  ['🪄 Personalized Gifts', '/products'],
+                  ['?? Trophies', '/categories/trophies'],
+                  ['?? Corporate Gifts', '/categories/corporate-gifts'],
+                  ['?? Momentos', '/categories/momentos'],
+                  ['?? Personalized Gifts', '/products'],
                 ].map(([label, to]) => (
                   <Link key={to} to={to} className="px-3 py-1.5 bg-brand-surface text-brand-primary text-sm font-semibold rounded-xl hover:bg-brand-surface transition-colors">
                     {label}
@@ -247,14 +247,14 @@ export default function Cart() {
           </div>
         ) : (
           <div className="grid lg:grid-cols-5 gap-8 items-start">
-            {/* ── Cart items ── */}
+            {/* -- Cart items -- */}
             <div className="lg:col-span-3 card overflow-hidden">
               {/* Free shipping progress bar */}
               {shipping > 0 && (
                 <div className="px-5 pt-4 pb-3 bg-brand-surface border-b border-brand-secondary">
                   <div className="flex items-center justify-between text-sm mb-2">
                     <span className="font-semibold text-brand-secondary flex items-center gap-1.5">
-                      <Truck className="w-4 h-4" /> Add ₹{freeShipRemaining.toFixed(0)} more for FREE shipping!
+                      <Truck className="w-4 h-4" /> Add ?{freeShipRemaining.toFixed(0)} more for FREE shipping!
                     </span>
                     <span className="text-brand-secondary font-bold">{Math.round(freeShipProgress)}%</span>
                   </div>
@@ -268,7 +268,7 @@ export default function Cart() {
               )}
               {shipping === 0 && (
                 <div className="px-5 py-3 bg-green-50 border-b border-green-100 flex items-center gap-2 text-sm font-semibold text-green-700">
-                  <Tag className="w-4 h-4" /> 🎉 You've unlocked FREE shipping!
+                  <Tag className="w-4 h-4" /> ?? You've unlocked FREE shipping!
                 </div>
               )}
 
@@ -287,7 +287,7 @@ export default function Cart() {
               </div>
             </div>
 
-            {/* ── Order summary ── */}
+            {/* -- Order summary -- */}
             <div className="lg:col-span-2 space-y-4 sticky top-24">
               <div className="card p-6">
                 <h2 className="font-bold text-xl text-gray-900 mb-5">
@@ -300,10 +300,10 @@ export default function Cart() {
                     {items.map((item) => (
                       <div key={item.id ?? item.productId} className="flex justify-between text-sm">
                         <span className="text-gray-600 truncate mr-2 max-w-[60%]">
-                          {item.product?.name} × {item.quantity}
+                          {item.product?.name} Ã— {item.quantity}
                         </span>
                         <span className="font-semibold text-gray-900 shrink-0">
-                          ₹{(Number(item.price) * item.quantity).toFixed(2)}
+                          ?{(Number(item.price) * item.quantity).toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -311,7 +311,7 @@ export default function Cart() {
 
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Subtotal</span>
-                    <span className="font-semibold text-gray-900">₹{subtotal.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900">?{subtotal.toFixed(2)}</span>
                   </div>
 
                   <div className="flex justify-between text-sm">
@@ -323,20 +323,20 @@ export default function Cart() {
                         <Tag className="w-3 h-3" /> FREE
                       </span>
                     ) : (
-                      <span className="font-semibold text-gray-900">₹{shipping.toFixed(2)}</span>
+                      <span className="font-semibold text-gray-900">?{shipping.toFixed(2)}</span>
                     )}
                   </div>
 
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-cream-200">
                     <span className="text-gray-900">Total</span>
-                    <span className="text-brand-primary">₹{total.toFixed(2)}</span>
+                    <span className="text-brand-primary">?{total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {shipping > 0 && (
                   <div className="mt-4 p-3 bg-brand-surface rounded-xl text-xs text-brand-secondary font-medium flex items-center gap-2 border border-brand-secondary">
                     <Tag className="w-3.5 h-3.5 shrink-0" />
-                    Add ₹{freeShipRemaining.toFixed(0)} more to get FREE shipping on this order
+                    Add ?{freeShipRemaining.toFixed(0)} more to get FREE shipping on this order
                   </div>
                 )}
 
@@ -366,9 +366,9 @@ export default function Cart() {
               {/* Trust row */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { icon: '🔒', label: 'Secure\nPayment' },
-                  { icon: '🚚', label: 'Fast\nDelivery' },
-                  { icon: '↩️', label: 'Easy\nReturns' },
+                  { icon: '??', label: 'Secure\nPayment' },
+                  { icon: '??', label: 'Fast\nDelivery' },
+                  { icon: '??', label: 'Easy\nReturns' },
                 ].map(({ icon, label }) => (
                   <div key={label} className="card p-3 flex flex-col items-center gap-1.5 text-center">
                     <span className="text-xl">{icon}</span>
@@ -382,9 +382,9 @@ export default function Cart() {
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">You might also like</p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    ['🌾 Grains', '/categories/grains-cereals'],
-                    ['🫒 Oils', '/categories/cold-pressed-oils'],
-                    ['🌶️ Spices', '/categories/spices-masalas'],
+                    ['?? Grains', '/categories/grains-cereals'],
+                    ['?? Oils', '/categories/cold-pressed-oils'],
+                    ['??? Spices', '/categories/spices-masalas'],
                   ].map(([label, to]) => (
                     <Link key={to} to={to} className="px-2.5 py-1 text-xs font-semibold bg-brand-surface text-brand-primary rounded-lg hover:bg-brand-surface transition-colors">
                       {label}

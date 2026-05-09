@@ -32,7 +32,7 @@ export default function AdminInventory() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-gray-800 truncate">{p.name}</p>
-                    <p className="text-xs text-gray-400 truncate">{p.category?.name || 'Uncategorized'} · {p.sku || 'No SKU'}</p>
+                    <p className="text-xs text-gray-400 truncate">{p.category?.name || 'Uncategorized'} Â· {p.sku || 'No SKU'}</p>
                   </div>
                   {p.stock === 0 ? <span className="badge-status cancelled">Out</span>
                     : isLow ? <span className="badge-status pending">Low</span>
@@ -87,7 +87,7 @@ export default function AdminInventory() {
                       {p.name}
                     </td>
                     <td className="px-3 sm:px-4 py-3 text-sm text-gray-500">{p.category?.name}</td>
-                    <td className="px-3 sm:px-4 py-3 text-xs font-mono text-gray-400">{p.sku || '—'}</td>
+                    <td className="px-3 sm:px-4 py-3 text-xs font-mono text-gray-400">{p.sku || 'â€”'}</td>
                     <td className="px-3 sm:px-4 py-3 text-sm font-bold">{p.stock}</td>
                     <td className="px-3 sm:px-4 py-3 text-sm text-gray-400">{p.lowStockAlert}</td>
                     <td className="px-3 sm:px-4 py-3 text-xs">

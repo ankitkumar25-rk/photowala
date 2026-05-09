@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import { useCartStore } from '../store';
 import { usersApi, ordersApi } from '../api';
 
-/* ── Mini address form modal ── */
+/* -- Mini address form modal -- */
 function QuickAddressModal({ onClose, onSave }) {
   const [form, setForm] = useState({
     label: 'Home', fullName: '', phone: '',
@@ -97,7 +97,7 @@ function QuickAddressModal({ onClose, onSave }) {
   );
 }
 
-/* ── Steps ── */
+/* -- Steps -- */
 const STEPS = [
   { id: 1, label: 'Address' },
   { id: 2, label: 'Review' },
@@ -152,7 +152,7 @@ export default function Checkout() {
     }
   };
 
-  /* ── Place order with COD ── */
+  /* -- Place order with COD -- */
   const placeOrderCOD = async () => {
     if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
     setPlacing(true);
@@ -163,7 +163,7 @@ export default function Checkout() {
       const order = orderRes.data;
       await clearCart();
       await fetchCart();
-      toast.success('🎉 Order placed! Pay on delivery.');
+      toast.success('?? Order placed! Pay on delivery.');
       navigate(`/orders/${order.id}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to place order');
@@ -207,10 +207,10 @@ export default function Checkout() {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-5 gap-8">
-          {/* ── Left column (steps) ── */}
+          {/* -- Left column (steps) -- */}
           <div className="lg:col-span-3 space-y-6">
 
-            {/* STEP 1 — Address */}
+            {/* STEP 1 â€” Address */}
             <div className={`card transition-all ${step >= 1 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
               <div className="flex items-center justify-between p-4 border-b border-cream-200">
                 <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
@@ -257,11 +257,11 @@ export default function Checkout() {
                           />
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-900 text-sm">{a.label} — {a.fullName}</span>
+                              <span className="font-semibold text-gray-900 text-sm">{a.label} â€” {a.fullName}</span>
                               {a.isDefault && <span className="badge-featured text-[10px]">Default</span>}
                             </div>
                             <p className="text-sm text-gray-600 mt-0.5">
-                              {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}, {a.state} – {a.pincode}
+                              {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}, {a.state} â€“ {a.pincode}
                             </p>
                             <p className="text-xs text-gray-500 mt-0.5">{a.phone}</p>
                           </div>
@@ -300,22 +300,22 @@ export default function Checkout() {
                     }}
                     className="btn-primary w-full justify-center"
                   >
-                    Continue to Review →
+                    Continue to Review ?
                   </button>
                 </div>
               )}
 
               {step > 1 && selectedAddress && (
                 <div className="p-4 bg-brand-surface">
-                  <p className="text-sm font-semibold text-gray-900">{selectedAddress.label} — {selectedAddress.fullName}</p>
+                  <p className="text-sm font-semibold text-gray-900">{selectedAddress.label} â€” {selectedAddress.fullName}</p>
                   <p className="text-sm text-gray-600">
-                    {selectedAddress.line1}{selectedAddress.line2 ? `, ${selectedAddress.line2}` : ''}, {selectedAddress.city}, {selectedAddress.state} – {selectedAddress.pincode}
+                    {selectedAddress.line1}{selectedAddress.line2 ? `, ${selectedAddress.line2}` : ''}, {selectedAddress.city}, {selectedAddress.state} â€“ {selectedAddress.pincode}
                   </p>
                 </div>
               )}
             </div>
 
-            {/* STEP 2 — Review */}
+            {/* STEP 2 â€” Review */}
             {step >= 2 && (
               <div className="card">
                 <div className="flex items-center justify-between p-4 border-b border-cream-200">
@@ -335,7 +335,7 @@ export default function Checkout() {
                       {items.map((item) => (
                         <div key={item.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                           <img
-                            src={item.product?.images?.[0]?.url || 'https://placehold.co/64x64/d8f3dc/2d6a4f?text=🏆'}
+                            src={item.product?.images?.[0]?.url || 'https://placehold.co/64x64/d8f3dc/2d6a4f?text=??'}
                             alt={item.product?.name}
                             className="w-14 h-14 rounded-xl object-cover bg-cream-100 shrink-0"
                           />
@@ -344,7 +344,7 @@ export default function Checkout() {
                             {item.product?.unit && <p className="text-xs text-gray-500">{item.product.unit}</p>}
                             <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity}</p>
                           </div>
-                          <p className="font-bold text-gray-900 shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                          <p className="font-bold text-gray-900 shrink-0">?{(Number(item.price) * item.quantity).toFixed(2)}</p>
                         </div>
                       ))}
                     </div>
@@ -352,19 +352,19 @@ export default function Checkout() {
                       onClick={() => setStep(3)}
                       className="btn-primary w-full justify-center mt-4"
                     >
-                      Continue to Payment →
+                      Continue to Payment ?
                     </button>
                   </div>
                 )}
                 {step > 2 && (
                   <div className="p-4 bg-brand-surface text-sm text-gray-600">
-                    {items.length} item{items.length !== 1 ? 's' : ''} reviewed ✓
+                    {items.length} item{items.length !== 1 ? 's' : ''} reviewed ?
                   </div>
                 )}
               </div>
             )}
 
-            {/* STEP 3 — Cash on Delivery */}
+            {/* STEP 3 â€” Cash on Delivery */}
             {step >= 3 && (
               <div className="card">
                 <div className="p-4 border-b border-cream-200">
@@ -390,15 +390,15 @@ export default function Checkout() {
                       disabled={placing}
                       className="btn-secondary w-full justify-center mt-4"
                     >
-                      {placing ? 'Placing...' : `Place Order (COD) - ₹${total.toFixed(2)}`}
+                      {placing ? 'Placing...' : `Place Order (COD) - ?${total.toFixed(2)}`}
                     </button>
                   </div>
 
                   <div className="flex items-center justify-center gap-4 text-xs text-gray-400 mt-2">
                     <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Secure Checkout</span>
-                    <span>•</span>
+                    <span>â€¢</span>
                     <span className="flex items-center gap-1"><Truck className="w-3 h-3" /> Fast Delivery</span>
-                    <span>•</span>
+                    <span>â€¢</span>
                     <span>Easy Returns</span>
                   </div>
                 </div>
@@ -406,7 +406,7 @@ export default function Checkout() {
             )}
           </div>
 
-          {/* ── Right column (order summary) ── */}
+          {/* -- Right column (order summary) -- */}
           <div className="lg:col-span-2">
             <div className="card sticky top-20">
               <button
@@ -430,7 +430,7 @@ export default function Checkout() {
                     <div key={item.id} className="flex items-center gap-3 py-2.5 first:pt-0">
                       <div className="relative shrink-0">
                         <img
-                          src={item.product?.images?.[0]?.url || 'https://placehold.co/48x48/d8f3dc/2d6a4f?text=🏆'}
+                          src={item.product?.images?.[0]?.url || 'https://placehold.co/48x48/d8f3dc/2d6a4f?text=??'}
                           alt={item.product?.name}
                           className="w-12 h-12 rounded-xl object-cover bg-cream-100"
                         />
@@ -442,7 +442,7 @@ export default function Checkout() {
                         <p className="font-semibold text-gray-900 text-xs leading-tight truncate">{item.product?.name}</p>
                         {item.product?.unit && <p className="text-[10px] text-gray-400">{item.product.unit}</p>}
                       </div>
-                      <p className="font-bold text-gray-900 text-sm shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                      <p className="font-bold text-gray-900 text-sm shrink-0">?{(Number(item.price) * item.quantity).toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -452,7 +452,7 @@ export default function Checkout() {
               <div className="p-4 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Subtotal</span>
-                  <span className="font-semibold text-gray-900">₹{subtotal.toFixed(2)}</span>
+                  <span className="font-semibold text-gray-900">?{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 flex items-center gap-1">
@@ -463,24 +463,24 @@ export default function Checkout() {
                       <Tag className="w-3 h-3" /> FREE
                     </span>
                   ) : (
-                    <span className="font-semibold text-gray-900">₹{shipping.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900">?{shipping.toFixed(2)}</span>
                   )}
                 </div>
 
                 {shipping > 0 && (
                   <div className="bg-brand-surface p-2.5 rounded-xl text-xs text-brand-secondary font-medium flex items-center gap-2">
                     <Tag className="w-3.5 h-3.5" />
-                    Add ₹{(1000 - subtotal).toFixed(2)} more to get free shipping!
+                    Add ?{(1000 - subtotal).toFixed(2)} more to get free shipping!
                   </div>
                 )}
 
                 <div className="flex justify-between text-lg font-bold pt-3 border-t border-cream-200">
                   <span className="text-gray-900">Total</span>
-                  <span className="text-brand-primary">₹{total.toFixed(2)}</span>
+                  <span className="text-brand-primary">?{total.toFixed(2)}</span>
                 </div>
 
                 <div className="text-xs text-gray-400 text-center">
-                  Including all taxes • Prices in INR
+                  Including all taxes â€¢ Prices in INR
                 </div>
               </div>
 

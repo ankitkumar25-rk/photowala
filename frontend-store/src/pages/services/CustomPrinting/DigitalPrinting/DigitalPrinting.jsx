@@ -13,18 +13,18 @@ const SIDEBAR_LINKS = [
   { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
   { id: 'garment', icon: Tag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
   { id: 'billbook', icon: Book, label: 'Bill Book', to: '/services/custom-printing/bill-book' },
-  { id: 'envelop', icon: Mail, label: 'Envelop', to: '/services/custom-printing/envelop' },
+  { id: 'envelope', icon: Mail, label: 'Envelope', to: '/services/custom-printing/envelope' },
 ];
 
 const PAPER_PRODUCTS = [
   { id: 'letterhead', name: 'LETTER HEAD', detail: 'Production Time: 1 days', imageBg: '#2d4a3e', emoji: '📄' },
   { id: 'art', name: 'ART PAPER', detail: 'Production Time: 1 days', imageBg: '#3a3a3a', emoji: '🎨' },
-  { id: 'texture', name: 'TEXTURE PAPER', detail: 'Production Time: 1 days', imageBg: '#e8e0d0', emoji: '🗒️' },
+  { id: 'texture', name: 'TEXTURE PAPER', detail: 'Production Time: 1 days', imageBg: '#e8e0d0', emoji: 'Ã°Å¸â€”â€™Ã¯Â¸Â' },
   { id: 'metallic', name: 'METALLIC PAPER', detail: 'Production Time: 1 days', imageBg: '#c9a227', emoji: '✨' },
   { id: 'ntpvc', name: 'NT / PVC SHEET', detail: 'Production Time: 1 days', imageBg: '#9e9e9e', emoji: '📋' },
-  { id: 'gummed', name: 'PAPER GUMMING', detail: 'Production Time: 1 days', imageBg: '#d4b96a', emoji: '📑' },
-  { id: 'pvcgum', name: 'PVC GUMMING', detail: 'Production Time: 1 days', imageBg: '#5fb8b0', emoji: '🗂️' },
-  { id: 'only', name: 'ONLY PRINTING', detail: 'Production Time: 1 days', imageBg: '#1a1a1a', emoji: '🖨️' },
+  { id: 'gummed', name: 'PAPER GUMMING', detail: 'Production Time: 1 days', imageBg: '#d4b96a', emoji: '📒' },
+  { id: 'pvcgum', name: 'PVC GUMMING', detail: 'Production Time: 1 days', imageBg: '#5fb8b0', emoji: 'Ã°Å¸â€”â€šÃ¯Â¸Â' },
+  { id: 'only', name: 'ONLY PRINTING', detail: 'Production Time: 1 days', imageBg: '#1a1a1a', emoji: 'Ã°Å¸â€“Â¨Ã¯Â¸Â' },
 ];
 
 const ART_PAPER_OPTIONS = [
@@ -318,7 +318,7 @@ export default function DigitalPrinting() {
                     </div>
                     <div className="w-full sm:w-2/3">
                       <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                        placeholder="यहाँ अपने कस्टमर का नाम टाइप करें..."
+                        placeholder="Ã Â¤Â¯Ã Â¤Â¹Ã Â¤Â¾Ã Â¤Â Ã Â¤â€¦Ã Â¤ÂªÃ Â¤Â¨Ã Â¥â€¡ Ã Â¤â€¢Ã Â¤Â¸Ã Â¥ÂÃ Â¤Å¸Ã Â¤Â®Ã Â¤Â° Ã Â¤â€¢Ã Â¤Â¾ Ã Â¤Â¨Ã Â¤Â¾Ã Â¤Â® Ã Â¤Å¸Ã Â¤Â¾Ã Â¤â€¡Ã Â¤Âª Ã Â¤â€¢Ã Â¤Â°Ã Â¥â€¡Ã Â¤â€š..."
                         className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-blue-500/50 outline-none placeholder:text-gray-300" />
                     </div>
                   </div>
@@ -564,7 +564,7 @@ export default function DigitalPrinting() {
                       <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
                         <Mail className="w-8 h-8 text-[#a64d24]" />
                       </div>
-                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowalagift@gmail.com</h4>
+                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
                       <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
                     </div>
                   )}

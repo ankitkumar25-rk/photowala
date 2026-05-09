@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
@@ -14,14 +14,14 @@ const SIDEBAR_LINKS = [
   { id: 'letterhead',icon: FileText,    label: 'Letterhead',              to: '/services/custom-printing/letterhead' },
   { id: 'garment',    icon: Tag,         label: 'Garment Tag',             to: '/services/custom-printing/garment-tag' },
   { id: 'billbook',  icon: Book,        label: 'Bill Book',               to: '/services/custom-printing/bill-book' },
-  { id: 'envelop',   icon: Mail,        label: 'Envelop',                 to: '/services/custom-printing/envelop', active: true },
+  { id: 'envelope',   icon: Mail,        label: 'Envelope',                to: '/services/custom-printing/envelope', active: true },
 ];
 
-import env1 from '../../../../assets/images/services/envelope_1.png';
-import env2 from '../../../../assets/images/services/envelope_2.png';
-import env3 from '../../../../assets/images/services/envelope_3.png';
+import env1 from '../../../../assets/images/services/Envelope_1.png';
+import env2 from '../../../../assets/images/services/Envelope_2.png';
+import env3 from '../../../../assets/images/services/Envelope_3.png';
 
-const ENVELOPE_PRODUCTS = [
+const Envelope_PRODUCTS = [
   { 
     id: 'ENV_9X4', 
     name: 'Envelopes - 9x4', 
@@ -109,7 +109,7 @@ export default function Envelope() {
   const [loading, setLoading]     = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  const activeProduct = ENVELOPE_PRODUCTS.find(p => p.id === product);
+  const activeProduct = Envelope_PRODUCTS.find(p => p.id === product);
 
   const handleProductChange = (val) => {
     setProduct(val);
@@ -241,7 +241,7 @@ export default function Envelope() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Name</label>
                 <input type="text" value={orderName} onChange={(e)=>setOrderName(e.target.value)}
-                  placeholder="यहाँ अपने कस्टमर का नाम टाइप करें..."
+                  placeholder="ÃƒÂ Ã‚Â¤Ã‚Â¯ÃƒÂ Ã‚Â¤Ã‚Â¹ÃƒÂ Ã‚Â¤Ã‚Â¾ÃƒÂ Ã‚Â¤Ã‚Â ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¦ÃƒÂ Ã‚Â¤Ã‚ÂªÃƒÂ Ã‚Â¤Ã‚Â¨ÃƒÂ Ã‚Â¥Ã¢â‚¬Â¡ ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¢ÃƒÂ Ã‚Â¤Ã‚Â¸ÃƒÂ Ã‚Â¥Ã‚ÂÃƒÂ Ã‚Â¤Ã…Â¸ÃƒÂ Ã‚Â¤Ã‚Â®ÃƒÂ Ã‚Â¤Ã‚Â° ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¢ÃƒÂ Ã‚Â¤Ã‚Â¾ ÃƒÂ Ã‚Â¤Ã‚Â¨ÃƒÂ Ã‚Â¤Ã‚Â¾ÃƒÂ Ã‚Â¤Ã‚Â® ÃƒÂ Ã‚Â¤Ã…Â¸ÃƒÂ Ã‚Â¤Ã‚Â¾ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¡ÃƒÂ Ã‚Â¤Ã‚Âª ÃƒÂ Ã‚Â¤Ã¢â‚¬Â¢ÃƒÂ Ã‚Â¤Ã‚Â°ÃƒÂ Ã‚Â¥Ã¢â‚¬Â¡ÃƒÂ Ã‚Â¤Ã¢â‚¬Å¡..."
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
 
@@ -249,7 +249,7 @@ export default function Envelope() {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Select Product</label>
                 <select value={product} onChange={(e)=>handleProductChange(e.target.value)}
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none">
-                    {ENVELOPE_PRODUCTS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    {Envelope_PRODUCTS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
 
@@ -370,8 +370,8 @@ export default function Envelope() {
                       <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
                         <Mail className="w-8 h-8 text-[#a64d24]" />
                       </div>
-                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowalagift@gmail.com</h4>
-                      <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
+                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
+                      <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">â‚¹10.00</span> will be added.</p>
                     </div>
                   )}
                 </div>

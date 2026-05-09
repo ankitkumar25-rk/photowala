@@ -65,14 +65,14 @@ export default function ServiceOrderDetail() {
       <div className="flex items-center justify-between">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors font-medium text-sm"
+          className="flex items-center gap-2 text-brand-primary/60 hover:text-brand-primary transition-all font-bold text-[11px] uppercase tracking-widest"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Orders
         </button>
         <div className="flex gap-2">
            <button 
             onClick={() => deleteMutation.mutate()}
-            className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-all text-sm font-bold"
+            className="flex items-center gap-2 px-5 py-2.5 bg-red-50 text-red-600 border border-red-100 rounded-xl hover:bg-red-600 hover:text-white transition-all text-xs font-black uppercase tracking-widest shadow-sm"
           >
             <Trash2 className="w-4 h-4" /> Delete Order
           </button>
@@ -89,7 +89,7 @@ export default function ServiceOrderDetail() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order.category === 'MACHINE' ? 'bg-orange-100 text-orange-700' : 'bg-indigo-100 text-indigo-700'}`}>
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${order.category === 'MACHINE' ? 'bg-orange-100 text-brand-accent' : 'bg-brand-surface text-brand-primary'}`}>
                     {order.category} SERVICE
                   </span>
                   <span className="text-gray-300">|</span>
@@ -155,21 +155,21 @@ export default function ServiceOrderDetail() {
 
           {/* File Download Card */}
           {order.fileUrl && (
-             <div className="bg-[#f0f7ff] rounded-3xl p-8 border border-blue-100 flex items-center justify-between">
+             <div className="bg-brand-surface rounded-3xl p-8 border border-brand-primary/10 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600">
+                <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-brand-secondary">
                    <FileText className="w-8 h-8" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-black text-blue-900 uppercase tracking-tight">Artwork / Design File</h4>
-                  <p className="text-[11px] text-blue-600 font-bold uppercase tracking-wider">Attached via {order.fileOption}</p>
+                  <h4 className="text-sm font-black text-brand-primary uppercase tracking-tight">Artwork / Design File</h4>
+                  <p className="text-[11px] text-brand-secondary font-bold uppercase tracking-wider">Attached via {order.fileOption}</p>
                 </div>
               </div>
               <a 
                 href={order.fileUrl} 
                 target="_blank" 
                 rel="noreferrer"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20 uppercase text-xs tracking-widest"
+                className="bg-brand-secondary hover:bg-brand-secondary/90 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-brand-secondary/20 uppercase text-xs tracking-widest"
               >
                 <Download className="w-4 h-4" /> Download File
               </a>
@@ -214,13 +214,13 @@ export default function ServiceOrderDetail() {
             </div>
           </div>
 
-            <div className="bg-gray-900 rounded-3xl p-8 text-white">
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Logistic Management</h3>
+            <div className="bg-[linear-gradient(180deg,#5a3f2f,#3b291f)] rounded-3xl p-8 text-white luxury-grain">
+              <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-6">Logistic Management</h3>
               
               <div className="mb-8 space-y-4">
                  <div className="space-y-2">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase">Current Tracking ID</p>
-                    <p className="font-mono text-sm font-bold text-brand-primary">{order.trackingNumber || 'NOT ASSIGNED'}</p>
+                    <p className="text-[10px] font-bold text-white/40 uppercase">Current Tracking ID</p>
+                    <p className="font-mono text-sm font-bold text-brand-secondary">{order.trackingNumber || 'NOT ASSIGNED'}</p>
                  </div>
                  <div className="flex gap-2">
                     <input 
@@ -228,21 +228,21 @@ export default function ServiceOrderDetail() {
                       placeholder="Assign Tracking #"
                       value={trackingNumber}
                       onChange={(e) => setTrackingNumber(e.target.value)}
-                      className="flex-1 bg-gray-800 border-none rounded-xl text-xs font-bold focus:ring-1 focus:ring-brand-primary px-3 py-2"
+                      className="flex-1 bg-white/5 border-white/10 rounded-xl text-xs font-bold focus:ring-1 focus:ring-brand-secondary px-3 py-2 text-white placeholder:text-white/20"
                     />
                     <button 
                       onClick={() => updateTrackingMutation.mutate()}
-                      className="bg-brand-primary hover:bg-brand-secondary px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all"
+                      className="bg-brand-secondary hover:bg-brand-secondary/90 px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all"
                     >
                       Set
                     </button>
                  </div>
               </div>
 
-              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Workflow Status</h3>
+              <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-6">Workflow Status</h3>
               <div className="space-y-8 relative">
               {/* Vertical line */}
-              <div className="absolute left-3 top-3 bottom-3 w-0.5 bg-gray-800" />
+              <div className="absolute left-3 top-3 bottom-3 w-0.5 bg-white/5" />
               
               {STATUS_FLOW.map((s, idx) => {
                 const isCompleted = STATUS_FLOW.indexOf(order.status) >= idx;
@@ -250,15 +250,15 @@ export default function ServiceOrderDetail() {
                 return (
                   <div key={s} className="relative flex items-center gap-6">
                     <div className={`w-6 h-6 rounded-full border-2 z-10 flex items-center justify-center transition-all ${
-                      isCompleted ? 'bg-green-500 border-green-500 shadow-lg shadow-green-500/20' : 'bg-gray-900 border-gray-700'
+                      isCompleted ? 'bg-brand-secondary border-brand-secondary shadow-lg shadow-brand-secondary/20' : 'bg-transparent border-white/10'
                     }`}>
                       {isCompleted && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
                     </div>
                     <div>
-                      <p className={`text-xs font-bold uppercase tracking-widest ${isCurrent ? 'text-white' : isCompleted ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <p className={`text-xs font-bold uppercase tracking-widest ${isCurrent ? 'text-white' : isCompleted ? 'text-white/60' : 'text-white/20'}`}>
                         {s}
                       </p>
-                      {isCurrent && <p className="text-[10px] text-brand-primary font-bold uppercase mt-1">Active Stage</p>}
+                      {isCurrent && <p className="text-[10px] text-brand-secondary font-bold uppercase mt-1">Active Stage</p>}
                     </div>
                   </div>
                 );

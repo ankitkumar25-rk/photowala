@@ -1,7 +1,8 @@
 ﻿import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Leaf, Mail } from 'lucide-react';
+import { Mail, ArrowLeft } from 'lucide-react';
+import { brandAssets } from '../data/assets';
 import api from '../api/client';
 
 export default function ForgotPassword() {
@@ -27,13 +28,11 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <div className="card p-8 shadow-lg">
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
+            <div className="mb-4">
+              <img src={brandAssets.logo} alt="Logo" className="h-12 md:h-16 mx-auto object-contain" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Reset Password
-            </h1>
-            <p className="text-gray-500 text-sm mt-1">We'll send a reset link to your email</p>
+            <h1 className="text-2xl font-bold text-gray-800">Reset Password</h1>
+            <p className="text-gray-500 text-sm mt-1">We'll email you a link to reset your password</p>
           </div>
 
           {sent ? (
@@ -75,7 +74,7 @@ export default function ForgotPassword() {
                 {loading ? 'Sending...' : 'Send Reset Link'}
               </button>
               <Link to="/login" className="block text-center text-sm text-gray-500 hover:text-brand-primary">
-                ← Back to Login
+                Ã¢â€ Â Back to Login
               </Link>
             </form>
           )}

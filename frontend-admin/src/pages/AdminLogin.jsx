@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStore } from '../App';
 import api from '../api/client';
@@ -53,7 +53,7 @@ export default function AdminLogin() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="input-field"
-                placeholder="admin@manufact.in"
+                placeholder="admin@photowala.in"
               />
             </div>
             <div>

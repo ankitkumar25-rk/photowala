@@ -1,4 +1,4 @@
-export default function FileUploadOption({
+﻿export default function FileUploadOption({
   fileOption,
   setFileOption,
   attachedFile,
@@ -18,7 +18,7 @@ export default function FileUploadOption({
           onChange={() => setFileOption('attach')}
           className="accent-brand-primary"
         />
-        ☁️ Attach File Online
+        Ã¢ËœÂÃ¯Â¸Â Attach File Online
       </label>
       <label className="flex items-center gap-2 text-sm">
         <input
@@ -27,7 +27,7 @@ export default function FileUploadOption({
           onChange={() => setFileOption('email')}
           className="accent-brand-primary"
         />
-        ✉️ Send via Email
+        Ã¢Å“â€°Ã¯Â¸Â Send via Email
       </label>
 
       {fileOption === 'attach' ? (

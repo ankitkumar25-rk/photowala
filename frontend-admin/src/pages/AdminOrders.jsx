@@ -115,7 +115,7 @@ export default function AdminOrders() {
             <thead>
               <tr className="border-b border-gray-100">
                 {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Tracking #', 'Details'].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>
+                  <th key={h} className="text-left text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest px-3 sm:px-4 py-4">{h}</th>
                 ))}
               </tr>
             </thead>

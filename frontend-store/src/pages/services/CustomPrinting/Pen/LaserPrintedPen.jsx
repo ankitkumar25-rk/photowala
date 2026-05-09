@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
-  HelpCircle, UploadCloud, AlertTriangle, ShieldCheck, Leaf, ShoppingCart, Truck, Loader2, Paperclip
+  HelpCircle, UploadCloud, AlertTriangle, ShieldCheck, Award, ShoppingCart, Truck, Loader2, Paperclip
 } from 'lucide-react';
 import api from '../../../../api/client';
 import { serviceAssets } from '../../../../data/assets';
@@ -14,7 +14,7 @@ const SIDEBAR_LINKS = [
   { id: 'letterhead',icon: FileText,    label: 'Letterhead',             to: '/services/custom-printing/letterhead' },
   { id: 'garment',   icon: Tag,         label: 'Garment Tag',            to: '/services/custom-printing/garment-tag' },
   { id: 'billbook',  icon: Book,        label: 'Bill Book',              to: '/services/custom-printing/bill-book' },
-  { id: 'envelop',   icon: Mail,        label: 'Envelop',                to: '/services/custom-printing/envelop' },
+  { id: 'envelope',   icon: Mail,        label: 'Envelope',                to: '/services/custom-printing/envelope' },
 ];
 
 // Pen type price per unit (₹)
@@ -145,7 +145,7 @@ export default function LaserPrintedPen() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col md:flex-row font-sans">
-      {/* ── Sidebar ── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Sidebar Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2>
@@ -170,7 +170,7 @@ export default function LaserPrintedPen() {
 
       </aside>
 
-      {/* ── Main Content ── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Main Content Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <main className="flex-1 p-6 md:p-10 lg:p-12">
         {/* Breadcrumb */}
         <div className="text-sm font-medium mb-8 flex items-center gap-2">
@@ -187,12 +187,12 @@ export default function LaserPrintedPen() {
         <div className="mb-10">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">Laser Printed Pens</h1>
           <p className="text-gray-600 max-w-3xl leading-relaxed">
-            Precision-etched branding for executive gifts and corporate identity. Choose your pen model and quantity — price updates live.
+            Precision-etched branding for executive gifts and corporate identity. Choose your pen model and quantity — price updates live.
           </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* ── Left Column ── */}
+          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Left Column Ã¢â€â‚¬Ã¢â€â‚¬ */}
           <div className="w-full lg:w-2/3 flex flex-col gap-6">
             <div className="bg-white rounded-2xl border border-[#e8dfd5] p-6 lg:p-8 shadow-sm">
 
@@ -256,7 +256,7 @@ export default function LaserPrintedPen() {
               {pricing && (
                 <div className="bg-[#fdf8f4] border border-[#e8dfd5] rounded-xl p-5 mb-8 space-y-2">
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Base Cost ({qty} × ₹{pricing.unitCost})</span>
+                    <span>Base Cost ({qty} Ãƒâ€” ₹{pricing.unitCost})</span>
                     <span className="font-semibold text-gray-800">₹{pricing.baseCost}</span>
                   </div>
                   {designOption === 'email' && (
@@ -315,7 +315,7 @@ export default function LaserPrintedPen() {
                     <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
                       <Mail className="w-8 h-8 text-[#a64d24]" />
                     </div>
-                    <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowalagift@gmail.com</h4>
+                    <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
                     <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
                   </div>
                 ) : (
@@ -381,7 +381,7 @@ export default function LaserPrintedPen() {
               </div>
               <div className="bg-[#f0ece5] rounded-xl p-5 border border-[#e3dacd]">
                 <div className="flex items-center gap-2 mb-2">
-                  <Leaf className="w-5 h-5 text-green-700" />
+                  <Award className="w-5 h-5 text-brand-secondary" />
                   <h4 className="font-bold text-gray-900 text-sm">Premium Materials</h4>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
@@ -391,7 +391,7 @@ export default function LaserPrintedPen() {
             </div>
           </div>
 
-          {/* ── Right Column (Summary) ── */}
+          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Right Column (Summary) Ã¢â€â‚¬Ã¢â€â‚¬ */}
           <div className="w-full lg:w-1/3 flex flex-col gap-6">
             <div className="bg-[#1c1a19] text-white rounded-2xl overflow-hidden shadow-lg border border-gray-800">
               <div className="relative h-48 w-full">
@@ -408,7 +408,7 @@ export default function LaserPrintedPen() {
                 {penType && (
                   <div className="bg-gray-800 rounded-lg p-3 mb-3 border border-gray-700">
                     <div className="text-xs text-gray-400 mb-0.5">Pen Type</div>
-                    <div className="font-bold text-[#f0ba9c]">Type {penType} — ₹{PEN_PRICES[Number(penType)]}/pen</div>
+                    <div className="font-bold text-[#f0ba9c]">Type {penType} — ₹{PEN_PRICES[Number(penType)]}/pen</div>
                   </div>
                 )}
 
@@ -456,7 +456,7 @@ export default function LaserPrintedPen() {
                   {loading ? 'Processing...' : 'Add Order'}
                 </button>
                 <p className="text-center text-xs text-gray-500 italic">
-                  {canOrder ? 'Free Courier Delivery · Est. 5-7 days' : 'Select pen type & quantity'}
+                  {canOrder ? 'Free Courier Delivery Ã‚Â· Est. 5-7 days' : 'Select pen type & quantity'}
                 </p>
               </div>
             </div>

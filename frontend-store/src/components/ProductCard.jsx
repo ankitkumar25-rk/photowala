@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+﻿import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
 import { useCartStore, useAuthStore } from '../store';
 import { useWishlist } from '../contexts/WishlistContext';
@@ -24,7 +24,7 @@ const ProductCard = memo(function ProductCard({ product }) {
       }
       try {
         await toggleWishlist({ productId: product.id, isWishlisted: productWishlisted });
-        toast.success(productWishlisted ? 'Removed from wishlist' : 'Added to wishlist ❤️');
+        toast.success(productWishlisted ? 'Removed from wishlist' : 'Added to wishlist Ã¢ÂÂ¤Ã¯Â¸Â');
       } catch {
         toast.error('Failed to update wishlist');
       }
@@ -73,7 +73,7 @@ const ProductCard = memo(function ProductCard({ product }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl bg-[#f0e3d7]">
-            🏆
+            Ã°Å¸Ââ€ 
           </div>
         )}
 

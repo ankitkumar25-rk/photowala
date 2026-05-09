@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useCallback, useRef, createElement } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  ShoppingCart, Heart, Share2, Star, Leaf, Shield,
+  ShoppingCart, Heart, Share2, Star, Shield,
   Truck, RefreshCw, ChevronRight, ChevronLeft, Plus,
   Minus, Check, Award, Package, AlertCircle, ZoomIn,
   MessageSquare, ThumbsUp, ArrowLeft, Pencil, ImagePlus, X
@@ -12,7 +12,7 @@ import { useCartStore, useAuthStore } from '../store';
 import { useWishlist } from '../contexts/WishlistContext';
 import ProductCard from '../components/ProductCard';
 
-/* ────── helpers ────── */
+/* ------ helpers ------ */
 function StarRating({ rating, size = 'sm', interactive = false, onChange }) {
   const [hovered, setHovered] = useState(0);
   const sz = size === 'sm' ? 'w-4 h-4' : 'w-6 h-6';
@@ -40,7 +40,7 @@ function avgRating(reviews) {
   return reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
 }
 
-/* ────── Image Gallery ────── */
+/* ------ Image Gallery ------ */
 function ImageGallery({ images, name }) {
   const [active, setActive] = useState(0);
   const [zoomed, setZoomed] = useState(false);
@@ -76,7 +76,7 @@ function ImageGallery({ images, name }) {
   if (!images?.length) {
     return (
       <div className="aspect-square rounded-3xl bg-brand-surface flex items-center justify-center text-8xl border border-cream-300">
-        🏆
+        ??
       </div>
     );
   }
@@ -166,7 +166,7 @@ function ImageGallery({ images, name }) {
             onClick={() => setZoomed(false)}
             className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors text-xl"
           >
-            ✕
+            ?
           </button>
         </div>
       )}
@@ -174,7 +174,7 @@ function ImageGallery({ images, name }) {
   );
 }
 
-/* ────── Review Card ────── */
+/* ------ Review Card ------ */
 function ReviewCard({ review }) {
   const date = new Date(review.createdAt).toLocaleDateString('en-IN', {
     day: '2-digit', month: 'short', year: 'numeric',
@@ -215,7 +215,7 @@ function ReviewCard({ review }) {
   );
 }
 
-/* ────── Write Review Form ────── */
+/* ------ Write Review Form ------ */
 function ReviewForm({ productId, onSuccess }) {
   const [rating, setRating] = useState(0);
   const [title, setTitle] = useState('');
@@ -269,9 +269,9 @@ function ReviewForm({ productId, onSuccess }) {
   );
 }
 
-/* ────── Removed Nutrition Table ────── */
+/* ------ Removed Nutrition Table ------ */
 
-/* ════════ MAIN PAGE ════════ */
+/* -------- MAIN PAGE -------- */
 export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -364,7 +364,7 @@ export default function ProductDetail() {
         toast.success('Removed from wishlist');
       } else {
         await triggerWishlist({ productId: product.id, isWishlisted: false });
-        toast.success('Added to wishlist ❤️');
+        toast.success('Added to wishlist ??');
       }
     } catch { toast.error('Failed to update wishlist'); }
   };
@@ -386,7 +386,7 @@ export default function ProductDetail() {
     try {
       const { data } = await uploadApi.uploadCustomization(file);
       setCustomizationImage({ url: data.data.url, publicId: data.data.publicId });
-      toast.success('Image uploaded to Cloudinary ✓');
+      toast.success('Image uploaded to Cloudinary ?');
     } catch {
       toast.error('Failed to upload image');
     } finally {
@@ -402,7 +402,7 @@ export default function ProductDetail() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  /* ─── Loading skeleton ─── */
+  /* --- Loading skeleton --- */
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-10 animate-pulse">
@@ -460,7 +460,7 @@ export default function ProductDetail() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
-        {/* ══ Main product section ══ */}
+        {/* -- Main product section -- */}
         <div className="grid lg:grid-cols-2 gap-10 xl:gap-16">
           {/* Images */}
           <div className="lg:sticky lg:top-24 h-fit">
@@ -486,7 +486,7 @@ export default function ProductDetail() {
               )}
               {product.isFeatured && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-brand-secondary text-white">
-                  ⭐ Featured
+                  ? Featured
                 </span>
               )}
             </div>
@@ -517,11 +517,11 @@ export default function ProductDetail() {
 
             {/* Price */}
             <div className="flex items-end gap-3">
-              <span className="text-4xl font-extrabold text-brand-primary">₹{Number(product.price).toFixed(2)}</span>
+              <span className="text-4xl font-extrabold text-brand-primary">?{Number(product.price).toFixed(2)}</span>
               <span className="text-gray-400 mb-1 text-sm">/ {product.unit}</span>
               {discountPct > 0 && (
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl text-gray-400 line-through">₹{Number(product.mrp).toFixed(2)}</span>
+                  <span className="text-xl text-gray-400 line-through">?{Number(product.mrp).toFixed(2)}</span>
                   <span className="px-2 py-0.5 bg-brand-secondary text-white text-sm font-extrabold rounded-lg">
                     {discountPct}% OFF
                   </span>
@@ -537,7 +537,7 @@ export default function ProductDetail() {
                 </div>
               ) : lowStock ? (
                 <div className="flex items-center gap-2 text-brand-secondary font-semibold text-sm">
-                  <Package className="w-4 h-4" /> Only {product.stock} left — hurry!
+                  <Package className="w-4 h-4" /> Only {product.stock} left â€” hurry!
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-green-600 font-semibold text-sm">
@@ -622,7 +622,7 @@ export default function ProductDetail() {
                           </button>
                         )}
                         <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                        <p className="text-[11px] text-gray-400 mt-1">PNG, JPG, SVG — max 5MB</p>
+                        <p className="text-[11px] text-gray-400 mt-1">PNG, JPG, SVG â€” max 5MB</p>
                       </div>
                     )}
                   </div>
@@ -650,7 +650,7 @@ export default function ProductDetail() {
                     </button>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Total: <span className="font-bold text-brand-primary text-base">₹{(Number(product.price) * qty).toFixed(2)}</span>
+                    Total: <span className="font-bold text-brand-primary text-base">?{(Number(product.price) * qty).toFixed(2)}</span>
                   </p>
                 </div>
 
@@ -700,7 +700,7 @@ export default function ProductDetail() {
             {/* Go to cart link */}
             <div>
               <Link to="/cart" className="text-sm font-semibold text-brand-primary hover:text-brand-primary transition-colors flex items-center gap-1.5">
-                <ShoppingCart className="w-4 h-4" /> View Cart →
+                <ShoppingCart className="w-4 h-4" /> View Cart ?
               </Link>
             </div>
 
@@ -708,7 +708,7 @@ export default function ProductDetail() {
             <div className="grid grid-cols-3 gap-3 pt-2 border-t border-cream-200">
               {[
                 { icon: Shield, label: 'Secure Payment', sub: 'SSL encrypted' },
-                { icon: Truck,  label: 'Fast Delivery',  sub: 'Free above ₹999' },
+                { icon: Truck,  label: 'Fast Delivery',  sub: 'Free above ?999' },
                 { icon: RefreshCw, label: 'Easy Returns', sub: '7-day policy' },
               ].map(({ icon, label, sub }) => (
                 <div key={label} className="flex flex-col items-center text-center gap-1 p-3 bg-cream-50 rounded-2xl">
@@ -745,7 +745,7 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* ══ Tabs ══ */}
+        {/* -- Tabs -- */}
         <div className="card overflow-hidden">
           {/* Tab bar */}
           <div className="flex border-b border-cream-200 bg-cream-50 overflow-x-auto">
@@ -778,9 +778,9 @@ export default function ProductDetail() {
                 <div className="grid sm:grid-cols-2 gap-4 not-prose pt-4 border-t border-cream-200">
                   {[
                     { label: 'Unit',     value: product.unit },
-                    { label: 'SKU',      value: product.sku || '—' },
-                    { label: 'Weight',   value: product.weight ? `${product.weight}g` : '—' },
-                    { label: 'Category', value: product.category?.name || '—' },
+                    { label: 'SKU',      value: product.sku || 'â€”' },
+                    { label: 'Weight',   value: product.weight ? `${product.weight}g` : 'â€”' },
+                    { label: 'Category', value: product.category?.name || 'â€”' },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex justify-between py-2 border-b border-cream-100 text-sm">
                       <span className="text-gray-500 font-medium">{label}</span>
@@ -860,7 +860,7 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* ══ Related products ══ */}
+        {/* -- Related products -- */}
         {related.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-5">
@@ -868,7 +868,7 @@ export default function ProductDetail() {
                 You Might Also Like
               </h2>
               <Link to={`/categories/${product.category?.slug}`} className="text-sm font-semibold text-brand-primary hover:text-brand-primary transition-colors">
-                View all →
+                View all ?
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

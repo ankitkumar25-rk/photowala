@@ -2,7 +2,8 @@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store';
 import toast from 'react-hot-toast';
-import { Leaf, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import { brandAssets } from '../data/assets';
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -19,7 +20,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await login(form);
-      toast.success('Welcome back! 🏆');
+      toast.success('Welcome back! Ã°Å¸Ââ€ ');
       navigate(redirect, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Login failed. Please check your credentials.');
@@ -32,11 +33,11 @@ export default function Login() {
         <div className="card p-8 shadow-lg">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
+            <div className="mb-4">
+              <img src={brandAssets.logo} alt="Logo" className="h-12 md:h-16 mx-auto object-contain" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>
-            <p className="text-gray-500 text-sm mt-1">Sign in to your Manufact Awards account</p>
+            <p className="text-gray-500 text-sm mt-1">Sign in to your Photowala account</p>
           </div>
 
           {/* Google OAuth */}

@@ -2,7 +2,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store';
 import toast from 'react-hot-toast';
-import { Leaf, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
+import { brandAssets } from '../data/assets';
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' });
@@ -18,7 +19,7 @@ export default function Register() {
     if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
     try {
       await register(form);
-      toast.success('Welcome to Manufact Awards! 🏆');
+      toast.success('Welcome to Photowala! Ã°Å¸Ââ€ ');
       navigate('/', { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Registration failed. Please try again.');
@@ -30,11 +31,11 @@ export default function Register() {
       <div className="w-full max-w-md">
         <div className="card p-8 shadow-lg">
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-brand-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <Leaf className="w-7 h-7 text-white" strokeWidth={2.5} />
+            <div className="mb-4">
+              <img src={brandAssets.logo} alt="Logo" className="h-12 md:h-16 mx-auto object-contain" />
             </div>
             <h1 className="text-2xl font-bold text-gray-800">Create Account</h1>
-            <p className="text-gray-500 text-sm mt-1">Join the premium revolution 🌱</p>
+            <p className="text-gray-500 text-sm mt-1">Join Photowala to start creating gifts</p>
           </div>
 
           {/* Google OAuth */}

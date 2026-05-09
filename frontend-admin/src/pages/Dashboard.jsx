@@ -9,12 +9,12 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend
 } from 'recharts';
 
-// ── KPI Card ──────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ KPI Card Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 function KPICard({ title, value, subtitle, icon: Icon, color = 'forest', trend }) {
   const colors = {
-    forest: { bg: '#d8f3dc', text: '#1e4d34', icon: '#2d6a4f' },
-    blue:   { bg: '#dbeafe', text: '#1e40af', icon: '#2563eb' },
-    amber:  { bg: '#fef3c7', text: '#92400e', icon: '#d97706' },
+    brand:  { bg: '#f5e7d8', text: '#5b3f2f', icon: '#b88a2f' },
+    accent: { bg: '#fff1ef', text: '#8f2d1d', icon: '#d96a22' },
+    gold:   { bg: '#fef9e7', text: '#704709', icon: '#b88a2f' },
     red:    { bg: '#fee2e2', text: '#991b1b', icon: '#dc2626' },
   }[color] || {};
 
@@ -42,8 +42,8 @@ function KPICard({ title, value, subtitle, icon: Icon, color = 'forest', trend }
 }
 
 const STATUS_COLORS = {
-  PENDING: '#f59e0b', CONFIRMED: '#3b82f6', PROCESSING: '#8b5cf6',
-  SHIPPED: '#06b6d4', DELIVERED: '#22c55e', CANCELLED: '#ef4444',
+  PENDING: '#b88a2f', CONFIRMED: '#5b3f2f', PROCESSING: '#d96a22',
+  SHIPPED: '#a06f20', DELIVERED: '#22c55e', CANCELLED: '#ef4444',
 };
 
 function SkeletonLine({ width = '100%', height = 'h-3' }) {
@@ -151,25 +151,25 @@ export default function Dashboard() {
           title="Total Revenue"
           value={`₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`}
           subtitle={`₹${(stats?.revenueThisMonth || 0).toLocaleString('en-IN')} this month`}
-          icon={TrendingUp} color="forest"
+          icon={TrendingUp} color="brand"
         />
         <KPICard
           title="Total Orders"
           value={(stats?.totalOrders || 0).toLocaleString()}
           subtitle={`${stats?.ordersThisMonth || 0} this month`}
-          icon={ShoppingCart} color="blue"
+          icon={ShoppingCart} color="accent"
         />
         <KPICard
           title="Customers"
           value={(stats?.totalUsers || 0).toLocaleString()}
-          icon={Users} color="amber"
+          icon={Users} color="gold"
         />
         <KPICard
           title="Products"
           value={stats?.totalProducts || 0}
           subtitle={`${stats?.lowStockCount || 0} low stock`}
           icon={Package}
-          color={stats?.lowStockCount > 0 ? 'red' : 'forest'}
+          color={stats?.lowStockCount > 0 ? 'red' : 'brand'}
         />
       </div>
 
@@ -185,7 +185,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sales trend */}
         <div className="card p-5 lg:col-span-2">
-          <h3 className="font-semibold text-gray-800 mb-4">Sales — Last 30 Days</h3>
+          <h3 className="font-semibold text-gray-800 mb-4">Sales — Last 30 Days</h3>
           {salesData && salesData.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={salesData}>
@@ -196,8 +196,8 @@ export default function Dashboard() {
                   tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v) => [`₹${v.toLocaleString('en-IN')}`, 'Revenue']}
                   labelFormatter={(l) => new Date(l).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} />
-                <Line type="monotone" dataKey="revenue" stroke="#2d6a4f" strokeWidth={2.5}
-                  dot={false} activeDot={{ r: 4, fill: '#2d6a4f' }} />
+                <Line type="monotone" dataKey="revenue" stroke="#5b3f2f" strokeWidth={2.5}
+                  dot={false} activeDot={{ r: 4, fill: '#5b3f2f' }} />
               </LineChart>
             </ResponsiveContainer>
           ) : (

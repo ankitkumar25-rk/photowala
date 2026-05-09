@@ -1,4 +1,4 @@
-import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+﻿import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCartStore } from '../store';
 import { useEffect } from 'react';
@@ -48,7 +48,7 @@ export default function CartDrawer() {
         <div className="flex-1 overflow-y-auto">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
-              <div className="text-6xl">🛒</div>
+              <div className="text-6xl">Ã°Å¸â€ºâ€™</div>
               <h3 className="font-bold text-xl text-[#5b3f2f]">Your cart is empty</h3>
               <p className="text-[#a68971] text-sm">Add some personalized magic!</p>
               <Link to="/products" onClick={closeCart} className="btn-primary">
@@ -66,7 +66,7 @@ export default function CartDrawer() {
                        {img ? (
                          <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
                        ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl">🏆</div>
+                        <div className="w-full h-full flex items-center justify-center text-2xl">Ã°Å¸Ââ€ </div>
                       )}
                     </div>
 
@@ -120,7 +120,7 @@ export default function CartDrawer() {
               <div className="flex justify-between text-sm text-[#7a655c]">
                 <span>Shipping</span>
                 <span className={shipping === 0 ? 'text-brand-primary font-semibold' : ''}>
-                  {shipping === 0 ? 'FREE 🎉' : `₹${shipping}`}
+                  {shipping === 0 ? 'FREE Ã°Å¸Å½â€°' : `₹${shipping}`}
                 </span>
               </div>
               <div className="flex justify-between font-bold text-base border-t border-cream-300 pt-2 mt-2">
@@ -131,7 +131,7 @@ export default function CartDrawer() {
 
             {shipping > 0 && (
               <p className="text-xs text-brand-secondary bg-brand-surface px-3 py-2 rounded-lg">
-                💡 Add ₹{(1000 - subtotal()).toFixed(0)} more for free shipping!
+                Ã°Å¸â€™Â¡ Add ₹{(1000 - subtotal()).toFixed(0)} more for free shipping!
               </p>
             )}
 

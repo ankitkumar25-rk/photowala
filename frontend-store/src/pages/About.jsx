@@ -9,7 +9,7 @@ export default function About() {
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-            About <span className="text-brand-secondary">Photowalagift</span>
+            About <span className="text-brand-secondary">Photowala</span>
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Honoring excellence and celebrating life through premium recognition solutions.
@@ -23,7 +23,7 @@ export default function About() {
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
           <p className="text-gray-700 leading-relaxed text-lg">
-            At <strong>Photowalagift</strong>, we believe that every achievement, whether corporate or personal, deserves to be immortalized. We specialize in crafting high-quality awards, trophies, and personalized home decor that transform significant milestones into lasting legacies. Our mission is to provide premium recognition solutions that combine modern aesthetics with timeless craftsmanship.
+            At <strong>Photowala</strong>, we believe that every achievement, whether corporate or personal, deserves to be immortalized. We specialize in crafting high-quality awards, trophies, and personalized home decor that transform significant milestones into lasting legacies. Our mission is to provide premium recognition solutions that combine modern aesthetics with timeless craftsmanship.
           </p>
         </section>
 
@@ -74,7 +74,7 @@ export default function About() {
         {/* Why Choose Us */}
         <section className="space-y-8">
           <h2 className="text-3xl font-bold text-gray-900 text-center">
-            Why Choose Photowalagift?
+            Why Choose Photowala?
           </h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {[
@@ -97,10 +97,10 @@ export default function About() {
         {/* Promise */}
         <section className="bg-cream-200 rounded-3xl p-8 md:p-12 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            The Photowalagift Promise
+            The Photowala Promise
           </h2>
           <p className="text-gray-700 text-lg leading-relaxed max-w-3xl mx-auto italic">
-            "Whether you are a HR professional honoring a decade of service, a school principal celebrating a graduate, or an individual capturing a family memory, we provide the physical symbol of that pride. At <strong>Photowalagift</strong>, we don't just sell products; we help you honor excellence and celebrate life."
+            "Whether you are a HR professional honoring a decade of service, a school principal celebrating a graduate, or an individual capturing a family memory, we provide the physical symbol of that pride. At <strong>Photowala</strong>, we don't just sell products; we help you honor excellence and celebrate life."
           </p>
         </section>
 

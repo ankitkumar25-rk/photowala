@@ -13,7 +13,7 @@ const SIDEBAR_LINKS = [
   { id: 'letterhead', icon: FileText,    label: 'Letterhead',              to: '/services/custom-printing/letterhead' },
   { id: 'garment',    icon: Tag,         label: 'Garment Tag',             to: '/services/custom-printing/garment-tag' },
   { id: 'billbook',   icon: Book,        label: 'Bill Book',               to: '/services/custom-printing/bill-book' },
-  { id: 'envelop',    icon: Mail,        label: 'Envelop',                 to: '/services/custom-printing/envelop' },
+  { id: 'envelope',    icon: Mail,        label: 'Envelope',                to: '/services/custom-printing/envelope' },
 ];
 
 const CUT_TYPES = [
@@ -99,7 +99,7 @@ export default function StickerLabels() {
           halfCutDetails: (
             <div className="flex flex-col">
               <span className="italic">Available with 6 cut size options:</span>
-              {ROUND_OPTIONS.map((opt, i) => <span key={i} className="ml-2">⇒ {opt}</span>)}
+              {ROUND_OPTIONS.map((opt, i) => <span key={i} className="ml-2">Ã¢â€¡â€™ {opt}</span>)}
             </div>
           )
         };
@@ -288,7 +288,7 @@ export default function StickerLabels() {
                     type="text" 
                     value={orderName}
                     onChange={(e) => setOrderName(e.target.value)}
-                    placeholder="यहाँ अपने कस्टमर का नाम टाइप करें"
+                    placeholder="Ã Â¤Â¯Ã Â¤Â¹Ã Â¤Â¾Ã Â¤Â Ã Â¤â€¦Ã Â¤ÂªÃ Â¤Â¨Ã Â¥â€¡ Ã Â¤â€¢Ã Â¤Â¸Ã Â¥ÂÃ Â¤Å¸Ã Â¤Â®Ã Â¤Â° Ã Â¤â€¢Ã Â¤Â¾ Ã Â¤Â¨Ã Â¤Â¾Ã Â¤Â® Ã Â¤Å¸Ã Â¤Â¾Ã Â¤â€¡Ã Â¤Âª Ã Â¤â€¢Ã Â¤Â°Ã Â¥â€¡Ã Â¤â€š"
                     className="w-full bg-gray-50 border border-gray-100 rounded-xl px-5 py-4 focus:outline-none focus:border-[#b65e2e] transition-all"
                   />
                 </div>
@@ -411,7 +411,7 @@ export default function StickerLabels() {
                       <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
                         <Mail className="w-8 h-8 text-[#a64d24]" />
                       </div>
-                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowalagift@gmail.com</h4>
+                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
                       <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
                     </div>
                   )}
@@ -514,7 +514,7 @@ export default function StickerLabels() {
                        <span className="font-bold shrink-0">• Product Size :</span>
                        <div className="flex flex-col">
                           <span className="italic">Available with</span>
-                          <span className="font-bold">⇒ 7"X9.5"</span>
+                          <span className="font-bold">Ã¢â€¡â€™ 7"X9.5"</span>
                        </div>
                     </li>
                     {config.halfCutDetails && (

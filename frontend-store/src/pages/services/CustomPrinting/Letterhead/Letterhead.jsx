@@ -13,7 +13,7 @@ const SIDEBAR_LINKS = [
   { id: 'letterhead',icon: FileText,    label: 'Letterhead',              to: '/services/custom-printing/letterhead', active: true },
   { id: 'garment',    icon: Tag,         label: 'Garment Tag',             to: '/services/custom-printing/garment-tag' },
   { id: 'billbook',  icon: Book,        label: 'Bill Book',               to: '/services/custom-printing/bill-book' },
-  { id: 'envelop',   icon: Mail,        label: 'Envelop',                 to: '/services/custom-printing/envelop' },
+  { id: 'envelope',   icon: Mail,        label: 'Envelope',                to: '/services/custom-printing/envelope' },
 ];
 
 const LETTERHEAD_PRODUCTS_LIST = [
@@ -214,7 +214,7 @@ export default function Letterhead() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Name</label>
                 <input type="text" value={orderName} onChange={(e)=>setOrderName(e.target.value)}
-                  placeholder="यहाँ अपने कस्टमर का नाम टाइप करें..."
+                  placeholder="Ã Â¤Â¯Ã Â¤Â¹Ã Â¤Â¾Ã Â¤Â Ã Â¤â€¦Ã Â¤ÂªÃ Â¤Â¨Ã Â¥â€¡ Ã Â¤â€¢Ã Â¤Â¸Ã Â¥ÂÃ Â¤Å¸Ã Â¤Â®Ã Â¤Â° Ã Â¤â€¢Ã Â¤Â¾ Ã Â¤Â¨Ã Â¤Â¾Ã Â¤Â® Ã Â¤Å¸Ã Â¤Â¾Ã Â¤â€¡Ã Â¤Âª Ã Â¤â€¢Ã Â¤Â°Ã Â¥â€¡Ã Â¤â€š..."
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
 
@@ -396,7 +396,7 @@ export default function Letterhead() {
                       <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
                         <Mail className="w-8 h-8 text-[#a64d24]" />
                       </div>
-                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowalagift@gmail.com</h4>
+                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
                       <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
                     </div>
                   )}
@@ -466,14 +466,14 @@ export default function Letterhead() {
                       { label: 'Price Discount', val: 'applicable (System auto calculate) with increase in Quantity' },
                     ].map((item, idx) => (
                       <li key={idx} className="flex gap-3 text-[11px] leading-tight">
-                        <span className="text-[#b65e2e] mt-1">●</span>
+                        <span className="text-[#b65e2e] mt-1">Ã¢â€”Â</span>
                         <span className="font-semibold text-gray-400 w-32 shrink-0">{item.label} :</span>
                         <span className="font-bold text-gray-800">{item.val}</span>
                       </li>
                     ))}
                     {(selected?.code === 'LH-4A' || selected?.code === 'LH-4B') && (
                       <li className="flex gap-3 text-[11px] leading-tight">
-                        <span className="text-[#b65e2e] mt-1">●</span>
+                        <span className="text-[#b65e2e] mt-1">Ã¢â€”Â</span>
                         <span className="font-bold text-blue-600">UV effects will be single side only</span>
                       </li>
                     )}
@@ -488,7 +488,7 @@ export default function Letterhead() {
                         'Constant quality with reasonable price'
                       ].map((txt, idx) => (
                         <li key={idx} className="flex gap-3 text-[11px]">
-                          <span className="text-[#b65e2e] mt-1">●</span>
+                          <span className="text-[#b65e2e] mt-1">Ã¢â€”Â</span>
                           <span className="font-bold text-gray-600 leading-snug">{txt}</span>
                         </li>
                       ))}

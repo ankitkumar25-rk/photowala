@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+﻿import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -65,12 +65,12 @@ export default function AdminOrderDetail() {
                 <div key={item.id} className="p-4 flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-gray-800">{item.productName || item.product?.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity} · Unit: {item.productUnit || item.product?.unit || 'N/A'}</p>
+                    <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity} Ã‚Â· Unit: {item.productUnit || item.product?.unit || 'N/A'}</p>
 
                     {/* Customization info */}
                     {item.customizationText && (
                       <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                        <span className="text-amber-600 text-xs">✏️</span>
+                        <span className="text-amber-600 text-xs">Ã¢Å“ÂÃ¯Â¸Â</span>
                         <div>
                           <p className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Custom Text</p>
                           <p className="text-sm font-medium text-amber-900 break-words">{item.customizationText}</p>
@@ -79,7 +79,7 @@ export default function AdminOrderDetail() {
                     )}
                     {item.customizationImageUrl && (
                       <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-                        <span className="text-blue-600 text-xs">🖼️</span>
+                        <span className="text-blue-600 text-xs">Ã°Å¸â€“Â¼Ã¯Â¸Â</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wide mb-1">Custom Image / Logo</p>
                           <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer">
@@ -92,14 +92,14 @@ export default function AdminOrderDetail() {
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                             >
-                              ↗ Open Full Size
+                              Ã¢â€ â€” Open Full Size
                             </a>
                             <a
                               href={item.customizationImageUrl}
                               download={`customization-${item.id}.jpg`}
                               className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                             >
-                              ⬇ Download & Print
+                              Ã¢Â¬â€¡ Download & Print
                             </a>
                           </div>
                         </div>
