@@ -26,6 +26,7 @@ const Register      = lazy(() => import('./pages/Register'));
 const Category      = lazy(() => import('./pages/Category'));
 const AuthSuccess   = lazy(() => import('./pages/AuthSuccess'));
 const TrackOrder    = lazy(() => import('./pages/TrackOrder'));
+const OrderTrackingDetails = lazy(() => import('./pages/orders/TrackOrder'));
 const Returns       = lazy(() => import('./pages/Returns'));
 const FAQ           = lazy(() => import('./pages/FAQ'));
 const Privacy       = lazy(() => import('./pages/Privacy'));
@@ -138,6 +139,7 @@ export default function App() {
                 {/* Auth flow routes */}
                 <Route path="auth/success"     element={<AuthSuccess />} />
                 <Route path="track-order"      element={<TrackOrder />} />
+                <Route path="orders/track/:orderNumber" element={<OrderTrackingDetails />} />
                 <Route path="returns"          element={<Returns />} />
                 <Route path="faq"              element={<FAQ />} />
                 <Route path="services"         element={<Services />} />

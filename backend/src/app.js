@@ -184,6 +184,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/returns', returnsRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/v1/orders/custom-printing', serviceRoutes);
 
 // ================================
 // 404 HANDLER

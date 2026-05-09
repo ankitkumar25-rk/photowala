@@ -442,40 +442,61 @@ enum ServiceOrderStatus {
 enum MachineServiceStatus {
   PENDING_QUOTE
   QUOTE_SENT
-  COMPLETED
+  CONFIRMED
+  IN_PRODUCTION
+  DELIVERED
   CANCELLED
 }
 
+enum FileSubmission {
+  UPLOAD
+  EMAIL
+}
+
+enum CustomDeliveryOption {
+  COURIER
+  TRANSPORT
+}
+
+enum CustomPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum CustomPaymentMethod {
+  COD
+  RAZORPAY
+}
+
 model CustomPrintingOrder {
-  id              String             @id @default(uuid())
-  orderNumber     String             @unique
-  userId          String
-  user            User               @relation(fields: [userId], references: [id])
-  serviceType     ServiceType
-  status          ServiceOrderStatus @default(PENDING)
-  orderName       String
-  quantity        Int
-  deliveryOption  String
-  fileOption      String
-  specialRemark   String?
+  id                String             @id @default(uuid())
+  orderNumber       String             @unique
+  userId            String
+  user              User               @relation(fields: [userId], references: [id])
+  serviceType       ServiceType
+  orderName         String
+  baseAmount        Decimal            @db.Decimal(10, 2)
+  emailFee          Decimal            @default(0) @db.Decimal(10, 2)
+  gstAmount         Decimal            @db.Decimal(10, 2)
+  totalAmount       Decimal            @db.Decimal(10, 2)
+  fileSubmission    FileSubmission
+  deliveryOption    CustomDeliveryOption
+  paymentMethod     CustomPaymentMethod @default(COD)
+  paymentStatus     CustomPaymentStatus @default(PENDING)
+  status            ServiceOrderStatus @default(PENDING)
+  serviceData       Json
+  adminNotes        String?
+  estimatedDelivery DateTime?
   
-  // JSON field to store all dynamic service-specific details
-  details         Json
+  razorpayOrderId   String?
+  razorpayPaymentId String?
   
-  // Pricing
-  baseAmount      Decimal            @db.Decimal(10, 2)
-  emailFee        Decimal            @default(0) @db.Decimal(10, 2)
-  gstAmount       Decimal            @db.Decimal(10, 2)
-  totalAmount     Decimal            @db.Decimal(10, 2)
+  files             OrderFile[]
   
-  // Admin fields
-  adminNotes      String?
-  
-  // Files
-  files           OrderFile[]
-  
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@map("custom_printing_orders")
 }
@@ -486,22 +507,12 @@ model MachineServiceRequest {
   userId          String
   user            User                 @relation(fields: [userId], references: [id])
   serviceType     MachineServiceType
-  status          MachineServiceStatus @default(PENDING_QUOTE)
-  
-  // Common fields
   orderName       String?
-  projectTitle    String?              // specific to CNC
-  quantity        Int
-  
-  // JSON field for dynamic specs
-  specs           Json
-  
-  // Admin fields
+  status          MachineServiceStatus @default(PENDING_QUOTE)
   quotedPrice     Decimal?             @db.Decimal(10, 2)
+  serviceData     Json
+  fileUrls        String[]             // For machine services we might use arrays of strings or files
   adminNotes      String?
-  
-  // Files
-  files           OrderFile[]
   
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
@@ -511,16 +522,14 @@ model MachineServiceRequest {
 
 model OrderFile {
   id                      String                 @id @default(uuid())
-  url                     String
-  publicId                String?                // Cloudinary public ID
-  fileName                String?
-  fileType                String?
+  fileName                String
+  originalName            String
+  mimeType                String
+  size                    Int                    // bytes
+  localPath               String                 // relative path
   
-  customPrintingOrderId   String?
-  customPrintingOrder     CustomPrintingOrder?   @relation(fields: [customPrintingOrderId], references: [id], onDelete: Cascade)
-  
-  machineServiceRequestId String?
-  machineServiceRequest   MachineServiceRequest? @relation(fields: [machineServiceRequestId], references: [id], onDelete: Cascade)
+  orderId                 String?
+  order                   CustomPrintingOrder?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   
   createdAt               DateTime               @default(now())
 

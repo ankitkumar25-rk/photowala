@@ -1,49 +1,78 @@
 const multer = require('multer');
-const { uploadAutoToCloudinary } = require('../config/cloudinary');
-const { createError } = require('./errorHandler');
+const path = require('path');
+const fs = require('fs');
 
-// Use memory storage for buffer-based Cloudinary upload
-const storage = multer.memoryStorage();
+// Ensure base upload directory exists
+const UPLOAD_BASE = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(UPLOAD_BASE)) {
+    fs.mkdirSync(UPLOAD_BASE, { recursive: true });
+}
+
+// Allowed extensions
+const ALLOWED_EXT = [
+    '.pdf', '.cdr', '.psd', '.jpg', '.jpeg', '.png', '.webp', 
+    '.dxf', '.dwg', '.stl', '.step', '.csv', '.xlsx'
+];
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Determine subfolder based on service (e.g., from route or body)
+        // Default to 'general' if not specified
+        const service = req.body.serviceType || req.params.serviceType || 'general';
+        const dest = path.join(UPLOAD_BASE, service.toLowerCase());
+        
+        if (!fs.existsSync(dest)) {
+            fs.mkdirSync(dest, { recursive: true });
+        }
+        cb(null, dest);
+    },
+    filename: (req, file, cb) => {
+        const safeName = file.originalname.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+        const timestamp = Date.now();
+        const random = Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        const nameWithoutExt = path.basename(safeName, ext);
+        
+        cb(null, `${nameWithoutExt}_${timestamp}_${random}${ext}`);
+    }
+});
 
 const upload = multer({
-  storage,
-  limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    // Allow various formats including vector and CAD
-    const allowedExtensions = [
-      '.pdf', '.cdr', '.psd', '.jpeg', '.jpg', '.png', 
-      '.stl', '.step', '.dxf', '.dwg', '.plt', '.csv', '.xlsx'
-    ];
-    const ext = file.originalname.toLowerCase().substring(file.originalname.lastIndexOf('.'));
-    
-    if (allowedExtensions.includes(ext)) {
-      cb(null, true);
-    } else {
-      cb(createError(`File format ${ext} not allowed.`, 400));
+    storage: storage,
+    limits: {
+        fileSize: 100 * 1024 * 1024 // 100MB
+    },
+    fileFilter: (req, file, cb) => {
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (ALLOWED_EXT.includes(ext)) {
+            cb(null, true);
+        } else {
+            cb(new Error(`File type ${ext} is not allowed.`));
+        }
     }
-  }
 });
 
 /**
- * Middleware to upload to Cloudinary after multer processing
- * @param {string} folder - Cloudinary folder path
+ * handleUpload wrapper to catch Multer errors
  */
-const uploadToCloudinary = (folder) => async (req, res, next) => {
-  if (!req.file) return next();
-
-  try {
-    const result = await uploadAutoToCloudinary(req.file.buffer, {
-      folder,
-      public_id: `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9]/g, '_')}`
-    });
+const handleUpload = (field) => (req, res, next) => {
+    const uploadMiddleware = upload.single(field);
     
-    req.file.cloudinary = result;
-    next();
-  } catch (error) {
-    next(createError('Cloudinary upload failed: ' + error.message, 500));
-  }
+    uploadMiddleware(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({
+                success: false,
+                message: 'Upload error',
+                error: err.message
+            });
+        } else if (err) {
+            return res.status(400).json({
+                success: false,
+                message: err.message
+            });
+        }
+        next();
+    });
 };
 
-module.exports = { upload, uploadToCloudinary };
+module.exports = { handleUpload };
