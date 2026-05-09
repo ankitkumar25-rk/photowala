@@ -5,7 +5,14 @@ Generated: 2026-05-09
 Project Scope: E-commerce for Printing & Machine Services
 
 --------------------------------------------------------------------
-CORE TECHNOLOGIES & ARCHITECTURE
+PRODUCTION DEPLOYMENT
+--------------------------------------------------------------------
+BACKEND URL:  https://photowala-5pa7.onrender.com
+FRONTEND URL: https://photowala-user.vercel.app (and variations)
+ENVIRONMENT:  Render (Backend/DB) + Vercel (Frontend)
+NODE VERSION: v24.14.1
+DATABASE:     Managed PostgreSQL (photowala_db)
+STATUS:       Live & Operational
 --------------------------------------------------------------------
 DATABASE & CACHING:
   - PostgreSQL: Primary relational database for all application data.
