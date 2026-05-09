@@ -10,6 +10,8 @@ const NAV = [
   { to: '/',          icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/products',  icon: Package,         label: 'Products' },
   { to: '/orders',    icon: ShoppingCart,    label: 'Orders' },
+  { to: '/machine-orders', icon: Settings,   label: 'Machine Services' },
+  { to: '/print-orders',   icon: Printer,    label: 'Print Orders' },
   { to: '/customers', icon: Users,           label: 'Customers' },
   { to: '/returns',   icon: RotateCcw,       label: 'Returns' },
   { to: '/inventory', icon: BarChart3,       label: 'Inventory' },

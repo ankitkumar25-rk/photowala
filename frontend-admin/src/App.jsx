@@ -65,6 +65,11 @@ const AdminReturns    = lazy(() => import('./pages/AdminReturns'));
 const AdminInventory  = lazy(() => import('./pages/AdminInventory'));
 const AdminSupport    = lazy(() => import('./pages/AdminSupport'));
 
+// Service Orders
+const MachineOrders   = lazy(() => import('./pages/services/MachineOrders'));
+const PrintOrders     = lazy(() => import('./pages/services/PrintOrders'));
+const ServiceOrderDetail = lazy(() => import('./pages/services/ServiceOrderDetail'));
+
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
 
 const qc = new QueryClient({ defaultOptions: { queries: { staleTime: 2 * 60 * 1000, retry: 1 } } });
@@ -148,6 +153,11 @@ export default function App() {
               <Route path="returns"     element={<AdminReturns />} />
               <Route path="inventory"   element={<AdminInventory />} />
               <Route path="support"     element={<AdminSupport />} />
+              
+              {/* Service Orders */}
+              <Route path="machine-orders" element={<MachineOrders />} />
+              <Route path="print-orders"   element={<PrintOrders />} />
+              <Route path="services/orders/:id" element={<ServiceOrderDetail />} />
 
             </Route>
           </Routes>

@@ -25,6 +25,7 @@ const adminRoutes = require('./routes/admin.routes');
 const uploadRoutes = require('./routes/upload.routes');
 const returnsRoutes = require('./routes/returns.routes');
 const supportRoutes = require('./routes/support.routes');
+const serviceOrderRoutes = require('./routes/serviceOrder.routes');
 
 const app = express();
 const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-session-secret' : '');
@@ -182,6 +183,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/returns', returnsRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/service-orders', serviceOrderRoutes);
 
 // ================================
 // 404 HANDLER

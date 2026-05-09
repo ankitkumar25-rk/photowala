@@ -85,8 +85,49 @@ model User {
   passwordResetTokens  PasswordResetToken[]
   returns              Return[]
   supportTickets       SupportTicket[]
+  serviceOrders        ServiceOrder[] @relation("UserServices")
 
   @@map("users")
+}
+
+// ================================
+// SERVICE ORDERS (Machine & Printing)
+// ================================
+
+enum ServiceCategory {
+  MACHINE
+  PRINTING
+}
+
+model ServiceOrder {
+  id              String          @id @default(uuid())
+  orderNumber     String          @unique
+  userId          String
+  user            User            @relation("UserServices", fields: [userId], references: [id], onDelete: Cascade)
+  category        ServiceCategory
+  serviceName     String          // e.g., "Laser Printed Pen", "CNC Router"
+  productName     String?         // specific variant or model
+  quantity        Int
+  totalAmount     Decimal         @db.Decimal(10, 2)
+  status          OrderStatus     @default(PENDING)
+  
+  // Form details stored as JSON
+  details         Json?           
+  
+  // File handling
+  fileUrl         String?         
+  fileOption      String?         // online, email
+  
+  specialRemark   String?
+  customerName    String?         // The "Order Name" field from forms
+  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([category])
+  @@index([status])
+  @@map("service_orders")
 }
 
 model PasswordResetToken {
