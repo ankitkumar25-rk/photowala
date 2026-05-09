@@ -141,45 +141,34 @@ export default function LaserPrintedPen() {
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col md:flex-row font-sans">
       {/* ── Sidebar ── */}
-      <aside className="w-full md:w-64 bg-[#f2eee9] border-b md:border-b-0 md:border-r border-[#e8dfd5] flex flex-col p-4 md:p-6 shrink-0">
-        <div className="mb-4 md:mb-8 hidden md:block">
-          <h2 className="text-xl font-bold text-gray-900 mb-1 uppercase tracking-tighter">Service Index</h2>
-          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Explore Categories</p>
+      <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2>
+          <p className="text-xs text-gray-500">Explore categories</p>
         </div>
-        <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
+        <nav className="flex-1 space-y-2 mb-8">
           {SIDEBAR_LINKS.map((link) => {
             const Icon = link.icon;
             return (
               <Link key={link.id} to={link.to}
-                className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
                   link.active
-                    ? 'bg-[#b65e2e] shadow-lg text-white'
-                    : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
+                    ? 'bg-[#b65e2e] shadow-md text-white'
+                    : 'text-gray-600 hover:bg-[#e8dfd5] hover:text-gray-900'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 md:w-4 md:h-4 ${link.active ? 'text-white' : 'text-gray-400'}`} />
-                <span className="uppercase tracking-widest">{link.label}</span>
+                <Icon className="w-4 h-4" />{link.label}
               </Link>
             );
           })}
         </nav>
+
       </aside>
 
       {/* ── Main Content ── */}
-      <main className="flex-1 overflow-y-auto">
-        <header className="bg-white border-b border-gray-100 px-4 md:px-10 py-4 md:py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-1.5 h-6 bg-[#b65e2e] rounded-full" />
-            <div className="flex flex-col">
-              <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-1">Custom Printing</span>
-              <span className="text-base md:text-lg font-black text-gray-900 uppercase tracking-tighter leading-none">Laser Printed Pens</span>
-            </div>
-          </div>
-          <h1 className="text-[9px] md:text-xs font-black text-gray-400 uppercase tracking-widest hidden sm:block">Order Portal v2.0</h1>
-        </header>
-        <div className="p-4 md:p-10 lg:p-12">
+      <main className="flex-1 p-6 md:p-10 lg:p-12">
         {/* Breadcrumb */}
-        <div className="text-[10px] md:text-sm font-medium mb-4 md:mb-8 flex flex-wrap items-center gap-2">
+        <div className="text-sm font-medium mb-8 flex items-center gap-2">
           <Link to="/" className="text-[#3b71ca] hover:text-[#285192] transition-colors">Home</Link>
           <span className="text-gray-500">›</span>
           <Link to="/services" className="text-[#3b71ca] hover:text-[#285192] transition-colors">Our Services</Link>
@@ -190,9 +179,9 @@ export default function LaserPrintedPen() {
         </div>
 
         {/* Header */}
-        <div className="mb-6 md:mb-10">
-          <h1 className="text-2xl md:text-4xl font-extrabold text-gray-900 mb-2 md:mb-3 tracking-tight">Laser Printed Pens</h1>
-          <p className="text-xs md:text-base text-gray-600 max-w-3xl leading-relaxed">
+        <div className="mb-10">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">Laser Printed Pens</h1>
+          <p className="text-gray-600 max-w-3xl leading-relaxed">
             Precision-etched branding for executive gifts and corporate identity. Choose your pen model and quantity — price updates live.
           </p>
         </div>
@@ -398,7 +387,7 @@ export default function LaserPrintedPen() {
           </div>
 
           {/* ── Right Column (Summary) ── */}
-          <div className="w-full lg:w-1/3 flex flex-col gap-6 lg:sticky lg:top-6">
+          <div className="w-full lg:w-1/3 flex flex-col gap-6">
             <div className="bg-[#1c1a19] text-white rounded-2xl overflow-hidden shadow-lg border border-gray-800">
               <div className="relative h-48 w-full">
                 <img src={serviceAssets.penPreview} alt="Pen Preview" className="w-full h-full object-cover opacity-80" />
@@ -469,7 +458,6 @@ export default function LaserPrintedPen() {
 
 
           </div>
-        </div>
         </div>
       </main>
     </div>
