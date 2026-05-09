@@ -52,7 +52,11 @@ exports.createServiceOrder = async (req, res, next) => {
       }
     });
 
-    res.status(201).json({ success: true, data: order });
+    res.status(201).json({ 
+      success: true, 
+      orderId: order.orderNumber,
+      data: order 
+    });
   } catch (err) {
     next(err);
   }
@@ -137,19 +141,26 @@ exports.getAllServiceOrders = async (req, res, next) => {
  */
 exports.updateServiceOrderStatus = async (req, res, next) => {
   try {
-    const { status } = z.object({ 
-      status: z.enum(['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED','REFUNDED']) 
-    }).parse(req.body);
-
+    const { id } = req.params;
+    const { status } = req.body;
     const order = await prisma.serviceOrder.update({
-      where: { id: req.params.id },
+      where: { id },
       data: { status }
     });
-
     res.json({ success: true, data: order });
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
+};
+
+exports.updateTrackingNumber = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { trackingNumber } = req.body;
+    const order = await prisma.serviceOrder.update({
+      where: { id },
+      data: { trackingNumber }
+    });
+    res.json({ success: true, data: order });
+  } catch (err) { next(err); }
 };
 
 /**

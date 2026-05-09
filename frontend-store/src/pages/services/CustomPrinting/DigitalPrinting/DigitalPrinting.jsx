@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, Layers, Package, Truck, Scissors, Paperclip, Loader2
@@ -83,6 +83,7 @@ const QUANTITY_OPTIONS = ['100 Pcs', '250 Pcs', '500 Pcs', '1000 Pcs', '5000 Pcs
 const SIZE_OPTIONS = ['12x18', '13x19'];
 
 export default function DigitalPrinting() {
+  const navigate = useNavigate();
   const [sel, setSel] = useState(null);
   const [qty, setQty] = useState(10); // Default to min
   const [size, setSize] = useState('12x18');
@@ -191,6 +192,7 @@ export default function DigitalPrinting() {
         // Reset essential states
         setFile(null);
         setName('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error('Order Submission Error:', err);

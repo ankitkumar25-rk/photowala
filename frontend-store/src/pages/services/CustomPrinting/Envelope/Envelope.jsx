@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, Package, File, Loader2, Truck, CheckCircle2,
@@ -94,6 +94,7 @@ const FLAP_OPTIONS = ['Short Opening (with center pasting)', 'Long Opening (with
 const QTY_OPTIONS = [1000, 2000, 3000, 4000];
 
 export default function Envelope() {
+  const navigate = useNavigate();
   const [orderName, setOrderName] = useState('');
   const [product, setProduct]     = useState('ENV_9X4');
   const [paperType, setPaperType] = useState('');
@@ -186,8 +187,9 @@ export default function Envelope() {
       };
       const res = await api.post('/service-orders', payload);
       if (res.data.success) {
-        alert('Order Placed Successfully!');
+        alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
         setOrderName(''); setPaperType(''); setWindowCut(''); setFlap(''); setQty(''); setFile(null); setRemark('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

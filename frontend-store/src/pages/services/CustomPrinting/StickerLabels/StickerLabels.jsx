@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   UploadCloud, ShoppingCart, HelpCircle, ChevronLeft, CheckCircle2, Info, Loader2, Paperclip
@@ -53,6 +53,7 @@ const STRAIGHT_OPTIONS = [
 ];
 
 export default function StickerLabels() {
+  const navigate = useNavigate();
   const { type } = useParams();
   const currentType = type || 'no-cut';
 
@@ -202,6 +203,7 @@ export default function StickerLabels() {
         setSelectedFile(null);
         setRemark('');
         setStickerCount('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

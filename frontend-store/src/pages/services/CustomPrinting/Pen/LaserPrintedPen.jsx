@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   HelpCircle, UploadCloud, AlertTriangle, ShieldCheck, Leaf, ShoppingCart, Truck, Loader2, Paperclip
@@ -36,6 +36,7 @@ const QTY_OPTIONS = [1, 2, 5, 10, 20, 30, 40, 50, 75, 100];
 const GST_RATE = 0.18;
 
 export default function LaserPrintedPen() {
+  const navigate = useNavigate();
   const [orderName, setOrderName]       = useState('');
   const [penType, setPenType]           = useState('');
   const [qty, setQty]                   = useState('');
@@ -132,6 +133,7 @@ export default function LaserPrintedPen() {
         setQty('');
         setSelectedFile(null);
         setRemark('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

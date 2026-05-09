@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   PenTool, Scissors, UploadCloud, 
   ShoppingCart, HelpCircle, ChevronLeft, 
@@ -12,6 +12,7 @@ const PROCESS_TYPES = ['2D Profile Cutting', '3D Carving / Bas-Relief', 'Drillin
 const QUANTITY_TIERS = ['1 - 5 units', '6 - 20 units', '21 - 50 units', '50+ units'];
 
 export default function CNCRouterService() {
+  const navigate = useNavigate();
   const [orderName, setOrderName] = useState('');
   const [materialType, setMaterialType] = useState('');
   const [processType, setProcessType] = useState('');
@@ -72,6 +73,7 @@ export default function CNCRouterService() {
       if (res.data.success) {
         alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
         setOrderName(''); setMaterialType(''); setProcessType(''); setQuantity(''); setDimensions({l:'', w:'', h:''}); setSelectedFile(null); setSpecialInstructions('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Scissors, Settings, PenTool, UploadCloud, 
   ShoppingCart, HelpCircle, ChevronLeft, 
@@ -12,6 +12,7 @@ const THICKNESS_OPTIONS = ['1mm', '2mm', '3mm', '4mm', '5mm', '6mm', '8mm', '10m
 const QUANTITY_TIERS = ['1 - 10 units', '11 - 50 units', '51 - 100 units', '100+ units'];
 
 export default function CO2LaserService() {
+  const navigate = useNavigate();
   const [orderName, setOrderName] = useState('');
   const [materialType, setMaterialType] = useState('');
   const [materialThickness, setMaterialThickness] = useState('');
@@ -72,6 +73,7 @@ export default function CO2LaserService() {
       if (res.data.success) {
         alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
         setOrderName(''); setMaterialType(''); setMaterialThickness(''); setQuantity(''); setDimensions({l:'', w:'', h:''}); setSelectedFile(null); setSpecialInstructions('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

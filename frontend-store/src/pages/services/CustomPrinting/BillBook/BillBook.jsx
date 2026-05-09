@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, Package, File, Loader2, Truck, CheckCircle2,
@@ -35,6 +35,7 @@ const COLOR_OPTIONS = ['White', 'Pink', 'Yellow'];
 const BINDING_OPTIONS = ['Normal', 'Premium'];
 
 export default function BillBook() {
+  const navigate = useNavigate();
   const [orderName, setOrderName] = useState('');
   const [product, setProduct]     = useState('A4_BB_2');
   const [qty, setQty]             = useState(10);
@@ -132,8 +133,9 @@ export default function BillBook() {
       };
       const res = await api.post('/service-orders', payload);
       if (res.data.success) {
-        alert('Order Placed Successfully!');
+        alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
         setOrderName(''); setProduct('A4_BB_2'); setQty(10); setPaperQuality(''); setPaperColor(''); setPaperColor3(''); setBinding(''); setFile(null); setRemark('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

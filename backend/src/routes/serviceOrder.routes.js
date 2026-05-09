@@ -11,6 +11,7 @@ router.get('/:id',              authenticate, serviceOrderController.getServiceO
 // Admin routes
 router.get('/admin/all',        authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.getAllServiceOrders);
 router.patch('/admin/:id/status', authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.updateServiceOrderStatus);
+router.patch('/admin/:id/tracking', authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.updateTrackingNumber);
 router.delete('/admin/:id',      authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.deleteServiceOrder);
 
 module.exports = router;

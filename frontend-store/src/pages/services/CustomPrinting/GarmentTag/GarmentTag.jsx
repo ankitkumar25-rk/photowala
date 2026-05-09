@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, Package, File, Loader2, Truck, CheckCircle2, Scissors,
@@ -119,6 +119,7 @@ const DATA = {
 };
 
 export default function GarmentTag() {
+  const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('gloss');
   const [loading, setLoading]     = useState(false);
@@ -291,10 +292,12 @@ export default function GarmentTag() {
       const res = await api.post('/service-orders', payload);
 
       if (res.data.success) {
-        alert('Order Placed Successfully!');
-        setOrderName(''); setSize(''); setPrinting(''); setQty(''); setDieShape('');
+        alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
+        setOrderName('');
+        setSize(''); setPrinting(''); setQty(''); setDieShape('');
         setProductType(''); setSpotUV(''); setSelThread(''); setThreadColor('');
         setFile(null); setRemark('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

@@ -83,7 +83,8 @@ exports.uploadDesignLocal = async (req, res, next) => {
     if (!req.file) throw createError('No design file provided', 400);
 
     const relativePath = `designs/${req.file.filename}`;
-    const url = `/uploads/${relativePath}`;
+    const baseUrl = process.env.PUBLIC_URL || `${req.protocol}://${req.get('host')}`;
+    const url = `${baseUrl}/uploads/${relativePath}`;
 
     res.json({
       success: true,

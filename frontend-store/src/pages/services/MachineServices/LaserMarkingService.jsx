@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Settings, Zap, UploadCloud, 
   ShoppingCart, HelpCircle, ChevronLeft, 
@@ -12,6 +12,7 @@ const MARKING_TYPES = ['Surface Etching', 'Deep Engraving', 'Color Annealing (SS
 const QUANTITY_TIERS = ['1 - 20 units', '21 - 100 units', '101 - 500 units', '500+ units'];
 
 export default function LaserMarkingService() {
+  const navigate = useNavigate();
   const [orderName, setOrderName] = useState('');
   const [materialType, setMaterialType] = useState('');
   const [markingType, setMarkingType] = useState('');
@@ -72,6 +73,7 @@ export default function LaserMarkingService() {
       if (res.data.success) {
         alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
         setOrderName(''); setMaterialType(''); setMarkingType(''); setQuantity(''); setDimensions({l:'', w:''}); setSelectedFile(null); setSpecialInstructions('');
+        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

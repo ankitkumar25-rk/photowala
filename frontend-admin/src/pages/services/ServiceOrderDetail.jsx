@@ -34,6 +34,18 @@ export default function ServiceOrderDetail() {
     }
   });
 
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const updateTrackingMutation = useMutation({
+    mutationFn: async () => {
+      await api.patch(`/service-orders/admin/${id}/tracking`, { trackingNumber });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['service-order', id]);
+      toast.success('Tracking number updated');
+      setTrackingNumber('');
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async () => {
       if (!window.confirm('Are you sure you want to delete this order?')) return;
@@ -202,9 +214,33 @@ export default function ServiceOrderDetail() {
             </div>
           </div>
 
-          <div className="bg-gray-900 rounded-3xl p-8 text-white">
-            <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Workflow Status</h3>
-            <div className="space-y-8 relative">
+            <div className="bg-gray-900 rounded-3xl p-8 text-white">
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Logistic Management</h3>
+              
+              <div className="mb-8 space-y-4">
+                 <div className="space-y-2">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase">Current Tracking ID</p>
+                    <p className="font-mono text-sm font-bold text-brand-primary">{order.trackingNumber || 'NOT ASSIGNED'}</p>
+                 </div>
+                 <div className="flex gap-2">
+                    <input 
+                      type="text"
+                      placeholder="Assign Tracking #"
+                      value={trackingNumber}
+                      onChange={(e) => setTrackingNumber(e.target.value)}
+                      className="flex-1 bg-gray-800 border-none rounded-xl text-xs font-bold focus:ring-1 focus:ring-brand-primary px-3 py-2"
+                    />
+                    <button 
+                      onClick={() => updateTrackingMutation.mutate()}
+                      className="bg-brand-primary hover:bg-brand-secondary px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all"
+                    >
+                      Set
+                    </button>
+                 </div>
+              </div>
+
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6">Workflow Status</h3>
+              <div className="space-y-8 relative">
               {/* Vertical line */}
               <div className="absolute left-3 top-3 bottom-3 w-0.5 bg-gray-800" />
               
