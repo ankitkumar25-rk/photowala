@@ -77,3 +77,23 @@ exports.deleteImage = async (req, res, next) => {
     next(createError(`Image delete failed: ${extractCloudinaryErrorMessage(err)}`, 500));
   }
 };
+
+exports.uploadDesignLocal = async (req, res, next) => {
+  try {
+    if (!req.file) throw createError('No design file provided', 400);
+
+    const relativePath = `designs/${req.file.filename}`;
+    const url = `/uploads/${relativePath}`;
+
+    res.json({
+      success: true,
+      data: {
+        url,
+        filename: req.file.filename,
+        originalName: req.file.originalname
+      },
+    });
+  } catch (err) {
+    next(createError(`Design upload failed: ${err.message}`, 500));
+  }
+};

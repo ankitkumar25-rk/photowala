@@ -1,175 +1,435 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
-  HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, BookOpen, CheckCircle
+  HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, Package, File, Loader2, Truck, CheckCircle2,
+  ChevronLeft, ChevronRight, BookOpen, Layers
 } from 'lucide-react';
+import api from '../../../../api/client';
 
 const SIDEBAR_LINKS = [
-  { id: 'pen',         icon: PenTool,    label: 'Pen',                    to: '/services/custom-printing/pen' },
+  { id: 'pen',        icon: PenTool,    label: 'Pen',                    to: '/services/custom-printing/pen' },
   { id: 'sticker',    icon: StickyNote,  label: 'Sticker Labels',         to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital',    icon: Printer,     label: 'Digital Paper Printing',  to: '/services/custom-printing/digital-printing' },
-  { id: 'letterhead', icon: FileText,    label: 'Letterhead',              to: '/services/custom-printing/letterhead' },
+  { id: 'digital',   icon: Printer,     label: 'Digital Paper Printing',  to: '/services/custom-printing/digital-printing' },
+  { id: 'letterhead',icon: FileText,    label: 'Letterhead',              to: '/services/custom-printing/letterhead' },
   { id: 'garment',    icon: Tag,         label: 'Garment Tag',             to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook',   icon: Book,        label: 'Bill Book',               to: '/services/custom-printing/bill-book', active: true },
-  { id: 'envelop',    icon: Mail,        label: 'Envelop',                 to: '/services/custom-printing/envelop' },
+  { id: 'billbook',  icon: Book,        label: 'Bill Book',               to: '/services/custom-printing/bill-book', active: true },
+  { id: 'envelop',   icon: Mail,        label: 'Envelop',                 to: '/services/custom-printing/envelop' },
 ];
 
-const FORMATS = [
-  {
-    id: '2copy', name: 'A4 Bill Book - 2 Copy', bestSeller: true,
-    features: ['Carbonless NCR Paper', 'Standard A4 Size', 'Production: 3 Working Days'],
-    price: '₹850', imageBg: '#c8b89a', emoji: '📋',
-  },
-  {
-    id: '3copy', name: 'A4 Bill Book - 3 Copy', bestSeller: false,
-    features: ['Carbonless NCR Paper (White/Pink/Yellow)', 'Standard A4 Size', 'Production: 3 Working Days'],
-    price: '₹1,200', imageBg: '#f4a261', emoji: '📒',
-  },
+import bb2 from '../../../../assets/images/services/bill_book_a4_2copy.png';
+import bb3 from '../../../../assets/images/services/bill_book_a4_3copy.png';
+
+const BILL_BOOK_PRODUCTS = [
+  { id: 'A4_BB_2', name: 'A4 Bill Book - 2 Copy', image: bb2 },
+  { id: 'A4_BB_3', name: 'A4 Bill Book - 3 Copy', image: bb3 },
 ];
+
+const PAPER_QUALITY_OPTIONS = [
+    '100 GSM DEO Paper ( 1 Side Printing )',
+    '100 GSM DEO Paper ( 2 Side Printing )',
+    '90 GSM Sunshine Paper ( 1 Side Printing )',
+];
+
+const COLOR_OPTIONS = ['White', 'Pink', 'Yellow'];
+const BINDING_OPTIONS = ['Normal', 'Premium'];
 
 export default function BillBook() {
-  const [sel, setSel]         = useState(null);
-  const [qty, setQty]         = useState('');
-  const [pages, setPages]     = useState('');
-  const [dOpt, setDOpt]       = useState('online');
-  const [name, setName]       = useState('');
-  const selected = FORMATS.find((f) => f.id === sel);
+  const [orderName, setOrderName] = useState('');
+  const [product, setProduct]     = useState('A4_BB_2');
+  const [qty, setQty]             = useState(10);
+  const [paperQuality, setPaperQuality] = useState('');
+  const [paperColor, setPaperColor]     = useState('');
+  const [paperColor3, setPaperColor3]   = useState('');
+  const [binding, setBinding]           = useState('');
+  
+  const [delivery, setDelivery]   = useState('courier');
+  const [fileOption, setFileOption] = useState('online');
+  const [remark, setRemark]       = useState('');
+  const [file, setFile]           = useState(null);
+  const [loading, setLoading]     = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const minQty = product === 'A4_BB_3' ? 20 : 10;
+
+  const nextImage = () => {
+    setActiveImageIndex((prev) => (prev + 1) % BILL_BOOK_PRODUCTS.length);
+  };
+
+  const prevImage = () => {
+    setActiveImageIndex((prev) => (prev - 1 + BILL_BOOK_PRODUCTS.length) % BILL_BOOK_PRODUCTS.length);
+  };
+
+  const handleProductChange = (val) => {
+    setProduct(val);
+    if (val === 'A4_BB_3' && qty < 20) setQty(20);
+    else if (val === 'A4_BB_2' && qty < 10) setQty(10);
+  };
+
+  const pricing = useMemo(() => {
+    if (!product || !qty) return { subtotal: 0, gst: 0, total: 0, emailFee: 0 };
+    const baseRate = product === 'A4_BB_2' ? 85 : 120;
+    const base = qty * baseRate;
+    const emailFee = fileOption === 'email' ? 10 : 0;
+    const subtotal = base + emailFee;
+    const gst = subtotal * 0.18;
+    return {
+      subtotal: subtotal.toFixed(2),
+      gst: gst.toFixed(2),
+      total: (subtotal + gst).toFixed(2),
+      emailFee
+    };
+  }, [qty, product, fileOption]);
+
+  const handleFileChange = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      const ext = f.name.split('.').pop().toLowerCase();
+      const allowed = ['pdf', 'cdr', 'psd', 'jpeg', 'jpg', 'png'];
+      if (allowed.includes(ext)) setFile(f);
+      else { alert('Invalid format. Allowed: PDF, CDR, PSD, JPEG, PNG'); e.target.value = null; }
+    }
+  };
+
+  const handleAddOrder = async () => {
+    if (!product || (fileOption === 'online' && !file)) {
+        alert('Please fill all mandatory fields.');
+        return;
+    }
+    try {
+      setLoading(true);
+      let fileUrl = '';
+      if (fileOption === 'online' && file) {
+        const formData = new FormData();
+        formData.append('design', file);
+        const uploadRes = await api.post('/uploads/design', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        if (uploadRes.data.success) fileUrl = uploadRes.data.data.url;
+      }
+      const payload = {
+        orderName: orderName.trim() || 'Bill Book Order',
+        product: BILL_BOOK_PRODUCTS.find(p => p.id === product)?.name,
+        qty: Number(qty),
+        details: { paperQuality, paperColor, paperColor3: product === 'A4_BB_3' ? paperColor3 : undefined, binding, delivery, fileOption },
+        specialRemark: remark,
+        fileUrl: fileUrl || (fileOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
+        pricing
+      };
+      const res = await api.post('/orders/laser-pen', {
+        orderName: payload.orderName,
+        penType: 'Bill Book: ' + payload.product,
+        qty: payload.qty,
+        deliveryOption: payload.delivery,
+        fileOption: payload.fileOption,
+        specialRemark: JSON.stringify(payload)
+      });
+      if (res.data.success) {
+        alert('Order Placed Successfully!');
+        setOrderName(''); setProduct('A4_BB_2'); setQty(10); setPaperQuality(''); setPaperColor(''); setPaperColor3(''); setBinding(''); setFile(null); setRemark('');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Order failed: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const activeProduct = BILL_BOOK_PRODUCTS.find(p => p.id === product);
 
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col md:flex-row font-sans">
-      <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
-        <div className="mb-8"><h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2><p className="text-xs text-gray-500">Explore categories</p></div>
-        <nav className="flex-1 space-y-2 mb-8">
-          {SIDEBAR_LINKS.map((l) => { const I = l.icon; return (
-            <Link key={l.id} to={l.to} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${l.active ? 'bg-[#b65e2e] text-white shadow-md' : 'text-gray-600 hover:bg-[#e8dfd5] hover:text-gray-900'}`}>
-              <I className="w-4 h-4" />{l.label}
-            </Link>
-          );})}
+      <aside className="w-full md:w-64 bg-[#f2eee9] border-b md:border-b-0 md:border-r border-[#e8dfd5] flex flex-col p-4 md:p-6 shrink-0">
+        <div className="mb-4 md:mb-8 text-left hidden md:block">
+          <h2 className="text-xl font-bold text-gray-900 mb-1 font-outfit uppercase tracking-tighter text-left">Service Index</h2>
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-left">Explore Categories</p>
+        </div>
+        <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
+          {SIDEBAR_LINKS.map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link key={link.id} to={link.to}
+                className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
+                  link.active ? 'bg-[#b65e2e] text-white shadow-lg' : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
+                }`}>
+                <Icon className={`w-3.5 h-3.5 md:w-4 h-4 ${link.active ? 'text-white' : 'text-gray-400'}`} />
+                <span className="uppercase tracking-widest">{link.label}</span>
+              </Link>
+            );
+          })}
         </nav>
-
       </aside>
 
-      <main className="flex-1 p-6 md:p-10 lg:p-12">
-        <div className="text-sm font-medium mb-8 flex items-center gap-2">
-          <Link to="/" className="text-[#3b71ca] hover:text-[#285192]">Home</Link><span className="text-gray-500">›</span>
-          <Link to="/services" className="text-[#3b71ca] hover:text-[#285192]">Our Services</Link><span className="text-gray-500">›</span>
-          <Link to="/services/custom-printing" className="text-[#3b71ca] hover:text-[#285192]">Custom Printing</Link><span className="text-gray-500">›</span>
-          <span className="text-[#a64d24]">Bill Book</span>
-        </div>
-
-        <div className="mb-10">
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">Bill Book Customization</h1>
-          <p className="text-gray-600 max-w-3xl leading-relaxed">Professional carbonless billing solutions for your business.</p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          <div className="w-full lg:w-2/3 flex flex-col gap-6">
-            <div className="bg-white rounded-2xl border border-[#e8dfd5] p-6 lg:p-8 shadow-sm">
-              <div className="flex items-center gap-3 mb-6"><BookOpen className="w-5 h-5 text-[#a64d24]" /><h3 className="text-lg font-bold text-gray-900">Select Format</h3></div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
-                {FORMATS.map((f) => (
-                  <div key={f.id} onClick={() => setSel(f.id)}
-                    className={`rounded-xl overflow-hidden border-2 cursor-pointer transition-all duration-200 ${sel === f.id ? 'border-[#a64d24] shadow-md scale-[1.01]' : 'border-[#e8dfd5] hover:border-[#d1a88b] hover:shadow'}`}>
-                    <div className="relative h-44 flex items-center justify-center text-7xl" style={{ background: f.imageBg }}>
-                      <span className="opacity-60">{f.emoji}</span>
-                      {f.bestSeller && <span className="absolute top-3 left-3 bg-[#2e7d52] text-white text-[10px] font-bold px-3 py-1 rounded-full shadow">Best Seller</span>}
-                    </div>
-                    <div className="p-5 bg-white">
-                      <h4 className={`font-bold text-base mb-3 ${sel === f.id ? 'text-[#a64d24]' : 'text-gray-900'}`}>{f.name}</h4>
-                      <ul className="space-y-1.5 mb-4">
-                        {f.features.map((ft, i) => (
-                          <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
-                            <CheckCircle className="w-3.5 h-3.5 text-[#2e7d52] shrink-0 mt-0.5" />{ft}
-                          </li>
-                        ))}
-                      </ul>
-                      <p className={`font-bold text-lg ${sel === f.id ? 'text-[#a64d24]' : 'text-gray-800'}`}>From {f.price}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-gray-100 pt-8 grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div><label className="block text-sm font-semibold text-gray-700 mb-2">Order Name</label>
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. March Invoice Books"
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e]" /></div>
-                <div><label className="block text-sm font-semibold text-gray-700 mb-2">Quantity (Books)</label>
-                  <select value={qty} onChange={(e) => setQty(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e]">
-                    <option value="">-- Select Quantity --</option>
-                    {['50 Books','100 Books','200 Books','500 Books'].map((q) => <option key={q}>{q}</option>)}
-                  </select></div>
-                <div className="md:col-span-2"><label className="block text-sm font-semibold text-gray-700 mb-2">Pages per Book</label>
-                  <select value={pages} onChange={(e) => setPages(e.target.value)} className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#b65e2e]/50 focus:border-[#b65e2e]">
-                    <option value="">-- Select Pages --</option>
-                    {['25 Pages','50 Pages','100 Pages'].map((p) => <option key={p}>{p}</option>)}
-                  </select></div>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Design File</label>
-                <div className="flex items-center gap-6 mb-4">
-                  {['online','email'].map((o) => (
-                    <div key={o} className="flex items-center gap-2 cursor-pointer" onClick={() => setDOpt(o)}>
-                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${dOpt===o?'border-[#b65e2e]':'border-gray-300'}`}>{dOpt===o&&<div className="w-2 h-2 rounded-full bg-[#b65e2e]"/>}</div>
-                      <span className="text-sm font-medium text-gray-800">{o==='online'?'Attach File Online':'Send via Email'}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-2 border-dashed border-[#d1a88b] bg-[#fffaf5] rounded-xl p-10 flex flex-col items-center text-center hover:bg-[#fbf4ea]">
-                  <UploadCloud className="w-10 h-10 text-[#a64d24] mb-3" />
-                  <p className="text-sm font-bold text-gray-800 mb-1">Drag and drop your design here</p>
-                  <p className="text-xs text-gray-500 mb-6">PDF, AI, or High-Res PNG (Max 50MB)</p>
-                  <button className="border border-[#b65e2e] text-[#b65e2e] hover:bg-[#b65e2e] hover:text-white transition-colors font-semibold py-2 px-6 rounded-lg text-sm bg-white">Choose File</button>
-                </div>
-              </div>
-
-              <div className="bg-[#fff4f2] border border-[#f5c6cb] rounded-lg p-4 flex gap-3 items-start">
-                <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                <div><h4 className="text-sm font-bold text-red-700">Serial Number Notice</h4>
-                  <p className="text-xs text-red-600 mt-0.5">Mention in remarks if you need serial numbering (additional charges may apply).</p></div>
-              </div>
-            </div>
+      <main className="flex-1 overflow-y-auto">
+        <header className="bg-white border-b border-gray-100 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center gap-3">
+             <div className="w-1.5 h-6 bg-[#b65e2e] rounded-full" />
+             <div className="flex flex-col">
+                <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-1 text-left">Custom Printing</span>
+                <span className="text-base md:text-lg font-black text-gray-900 uppercase tracking-tighter leading-none text-left">Bill Book</span>
+             </div>
           </div>
+          <h1 className="text-[9px] md:text-xs font-black text-gray-400 uppercase tracking-widest hidden sm:block">Order Portal v2.0</h1>
+        </header>
 
-          <div className="w-full lg:w-1/3 flex flex-col gap-6 sticky top-6">
-            <div className="bg-[#1c1a19] text-white rounded-2xl overflow-hidden shadow-lg border border-gray-800">
-              <div className="p-6">
-                <h3 className="font-bold text-lg mb-6 border-b border-gray-700 pb-3">Order Summary</h3>
-                {selected ? (
-                  <div className="bg-gray-800 rounded-lg p-4 mb-4 border border-gray-700">
-                    <div className="text-xs text-gray-400 mb-1">Selected Format</div>
-                    <div className="font-bold text-[#f0ba9c]">{selected.name}</div>
-                    <div className="text-sm font-bold text-[#f0ba9c] mt-2">From {selected.price}</div>
-                  </div>
-                ) : (
-                  <div className="bg-gray-800/50 rounded-lg p-4 mb-4 border border-gray-700 border-dashed text-center">
-                    <span className="text-sm text-gray-400">Please select a format</span>
-                  </div>
-                )}
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-sm"><span className="text-gray-400">Quantity</span><span className="font-medium">{qty||'-'}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-gray-400">Pages / Book</span><span className="font-medium">{pages||'-'}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-gray-400">GST (18%)</span><span className="font-medium">-</span></div>
-                </div>
-                <div className="flex justify-between items-center mb-8 border-t border-gray-700 pt-4">
-                  <span className="font-bold text-lg">Total Amount</span>
-                  <span className="font-bold text-2xl">-</span>
-                </div>
-                <button disabled={!sel||!qty}
-                  className={`w-full flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-colors mb-4 ${sel&&qty?'bg-[#b65e2e] hover:bg-[#a15024] text-white cursor-pointer':'bg-gray-700 text-gray-500 cursor-not-allowed'}`}>
-                  <ShoppingCart className="w-5 h-5" /> Add Order
-                </button>
-                <p className="text-center text-xs text-gray-500 italic">{sel&&qty?'Est. delivery: 3 working days':'Select format & quantity to proceed'}</p>
+        <div className="p-4 md:p-8">
+          <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
+            <div className="flex-1 space-y-6">
+              
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Name</label>
+                <input type="text" value={orderName} onChange={(e)=>setOrderName(e.target.value)}
+                  placeholder="यहाँ अपने कस्टमर का नाम टाइप करें..."
+                  className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Select Product</label>
+                <select value={product} onChange={(e)=>handleProductChange(e.target.value)}
+                  className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none">
+                    {BILL_BOOK_PRODUCTS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="bg-[#fffaf5] px-6 py-4 border-b border-[#e8dfd5]">
+                  <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Order Details</h3>
+                </div>
+                <div className="p-4 md:p-6 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <div className="w-full sm:w-32 flex items-center gap-2">
+                        <Layers className="w-4 h-4 text-[#a64d24]" />
+                        <span className="text-sm font-bold text-gray-700">Quantity</span>
+                    </div>
+                    <div className="w-full sm:flex-1 flex items-center gap-3">
+                        <input type="number" value={qty} onChange={(e)=>setQty(Math.max(minQty, e.target.value))} min={minQty}
+                            className="w-24 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none font-bold" />
+                        <span className="text-[10px] text-[#a64d24] font-black uppercase tracking-widest">(Min Qty. : {minQty})</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <div className="w-full sm:w-32 flex items-center gap-2">
+                        <File className="w-4 h-4 text-[#a64d24]" />
+                        <span className="text-sm font-bold text-gray-700">1st Paper Quality</span>
+                    </div>
+                    <select value={paperQuality} onChange={(e)=>setPaperQuality(e.target.value)}
+                      className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none">
+                      <option value="">--Select--</option>
+                      {PAPER_QUALITY_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <div className="w-full sm:w-32 flex items-center gap-2">
+                        <File className="w-4 h-4 text-[#a64d24]" />
+                        <span className="text-sm font-bold text-gray-700">2nd Copy Color</span>
+                    </div>
+                    <select value={paperColor} onChange={(e)=>setPaperColor(e.target.value)}
+                      className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none">
+                      <option value="">--Select--</option>
+                      {COLOR_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </div>
+                  {product === 'A4_BB_3' && (
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 animate-in slide-in-from-left duration-300">
+                      <div className="w-full sm:w-32 flex items-center gap-2">
+                          <File className="w-4 h-4 text-[#a64d24]" />
+                          <span className="text-sm font-bold text-gray-700">3rd Copy Color</span>
+                      </div>
+                      <select value={paperColor3} onChange={(e)=>setPaperColor3(e.target.value)}
+                        className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none">
+                        <option value="">--Select--</option>
+                        {COLOR_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    </div>
+                  )}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <div className="w-full sm:w-32 flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-[#a64d24]" />
+                        <span className="text-sm font-bold text-gray-700">Binding Quality</span>
+                    </div>
+                    <select value={binding} onChange={(e)=>setBinding(e.target.value)}
+                      className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none">
+                      <option value="">--Select--</option>
+                      {BINDING_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Delivery Option */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Select Delivery Option</label>
+                <div className="flex flex-wrap gap-10">
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input type="radio" name="delivery" checked={delivery==='courier'} onChange={()=>setDelivery('courier')} className="hidden" />
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${delivery==='courier'?'border-[#b65e2e] bg-[#fffaf5]':'border-gray-300'}`}>
+                      {delivery==='courier' && <div className="w-2.5 h-2.5 rounded-full bg-[#b65e2e]" />}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Truck className="w-4 h-4 text-[#a64d24]" />
+                      <div>
+                        <span className="text-sm font-bold text-gray-700">Deliver By Courier</span>
+                        <p className="text-[10px] text-green-600 font-bold uppercase leading-none mt-1">Free Delivery</p>
+                      </div>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <input type="radio" name="delivery" checked={delivery==='transport'} onChange={()=>setDelivery('transport')} className="hidden" />
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${delivery==='transport'?'border-[#b65e2e] bg-[#fffaf5]':'border-gray-300'}`}>
+                      {delivery==='transport' && <div className="w-2.5 h-2.5 rounded-full bg-[#b65e2e]" />}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-gray-400" />
+                      <span className="text-sm font-bold text-gray-700">Dispatch By Transport</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* File Option */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Select File Option</label>
+                  <div className="flex gap-10 mb-6">
+                    {['online', 'email'].map(opt => (
+                      <label key={opt} className="flex items-center gap-3 cursor-pointer">
+                        <input type="radio" checked={fileOption===opt} onChange={()=>setFileOption(opt)} className="hidden" />
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${fileOption===opt?'border-[#b65e2e]':'border-gray-300'}`}>
+                          {fileOption===opt && <div className="w-2 h-2 rounded-full bg-[#b65e2e]" />}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {opt === 'online' ? <UploadCloud className="w-4 h-4 text-[#a64d24]" /> : <Mail className="w-4 h-4 text-[#a64d24]" />}
+                          <span className="text-sm font-bold text-gray-700 capitalize">{opt === 'online' ? 'Attach File Online' : 'Send via Email'}</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+
+                  {fileOption === 'online' ? (
+                    <div className="border-2 border-dashed border-[#d1a88b] bg-[#fffaf5] rounded-2xl p-10 flex flex-col items-center justify-center group hover:bg-[#fbf4ea] transition-all cursor-pointer"
+                      onClick={() => document.getElementById('bb-file').click()}>
+                      <input type="file" id="bb-file" className="hidden" onChange={handleFileChange} />
+                      <div className="w-14 h-14 bg-white rounded-full shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <UploadCloud className="w-7 h-7 text-[#a64d24]" />
+                      </div>
+                      <p className="text-sm font-bold text-gray-900 mb-1">{file ? file.name : 'Upload your Design Artwork'}</p>
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">PDF, CDR, PSD, JPG, PNG (MAX 50MB)</p>
+                    </div>
+                  ) : (
+                    <div className="p-10 bg-[#fffaf5] border border-[#f3ebdf] rounded-2xl flex flex-col items-center text-center">
+                      <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
+                        <Mail className="w-8 h-8 text-[#a64d24]" />
+                      </div>
+                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowalagift@gmail.com</h4>
+                      <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Pricing & Remark */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="p-6 space-y-4">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-bold text-gray-500">Applicable Cost</span>
+                      <span className="font-bold text-gray-900">Rs. {pricing.subtotal}/-</span>
+                    </div>
+                    {pricing.emailFee > 0 && (
+                      <div className="flex justify-between items-center text-sm text-[#a64d24]">
+                        <span className="font-bold">Manual Handling Fee</span>
+                        <span className="font-bold">Rs. {pricing.emailFee.toFixed(2)}/-</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-bold text-gray-500">GST (18.00%)</span>
+                      <span className="font-bold text-gray-900">Rs. {pricing.gst}/-</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-5 border-t border-gray-100">
+                      <span className="font-bold text-gray-400 uppercase tracking-widest text-[10px]">Total Amount Payable</span>
+                      <span className="text-2xl font-black text-[#a64d24]">Rs. {pricing.total}/-</span>
+                    </div>
+                  </div>
+                <div className="bg-gray-50/50 p-6 border-t border-gray-100">
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Special Remark (Optional)</label>
+                  <textarea value={remark} onChange={(e)=>setRemark(e.target.value)}
+                    placeholder="remarks for order processing team..."
+                    className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#b65e2e]/10 h-24 transition-all" />
+                </div>
+                <button onClick={handleAddOrder} disabled={loading}
+                  className="w-full bg-[#b65e2e] hover:bg-[#a15024] text-white font-bold py-5 uppercase tracking-widest text-xs transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-4 h-4" />}
+                  {loading ? 'Processing Order...' : 'Add Order'}
+                </button>
+              </div>
+
             </div>
+
+            {/* Right Column */}
+            <div className="w-full lg:w-[420px] space-y-6">
+              
+              {/* Product Preview */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative group">
+                <div className="relative h-[280px] sm:h-[380px] bg-[#fdfaf7] flex items-center justify-center p-4 sm:p-8">
+                  <img src={activeProduct?.image} alt="Bill Book" 
+                    className="max-w-full max-h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.1)] sm:drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-lg group-hover:scale-105 transition-transform duration-700" />
+                </div>
+
+                <div className="p-8 border-l-4 border-[#b65e2e] bg-white">
+                  <h3 className="text-xs font-bold text-gray-900 uppercase mb-6 tracking-[0.2em]">Product Description</h3>
+                  <ul className="space-y-4">
+                    {[
+                      { label: 'Product Ref.', val: 'LH/02nd Edition ( Sample File )' },
+                      { label: 'Product Code', val: 'BB-1 / BB-2' },
+                      { label: 'Product Core', val: 'Best Binding Quality' },
+                      { label: 'Paper Quality', val: '1st Copy - 100 GSM Deo / 90 GSM Sunshine With Multicolor Printing' },
+                      { label: '2nd Copy', val: '56 GSM Maplitho with Single color Printing' },
+                      product === 'A4_BB_3' ? { label: '3rd Copy', val: '56 GSM Maplitho with Single color Printing' } : null,
+                      { label: 'Production Time', val: '5-7 Working Days' },
+                    ].filter(Boolean).map((item, idx) => (
+                      <li key={idx} className="flex gap-4 text-[11px] leading-relaxed">
+                        <span className="text-[#b65e2e] font-black mt-1">/</span>
+                        <span className="font-bold text-gray-400 w-32 shrink-0 uppercase tracking-wider">{item.label} :</span>
+                        <span className="font-black text-gray-800">{item.val}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-10 pt-8 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-gray-900 uppercase mb-5 tracking-[0.2em]">Important Note</h3>
+                    <ul className="space-y-3">
+                        <li className="flex gap-3 text-[11px] font-bold text-gray-500 leading-tight">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                            <span>Both Side Printing Available Only 100 GSM Deo Paper</span>
+                        </li>
+                        <li className="flex gap-3 text-[11px] font-bold text-gray-500 leading-tight">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                            <span>Please mention starting serial number in CDR or PDF file</span>
+                        </li>
+                    </ul>
+                  </div>
+
+                  <div className="mt-10 pt-8 border-t border-gray-100 bg-gray-50/30 -mx-8 px-8 pb-8">
+                    <h3 className="text-xs font-bold text-gray-900 uppercase mb-5 tracking-[0.2em]">Our Specialization</h3>
+                    <div className="grid grid-cols-1 gap-4">
+                        {[
+                            'Printing with latest Komori offset machines (2023 Model)',
+                            'Innovative, Advanced & Equipped Post Printing Unit',
+                            'Constant quality with reasonable price'
+                        ].map((spec, i) => (
+                            <div key={i} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                                <Package className="w-4 h-4 text-[#a64d24]" />
+                                <span className="text-[10px] font-bold text-gray-600 leading-tight">{spec}</span>
+                            </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
       </main>
     </div>
   );
 }
-
-
-

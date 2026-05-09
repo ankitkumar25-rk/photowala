@@ -148,6 +148,10 @@ export default function App() {
                 <Route path="services/custom-printing/sticker-labels" element={<Navigate to="/services/custom-printing/sticker-labels/no-cut" replace />} />
                 <Route path="services/custom-printing/sticker-labels/:type" element={<StickerLabels />} />
                 <Route path="services/custom-printing/garment-tag" element={<GarmentTag />} />
+                <Route path="services/custom-printing/garment-thread" element={<GarmentTag />} />
+                <Route path="services/custom-printing/garment-gloss" element={<GarmentTag />} />
+                <Route path="services/custom-printing/garment-matt" element={<GarmentTag />} />
+                <Route path="services/custom-printing/garment-uv" element={<GarmentTag />} />
                 <Route path="services/custom-printing/bill-book" element={<BillBook />} />
                 <Route path="services/custom-printing/digital-printing" element={<DigitalPrinting />} />
                 <Route path="services/machine-services/co2-laser" element={<CO2LaserService />} />
