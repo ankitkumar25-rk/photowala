@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { 
   Settings, Zap, UploadCloud, 
   ShoppingCart, HelpCircle, ChevronLeft, 
-  Target, ShieldCheck, Info
+  Target, ShieldCheck, Info, Loader2
 } from 'lucide-react';
+import api from '../../../api/client';
 
 const MATERIAL_TYPES = ['Stainless Steel', 'Aluminum', 'Brass/Copper', 'Titanium', 'Anodized Metal', 'Industrial Plastics'];
 const MARKING_TYPES = ['Surface Etching', 'Deep Engraving', 'Color Annealing (SS)', 'Carbonizing'];
@@ -18,6 +19,7 @@ export default function LaserMarkingService() {
   const [dimensions, setDimensions] = useState({ l: '', w: '' });
   const [selectedFile, setSelectedFile] = useState(null);
   const [specialInstructions, setSpecialInstructions] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -34,6 +36,50 @@ export default function LaserMarkingService() {
       selectedFile
     );
   }, [orderName, materialType, markingType, quantity, dimensions, selectedFile]);
+
+  const handleAddOrder = async () => {
+    if (!canOrder) return;
+    try {
+      setLoading(true);
+      let fileUrl = '';
+      const formData = new FormData();
+      formData.append('design', selectedFile);
+      const uploadRes = await api.post('/uploads/design', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (uploadRes.data.success) {
+        fileUrl = uploadRes.data.data.url;
+      }
+
+      const payload = {
+        category: 'MACHINE',
+        serviceName: 'Laser Marking Service',
+        customerName: orderName.trim(),
+        productName: materialType,
+        quantity: 1,
+        totalAmount: 0,
+        fileUrl,
+        fileOption: 'online',
+        specialRemark: specialInstructions,
+        details: {
+          markingType,
+          quantityTier: quantity,
+          dimensions,
+        }
+      };
+
+      const res = await api.post('/service-orders', payload);
+      if (res.data.success) {
+        alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
+        setOrderName(''); setMaterialType(''); setMarkingType(''); setQuantity(''); setDimensions({l:'', w:''}); setSelectedFile(null); setSpecialInstructions('');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Order failed: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#faf8f5] font-sans">
@@ -178,15 +224,16 @@ export default function LaserMarkingService() {
 
                 {/* Add Order Button */}
                 <button 
-                  disabled={!canOrder}
+                  onClick={handleAddOrder}
+                  disabled={!canOrder || loading}
                   className={`w-full py-5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] ${
-                    canOrder 
+                    canOrder && !loading
                       ? 'bg-[#1c1a19] hover:bg-black text-white shadow-lg hover:shadow-xl' 
                       : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
                   }`}
                 >
-                  <ShoppingCart className="w-6 h-6" />
-                  <span className="text-lg">Add Order</span>
+                  {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <ShoppingCart className="w-6 h-6" />}
+                  <span className="text-lg">{loading ? 'Processing...' : 'Add Order'}</span>
                 </button>
               </div>
             </div>

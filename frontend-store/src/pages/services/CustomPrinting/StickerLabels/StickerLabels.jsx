@@ -170,26 +170,31 @@ export default function StickerLabels() {
         }
       }
 
-      const details = {
-        category: 'Sticker Labels',
-        type: CUT_TYPES.find(t => t.id === currentType)?.label + ' ' + CUT_TYPES.find(t => t.id === currentType)?.subLabel,
-        quantity: qty,
-        sheetSize,
-        lamination,
-        stickerCount: stickerCount || 'Standard',
-        delivery: deliveryOption,
-        orderName: orderName.trim(),
-        fileUrl: fileUrl || (designOption === 'email' ? 'SEND_VIA_EMAIL' : '')
+      const payload = {
+        category: 'PRINTING',
+        serviceName: 'Sticker Label',
+        customerName: orderName.trim(),
+        productName: CUT_TYPES.find(t => t.id === currentType)?.label + ' ' + CUT_TYPES.find(t => t.id === currentType)?.subLabel,
+        quantity: Number(qty),
+        totalAmount: Number(pricing.total),
+        fileUrl: fileUrl || (designOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
+        fileOption: designOption,
+        specialRemark: remark,
+        details: {
+          sheetSize,
+          lamination,
+          stickerCount: stickerCount || 'Standard',
+          delivery: deliveryOption,
+          pricing: {
+            base: pricing.base,
+            lam: pricing.lam,
+            gst: pricing.gst,
+            emailFee: pricing.emailFee
+          }
+        }
       };
 
-      const res = await api.post('/orders/laser-pen', {
-        orderName: details.orderName,
-        penType: 'Sticker Label',
-        qty: Number(qty),
-        deliveryOption: 'courier',
-        fileOption: designOption,
-        specialRemark: JSON.stringify(details)
-      });
+      const res = await api.post('/service-orders', payload);
 
       if (res.data.success) {
         alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);

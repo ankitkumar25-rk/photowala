@@ -163,22 +163,28 @@ export default function Envelope() {
         if (uploadRes.data.success) fileUrl = uploadRes.data.data.url;
       }
       const payload = {
-        orderName: orderName.trim() || 'Envelope Order',
-        product: activeProduct?.name,
-        qty: Number(qty),
-        details: { paperType, windowCut, flap, delivery, fileOption },
-        specialRemark: remark,
+        category: 'PRINTING',
+        serviceName: 'Envelope',
+        customerName: orderName.trim() || 'Envelope Order',
+        productName: activeProduct?.name,
+        quantity: Number(qty),
+        totalAmount: Number(pricing.total),
         fileUrl: fileUrl || (fileOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
-        pricing
+        fileOption: fileOption,
+        specialRemark: remark,
+        details: { 
+          paperType, 
+          windowCut, 
+          flap, 
+          delivery,
+          pricing: {
+            subtotal: pricing.subtotal,
+            gst: pricing.gst,
+            emailFee: pricing.emailFee
+          }
+        }
       };
-      const res = await api.post('/orders/laser-pen', {
-        orderName: payload.orderName,
-        penType: 'Envelope: ' + payload.product,
-        qty: payload.qty,
-        deliveryOption: payload.delivery,
-        fileOption: payload.fileOption,
-        specialRemark: JSON.stringify(payload)
-      });
+      const res = await api.post('/service-orders', payload);
       if (res.data.success) {
         alert('Order Placed Successfully!');
         setOrderName(''); setPaperType(''); setWindowCut(''); setFlap(''); setQty(''); setFile(null); setRemark('');

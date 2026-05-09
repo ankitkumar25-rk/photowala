@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, createElement } from 'react';
+import { useState, useEffect, createElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User, Lock, MapPin, Heart, Package, ChevronRight,
@@ -14,6 +14,7 @@ const TABS = [
   { id: 'addresses', label: 'Addresses', icon: MapPin },
   { id: 'security',  label: 'Security',  icon: Lock },
   { id: 'wishlist',  label: 'Wishlist',  icon: Heart },
+  { id: 'services',  label: 'Services',  icon: Settings },
 ];
 
 /* ── Status badge ── */
@@ -213,6 +214,7 @@ export default function Account() {
     if (tab === 'addresses') loadAddresses();
     if (tab === 'wishlist')  loadWishlist();
     if (tab === 'profile')   loadRecentOrders();
+    if (tab === 'services')  navigate('/account/services');
   }, [tab]);
 
   const loadAddresses = async () => {
@@ -432,6 +434,20 @@ export default function Account() {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Services history quick link */}
+            <div className="card p-6 bg-brand-primary text-white">
+              <h3 className="font-bold flex items-center gap-2 mb-2">
+                <Settings className="w-4 h-4" /> Machine & Print Services
+              </h3>
+              <p className="text-xs text-white/80 mb-4">Track your custom printing and laser cutting requests.</p>
+              <button 
+                onClick={() => navigate('/account/services')}
+                className="w-full py-2 bg-white text-brand-primary rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-transform"
+              >
+                View Service History
+              </button>
             </div>
           </div>
         )}

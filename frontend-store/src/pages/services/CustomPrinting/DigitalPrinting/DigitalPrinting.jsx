@@ -163,29 +163,28 @@ export default function DigitalPrinting() {
       const emailFee = dOpt === 'email' ? 10 : 0;
 
       // 2. Prepare Order Details
-      const details = {
-        category: 'Digital Printing',
-        product: selected.name,
-        type: (sel === 'letterhead' ? lhType : (sel === 'art' ? artType : (sel === 'texture' ? textureType : (sel === 'metallic' ? metallicType : (sel === 'ntpvc' ? ntpvcType : (sel === 'gummed' || sel === 'pvcgum' ? gumType : '')))))),
-        quantity: qty,
-        size,
-        printing,
-        halfCut,
-        lamination,
-        delivery: deliveryOption,
-        orderName: name || 'Digital Print Order',
-        fileUrl: fileUrl || (dOpt === 'email' ? 'SEND_VIA_EMAIL' : '')
+      const payload = {
+        category: 'PRINTING',
+        serviceName: 'Digital Paper Printing',
+        customerName: name || 'Digital Print Order',
+        productName: selected.name,
+        quantity: Number(qty),
+        totalAmount: 0, // Not calculated in this frontend module
+        fileUrl: fileUrl || (dOpt === 'email' ? 'SEND_VIA_EMAIL' : ''),
+        fileOption: dOpt,
+        specialRemark: '',
+        details: {
+          type: (sel === 'letterhead' ? lhType : (sel === 'art' ? artType : (sel === 'texture' ? textureType : (sel === 'metallic' ? metallicType : (sel === 'ntpvc' ? ntpvcType : (sel === 'gummed' || sel === 'pvcgum' ? gumType : '')))))),
+          size,
+          printing,
+          halfCut,
+          lamination,
+          delivery: deliveryOption,
+          emailFee: dOpt === 'email' ? 10 : 0
+        }
       };
 
-      // 3. Submit Order (Using existing laser-pen endpoint as a placeholder for service requests)
-      const orderRes = await api.post('/orders/laser-pen', {
-        orderName: details.orderName,
-        penType: details.product,
-        qty: details.quantity,
-        deliveryOption: 'courier',
-        fileOption: dOpt === 'online' ? 'attach' : 'email',
-        specialRemark: JSON.stringify(details)
-      });
+      const orderRes = await api.post('/service-orders', payload);
 
       if (orderRes.data.success) {
         alert(`Order Submitted Successfully!\nOrder ID: ${orderRes.data.orderId}`);

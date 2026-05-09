@@ -104,24 +104,27 @@ export default function LaserPrintedPen() {
       }
 
       const payload = {
-        orderName: orderName.trim(),
-        penType: String(penType),
-        qty: Number(qty),
-        deliveryOption: 'courier',
+        category: 'PRINTING',
+        serviceName: 'Laser Printed Pen',
+        customerName: orderName.trim(),
+        productName: `Type ${penType}`,
+        quantity: Number(qty),
+        totalAmount: Number(pricing.total),
+        fileUrl: fileUrl || (designOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
         fileOption: designOption,
         specialRemark: remark,
-        fileUrl: fileUrl || (designOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
-        pricing: {
-          applicableCost: Number(pricing.applicable),
-          discountPercent: 0,
-          discountAmt: 0,
-          emailCharge: Number(pricing.emailCharge),
-          gst: Number(pricing.gst),
-          totalPayable: Number(pricing.total)
+        details: {
+          deliveryOption: 'courier',
+          penType: String(penType),
+          pricing: {
+            applicableCost: Number(pricing.applicable),
+            emailCharge: Number(pricing.emailCharge),
+            gst: Number(pricing.gst),
+          }
         }
       };
 
-      const res = await api.post('/orders/laser-pen', payload);
+      const res = await api.post('/service-orders', payload);
       if (res.data.success) {
         alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
         setOrderName('');

@@ -43,6 +43,7 @@ const DigitalPrinting = lazy(() => import('./pages/services/CustomPrinting/Digit
 const CO2LaserService = lazy(() => import('./pages/services/MachineServices/CO2LaserService'));
 const LaserMarkingService = lazy(() => import('./pages/services/MachineServices/LaserMarkingService'));
 const CNCRouterService = lazy(() => import('./pages/services/MachineServices/CNCRouterService'));
+const MyServiceOrders = lazy(() => import('./pages/MyServiceOrders'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -133,6 +134,7 @@ export default function App() {
                 <Route path="orders"    element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
                 <Route path="account"   element={<ProtectedRoute><Account /></ProtectedRoute>} />
+                <Route path="account/services" element={<ProtectedRoute><MyServiceOrders /></ProtectedRoute>} />
                 <Route path="wishlist"  element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
                 {/* Auth flow routes */}
@@ -140,23 +142,23 @@ export default function App() {
                 <Route path="track-order"      element={<TrackOrder />} />
                 <Route path="returns"          element={<Returns />} />
                 <Route path="faq"              element={<FAQ />} />
-                <Route path="services"         element={<Services />} />
-                <Route path="services/custom-printing" element={<CustomPrintingIndex />} />
-                <Route path="services/custom-printing/pen" element={<LaserPrintedPen />} />
-                <Route path="services/custom-printing/letterhead" element={<Letterhead />} />
-                <Route path="services/custom-printing/envelop" element={<Envelope />} />
+                <Route path="services"         element={<ProtectedRoute><Services /></ProtectedRoute>} />
+                <Route path="services/custom-printing" element={<ProtectedRoute><CustomPrintingIndex /></ProtectedRoute>} />
+                <Route path="services/custom-printing/pen" element={<ProtectedRoute><LaserPrintedPen /></ProtectedRoute>} />
+                <Route path="services/custom-printing/letterhead" element={<ProtectedRoute><Letterhead /></ProtectedRoute>} />
+                <Route path="services/custom-printing/envelop" element={<ProtectedRoute><Envelope /></ProtectedRoute>} />
                 <Route path="services/custom-printing/sticker-labels" element={<Navigate to="/services/custom-printing/sticker-labels/no-cut" replace />} />
-                <Route path="services/custom-printing/sticker-labels/:type" element={<StickerLabels />} />
-                <Route path="services/custom-printing/garment-tag" element={<GarmentTag />} />
-                <Route path="services/custom-printing/garment-thread" element={<GarmentTag />} />
-                <Route path="services/custom-printing/garment-gloss" element={<GarmentTag />} />
-                <Route path="services/custom-printing/garment-matt" element={<GarmentTag />} />
-                <Route path="services/custom-printing/garment-uv" element={<GarmentTag />} />
-                <Route path="services/custom-printing/bill-book" element={<BillBook />} />
-                <Route path="services/custom-printing/digital-printing" element={<DigitalPrinting />} />
-                <Route path="services/machine-services/co2-laser" element={<CO2LaserService />} />
-                <Route path="services/machine-services/laser-marking" element={<LaserMarkingService />} />
-                <Route path="services/machine-services/cnc-router" element={<CNCRouterService />} />
+                <Route path="services/custom-printing/sticker-labels/:type" element={<ProtectedRoute><StickerLabels /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-tag" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-thread" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-gloss" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-matt" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-uv" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
+                <Route path="services/custom-printing/bill-book" element={<ProtectedRoute><BillBook /></ProtectedRoute>} />
+                <Route path="services/custom-printing/digital-printing" element={<ProtectedRoute><DigitalPrinting /></ProtectedRoute>} />
+                <Route path="services/machine-services/co2-laser" element={<ProtectedRoute><CO2LaserService /></ProtectedRoute>} />
+                <Route path="services/machine-services/laser-marking" element={<ProtectedRoute><LaserMarkingService /></ProtectedRoute>} />
+                <Route path="services/machine-services/cnc-router" element={<ProtectedRoute><CNCRouterService /></ProtectedRoute>} />
                 <Route path="privacy"          element={<Privacy />} />
                 <Route path="forgot-password"  element={<ForgotPassword />} />
                 <Route path="reset-password"   element={<ResetPassword />} />

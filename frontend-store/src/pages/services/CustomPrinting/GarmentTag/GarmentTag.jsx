@@ -255,23 +255,40 @@ export default function GarmentTag() {
       }
 
       const payload = {
-        orderName: orderName.trim() || `${activeData.title} Order`,
-        product: activeData.title,
-        qty: Number(qty),
-        details: isThread ? { selThread, threadColor, delivery, fileOption } : { size, printing, dieShape, spotUV, productType, delivery, fileOption },
-        specialRemark: remark,
+        category: 'PRINTING',
+        serviceName: activeData.title,
+        customerName: orderName.trim() || `${activeData.title} Order`,
+        productName: isThread ? selThread : size,
+        quantity: Number(qty),
+        totalAmount: Number(pricing.total),
         fileUrl: fileUrl || (fileOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
-        pricing
+        fileOption: fileOption,
+        specialRemark: remark,
+        details: isThread ? { 
+          selThread, 
+          threadColor, 
+          delivery,
+          pricing: {
+            subtotal: pricing.subtotal,
+            gst: pricing.gst,
+            emailFee: pricing.emailFee
+          }
+        } : { 
+          size, 
+          printing, 
+          dieShape, 
+          spotUV, 
+          productType, 
+          delivery,
+          pricing: {
+            subtotal: pricing.subtotal,
+            gst: pricing.gst,
+            emailFee: pricing.emailFee
+          }
+        }
       };
 
-      const res = await api.post('/orders/laser-pen', {
-        orderName: payload.orderName,
-        penType: `Garment ${activeTab}: ` + (isThread ? selThread : size),
-        qty: payload.qty,
-        deliveryOption: payload.delivery,
-        fileOption: payload.fileOption,
-        specialRemark: JSON.stringify(payload)
-      });
+      const res = await api.post('/service-orders', payload);
 
       if (res.data.success) {
         alert('Order Placed Successfully!');

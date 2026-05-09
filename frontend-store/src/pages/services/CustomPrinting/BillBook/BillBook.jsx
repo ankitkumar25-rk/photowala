@@ -108,22 +108,29 @@ export default function BillBook() {
         if (uploadRes.data.success) fileUrl = uploadRes.data.data.url;
       }
       const payload = {
-        orderName: orderName.trim() || 'Bill Book Order',
-        product: BILL_BOOK_PRODUCTS.find(p => p.id === product)?.name,
-        qty: Number(qty),
-        details: { paperQuality, paperColor, paperColor3: product === 'A4_BB_3' ? paperColor3 : undefined, binding, delivery, fileOption },
-        specialRemark: remark,
+        category: 'PRINTING',
+        serviceName: 'Bill Book',
+        customerName: orderName.trim() || 'Bill Book Order',
+        productName: BILL_BOOK_PRODUCTS.find(p => p.id === product)?.name,
+        quantity: Number(qty),
+        totalAmount: Number(pricing.total),
         fileUrl: fileUrl || (fileOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
-        pricing
+        fileOption: fileOption,
+        specialRemark: remark,
+        details: { 
+          paperQuality, 
+          paperColor, 
+          paperColor3: product === 'A4_BB_3' ? paperColor3 : undefined, 
+          binding, 
+          delivery,
+          pricing: {
+            subtotal: pricing.subtotal,
+            gst: pricing.gst,
+            emailFee: pricing.emailFee
+          }
+        }
       };
-      const res = await api.post('/orders/laser-pen', {
-        orderName: payload.orderName,
-        penType: 'Bill Book: ' + payload.product,
-        qty: payload.qty,
-        deliveryOption: payload.delivery,
-        fileOption: payload.fileOption,
-        specialRemark: JSON.stringify(payload)
-      });
+      const res = await api.post('/service-orders', payload);
       if (res.data.success) {
         alert('Order Placed Successfully!');
         setOrderName(''); setProduct('A4_BB_2'); setQty(10); setPaperQuality(''); setPaperColor(''); setPaperColor3(''); setBinding(''); setFile(null); setRemark('');

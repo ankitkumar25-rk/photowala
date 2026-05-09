@@ -120,34 +120,34 @@ export default function Letterhead() {
       }
 
       const payload = {
-        orderName: orderName.trim() || 'Letterhead Order',
-        product: selected.name,
-        qty: Number(qty),
-        details: {
-            printing,
-            binding,
-            size: selected.size,
-            gsm: selected.gsm,
-            delivery,
-            fileOption,
-            cuttingType,
-            uvSide: selected.code === 'LH-4A' ? finishing : 'None',
-            foilSide: selected.code === 'LH-4B' ? foilSide : 'None',
-            foilColor: selected.code === 'LH-4B' ? foilColor : 'None'
-        },
-        specialRemark: remark,
+        category: 'PRINTING',
+        serviceName: 'Letterhead',
+        customerName: orderName.trim() || 'Letterhead Order',
+        productName: selected.name,
+        quantity: Number(qty),
+        totalAmount: Number(pricing.total),
         fileUrl: fileUrl || (fileOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
-        pricing
+        fileOption: fileOption,
+        specialRemark: remark,
+        details: {
+          printing,
+          binding,
+          size: selected.size,
+          gsm: selected.gsm,
+          delivery,
+          cuttingType,
+          uvSide: selected.code === 'LH-4A' ? finishing : 'None',
+          foilSide: selected.code === 'LH-4B' ? foilSide : 'None',
+          foilColor: selected.code === 'LH-4B' ? foilColor : 'None',
+          pricing: {
+            subtotal: pricing.subtotal,
+            gst: pricing.gst,
+            emailFee: pricing.emailFee
+          }
+        }
       };
 
-      const res = await api.post('/orders/laser-pen', {
-        orderName: payload.orderName,
-        penType: 'Letterhead: ' + payload.product,
-        qty: payload.qty,
-        deliveryOption: payload.delivery,
-        fileOption: payload.fileOption,
-        specialRemark: JSON.stringify(payload)
-      });
+      const res = await api.post('/service-orders', payload);
 
       if (res.data.success) {
         alert('Order Placed Successfully!');
