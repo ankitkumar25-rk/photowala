@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "nodemon server.js",
-    "prestart": "npx prisma db push --accept-data-loss && npx prisma generate",
+    "build": "npx prisma generate && npx prisma db push --accept-data-loss",
+    "prestart": "",
     "start": "node server.js",
     "seed": "node src/utils/seed.js",
     "reset:admin-password": "node src/utils/reset-admin-password.js",
