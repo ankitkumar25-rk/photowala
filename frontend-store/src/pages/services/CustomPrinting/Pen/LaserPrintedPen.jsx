@@ -22,7 +22,7 @@ const SIDEBAR_LINKS = [
 
 // Pen type price per unit (₹)
 const PEN_PRICES = {
-  1: 22,  2: 24,  3: 26,  4: 31,  5: 32,  6: 32,  7: 39,  8: 36,  9: 44,  10: 44,
+  1: 22, 2: 24, 3: 26, 4: 31, 5: 32, 6: 32, 7: 39, 8: 36, 9: 44, 10: 44,
   11: 44, 12: 44, 13: 37, 14: 37, 15: 44, 16: 49, 17: 54, 18: 69, 19: 74, 20: 74,
 };
 
@@ -62,21 +62,21 @@ export default function LaserPrintedPen() {
   // Live price calculation
   const pricing = useMemo(() => {
     if (!penType || !qty || Number(qty) <= 0) return null;
-    
+
     const target = PEN_PRICES[Number(penType)] || 74;
     const q = Number(qty);
-    
+
     // Logarithmic decay formula: price = target + (150 - target) * (1 - log(qty) / log(500))
     // Clamp effective qty to [1, 500] for unit price curve
     const effectiveQtyForDecay = Math.min(Math.max(q, 1), 500);
     const unitCost = Math.round(target + (150 - target) * (1 - Math.log(effectiveQtyForDecay) / Math.log(500)));
-    
+
     const baseCost = unitCost * q;
     const emailCharge = designOption === 'email' ? 10 : 0;
     const applicable = baseCost + emailCharge;
     const gst = applicable * GST_RATE;
     const total = applicable + gst;
-    
+
     return {
       unitCost,
       baseCost: baseCost.toFixed(2),
@@ -251,11 +251,6 @@ export default function LaserPrintedPen() {
                         <option key={t} value={t}>{t}</option>
                       ))}
                     </select>
-                    {penType && (
-                      <p className="text-xs text-[#a64d24] mt-1 font-medium">
-                        ₹{PEN_PRICES[Number(penType)]}/pen
-                      </p>
-                    )}
                   </div>
 
                   {/* Qty */}
