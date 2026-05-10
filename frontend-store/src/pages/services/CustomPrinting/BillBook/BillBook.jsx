@@ -133,9 +133,18 @@ export default function BillBook() {
       };
       const res = await api.post('/service-orders', payload);
       if (res.data.success) {
-        alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
+        const orderData = {
+          orderId: res.data.orderId,
+          orderNumber: res.data.orderNumber,
+          orderType: 'SERVICE_ORDER',
+          totalAmount: Number(pricing.total),
+          serviceName: 'Bill Book',
+          category: 'PRINTING',
+        };
+
+        navigate('/checkout/service', { state: { orderData } });
+
         setOrderName(''); setProduct('A4_BB_2'); setQty(10); setPaperQuality(''); setPaperColor(''); setPaperColor3(''); setBinding(''); setFile(null); setRemark('');
-        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);

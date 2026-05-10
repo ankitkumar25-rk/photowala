@@ -7,7 +7,7 @@ import {
 import api from '../../../../api/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../../../store';
-import PaymentModal from '../../../../components/PaymentModal';
+import { useAuthStore } from '../../../../store';
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png', label: 'Pen', to: '/services/custom-printing/pen' },
@@ -104,7 +104,6 @@ export default function DigitalPrinting() {
   const [name, setName] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [currentOrderData, setCurrentOrderData] = useState(null);
 
   const queryClient = useQueryClient();
@@ -196,15 +195,16 @@ export default function DigitalPrinting() {
       const orderRes = await api.post('/service-orders', payload);
 
       if (orderRes.data.success) {
-        setCurrentOrderData({
+        const orderData = {
           orderId: orderRes.data.orderId,
+          orderNumber: orderRes.data.orderNumber,
           orderType: 'SERVICE_ORDER',
           totalAmount: 200, // Fixed test amount for digital printing
-          userName: user?.name || 'Customer',
-          userEmail: user?.email || '',
-          userPhone: user?.phone || '',
-        });
-        setShowPaymentModal(true);
+          serviceName: 'Digital Paper Printing',
+          category: 'PRINTING',
+        };
+
+        navigate('/checkout/service', { state: { orderData } });
         
         // Reset essential states
         setFile(null);
@@ -216,12 +216,6 @@ export default function DigitalPrinting() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePaymentSuccess = async (method) => {
-    queryClient.invalidateQueries({ queryKey: ['serviceOrders'] });
-    queryClient.invalidateQueries({ queryKey: ['payments'] });
-    navigate('/account/services');
   };
 
   return (
@@ -702,14 +696,6 @@ export default function DigitalPrinting() {
           </div>
         </div>
       </main>
-      {showPaymentModal && currentOrderData && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          orderData={currentOrderData}
-          onSuccess={handlePaymentSuccess}
-        />
-      )}
     </div>
   );
 }

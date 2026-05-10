@@ -11,7 +11,6 @@ import api from '../api/client';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuthStore } from '../store';
-import PaymentModal from '../components/PaymentModal';
 import { useQueryClient } from '@tanstack/react-query';
 
 const STATUSES = [
@@ -248,7 +247,6 @@ function OrderCard({ order, onPay }) {
 export default function MyServiceOrders() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('ALL');
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   
   const queryClient = useQueryClient();
@@ -263,13 +261,15 @@ export default function MyServiceOrders() {
   });
 
   const handlePay = (order) => {
-    setSelectedOrder(order);
-    setShowPaymentModal(true);
-  };
-
-  const handlePaymentSuccess = () => {
-    queryClient.invalidateQueries(['my-service-orders']);
-    toast.success('Payment recorded! 🎉');
+    const orderData = {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      orderType: 'SERVICE_ORDER',
+      totalAmount: Number(order.totalAmount),
+      serviceName: order.serviceName,
+      category: order.category,
+    };
+    navigate('/checkout/service', { state: { orderData } });
   };
 
   const filteredOrders = orders?.filter(o => {
@@ -379,21 +379,6 @@ export default function MyServiceOrders() {
               <p className="text-xs text-gray-500 font-medium leading-relaxed uppercase tracking-wider">Multi-stage QC protocols ensure every deliverable meets professional enterprise standards.</p>
            </div>
         </div>
-      </div>
-      {showPaymentModal && selectedOrder && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          orderData={{
-            orderId: selectedOrder.id,
-            orderType: 'SERVICE_ORDER',
-            totalAmount: Number(selectedOrder.totalAmount),
-            userName: user?.name || 'Customer',
-            userEmail: user?.email || '',
-            userPhone: user?.phone || '',
-          }}
-          onSuccess={handlePaymentSuccess}
-        />
       )}
     </div>
   );
