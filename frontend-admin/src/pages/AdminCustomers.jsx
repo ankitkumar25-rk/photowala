@@ -32,7 +32,7 @@ export default function AdminCustomers() {
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <p className="text-gray-400 uppercase tracking-wider">Phone</p>
-                  <p className="text-gray-700">{u.phone || 'â€”'}</p>
+                  <p className="text-gray-700">{u.phone || '—'}</p>
                 </div>
                 <div>
                   <p className="text-gray-400 uppercase tracking-wider">Orders</p>
@@ -67,7 +67,7 @@ export default function AdminCustomers() {
                     </div>
                   </td>
                   <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{u.email}</td>
-                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-400">{u.phone || 'â€”'}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-400">{u.phone || '—'}</td>
                   <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">{u._count?.orders || 0}</td>
                   <td className="px-3 sm:px-4 py-3 text-xs text-gray-400">{new Date(u.createdAt).toLocaleDateString('en-IN')}</td>
                   <td className="px-3 sm:px-4 py-3">

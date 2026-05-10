@@ -17,7 +17,7 @@ const TABS = [
   { id: 'services',  label: 'Services Ledger', icon: Settings },
 ];
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Status badge Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* â”€â”€ Status badge â”€â”€ */
 function StatusBadge({ status }) {
   const map = {
     PENDING:    { bg: 'bg-[#b88a2f]', text: 'text-white', label: 'Pending' },
@@ -36,7 +36,7 @@ function StatusBadge({ status }) {
   );
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Address card Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* â”€â”€ Address card â”€â”€ */
 function AddressCard({ addr, onEdit, onDelete, onSetDefault }) {
   return (
     <div className={`relative p-4 rounded-2xl border-2 transition-all ${
@@ -92,7 +92,7 @@ function AddressCard({ addr, onEdit, onDelete, onSetDefault }) {
   );
 }
 
-/* Ã¢â€â‚¬Ã¢â€â‚¬ Address modal Ã¢â€â‚¬Ã¢â€â‚¬ */
+/* â”€â”€ Address modal â”€â”€ */
 function AddressModal({ addr, onClose, onSave }) {
   const [form, setForm] = useState(
     addr || { label: 'Home', fullName: '', phone: '', line1: '', line2: '', city: '', state: '', pincode: '', isDefault: false }
@@ -229,7 +229,7 @@ export default function Account() {
     try { const { data } = await ordersApi.myOrders({ limit: 3 }); setRecentOrders(data.data); } catch (err) { console.error('Failed to load recent orders', err); }
   };
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬ Profile save Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€ Profile save â”€â”€ */
   const saveProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
@@ -242,7 +242,7 @@ export default function Account() {
     } finally { setSaving(false); }
   };
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬ Password Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€ Password â”€â”€ */
   const changePassword = async (e) => {
     e.preventDefault();
     if (pwForm.newPassword !== pwForm.confirm) { toast.error('Passwords do not match'); return; }
@@ -256,7 +256,7 @@ export default function Account() {
     } finally { setPwSaving(false); }
   };
 
-  /* Ã¢â€â‚¬Ã¢â€â‚¬ Address actions Ã¢â€â‚¬Ã¢â€â‚¬ */
+  /* â”€â”€ Address actions â”€â”€ */
   const saveAddress = async (form) => {
     try {
       if (addrModal && typeof addrModal === 'object' && addrModal.id) {
@@ -364,7 +364,7 @@ export default function Account() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Ã¢â€â‚¬Ã¢â€â‚¬ PROFILE TAB Ã¢â€â‚¬Ã¢â€â‚¬ */}
+        {/* â”€â”€ PROFILE TAB â”€â”€ */}
         {tab === 'profile' && (
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
@@ -452,7 +452,7 @@ export default function Account() {
           </div>
         )}
 
-        {/* Ã¢â€â‚¬Ã¢â€â‚¬ ADDRESSES TAB Ã¢â€â‚¬Ã¢â€â‚¬ */}
+        {/* â”€â”€ ADDRESSES TAB â”€â”€ */}
         {tab === 'addresses' && (
           <div>
             <div className="flex items-center justify-between mb-6">
@@ -488,7 +488,7 @@ export default function Account() {
           </div>
         )}
 
-        {/* Ã¢â€â‚¬Ã¢â€â‚¬ SECURITY TAB Ã¢â€â‚¬Ã¢â€â‚¬ */}
+        {/* â”€â”€ SECURITY TAB â”€â”€ */}
         {tab === 'security' && (
           <div className="max-w-lg">
             <div className="card p-6">
@@ -534,7 +534,7 @@ export default function Account() {
           </div>
         )}
 
-        {/* Ã¢â€â‚¬Ã¢â€â‚¬ WISHLIST TAB Ã¢â€â‚¬Ã¢â€â‚¬ */}
+        {/* â”€â”€ WISHLIST TAB â”€â”€ */}
         {tab === 'wishlist' && (
           <div>
             <h2 className="font-bold text-xl text-gray-900 mb-6">
@@ -555,7 +555,7 @@ export default function Account() {
                   <div key={product.id} className="card group">
                     <div className="relative aspect-square bg-cream-100 overflow-hidden">
                       <img
-                        src={product.images?.[0]?.url || 'https://placehold.co/300x300/d8f3dc/2d6a4f?text=Ã°Å¸Ââ€ '}
+                        src={product.images?.[0]?.url || 'https://placehold.co/300x300/d8f3dc/2d6a4f?text=ðŸ†'}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />

@@ -74,7 +74,7 @@ export default function ForgotPassword() {
                 {loading ? 'Sending...' : 'Send Reset Link'}
               </button>
               <Link to="/login" className="block text-center text-sm text-gray-500 hover:text-brand-primary">
-                Ã¢â€ Â Back to Login
+                â† Back to Login
               </Link>
             </form>
           )}

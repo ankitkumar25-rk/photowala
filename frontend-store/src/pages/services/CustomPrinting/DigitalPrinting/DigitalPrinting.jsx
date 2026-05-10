@@ -22,12 +22,12 @@ const SIDEBAR_LINKS = [
 const PAPER_PRODUCTS = [
   { id: 'letterhead', name: 'LETTER HEAD', detail: 'Production Time: 1 days', imageBg: '#2d4a3e', emoji: '📄' },
   { id: 'art', name: 'ART PAPER', detail: 'Production Time: 1 days', imageBg: '#3a3a3a', emoji: '🎨' },
-  { id: 'texture', name: 'TEXTURE PAPER', detail: 'Production Time: 1 days', imageBg: '#e8e0d0', emoji: 'Ã°Å¸â€”â€™Ã¯Â¸Â' },
+  { id: 'texture', name: 'TEXTURE PAPER', detail: 'Production Time: 1 days', imageBg: '#e8e0d0', emoji: 'ðŸ—’ï¸' },
   { id: 'metallic', name: 'METALLIC PAPER', detail: 'Production Time: 1 days', imageBg: '#c9a227', emoji: '✨' },
   { id: 'ntpvc', name: 'NT / PVC SHEET', detail: 'Production Time: 1 days', imageBg: '#9e9e9e', emoji: '📋' },
   { id: 'gummed', name: 'PAPER GUMMING', detail: 'Production Time: 1 days', imageBg: '#d4b96a', emoji: '📒' },
-  { id: 'pvcgum', name: 'PVC GUMMING', detail: 'Production Time: 1 days', imageBg: '#5fb8b0', emoji: 'Ã°Å¸â€”â€šÃ¯Â¸Â' },
-  { id: 'only', name: 'ONLY PRINTING', detail: 'Production Time: 1 days', imageBg: '#1a1a1a', emoji: 'Ã°Å¸â€“Â¨Ã¯Â¸Â' },
+  { id: 'pvcgum', name: 'PVC GUMMING', detail: 'Production Time: 1 days', imageBg: '#5fb8b0', emoji: 'ðŸ—‚ï¸' },
+  { id: 'only', name: 'ONLY PRINTING', detail: 'Production Time: 1 days', imageBg: '#1a1a1a', emoji: 'ðŸ–¨ï¸' },
 ];
 
 const ART_PAPER_OPTIONS = [
@@ -340,7 +340,7 @@ export default function DigitalPrinting() {
                     </div>
                     <div className="w-full sm:w-2/3">
                       <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                        placeholder="Ã Â¤Â¯Ã Â¤Â¹Ã Â¤Â¾Ã Â¤Â Ã Â¤â€¦Ã Â¤ÂªÃ Â¤Â¨Ã Â¥â€¡ Ã Â¤â€¢Ã Â¤Â¸Ã Â¥ÂÃ Â¤Å¸Ã Â¤Â®Ã Â¤Â° Ã Â¤â€¢Ã Â¤Â¾ Ã Â¤Â¨Ã Â¤Â¾Ã Â¤Â® Ã Â¤Å¸Ã Â¤Â¾Ã Â¤â€¡Ã Â¤Âª Ã Â¤â€¢Ã Â¤Â°Ã Â¥â€¡Ã Â¤â€š..."
+                        placeholder="à¤¯à¤¹à¤¾à¤ à¤…à¤ªà¤¨à¥‡ à¤•à¤¸à¥à¤Ÿà¤®à¤° à¤•à¤¾ à¤¨à¤¾à¤® à¤Ÿà¤¾à¤‡à¤ª à¤•à¤°à¥‡à¤‚..."
                         className="w-full border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-1 focus:ring-blue-500/50 outline-none placeholder:text-gray-300" />
                     </div>
                   </div>

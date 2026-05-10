@@ -19,7 +19,7 @@ export default function Register() {
     if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
     try {
       await register(form);
-      toast.success('Welcome to Photowala! Ã°Å¸Ââ€ ');
+      toast.success('Welcome to Photowala! ðŸ†');
       navigate('/', { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Registration failed. Please try again.');

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
@@ -8,13 +8,13 @@ import {
 import api from '../../../../api/client';
 
 const SIDEBAR_LINKS = [
-  { id: 'pen',        icon: PenTool,    label: 'Pen',                    to: '/services/custom-printing/pen' },
-  { id: 'sticker',    icon: StickyNote,  label: 'Sticker Labels',         to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital',   icon: Printer,     label: 'Digital Paper Printing',  to: '/services/custom-printing/digital-printing' },
-  { id: 'letterhead',icon: FileText,    label: 'Letterhead',              to: '/services/custom-printing/letterhead' },
-  { id: 'garment',    icon: Tag,         label: 'Garment Tag',             to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook',  icon: Book,        label: 'Bill Book',               to: '/services/custom-printing/bill-book' },
-  { id: 'envelope',   icon: Mail,        label: 'Envelope',                to: '/services/custom-printing/envelope', active: true },
+  { id: 'pen', icon: PenTool, label: 'Pen', to: '/services/custom-printing/pen' },
+  { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
+  { id: 'digital', icon: Printer, label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
+  { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
+  { id: 'garment', icon: Tag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
+  { id: 'billbook', icon: Book, label: 'Bill Book', to: '/services/custom-printing/bill-book' },
+  { id: 'envelope', icon: Mail, label: 'Envelope', to: '/services/custom-printing/envelope', active: true },
 ];
 
 import env1 from '../../../../assets/images/services/envelope_1.png';
@@ -22,36 +22,36 @@ import env2 from '../../../../assets/images/services/envelope_2.png';
 import env3 from '../../../../assets/images/services/envelope_3.png';
 
 const Envelope_PRODUCTS = [
-  { 
-    id: 'ENV_9X4', 
-    name: 'Envelopes - 9x4', 
+  {
+    id: 'ENV_9X4',
+    name: 'Envelopes - 9x4',
     images: [env1, env2],
     code: 'EN-1',
     size: 'Envelope (9"X4")',
     papers: ['70 GSM Maplitho Paper', '90 GSM Sunshine Paper', '100 GSM Deo Paper'],
     utility: 'For Office Letters'
   },
-  { 
-    id: 'ENV_9_70', 
-    name: 'Envelopes - 9.70x4.20', 
+  {
+    id: 'ENV_9_70',
+    name: 'Envelopes - 9.70x4.20',
     images: [env2, env1, env3],
     code: 'EN-2',
     size: 'Envelope (9.7"X4.2")',
     papers: ['70 GSM Maplitho Paper', '90 GSM Sunshine Paper', '100 GSM Deo Paper'],
     utility: 'For Executive Office Letters'
   },
-  { 
-    id: 'ENV_10_75', 
-    name: 'Envelopes - 10.75x4.75', 
+  {
+    id: 'ENV_10_75',
+    name: 'Envelopes - 10.75x4.75',
     images: [env3, env1, env2],
     code: 'EN-3',
     size: 'Envelope (10.75"X4.75")',
     papers: ['90 GSM Sunshine Paper'],
     utility: 'For Documents & Large Letters'
   },
-  { 
-    id: 'ENV_5_7', 
-    name: 'Envelopes - 5x7', 
+  {
+    id: 'ENV_5_7',
+    name: 'Envelopes - 5x7',
     images: [env1, env2, env3],
     code: 'EN-4',
     size: 'Envelope (5"X7")',
@@ -59,9 +59,9 @@ const Envelope_PRODUCTS = [
     utility: 'For Invitations & Cards',
     hideWindow: true
   },
-  { 
-    id: 'ENV_6_8', 
-    name: 'Envelopes - 6x8', 
+  {
+    id: 'ENV_6_8',
+    name: 'Envelopes - 6x8',
     images: [env2, env3, env1],
     code: 'EN-5',
     size: 'Envelope (6"X8")',
@@ -69,18 +69,18 @@ const Envelope_PRODUCTS = [
     utility: 'For Catalogues & Booklets',
     hideWindow: true
   },
-  { 
-    id: 'ENV_8_60', 
-    name: 'Envelopes - 8.60x10.60', 
+  {
+    id: 'ENV_8_60',
+    name: 'Envelopes - 8.60x10.60',
     images: [env3, env1, env2],
     code: 'EN-6',
     size: 'Envelope (8.6"X10.6")',
     papers: ['90 GSM Sunshine Paper'],
     utility: 'For Large Documents & Files'
   },
-  { 
-    id: 'ENV_9_40', 
-    name: 'Envelopes - 9.40x12.40', 
+  {
+    id: 'ENV_9_40',
+    name: 'Envelopes - 9.40x12.40',
     images: [env1, env3, env2],
     code: 'EN-7',
     size: 'Envelope (9.4"X12.4")',
@@ -96,17 +96,17 @@ const QTY_OPTIONS = [1000, 2000, 3000, 4000];
 export default function Envelope() {
   const navigate = useNavigate();
   const [orderName, setOrderName] = useState('');
-  const [product, setProduct]     = useState('ENV_9X4');
+  const [product, setProduct] = useState('ENV_9X4');
   const [paperType, setPaperType] = useState('');
   const [windowCut, setWindowCut] = useState('');
-  const [flap, setFlap]           = useState('');
-  const [qty, setQty]             = useState('');
-  
-  const [delivery, setDelivery]   = useState('courier');
+  const [flap, setFlap] = useState('');
+  const [qty, setQty] = useState('');
+
+  const [delivery, setDelivery] = useState('courier');
   const [fileOption, setFileOption] = useState('online');
-  const [remark, setRemark]       = useState('');
-  const [file, setFile]           = useState(null);
-  const [loading, setLoading]     = useState(false);
+  const [remark, setRemark] = useState('');
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const activeProduct = Envelope_PRODUCTS.find(p => p.id === product);
@@ -149,8 +149,8 @@ export default function Envelope() {
 
   const handleAddOrder = async () => {
     if (!paperType || !qty || (!activeProduct.hideWindow && !windowCut) || !flap || (fileOption === 'online' && !file)) {
-        alert('Please fill all mandatory fields (Paper, Flap, Qty, and Design).');
-        return;
+      alert('Please fill all mandatory fields (Paper, Flap, Qty, and Design).');
+      return;
     }
     try {
       setLoading(true);
@@ -173,10 +173,10 @@ export default function Envelope() {
         fileUrl: fileUrl || (fileOption === 'email' ? 'SEND_VIA_EMAIL' : ''),
         fileOption: fileOption,
         specialRemark: remark,
-        details: { 
-          paperType, 
-          windowCut, 
-          flap, 
+        details: {
+          paperType,
+          windowCut,
+          flap,
           delivery,
           pricing: {
             subtotal: pricing.subtotal,
@@ -211,9 +211,8 @@ export default function Envelope() {
             const Icon = link.icon;
             return (
               <Link key={link.id} to={link.to}
-                className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${
-                  link.active ? 'bg-[#b65e2e] text-white shadow-lg' : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
-                }`}>
+                className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${link.active ? 'bg-[#b65e2e] text-white shadow-lg' : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
+                  }`}>
                 <Icon className={`w-3.5 h-3.5 md:w-4 h-4 ${link.active ? 'text-white' : 'text-gray-400'}`} />
                 <span className="uppercase tracking-widest">{link.label}</span>
               </Link>
@@ -225,11 +224,11 @@ export default function Envelope() {
       <main className="flex-1 overflow-y-auto">
         <header className="bg-white border-b border-gray-100 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-3">
-             <div className="w-1.5 h-6 bg-[#b65e2e] rounded-full" />
-             <div className="flex flex-col">
-                <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-1">Custom Printing</span>
-                <span className="text-base md:text-lg font-black text-gray-900 uppercase tracking-tighter leading-none">Envelope</span>
-             </div>
+            <div className="w-1.5 h-6 bg-[#b65e2e] rounded-full" />
+            <div className="flex flex-col">
+              <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-1">Custom Printing</span>
+              <span className="text-base md:text-lg font-black text-gray-900 uppercase tracking-tighter leading-none">Envelope</span>
+            </div>
           </div>
           <h1 className="text-[9px] md:text-xs font-black text-gray-400 uppercase tracking-widest hidden sm:block">Order Portal v2.0</h1>
         </header>
@@ -237,19 +236,19 @@ export default function Envelope() {
         <div className="p-4 md:p-8">
           <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
             <div className="flex-1 space-y-6">
-              
+
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Name</label>
-                <input type="text" value={orderName} onChange={(e)=>setOrderName(e.target.value)}
+                <input type="text" value={orderName} onChange={(e) => setOrderName(e.target.value)}
                   placeholder="Enter customer name or order reference..."
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
 
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Select Product</label>
-                <select value={product} onChange={(e)=>handleProductChange(e.target.value)}
+                <select value={product} onChange={(e) => handleProductChange(e.target.value)}
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none">
-                    {Envelope_PRODUCTS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  {Envelope_PRODUCTS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
 
@@ -260,10 +259,10 @@ export default function Envelope() {
                 <div className="p-4 md:p-6 space-y-6">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <div className="w-full sm:w-32 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-[#a64d24]" />
-                        <span className="text-sm font-bold text-gray-700">Paper Type</span>
+                      <FileText className="w-4 h-4 text-[#a64d24]" />
+                      <span className="text-sm font-bold text-gray-700">Paper Type</span>
                     </div>
-                    <select value={paperType} onChange={(e)=>setPaperType(e.target.value)}
+                    <select value={paperType} onChange={(e) => setPaperType(e.target.value)}
                       className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none">
                       <option value="">--Select--</option>
                       {activeProduct.papers.map(o => <option key={o} value={o}>{o}</option>)}
@@ -272,10 +271,10 @@ export default function Envelope() {
                   {!activeProduct.hideWindow && (
                     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                       <div className="w-full sm:w-32 flex items-center gap-2">
-                          <Layout className="w-4 h-4 text-[#a64d24]" />
-                          <span className="text-sm font-bold text-gray-700">Window Cutting</span>
+                        <Layout className="w-4 h-4 text-[#a64d24]" />
+                        <span className="text-sm font-bold text-gray-700">Window Cutting</span>
                       </div>
-                      <select value={windowCut} onChange={(e)=>setWindowCut(e.target.value)}
+                      <select value={windowCut} onChange={(e) => setWindowCut(e.target.value)}
                         className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none">
                         <option value="">--Select--</option>
                         {WINDOW_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -284,10 +283,10 @@ export default function Envelope() {
                   )}
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <div className="w-full sm:w-32 flex items-center gap-2">
-                        <Layout className="w-4 h-4 text-[#a64d24]" />
-                        <span className="text-sm font-bold text-gray-700">Flap Opening</span>
+                      <Layout className="w-4 h-4 text-[#a64d24]" />
+                      <span className="text-sm font-bold text-gray-700">Flap Opening</span>
                     </div>
-                    <select value={flap} onChange={(e)=>setFlap(e.target.value)}
+                    <select value={flap} onChange={(e) => setFlap(e.target.value)}
                       className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none">
                       <option value="">--Select--</option>
                       {FLAP_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -295,10 +294,10 @@ export default function Envelope() {
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                     <div className="w-full sm:w-32 flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-[#a64d24]" />
-                        <span className="text-sm font-bold text-gray-700">Qty.</span>
+                      <Layers className="w-4 h-4 text-[#a64d24]" />
+                      <span className="text-sm font-bold text-gray-700">Qty.</span>
                     </div>
-                    <select value={qty} onChange={(e)=>setQty(e.target.value)}
+                    <select value={qty} onChange={(e) => setQty(e.target.value)}
                       className="w-full sm:flex-1 bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none font-bold">
                       <option value="">--Select--</option>
                       {QTY_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
@@ -312,9 +311,9 @@ export default function Envelope() {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 text-left">Select Delivery Option</label>
                 <div className="flex flex-wrap gap-10">
                   <label className="flex items-center gap-3 cursor-pointer group">
-                    <input type="radio" name="delivery" checked={delivery==='courier'} onChange={()=>setDelivery('courier')} className="hidden" />
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${delivery==='courier'?'border-[#b65e2e] bg-[#fffaf5]':'border-gray-300'}`}>
-                      {delivery==='courier' && <div className="w-2.5 h-2.5 rounded-full bg-[#b65e2e]" />}
+                    <input type="radio" name="delivery" checked={delivery === 'courier'} onChange={() => setDelivery('courier')} className="hidden" />
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${delivery === 'courier' ? 'border-[#b65e2e] bg-[#fffaf5]' : 'border-gray-300'}`}>
+                      {delivery === 'courier' && <div className="w-2.5 h-2.5 rounded-full bg-[#b65e2e]" />}
                     </div>
                     <div className="flex items-center gap-2">
                       <Truck className="w-4 h-4 text-[#a64d24]" />
@@ -325,9 +324,9 @@ export default function Envelope() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer group">
-                    <input type="radio" name="delivery" checked={delivery==='transport'} onChange={()=>setDelivery('transport')} className="hidden" />
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${delivery==='transport'?'border-[#b65e2e] bg-[#fffaf5]':'border-gray-300'}`}>
-                      {delivery==='transport' && <div className="w-2.5 h-2.5 rounded-full bg-[#b65e2e]" />}
+                    <input type="radio" name="delivery" checked={delivery === 'transport'} onChange={() => setDelivery('transport')} className="hidden" />
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${delivery === 'transport' ? 'border-[#b65e2e] bg-[#fffaf5]' : 'border-gray-300'}`}>
+                      {delivery === 'transport' && <div className="w-2.5 h-2.5 rounded-full bg-[#b65e2e]" />}
                     </div>
                     <div className="flex items-center gap-2">
                       <Package className="w-4 h-4 text-gray-400" />
@@ -340,67 +339,67 @@ export default function Envelope() {
               {/* File Option */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 text-left">Select File Option</label>
-                  <div className="flex gap-10 mb-6">
-                    {['online', 'email'].map(opt => (
-                      <label key={opt} className="flex items-center gap-3 cursor-pointer">
-                        <input type="radio" checked={fileOption===opt} onChange={()=>setFileOption(opt)} className="hidden" />
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${fileOption===opt?'border-[#b65e2e]':'border-gray-300'}`}>
-                          {fileOption===opt && <div className="w-2 h-2 rounded-full bg-[#b65e2e]" />}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {opt === 'online' ? <UploadCloud className="w-4 h-4 text-[#a64d24]" /> : <Mail className="w-4 h-4 text-[#a64d24]" />}
-                          <span className="text-sm font-bold text-gray-700 capitalize">{opt === 'online' ? 'Attach File Online' : 'Send via Email'}</span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-
-                  {fileOption === 'online' ? (
-                    <div className="border-2 border-dashed border-[#d1a88b] bg-[#fffaf5] rounded-2xl p-10 flex flex-col items-center justify-center group hover:bg-[#fbf4ea] transition-all cursor-pointer"
-                      onClick={() => document.getElementById('bb-file').click()}>
-                      <input type="file" id="bb-file" className="hidden" onChange={handleFileChange} />
-                      <div className="w-14 h-14 bg-white rounded-full shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <UploadCloud className="w-7 h-7 text-[#a64d24]" />
+                <div className="flex gap-10 mb-6">
+                  {['online', 'email'].map(opt => (
+                    <label key={opt} className="flex items-center gap-3 cursor-pointer">
+                      <input type="radio" checked={fileOption === opt} onChange={() => setFileOption(opt)} className="hidden" />
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${fileOption === opt ? 'border-[#b65e2e]' : 'border-gray-300'}`}>
+                        {fileOption === opt && <div className="w-2 h-2 rounded-full bg-[#b65e2e]" />}
                       </div>
-                      <p className="text-sm font-bold text-gray-900 mb-1">{file ? file.name : 'Upload your Design Artwork'}</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">PDF, CDR, PSD, JPG, PNG (MAX 50MB)</p>
-                    </div>
-                  ) : (
-                    <div className="p-10 bg-[#fffaf5] border border-[#f3ebdf] rounded-2xl flex flex-col items-center text-center">
-                      <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
-                        <Mail className="w-8 h-8 text-[#a64d24]" />
+                      <div className="flex items-center gap-2">
+                        {opt === 'online' ? <UploadCloud className="w-4 h-4 text-[#a64d24]" /> : <Mail className="w-4 h-4 text-[#a64d24]" />}
+                        <span className="text-sm font-bold text-gray-700 capitalize">{opt === 'online' ? 'Attach File Online' : 'Send via Email'}</span>
                       </div>
-                      <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
-                      <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
-                    </div>
-                  )}
+                    </label>
+                  ))}
                 </div>
 
-                {/* Pricing & Remark */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="p-6 space-y-4">
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="font-bold text-gray-500 text-left">Applicable Cost</span>
-                      <span className="font-bold text-gray-900">Rs. {pricing.subtotal}/-</span>
+                {fileOption === 'online' ? (
+                  <div className="border-2 border-dashed border-[#d1a88b] bg-[#fffaf5] rounded-2xl p-10 flex flex-col items-center justify-center group hover:bg-[#fbf4ea] transition-all cursor-pointer"
+                    onClick={() => document.getElementById('bb-file').click()}>
+                    <input type="file" id="bb-file" className="hidden" onChange={handleFileChange} />
+                    <div className="w-14 h-14 bg-white rounded-full shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                      <UploadCloud className="w-7 h-7 text-[#a64d24]" />
                     </div>
-                    {pricing.emailFee > 0 && (
-                      <div className="flex justify-between items-center text-sm text-[#a64d24]">
-                        <span className="font-bold">Manual Handling Fee</span>
-                        <span className="font-bold">Rs. {pricing.emailFee.toFixed(2)}/-</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center text-sm text-left">
-                      <span className="font-bold text-gray-500 text-left">GST (18.00%)</span>
-                      <span className="font-bold text-gray-900">Rs. {pricing.gst}/-</span>
-                    </div>
-                    <div className="flex justify-between items-center pt-5 border-t border-gray-100 text-left">
-                      <span className="font-bold text-gray-400 uppercase tracking-widest text-[10px] text-left">Total Amount Payable</span>
-                      <span className="text-2xl font-black text-[#a64d24]">Rs. {pricing.total}/-</span>
-                    </div>
+                    <p className="text-sm font-bold text-gray-900 mb-1">{file ? file.name : 'Upload your Design Artwork'}</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">PDF, CDR, PSD, JPG, PNG (MAX 50MB)</p>
                   </div>
+                ) : (
+                  <div className="p-10 bg-[#fffaf5] border border-[#f3ebdf] rounded-2xl flex flex-col items-center text-center">
+                    <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-[#e8dfd5] flex items-center justify-center mb-4">
+                      <Mail className="w-8 h-8 text-[#a64d24]" />
+                    </div>
+                    <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
+                    <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Pricing & Remark */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-bold text-gray-500 text-left">Applicable Cost</span>
+                    <span className="font-bold text-gray-900">Rs. {pricing.subtotal}/-</span>
+                  </div>
+                  {pricing.emailFee > 0 && (
+                    <div className="flex justify-between items-center text-sm text-[#a64d24]">
+                      <span className="font-bold">Manual Handling Fee</span>
+                      <span className="font-bold">Rs. {pricing.emailFee.toFixed(2)}/-</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center text-sm text-left">
+                    <span className="font-bold text-gray-500 text-left">GST (18.00%)</span>
+                    <span className="font-bold text-gray-900">Rs. {pricing.gst}/-</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-5 border-t border-gray-100 text-left">
+                    <span className="font-bold text-gray-400 uppercase tracking-widest text-[10px] text-left">Total Amount Payable</span>
+                    <span className="text-2xl font-black text-[#a64d24]">Rs. {pricing.total}/-</span>
+                  </div>
+                </div>
                 <div className="bg-gray-50/50 p-6 border-t border-gray-100 text-left">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 text-left">Special Remark (Optional)</label>
-                  <textarea value={remark} onChange={(e)=>setRemark(e.target.value)}
+                  <textarea value={remark} onChange={(e) => setRemark(e.target.value)}
                     placeholder="remarks for order processing team..."
                     className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-[#b65e2e]/10 h-24 transition-all" />
                 </div>
@@ -415,22 +414,21 @@ export default function Envelope() {
 
             {/* Right Column */}
             <div className="w-full lg:w-[420px] space-y-6">
-              
+
               {/* Product Preview Slider */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative group">
                 <div className="relative h-[280px] sm:h-[380px] bg-[#fdfaf7] flex items-center justify-center p-4 sm:p-8 overflow-hidden">
-                  
+
                   {/* Main Image Slider */}
                   <div className="relative w-full h-full flex items-center justify-center">
-                      {currentImages.map((img, idx) => (
-                        <div key={idx}
-                            className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
-                                idx === activeImageIndex ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
-                            }`}>
-                            <img src={img} alt="Envelope" 
-                                className="w-full h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.1)] sm:drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-lg group-hover:scale-105 transition-transform duration-700" />
-                        </div>
-                      ))}
+                    {currentImages.map((img, idx) => (
+                      <div key={idx}
+                        className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${idx === activeImageIndex ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
+                          }`}>
+                        <img src={img} alt="Envelope"
+                          className="w-full h-full object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.1)] sm:drop-shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-lg group-hover:scale-105 transition-transform duration-700" />
+                      </div>
+                    ))}
                   </div>
 
                   {/* Slider Controls */}
@@ -447,9 +445,8 @@ export default function Envelope() {
                   <div className="absolute bottom-6 flex gap-2 z-20">
                     {currentImages.map((_, idx) => (
                       <button key={idx} onClick={() => setActiveImageIndex(idx)}
-                        className={`transition-all duration-300 rounded-full ${
-                          idx === activeImageIndex ? 'w-8 h-2 bg-[#b65e2e]' : 'w-2 h-2 bg-gray-300'
-                        }`} />
+                        className={`transition-all duration-300 rounded-full ${idx === activeImageIndex ? 'w-8 h-2 bg-[#b65e2e]' : 'w-2 h-2 bg-gray-300'
+                          }`} />
                     ))}
                   </div>
                 </div>
@@ -477,26 +474,26 @@ export default function Envelope() {
                   <div className="mt-10 pt-8 border-t border-gray-100 text-left">
                     <h3 className="text-xs font-bold text-gray-900 uppercase mb-5 tracking-[0.2em] text-left">Important Note</h3>
                     <ul className="space-y-3">
-                        <li className="flex gap-3 text-[11px] font-bold text-gray-500 leading-tight">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-green-600 shrink-0" />
-                            <span>Price discount applicable with increase in Quantity</span>
-                        </li>
+                      <li className="flex gap-3 text-[11px] font-bold text-gray-500 leading-tight">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                        <span>Price discount applicable with increase in Quantity</span>
+                      </li>
                     </ul>
                   </div>
 
                   <div className="mt-10 pt-8 border-t border-gray-100 bg-gray-50/30 -mx-8 px-8 pb-8 text-left">
                     <h3 className="text-xs font-bold text-gray-900 uppercase mb-5 tracking-[0.2em] text-left">Our Specialization</h3>
                     <div className="grid grid-cols-1 gap-4">
-                        {[
-                            'Printing with latest Komori offset machines (2023 Model)',
-                            'Innovative, Advanced & Equipped Post Printing Unit',
-                            'Constant quality with reasonable price'
-                        ].map((spec, i) => (
-                            <div key={i} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                                <Package className="w-4 h-4 text-[#a64d24]" />
-                                <span className="text-[10px] font-bold text-gray-600 leading-tight">{spec}</span>
-                            </div>
-                        ))}
+                      {[
+                        'Printing with latest Komori offset machines (2023 Model)',
+                        'Innovative, Advanced & Equipped Post Printing Unit',
+                        'Constant quality with reasonable price'
+                      ].map((spec, i) => (
+                        <div key={i} className="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                          <Package className="w-4 h-4 text-[#a64d24]" />
+                          <span className="text-[10px] font-bold text-gray-600 leading-tight">{spec}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

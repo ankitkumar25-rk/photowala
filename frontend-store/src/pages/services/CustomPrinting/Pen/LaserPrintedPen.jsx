@@ -168,7 +168,7 @@ export default function LaserPrintedPen() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col md:flex-row font-sans">
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Sidebar Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* â”€â”€ Sidebar â”€â”€ */}
       <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2>
@@ -192,7 +192,7 @@ export default function LaserPrintedPen() {
 
       </aside>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Main Content Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* â”€â”€ Main Content â”€â”€ */}
       <main className="flex-1 p-6 md:p-10 lg:p-12">
         {/* Breadcrumb */}
         <div className="text-sm font-medium mb-8 flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function LaserPrintedPen() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Left Column Ã¢â€â‚¬Ã¢â€â‚¬ */}
+          {/* â”€â”€ Left Column â”€â”€ */}
           <div className="w-full lg:w-2/3 flex flex-col gap-6">
             <div className="bg-white rounded-2xl border border-[#e8dfd5] p-6 lg:p-8 shadow-sm">
 
@@ -390,30 +390,10 @@ export default function LaserPrintedPen() {
               </div>
             </div>
 
-            {/* Feature Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-[#f0ece5] rounded-xl p-5 border border-[#e3dacd]">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShieldCheck className="w-5 h-5 text-[#8c3a1b]" />
-                  <h4 className="font-bold text-gray-900 text-sm">Precision Etching</h4>
-                </div>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Our high-grade laser etching ensures your brand logo never fades, even with heavy daily usage on metal surfaces.
-                </p>
-              </div>
-              <div className="bg-[#f0ece5] rounded-xl p-5 border border-[#e3dacd]">
-                <div className="flex items-center gap-2 mb-2">
-                  <Award className="w-5 h-5 text-brand-secondary" />
-                  <h4 className="font-bold text-gray-900 text-sm">Premium Materials</h4>
-                </div>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  We use sustainably sourced wood and recycled alloys for our eco-range of laser-etched professional instruments.
-                </p>
-              </div>
-            </div>
+
           </div>
 
-          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Right Column (Summary) Ã¢â€â‚¬Ã¢â€â‚¬ */}
+          {/* â”€â”€ Right Column (Summary) â”€â”€ */}
           <div className="w-full lg:w-1/3 flex flex-col gap-6">
             <div className="bg-[#1c1a19] text-white rounded-2xl overflow-hidden shadow-lg border border-gray-800">
               <div className="relative h-48 w-full">
@@ -426,13 +406,6 @@ export default function LaserPrintedPen() {
 
               <div className="p-6">
                 <h3 className="font-bold text-lg mb-6 border-b border-gray-700 pb-3">Order Summary</h3>
-
-                {penType && (
-                  <div className="bg-gray-800 rounded-lg p-3 mb-3 border border-gray-700">
-                    <div className="text-xs text-gray-400 mb-0.5">Pen Type</div>
-                    <div className="font-bold text-[#f0ba9c]">Type {penType} — ₹{PEN_PRICES[Number(penType)]}/pen</div>
-                  </div>
-                )}
 
                 {designOption === 'online' && selectedFile && (
                   <div className="bg-gray-800 rounded-lg p-3 mb-3 border border-gray-700">

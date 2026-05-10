@@ -306,7 +306,7 @@ export default function OrderDetail() {
                   <p className="font-semibold text-gray-900">{order.address.fullName}</p>
                   <p>{order.address.line1}</p>
                   {order.address.line2 && <p>{order.address.line2}</p>}
-                  <p>{order.address.city}, {order.address.state} â€“ {order.address.pincode}</p>
+                  <p>{order.address.city}, {order.address.state} – {order.address.pincode}</p>
                   <p className="text-gray-600">{order.address.phone}</p>
                 </div>
               </div>

@@ -96,8 +96,8 @@ export default function Footer() {
             <div className="mt-6">
               <p className="text-[#d4b49e] text-xs font-semibold uppercase tracking-wider mb-2">Certifications</p>
               <div className="flex gap-2">
-                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">Ã°Å¸Ââ€¦ Crafted Premium</span>
-                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">Ã°Å¸Ââ€  Trusted India</span>
+                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">ðŸ… Crafted Premium</span>
+                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40">ðŸ† Trusted India</span>
               </div>
             </div>
           </div>

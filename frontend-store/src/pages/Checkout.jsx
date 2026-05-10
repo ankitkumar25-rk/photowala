@@ -272,7 +272,7 @@ export default function Checkout() {
           {/* -- Left column (steps) -- */}
           <div className="lg:col-span-3 space-y-6">
 
-            {/* STEP 1 â€” Address */}
+            {/* STEP 1 — Address */}
             <div className={`card transition-all ${step >= 1 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
               <div className="flex items-center justify-between p-4 border-b border-cream-200">
                 <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
@@ -319,11 +319,11 @@ export default function Checkout() {
                           />
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-900 text-sm">{a.label} â€” {a.fullName}</span>
+                              <span className="font-semibold text-gray-900 text-sm">{a.label} — {a.fullName}</span>
                               {a.isDefault && <span className="badge-featured text-[10px]">Default</span>}
                             </div>
                             <p className="text-sm text-gray-600 mt-0.5">
-                              {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}, {a.state} â€“ {a.pincode}
+                              {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}, {a.state} – {a.pincode}
                             </p>
                             <p className="text-xs text-gray-500 mt-0.5">{a.phone}</p>
                           </div>
@@ -369,15 +369,15 @@ export default function Checkout() {
 
               {step > 1 && selectedAddress && (
                 <div className="p-4 bg-brand-surface">
-                  <p className="text-sm font-semibold text-gray-900">{selectedAddress.label} â€” {selectedAddress.fullName}</p>
+                  <p className="text-sm font-semibold text-gray-900">{selectedAddress.label} — {selectedAddress.fullName}</p>
                   <p className="text-sm text-gray-600">
-                    {selectedAddress.line1}{selectedAddress.line2 ? `, ${selectedAddress.line2}` : ''}, {selectedAddress.city}, {selectedAddress.state} â€“ {selectedAddress.pincode}
+                    {selectedAddress.line1}{selectedAddress.line2 ? `, ${selectedAddress.line2}` : ''}, {selectedAddress.city}, {selectedAddress.state} – {selectedAddress.pincode}
                   </p>
                 </div>
               )}
             </div>
 
-            {/* STEP 2 â€” Review */}
+            {/* STEP 2 — Review */}
             {step >= 2 && (
               <div className="card">
                 <div className="flex items-center justify-between p-4 border-b border-cream-200">
@@ -562,7 +562,7 @@ export default function Checkout() {
                 </div>
 
                 <div className="text-xs text-gray-400 text-center">
-                  Including all taxes â€¢ Prices in INR
+                  Including all taxes • Prices in INR
                 </div>
               </div>
 

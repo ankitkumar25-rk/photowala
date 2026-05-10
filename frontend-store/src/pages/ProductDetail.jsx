@@ -537,7 +537,7 @@ export default function ProductDetail() {
                 </div>
               ) : lowStock ? (
                 <div className="flex items-center gap-2 text-brand-secondary font-semibold text-sm">
-                  <Package className="w-4 h-4" /> Only {product.stock} left â€” hurry!
+                  <Package className="w-4 h-4" /> Only {product.stock} left — hurry!
                 </div>
               ) : (
                 <div className="flex items-center gap-2 text-green-600 font-semibold text-sm">
@@ -622,7 +622,7 @@ export default function ProductDetail() {
                           </button>
                         )}
                         <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                        <p className="text-[11px] text-gray-400 mt-1">PNG, JPG, SVG â€” max 5MB</p>
+                        <p className="text-[11px] text-gray-400 mt-1">PNG, JPG, SVG — max 5MB</p>
                       </div>
                     )}
                   </div>
@@ -778,9 +778,9 @@ export default function ProductDetail() {
                 <div className="grid sm:grid-cols-2 gap-4 not-prose pt-4 border-t border-cream-200">
                   {[
                     { label: 'Unit',     value: product.unit },
-                    { label: 'SKU',      value: product.sku || 'â€”' },
-                    { label: 'Weight',   value: product.weight ? `${product.weight}g` : 'â€”' },
-                    { label: 'Category', value: product.category?.name || 'â€”' },
+                    { label: 'SKU',      value: product.sku || '—' },
+                    { label: 'Weight',   value: product.weight ? `${product.weight}g` : '—' },
+                    { label: 'Category', value: product.category?.name || '—' },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex justify-between py-2 border-b border-cream-100 text-sm">
                       <span className="text-gray-500 font-medium">{label}</span>

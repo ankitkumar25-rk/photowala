@@ -24,7 +24,7 @@ const ProductCard = memo(function ProductCard({ product }) {
       }
       try {
         await toggleWishlist({ productId: product.id, isWishlisted: productWishlisted });
-        toast.success(productWishlisted ? 'Removed from wishlist' : 'Added to wishlist Ã¢ÂÂ¤Ã¯Â¸Â');
+        toast.success(productWishlisted ? 'Removed from wishlist' : 'Added to wishlist â¤ï¸');
       } catch {
         toast.error('Failed to update wishlist');
       }
@@ -73,7 +73,7 @@ const ProductCard = memo(function ProductCard({ product }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl bg-[#f0e3d7]">
-            Ã°Å¸Ââ€ 
+            ðŸ†
           </div>
         )}
 
