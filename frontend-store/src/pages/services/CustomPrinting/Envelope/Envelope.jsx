@@ -17,9 +17,9 @@ const SIDEBAR_LINKS = [
   { id: 'envelope',   icon: Mail,        label: 'Envelope',                to: '/services/custom-printing/envelope', active: true },
 ];
 
-import env1 from '../../../../assets/images/services/Envelope_1.png';
-import env2 from '../../../../assets/images/services/Envelope_2.png';
-import env3 from '../../../../assets/images/services/Envelope_3.png';
+import env1 from '../../../../assets/images/services/envelope_1.png';
+import env2 from '../../../../assets/images/services/envelope_2.png';
+import env3 from '../../../../assets/images/services/envelope_3.png';
 
 const Envelope_PRODUCTS = [
   { 
