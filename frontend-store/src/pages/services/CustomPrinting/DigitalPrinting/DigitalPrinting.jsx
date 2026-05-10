@@ -5,6 +5,9 @@ import {
   HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, Layers, Package, Truck, Scissors, Paperclip, Loader2
 } from 'lucide-react';
 import api from '../../../../api/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '../../../../store';
+import PaymentModal from '../../../../components/PaymentModal';
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: PenTool, label: 'Pen', to: '/services/custom-printing/pen' },
@@ -101,6 +104,11 @@ export default function DigitalPrinting() {
   const [name, setName] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentOrderData, setCurrentOrderData] = useState(null);
+
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
   const selected = PAPER_PRODUCTS.find((p) => p.id === sel);
 
   const isSpecial = ['art', 'texture', 'metallic', 'ntpvc', 'gummed', 'pvcgum'].includes(sel);
@@ -188,11 +196,19 @@ export default function DigitalPrinting() {
       const orderRes = await api.post('/service-orders', payload);
 
       if (orderRes.data.success) {
-        alert(`Order Submitted Successfully!\nOrder ID: ${orderRes.data.orderId}`);
+        setCurrentOrderData({
+          orderId: orderRes.data.orderId,
+          orderType: 'SERVICE_ORDER',
+          totalAmount: 200, // Fixed test amount for digital printing
+          userName: user?.name || 'Customer',
+          userEmail: user?.email || '',
+          userPhone: user?.phone || '',
+        });
+        setShowPaymentModal(true);
+        
         // Reset essential states
         setFile(null);
         setName('');
-        navigate('/account/services');
       }
     } catch (err) {
       console.error('Order Submission Error:', err);
@@ -200,6 +216,12 @@ export default function DigitalPrinting() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = async (method) => {
+    queryClient.invalidateQueries({ queryKey: ['serviceOrders'] });
+    queryClient.invalidateQueries({ queryKey: ['payments'] });
+    navigate('/account/services');
   };
 
   return (
@@ -681,6 +703,14 @@ export default function DigitalPrinting() {
           </div>
         </div>
       </main>
+      {showPaymentModal && currentOrderData && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          orderData={currentOrderData}
+          onSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 }

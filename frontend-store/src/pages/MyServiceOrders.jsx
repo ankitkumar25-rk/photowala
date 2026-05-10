@@ -10,6 +10,9 @@ import {
 import api from '../api/client';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuthStore } from '../store';
+import PaymentModal from '../components/PaymentModal';
+import { useQueryClient } from '@tanstack/react-query';
 
 const STATUSES = [
   { key: 'PENDING',    label: 'Order Placed',   icon: Clock,       desc: 'Your request is being reviewed' },
@@ -93,7 +96,7 @@ function TrackingTimeline({ currentStatus }) {
   );
 }
 
-function OrderCard({ order }) {
+function OrderCard({ order, onPay }) {
   const [expanded, setExpanded] = useState(false);
   const status = STATUS_ICONS[order.status] || STATUS_ICONS.PENDING;
   const Icon = status.icon;
@@ -237,6 +240,11 @@ function OrderCard({ order }) {
 export default function MyServiceOrders() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('ALL');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
 
   const { data: orders, isLoading } = useQuery({
     queryKey: ['my-service-orders'],
@@ -245,6 +253,16 @@ export default function MyServiceOrders() {
       return data.data;
     }
   });
+
+  const handlePay = (order) => {
+    setSelectedOrder(order);
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSuccess = () => {
+    queryClient.invalidateQueries(['my-service-orders']);
+    toast.success('Payment recorded! 🎉');
+  };
 
   const filteredOrders = orders?.filter(o => {
     if (filter === 'ALL') return true;
@@ -324,7 +342,7 @@ export default function MyServiceOrders() {
         ) : (
           <div className="space-y-10">
             {filteredOrders?.map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={order.id} order={order} onPay={handlePay} />
             ))}
           </div>
         )}
@@ -354,6 +372,21 @@ export default function MyServiceOrders() {
            </div>
         </div>
       </div>
+      {showPaymentModal && selectedOrder && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          orderData={{
+            orderId: selectedOrder.id,
+            orderType: 'SERVICE_ORDER',
+            totalAmount: Number(selectedOrder.totalAmount),
+            userName: user?.name || 'Customer',
+            userEmail: user?.email || '',
+            userPhone: user?.phone || '',
+          }}
+          onSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 }

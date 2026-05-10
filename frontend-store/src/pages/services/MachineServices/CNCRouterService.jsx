@@ -1,11 +1,14 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  PenTool, Scissors, UploadCloud, 
-  ShoppingCart, HelpCircle, ChevronLeft, 
+import {
+  PenTool, Scissors, UploadCloud,
+  ShoppingCart, HelpCircle, ChevronLeft,
   Layers, HardHat, Info, Loader2
 } from 'lucide-react';
 import api from '../../../api/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '../../../store';
+import PaymentModal from '../../../components/PaymentModal';
 
 const MATERIAL_TYPES = ['Solid Wood', 'Plywood / MDF', 'Acrylic Sheets', 'Aluminum Composite (ACP)', 'PVC / Foam Board', 'Solid Surface (Corian)'];
 const PROCESS_TYPES = ['2D Profile Cutting', '3D Carving / Bas-Relief', 'Drilling & Pocketing', 'V-Groove Folding'];
@@ -21,6 +24,11 @@ export default function CNCRouterService() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [specialInstructions, setSpecialInstructions] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentOrderData, setCurrentOrderData] = useState(null);
+
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -71,9 +79,18 @@ export default function CNCRouterService() {
 
       const res = await api.post('/service-orders', payload);
       if (res.data.success) {
-        alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
-        setOrderName(''); setMaterialType(''); setProcessType(''); setQuantity(''); setDimensions({l:'', w:'', h:''}); setSelectedFile(null); setSpecialInstructions('');
-        navigate('/account/services');
+        setCurrentOrderData({
+          orderId: res.data.orderId,
+          orderType: 'SERVICE_ORDER',
+          totalAmount: 150, // Fixed test amount for CNC service
+          userName: user?.name || 'Customer',
+          userEmail: user?.email || '',
+          userPhone: user?.phone || '',
+        });
+        setShowPaymentModal(true);
+
+        // Reset form
+        setOrderName(''); setMaterialType(''); setProcessType(''); setQuantity(''); setDimensions({ l: '', w: '', h: '' }); setSelectedFile(null); setSpecialInstructions('');
       }
     } catch (err) {
       console.error(err);
@@ -81,220 +98,232 @@ export default function CNCRouterService() {
     } finally {
       setLoading(false);
     }
-  };
+    const handlePaymentSuccess = async (method) => {
+      queryClient.invalidateQueries({ queryKey: ['serviceOrders'] });
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      navigate('/account/services');
+    };
 
-  return (
-    <div className="min-h-screen bg-[#faf8f5] font-sans">
-      {/* Header Area */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Link to="/services" className="inline-flex items-center text-sm text-gray-500 hover:text-[#a64d24] mb-6 transition-colors font-medium">
-            <ChevronLeft className="w-4 h-4 mr-1" /> Back to Services
-          </Link>
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">CNC Router Service</h1>
-              <p className="text-gray-600 max-w-2xl leading-relaxed">
-                Precision 3D carving and large-format profile cutting for furniture, signage, and complex architectural components.
-              </p>
-            </div>
-            <div className="bg-[#fff9db] border border-[#f5e7a1] rounded-2xl p-4 flex items-center gap-4">
-              <div className="bg-[#f08c00] p-3 rounded-xl text-white">
-                <PenTool className="w-6 h-6" />
-              </div>
+    return (
+      <div className="min-h-screen bg-[#faf8f5] font-sans">
+        {/* Header Area */}
+        <div className="bg-white border-b border-gray-200 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <Link to="/services" className="inline-flex items-center text-sm text-gray-500 hover:text-[#a64d24] mb-6 transition-colors font-medium">
+              <ChevronLeft className="w-4 h-4 mr-1" /> Back to Services
+            </Link>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <p className="text-xs font-bold text-[#f08c00] uppercase tracking-wider">Bed Capacity</p>
-                <p className="text-sm font-bold text-gray-900">8ft x 4ft Heavy Duty</p>
+                <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">CNC Router Service</h1>
+                <p className="text-gray-600 max-w-2xl leading-relaxed">
+                  Precision 3D carving and large-format profile cutting for furniture, signage, and complex architectural components.
+                </p>
+              </div>
+              <div className="bg-[#fff9db] border border-[#f5e7a1] rounded-2xl p-4 flex items-center gap-4">
+                <div className="bg-[#f08c00] p-3 rounded-xl text-white">
+                  <PenTool className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-[#f08c00] uppercase tracking-wider">Bed Capacity</p>
+                  <p className="text-sm font-bold text-gray-900">8ft x 4ft Heavy Duty</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-col lg:flex-row gap-12">
-          
-          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Left Side: Form Ã¢â€â‚¬Ã¢â€â‚¬ */}
-          <div className="flex-1">
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
-              
-              <div className="space-y-8">
-                {/* Order Name */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Project Title</label>
-                  <input 
-                    type="text" 
-                    value={orderName}
-                    onChange={(e) => setOrderName(e.target.value)}
-                    placeholder="e.g., Carved Oak Door Panel - Set of 4"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all"
-                  />
-                </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col lg:flex-row gap-12">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Material Type */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Material</label>
-                    <select 
-                      value={materialType}
-                      onChange={(e) => setMaterialType(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all appearance-none cursor-pointer"
-                    >
-                      <option value="">-- Select Material --</option>
-                      {MATERIAL_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
-                    </select>
-                  </div>
-                  {/* Process Type */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">CNC Process</label>
-                    <select 
-                      value={processType}
-                      onChange={(e) => setProcessType(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all appearance-none cursor-pointer"
-                    >
-                      <option value="">-- Select Process --</option>
-                      {PROCESS_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                </div>
+            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Left Side: Form Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            <div className="flex-1">
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Quantity */}
+                <div className="space-y-8">
+                  {/* Order Name */}
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Quantity</label>
-                    <select 
-                      value={quantity}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all appearance-none cursor-pointer"
-                    >
-                      <option value="">-- Select Quantity --</option>
-                      {QUANTITY_TIERS.map(q => <option key={q} value={q}>{q}</option>)}
-                    </select>
-                  </div>
-                  {/* Dimensions */}
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide flex items-center gap-2">
-                      Sheet Size / Dimensions <span className="text-[10px] text-gray-400 normal-case font-medium">(L x W x H in mm)</span>
-                    </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      <input type="number" placeholder="L" value={dimensions.l} onChange={(e) => setDimensions({...dimensions, l: e.target.value})} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-center focus:border-[#f08c00] focus:outline-none" />
-                      <input type="number" placeholder="W" value={dimensions.w} onChange={(e) => setDimensions({...dimensions, w: e.target.value})} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-center focus:border-[#f08c00] focus:outline-none" />
-                      <input type="number" placeholder="H" value={dimensions.h} onChange={(e) => setDimensions({...dimensions, h: e.target.value})} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-center focus:border-[#f08c00] focus:outline-none" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* File Upload */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">CAD / 3D Model File</label>
-                  <div className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center transition-all ${selectedFile ? 'border-orange-400 bg-orange-50/30' : 'border-[#d1a88b] bg-[#fffaf5] hover:bg-[#fbf4ea]'}`}>
-                    <input 
-                      type="file" 
-                      id="file-upload" 
-                      className="hidden" 
-                      onChange={handleFileChange}
-                      accept=".stl,.obj,.step,.pdf,.cdr,.dwg,.dxf"
+                    <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Project Title</label>
+                    <input
+                      type="text"
+                      value={orderName}
+                      onChange={(e) => setOrderName(e.target.value)}
+                      placeholder="e.g., Carved Oak Door Panel - Set of 4"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all"
                     />
-                    <div className="bg-white p-5 rounded-2xl shadow-sm mb-4">
-                      <UploadCloud className={`w-10 h-10 ${selectedFile ? 'text-orange-500' : 'text-[#f08c00]'}`} />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Material Type */}
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Material</label>
+                      <select
+                        value={materialType}
+                        onChange={(e) => setMaterialType(e.target.value)}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="">-- Select Material --</option>
+                        {MATERIAL_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
                     </div>
-                    {selectedFile ? (
-                      <div className="space-y-1">
-                        <p className="text-sm font-bold text-gray-900">{selectedFile.name}</p>
-                        <p className="text-xs text-orange-600 font-medium">File ready for upload</p>
-                        <button onClick={() => document.getElementById('file-upload').click()} className="mt-4 text-xs font-bold text-[#f08c00] hover:underline uppercase tracking-wider">Change File</button>
+                    {/* Process Type */}
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">CNC Process</label>
+                      <select
+                        value={processType}
+                        onChange={(e) => setProcessType(e.target.value)}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="">-- Select Process --</option>
+                        {PROCESS_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Quantity */}
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Quantity</label>
+                      <select
+                        value={quantity}
+                        onChange={(e) => setQuantity(e.target.value)}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all appearance-none cursor-pointer"
+                      >
+                        <option value="">-- Select Quantity --</option>
+                        {QUANTITY_TIERS.map(q => <option key={q} value={q}>{q}</option>)}
+                      </select>
+                    </div>
+                    {/* Dimensions */}
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide flex items-center gap-2">
+                        Sheet Size / Dimensions <span className="text-[10px] text-gray-400 normal-case font-medium">(L x W x H in mm)</span>
+                      </label>
+                      <div className="grid grid-cols-3 gap-3">
+                        <input type="number" placeholder="L" value={dimensions.l} onChange={(e) => setDimensions({ ...dimensions, l: e.target.value })} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-center focus:border-[#f08c00] focus:outline-none" />
+                        <input type="number" placeholder="W" value={dimensions.w} onChange={(e) => setDimensions({ ...dimensions, w: e.target.value })} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-center focus:border-[#f08c00] focus:outline-none" />
+                        <input type="number" placeholder="H" value={dimensions.h} onChange={(e) => setDimensions({ ...dimensions, h: e.target.value })} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-center focus:border-[#f08c00] focus:outline-none" />
                       </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <p className="text-sm font-bold text-gray-900">Drag and drop or <button onClick={() => document.getElementById('file-upload').click()} className="text-[#f08c00] hover:underline">click to upload</button></p>
-                        <p className="text-[11px] text-gray-500 max-w-xs">Accepted formats: STL, STEP, DXF, DWG, CDR (Max 200MB)</p>
+                    </div>
+                  </div>
+
+                  {/* File Upload */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-wide">CAD / 3D Model File</label>
+                    <div className={`border-2 border-dashed rounded-3xl p-10 flex flex-col items-center justify-center text-center transition-all ${selectedFile ? 'border-orange-400 bg-orange-50/30' : 'border-[#d1a88b] bg-[#fffaf5] hover:bg-[#fbf4ea]'}`}>
+                      <input
+                        type="file"
+                        id="file-upload"
+                        className="hidden"
+                        onChange={handleFileChange}
+                        accept=".stl,.obj,.step,.pdf,.cdr,.dwg,.dxf"
+                      />
+                      <div className="bg-white p-5 rounded-2xl shadow-sm mb-4">
+                        <UploadCloud className={`w-10 h-10 ${selectedFile ? 'text-orange-500' : 'text-[#f08c00]'}`} />
                       </div>
-                    )}
+                      {selectedFile ? (
+                        <div className="space-y-1">
+                          <p className="text-sm font-bold text-gray-900">{selectedFile.name}</p>
+                          <p className="text-xs text-orange-600 font-medium">File ready for upload</p>
+                          <button onClick={() => document.getElementById('file-upload').click()} className="mt-4 text-xs font-bold text-[#f08c00] hover:underline uppercase tracking-wider">Change File</button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-sm font-bold text-gray-900">Drag and drop or <button onClick={() => document.getElementById('file-upload').click()} className="text-[#f08c00] hover:underline">click to upload</button></p>
+                          <p className="text-[11px] text-gray-500 max-w-xs">Accepted formats: STL, STEP, DXF, DWG, CDR (Max 200MB)</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                {/* Special Instructions */}
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Technical Details</label>
-                  <textarea 
-                    rows="4"
-                    value={specialInstructions}
-                    onChange={(e) => setSpecialInstructions(e.target.value)}
-                    placeholder="Mention specific tolerances, finishing requirements, or bit preferences if any..."
-                    className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all resize-none"
-                  />
-                </div>
+                  {/* Special Instructions */}
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Technical Details</label>
+                    <textarea
+                      rows="4"
+                      value={specialInstructions}
+                      onChange={(e) => setSpecialInstructions(e.target.value)}
+                      placeholder="Mention specific tolerances, finishing requirements, or bit preferences if any..."
+                      className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-[#f08c00]/20 focus:border-[#f08c00] transition-all resize-none"
+                    />
+                  </div>
 
-                {/* Add Order Button */}
-                <button 
-                  onClick={handleAddOrder}
-                  disabled={!canOrder || loading}
-                  className={`w-full py-5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] ${
-                    canOrder && !loading
-                      ? 'bg-[#a64d24] hover:bg-[#8c3a1b] text-white shadow-lg hover:shadow-xl' 
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
-                  }`}
-                >
-                  {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <ShoppingCart className="w-6 h-6" />}
-                  <span className="text-lg">{loading ? 'Processing...' : 'Add Order'}</span>
-                </button>
+                  {/* Add Order Button */}
+                  <button
+                    onClick={handleAddOrder}
+                    disabled={!canOrder || loading}
+                    className={`w-full py-5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] ${canOrder && !loading
+                        ? 'bg-[#a64d24] hover:bg-[#8c3a1b] text-white shadow-lg hover:shadow-xl'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+                      }`}
+                  >
+                    {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <ShoppingCart className="w-6 h-6" />}
+                    <span className="text-lg">{loading ? 'Processing...' : 'Add Order'}</span>
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Ã¢â€â‚¬Ã¢â€â‚¬ Right Side: Info Panel Ã¢â€â‚¬Ã¢â€â‚¬ */}
+            <div className="w-full lg:w-80 shrink-0 space-y-6">
+              <div className="bg-[#1c1a19] text-white rounded-3xl p-8 shadow-xl">
+                <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-[#f0ba9c]" /> Large Format
+                </h3>
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-xs font-bold text-[#f0ba9c] uppercase mb-2">Massive Bed Size</p>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Our router can handle full 8ft x 4ft sheets, making it ideal for large signage and furniture parts.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-[#f0ba9c] uppercase mb-2">3D Depth</p>
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      Capable of intricate 3D carvings up to 150mm depth in solid wood and soft metals.
+                    </p>
+                  </div>
+                  <div className="pt-6 border-t border-gray-800">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-sm font-medium text-gray-400">Production Time</span>
+                      <span className="text-sm font-bold">4-5 Days</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-400">Material Prep</span>
+                      <span className="text-sm font-bold text-green-400">Professional</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-3 mb-4">
+                  <HardHat className="w-5 h-5 text-[#f08c00]" />
+                  <h3 className="font-bold text-gray-900">Safety & Precision</h3>
+                </div>
+                <ul className="space-y-3">
+                  {['Vacuum bed for stability', 'Automatic tool changer', 'Dust-free processing', 'Edge banding available'].map((item, i) => (
+                    <li key={i} className="text-xs text-gray-600 flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-[#f08c00]" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <button className="w-full flex items-center justify-center gap-2 py-4 text-gray-600 hover:text-gray-900 transition-colors font-semibold text-sm">
+                <HelpCircle className="w-4 h-4" /> Signage Partnership?
+              </button>
+            </div>
+
           </div>
-
-          {/* Ã¢â€â‚¬Ã¢â€â‚¬ Right Side: Info Panel Ã¢â€â‚¬Ã¢â€â‚¬ */}
-          <div className="w-full lg:w-80 shrink-0 space-y-6">
-            <div className="bg-[#1c1a19] text-white rounded-3xl p-8 shadow-xl">
-              <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
-                <Layers className="w-5 h-5 text-[#f0ba9c]" /> Large Format
-              </h3>
-              <div className="space-y-6">
-                <div>
-                  <p className="text-xs font-bold text-[#f0ba9c] uppercase mb-2">Massive Bed Size</p>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Our router can handle full 8ft x 4ft sheets, making it ideal for large signage and furniture parts.
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[#f0ba9c] uppercase mb-2">3D Depth</p>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Capable of intricate 3D carvings up to 150mm depth in solid wood and soft metals.
-                  </p>
-                </div>
-                <div className="pt-6 border-t border-gray-800">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-sm font-medium text-gray-400">Production Time</span>
-                    <span className="text-sm font-bold">4-5 Days</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-400">Material Prep</span>
-                    <span className="text-sm font-bold text-green-400">Professional</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <HardHat className="w-5 h-5 text-[#f08c00]" />
-                <h3 className="font-bold text-gray-900">Safety & Precision</h3>
-              </div>
-              <ul className="space-y-3">
-                {['Vacuum bed for stability', 'Automatic tool changer', 'Dust-free processing', 'Edge banding available'].map((item, i) => (
-                  <li key={i} className="text-xs text-gray-600 flex items-center gap-2">
-                    <div className="w-1 h-1 rounded-full bg-[#f08c00]" /> {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <button className="w-full flex items-center justify-center gap-2 py-4 text-gray-600 hover:text-gray-900 transition-colors font-semibold text-sm">
-              <HelpCircle className="w-4 h-4" /> Signage Partnership?
-            </button>
-          </div>
-
         </div>
+        {showPaymentModal && currentOrderData && (
+          <PaymentModal
+            isOpen={showPaymentModal}
+            onClose={() => setShowPaymentModal(false)}
+            orderData={currentOrderData}
+            onSuccess={handlePaymentSuccess}
+          />
+        )}
       </div>
-    </div>
-  );
+    );
+  }
 }

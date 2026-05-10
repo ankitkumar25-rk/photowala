@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, createElement } from 'react';
+import { useState, useEffect, useCallback, createElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MapPin, Plus, Check, Truck, Package,
@@ -8,6 +8,9 @@ import {
 import toast from 'react-hot-toast';
 import { useCartStore } from '../store';
 import { usersApi, ordersApi } from '../api';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '../store';
+import PaymentModal from '../components/PaymentModal';
 
 /* -- Mini address form modal -- */
 function QuickAddressModal({ onClose, onSave }) {
@@ -101,7 +104,7 @@ function QuickAddressModal({ onClose, onSave }) {
 const STEPS = [
   { id: 1, label: 'Address' },
   { id: 2, label: 'Review' },
-  { id: 3, label: 'COD' },
+  { id: 3, label: 'Payment' },
 ];
 
 export default function Checkout() {
@@ -117,6 +120,11 @@ export default function Checkout() {
   const [notes, setNotes] = useState('');
   const [placing, setPlacing] = useState(false);
   const [showItems, setShowItems] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentOrderData, setCurrentOrderData] = useState(null);
+  
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
 
   const subtotal = items.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
   const shipping = subtotal >= 1000 ? 0 : 49;
@@ -152,24 +160,39 @@ export default function Checkout() {
     }
   };
 
-  /* -- Place order with COD -- */
-  const placeOrderCOD = async () => {
+  /* -- Step 1: Create Order In DB -- */
+  const handleCreateOrder = async () => {
     if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
     setPlacing(true);
 
     try {
-      // Create order as cash on delivery
+      // Create order with PENDING status
       const { data: orderRes } = await ordersApi.create({ addressId: selectedAddr, notes });
       const order = orderRes.data;
-      await clearCart();
-      await fetchCart();
-      toast.success('?? Order placed! Pay on delivery.');
-      navigate(`/orders/${order.id}`);
+      
+      setCurrentOrderData({
+        orderId: order.id,
+        orderType: 'ORDER',
+        totalAmount: total,
+        userName: user?.name || 'Customer',
+        userEmail: user?.email || '',
+        userPhone: user?.phone || '',
+      });
+      
+      setShowPaymentModal(true);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to place order');
+      toast.error(err.response?.data?.message || 'Failed to initiate order');
     } finally {
       setPlacing(false);
     }
+  };
+
+  const handlePaymentSuccess = async (method) => {
+    await clearCart();
+    await fetchCart();
+    queryClient.invalidateQueries({ queryKey: ['orders'] });
+    queryClient.invalidateQueries({ queryKey: ['payments'] });
+    navigate(`/orders/${currentOrderData.orderId}`);
   };
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddr);
@@ -364,33 +387,28 @@ export default function Checkout() {
               </div>
             )}
 
-            {/* STEP 3 â€” Cash on Delivery */}
+            {/* STEP 3 â€” Payment */}
             {step >= 3 && (
               <div className="card">
                 <div className="p-4 border-b border-cream-200">
                   <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-brand-surface text-brand-primary flex items-center justify-center text-sm font-bold">3</div>
-                    Cash on Delivery
+                    Payment Selection
                   </h2>
                 </div>
                 <div className="p-4 space-y-4">
-                  <div className="p-4 rounded-2xl bg-cream-100 border border-cream-300">
-                    <div className="flex items-start gap-3">
-                      <Package className="w-8 h-8 text-brand-secondary shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-bold text-gray-900">Cash on Delivery</p>
-                        <p className="text-sm text-gray-500 mt-0.5">Pay when your order arrives</p>
-                        <div className="flex items-center gap-1 mt-1 text-xs text-brand-secondary font-semibold">
-                          <Info className="w-3 h-3" /> Available on all orders
-                        </div>
-                      </div>
-                    </div>
+                  <div className="p-6 rounded-2xl bg-cream-50 border-2 border-brand-secondary/20 flex flex-col items-center text-center">
+                    <Shield className="w-12 h-12 text-brand-secondary mb-3" />
+                    <h3 className="font-bold text-[#5b3f2f] text-lg">Secure Your Order</h3>
+                    <p className="text-sm text-[#5b3f2f]/60 mt-1 max-w-xs">
+                      Click below to choose your preferred payment method and complete your purchase.
+                    </p>
                     <button
-                      onClick={placeOrderCOD}
+                      onClick={handleCreateOrder}
                       disabled={placing}
-                      className="btn-secondary w-full justify-center mt-4"
+                      className="btn-primary w-full justify-center mt-6 py-4 text-lg shadow-xl shadow-brand-primary/20"
                     >
-                      {placing ? 'Placing...' : `Place Order (COD) - ?${total.toFixed(2)}`}
+                      {placing ? 'Processing...' : `Complete Order â€¢ ?${total.toFixed(2)}`}
                     </button>
                   </div>
 
@@ -504,6 +522,15 @@ export default function Checkout() {
 
       {showAddrModal && (
         <QuickAddressModal onClose={() => setShowAddrModal(false)} onSave={addAddress} />
+      )}
+
+      {showPaymentModal && currentOrderData && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          orderData={currentOrderData}
+          onSuccess={handlePaymentSuccess}
+        />
       )}
     </div>
   );
