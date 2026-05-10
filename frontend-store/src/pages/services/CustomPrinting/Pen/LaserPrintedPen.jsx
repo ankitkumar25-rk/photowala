@@ -168,7 +168,7 @@ export default function LaserPrintedPen() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col md:flex-row font-sans">
-      {/* â”€â”€ Sidebar â”€â”€ */}
+      {/* ── Sidebar ── */}
       <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2>
@@ -192,7 +192,7 @@ export default function LaserPrintedPen() {
 
       </aside>
 
-      {/* â”€â”€ Main Content â”€â”€ */}
+      {/* ── Main Content ── */}
       <main className="flex-1 p-6 md:p-10 lg:p-12">
         {/* Breadcrumb */}
         <div className="text-sm font-medium mb-8 flex items-center gap-2">
@@ -214,7 +214,7 @@ export default function LaserPrintedPen() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* â”€â”€ Left Column â”€â”€ */}
+          {/* ── Left Column ── */}
           <div className="w-full lg:w-2/3 flex flex-col gap-6">
             <div className="bg-white rounded-2xl border border-[#e8dfd5] p-6 lg:p-8 shadow-sm">
 
@@ -388,7 +388,7 @@ export default function LaserPrintedPen() {
 
           </div>
 
-          {/* â”€â”€ Right Column (Summary) â”€â”€ */}
+          {/* ── Right Column (Summary) ── */}
           <div className="w-full lg:w-1/3 flex flex-col gap-6">
             <div className="bg-[#1c1a19] text-white rounded-2xl overflow-hidden shadow-lg border border-gray-800">
               <div className="relative h-48 w-full">

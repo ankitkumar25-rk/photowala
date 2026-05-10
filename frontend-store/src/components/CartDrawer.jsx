@@ -66,7 +66,7 @@ export default function CartDrawer() {
                        {img ? (
                          <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
                        ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl">ðŸ†</div>
+                        <div className="w-full h-full flex items-center justify-center text-2xl">🏆</div>
                       )}
                     </div>
 

@@ -20,7 +20,7 @@ export default function Login() {
     e.preventDefault();
     try {
       await login(form);
-      toast.success('Welcome back! ðŸ†');
+      toast.success('Welcome back! 🏆');
       navigate(redirect, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Login failed. Please check your credentials.');

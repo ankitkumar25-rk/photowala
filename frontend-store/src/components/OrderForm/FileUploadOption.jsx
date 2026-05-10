@@ -18,7 +18,7 @@
           onChange={() => setFileOption('attach')}
           className="accent-brand-primary"
         />
-        â˜ï¸ Attach File Online
+        ☁️ Attach File Online
       </label>
       <label className="flex items-center gap-2 text-sm">
         <input
@@ -27,7 +27,7 @@
           onChange={() => setFileOption('email')}
           className="accent-brand-primary"
         />
-        âœ‰ï¸ Send via Email
+        ✉️ Send via Email
       </label>
 
       {fileOption === 'attach' ? (

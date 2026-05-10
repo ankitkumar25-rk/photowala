@@ -99,7 +99,7 @@ export default function StickerLabels() {
           halfCutDetails: (
             <div className="flex flex-col">
               <span className="italic">Available with 6 cut size options:</span>
-              {ROUND_OPTIONS.map((opt, i) => <span key={i} className="ml-2">â‡’ {opt}</span>)}
+              {ROUND_OPTIONS.map((opt, i) => <span key={i} className="ml-2">⇒ {opt}</span>)}
             </div>
           )
         };
@@ -288,7 +288,7 @@ export default function StickerLabels() {
                     type="text" 
                     value={orderName}
                     onChange={(e) => setOrderName(e.target.value)}
-                    placeholder="à¤¯à¤¹à¤¾à¤ à¤…à¤ªà¤¨à¥‡ à¤•à¤¸à¥à¤Ÿà¤®à¤° à¤•à¤¾ à¤¨à¤¾à¤® à¤Ÿà¤¾à¤‡à¤ª à¤•à¤°à¥‡à¤‚"
+                    placeholder="यहाँ अपने कस्टमर का नाम टाइप करें"
                     className="w-full bg-gray-50 border border-gray-100 rounded-xl px-5 py-4 focus:outline-none focus:border-[#b65e2e] transition-all"
                   />
                 </div>
@@ -514,7 +514,7 @@ export default function StickerLabels() {
                        <span className="font-bold shrink-0">• Product Size :</span>
                        <div className="flex flex-col">
                           <span className="italic">Available with</span>
-                          <span className="font-bold">â‡’ 7"X9.5"</span>
+                          <span className="font-bold">⇒ 7"X9.5"</span>
                        </div>
                     </li>
                     {config.halfCutDetails && (

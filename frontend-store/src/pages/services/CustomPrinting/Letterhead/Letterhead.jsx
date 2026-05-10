@@ -214,7 +214,7 @@ export default function Letterhead() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Name</label>
                 <input type="text" value={orderName} onChange={(e)=>setOrderName(e.target.value)}
-                  placeholder="à¤¯à¤¹à¤¾à¤ à¤…à¤ªà¤¨à¥‡ à¤•à¤¸à¥à¤Ÿà¤®à¤° à¤•à¤¾ à¤¨à¤¾à¤® à¤Ÿà¤¾à¤‡à¤ª à¤•à¤°à¥‡à¤‚..."
+                  placeholder="यहाँ अपने कस्टमर का नाम टाइप करें..."
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
 
@@ -466,14 +466,14 @@ export default function Letterhead() {
                       { label: 'Price Discount', val: 'applicable (System auto calculate) with increase in Quantity' },
                     ].map((item, idx) => (
                       <li key={idx} className="flex gap-3 text-[11px] leading-tight">
-                        <span className="text-[#b65e2e] mt-1">â—</span>
+                        <span className="text-[#b65e2e] mt-1">●</span>
                         <span className="font-semibold text-gray-400 w-32 shrink-0">{item.label} :</span>
                         <span className="font-bold text-gray-800">{item.val}</span>
                       </li>
                     ))}
                     {(selected?.code === 'LH-4A' || selected?.code === 'LH-4B') && (
                       <li className="flex gap-3 text-[11px] leading-tight">
-                        <span className="text-[#b65e2e] mt-1">â—</span>
+                        <span className="text-[#b65e2e] mt-1">●</span>
                         <span className="font-bold text-blue-600">UV effects will be single side only</span>
                       </li>
                     )}
@@ -488,7 +488,7 @@ export default function Letterhead() {
                         'Constant quality with reasonable price'
                       ].map((txt, idx) => (
                         <li key={idx} className="flex gap-3 text-[11px]">
-                          <span className="text-[#b65e2e] mt-1">â—</span>
+                          <span className="text-[#b65e2e] mt-1">●</span>
                           <span className="font-bold text-gray-600 leading-snug">{txt}</span>
                         </li>
                       ))}

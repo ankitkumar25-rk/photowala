@@ -235,7 +235,7 @@ export default function Orders() {
             </p>
             {!statusFilter && (
               <a href="/products" className="btn-primary">
-                Shop Products Ã°Å¸" 
+                Shop Products ðŸ" 
               </a>
             )}
           </div>
@@ -255,7 +255,7 @@ export default function Orders() {
                   disabled={page === 1}
                   className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
                 >
-                  â† Prev
+                  ← Prev
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button

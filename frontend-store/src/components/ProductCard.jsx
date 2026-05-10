@@ -1,9 +1,10 @@
-﻿import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
 import { useCartStore, useAuthStore } from '../store';
 import { useWishlist } from '../contexts/WishlistContext';
 import toast from 'react-hot-toast';
 import { useCallback, memo } from 'react';
+import { brandAssets } from '../data/assets';
 
 const ProductCard = memo(function ProductCard({ product }) {
   const addItem = useCartStore((s) => s.addItem);
@@ -24,7 +25,7 @@ const ProductCard = memo(function ProductCard({ product }) {
       }
       try {
         await toggleWishlist({ productId: product.id, isWishlisted: productWishlisted });
-        toast.success(productWishlisted ? 'Removed from wishlist' : 'Added to wishlist â¤ï¸');
+        toast.success(productWishlisted ? 'Removed from wishlist' : 'Added to wishlist ❤️');
       } catch {
         toast.error('Failed to update wishlist');
       }
@@ -72,8 +73,8 @@ const ProductCard = memo(function ProductCard({ product }) {
             height={300}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-5xl bg-[#f0e3d7]">
-            ðŸ†
+          <div className="w-full h-full flex items-center justify-center bg-[#f0e3d7] p-12">
+            <img src={brandAssets.logo} alt="Photowala" className="w-full h-full object-contain opacity-20 grayscale" />
           </div>
         )}
 

@@ -135,7 +135,7 @@ export default function CNCRouterService() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row gap-12">
 
-            {/* â”€â”€ Left Side: Form â”€â”€ */}
+            {/* ── Left Side: Form ── */}
             <div className="flex-1">
               <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
 
@@ -262,7 +262,7 @@ export default function CNCRouterService() {
               </div>
             </div>
 
-            {/* â”€â”€ Right Side: Info Panel â”€â”€ */}
+            {/* ── Right Side: Info Panel ── */}
             <div className="w-full lg:w-80 shrink-0 space-y-6">
               <div className="bg-[#1c1a19] text-white rounded-3xl p-8 shadow-xl">
                 <h3 className="font-bold text-xl mb-6 flex items-center gap-2">
