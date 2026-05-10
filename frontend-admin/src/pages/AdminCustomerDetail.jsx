@@ -1,4 +1,4 @@
-﻿import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import api from '../api/client';
@@ -61,8 +61,16 @@ export default function AdminCustomerDetail() {
             <p className="text-sm text-gray-700 mt-1">{data.email}</p>
           </div>
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wider">Phone</p>
-            <p className="text-sm text-gray-700 mt-1">{data.phone || '—'}</p>
+            <p className="text-xs text-gray-400 uppercase tracking-wider">Role</p>
+            <p className="text-sm font-bold text-brand-primary mt-1">{data.role}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-400 uppercase tracking-wider">Auth Provider</p>
+            <p className="text-sm text-gray-700 mt-1">{data.googleId ? 'Google OAuth' : 'Email/Password'}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-400 uppercase tracking-wider">Joined</p>
+            <p className="text-sm text-gray-700 mt-1">{new Date(data.createdAt).toLocaleString('en-IN')}</p>
           </div>
         </div>
       </div>

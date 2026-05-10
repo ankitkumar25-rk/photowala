@@ -58,7 +58,9 @@ async function issueTokens(user) {
 // ── Controllers ───────────────────────────────────────────────
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password, phone } = registerSchema.parse(req.body);
+    let { name, email, password, phone } = registerSchema.parse(req.body);
+    email = email.trim().toLowerCase();
+    name = name.trim();
 
     const exists = await prisma.user.findFirst({ where: { email } });
     if (exists) throw createError('Email already registered', 409);
@@ -89,7 +91,8 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = loginSchema.parse(req.body);
+    let { email, password } = loginSchema.parse(req.body);
+    email = email.trim().toLowerCase();
 
     if (typeof email !== 'string' || !email) {
       throw createError('Invalid credentials', 401);

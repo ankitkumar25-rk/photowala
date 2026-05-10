@@ -17,8 +17,13 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
+    const trimmedForm = {
+      ...form,
+      name: form.name.trim(),
+      email: form.email.trim(),
+    };
     try {
-      await register(form);
+      await register(trimmedForm);
       toast.success('Welcome to Photowala! 🏆');
       navigate('/', { replace: true });
     } catch (err) {

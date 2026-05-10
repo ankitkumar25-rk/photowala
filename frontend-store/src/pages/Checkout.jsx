@@ -355,15 +355,15 @@ export default function Checkout() {
                     />
                   </div>
 
-                  <button
-                    onClick={() => {
-                      if (!selectedAddr) { toast.error('Select an address first'); return; }
-                      setStep(2);
-                    }}
-                    className="btn-primary w-full justify-center"
-                  >
-                    Continue to Review ?
-                  </button>
+                    <button
+                      onClick={() => {
+                        if (!selectedAddr) { toast.error('Select an address first'); return; }
+                        setStep(2);
+                      }}
+                      className="btn-primary w-full justify-center"
+                    >
+                      Continue to Review
+                    </button>
                 </div>
               )}
 
@@ -406,21 +406,21 @@ export default function Checkout() {
                             {item.product?.unit && <p className="text-xs text-gray-500">{item.product.unit}</p>}
                             <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity}</p>
                           </div>
-                          <p className="font-bold text-gray-900 shrink-0">?{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                          <p className="font-bold text-gray-900 shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
                         </div>
                       ))}
                     </div>
-                    <button
-                      onClick={() => setStep(3)}
-                      className="btn-primary w-full justify-center mt-4"
-                    >
-                      Continue to Payment ?
-                    </button>
+                      <button
+                        onClick={() => setStep(3)}
+                        className="btn-primary w-full justify-center mt-4"
+                      >
+                        Continue to Payment
+                      </button>
                   </div>
                 )}
                 {step > 2 && (
                   <div className="p-4 bg-brand-surface text-sm text-gray-600">
-                    {items.length} item{items.length !== 1 ? 's' : ''} reviewed ?
+                    {items.length} item{items.length !== 1 ? 's' : ''} reviewed
                   </div>
                 )}
               </div>
@@ -524,7 +524,7 @@ export default function Checkout() {
                         <p className="font-semibold text-gray-900 text-xs leading-tight truncate">{item.product?.name}</p>
                         {item.product?.unit && <p className="text-[10px] text-gray-400">{item.product.unit}</p>}
                       </div>
-                      <p className="font-bold text-gray-900 text-sm shrink-0">?{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                      <p className="font-bold text-gray-900 text-sm shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -534,7 +534,7 @@ export default function Checkout() {
               <div className="p-4 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Subtotal</span>
-                  <span className="font-semibold text-gray-900">?{subtotal.toFixed(2)}</span>
+                  <span className="font-semibold text-gray-900">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 flex items-center gap-1">
@@ -545,20 +545,20 @@ export default function Checkout() {
                       <Tag className="w-3 h-3" /> FREE
                     </span>
                   ) : (
-                    <span className="font-semibold text-gray-900">?{shipping.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900">₹{shipping.toFixed(2)}</span>
                   )}
                 </div>
 
                 {shipping > 0 && (
                   <div className="bg-brand-surface p-2.5 rounded-xl text-xs text-brand-secondary font-medium flex items-center gap-2">
                     <Tag className="w-3.5 h-3.5" />
-                    Add ?{(1000 - subtotal).toFixed(2)} more to get free shipping!
+                    Add ₹{(1000 - subtotal).toFixed(2)} more to get free shipping!
                   </div>
                 )}
 
                 <div className="flex justify-between text-lg font-bold pt-3 border-t border-cream-200">
                   <span className="text-gray-900">Total</span>
-                  <span className="text-brand-primary">?{total.toFixed(2)}</span>
+                  <span className="text-brand-primary">₹{total.toFixed(2)}</span>
                 </div>
 
                 <div className="text-xs text-gray-400 text-center">

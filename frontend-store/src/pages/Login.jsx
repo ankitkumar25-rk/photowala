@@ -18,8 +18,12 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const trimmedForm = {
+      ...form,
+      email: form.email.trim(),
+    };
     try {
-      await login(form);
+      await login(trimmedForm);
       toast.success('Welcome back! 🏆');
       navigate(redirect, { replace: true });
     } catch (err) {
