@@ -144,7 +144,7 @@ function AddressModal({ addr, onClose, onSave }) {
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Phone *</label>
-              <input name="phone" value={form.phone} onChange={handle} required className="input-field" placeholder="9876543210" />
+              <input type="number" name="phone" value={form.phone} onChange={handle} required className="input-field" placeholder="9876543210" />
             </div>
           </div>
           <div>
@@ -162,11 +162,21 @@ function AddressModal({ addr, onClose, onSave }) {
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">State *</label>
-              <input name="state" value={form.state} onChange={handle} required className="input-field" placeholder="Maharashtra" />
+              <select name="state" value={form.state} onChange={handle} required className="input-field">
+                <option value="">Select State</option>
+                {[
+                  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", 
+                  "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", 
+                  "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", 
+                  "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", 
+                  "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
+                  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+                ].map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Pincode *</label>
-              <input name="pincode" value={form.pincode} onChange={handle} required maxLength={6} className="input-field" placeholder="400001" />
+              <input type="number" name="pincode" value={form.pincode} onChange={handle} required maxLength={6} className="input-field" placeholder="400001" />
             </div>
           </div>
           <label className="flex items-center gap-2 cursor-pointer">

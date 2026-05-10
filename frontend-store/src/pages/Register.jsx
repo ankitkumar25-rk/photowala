@@ -71,7 +71,7 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Phone (optional)</label>
-              <input id="reg-phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input-field" placeholder="+91 98765 43210" />
+              <input id="reg-phone" type="number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input-field" placeholder="9876543210" />
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>

@@ -7,13 +7,13 @@ import {
 } from 'lucide-react';
 import api from '../../../../api/client';
 import { 
-  FaPenNib, FaStickyNote, FaPrint, FaFileSignature, 
+  FaPenNib, FaNoteSticky, FaPrint, FaFileSignature, 
   FaTag, FaFileInvoiceDollar, FaEnvelope
 } from 'react-icons/fa6';
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: FaPenNib, label: 'Pen', to: '/services/custom-printing/pen' },
-  { id: 'sticker', icon: FaStickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
+  { id: 'sticker', icon: FaNoteSticky, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
   { id: 'digital', icon: FaPrint, label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
   { id: 'letterhead', icon: FaFileSignature, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
   { id: 'garment', icon: FaTag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag', active: true },
