@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
@@ -241,7 +241,7 @@ export default function Envelope() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Name</label>
                 <input type="text" value={orderName} onChange={(e)=>setOrderName(e.target.value)}
-                  placeholder="ÃƒÂ ¤¯ÃƒÂ ¤¹ÃƒÂ ¤¾ÃƒÂ ¤ ÃƒÂ ¤"¦ÃƒÂ ¤ªÃƒÂ ¤¨ÃƒÂ ¥"¡ ÃƒÂ ¤•ÃƒÂ ¤¸ÃƒÂ ¥ÃƒÂ ¤Ã…Â¸ÃƒÂ ¤®ÃƒÂ ¤° ÃƒÂ ¤•ÃƒÂ ¤¾ ÃƒÂ ¤¨ÃƒÂ ¤¾ÃƒÂ ¤® ÃƒÂ ¤Ã…Â¸ÃƒÂ ¤¾ÃƒÂ ¤"¡ÃƒÂ ¤ª ÃƒÂ ¤•ÃƒÂ ¤°ÃƒÂ ¥"¡ÃƒÂ ¤Ã¢â‚¬Å¡..."
+                  placeholder="Enter customer name or order reference..."
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
 
@@ -371,7 +371,7 @@ export default function Envelope() {
                         <Mail className="w-8 h-8 text-[#a64d24]" />
                       </div>
                       <h4 className="text-lg font-black text-gray-900 mb-1">Send to photowala@gmail.com</h4>
-                      <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">â‚¹10.00</span> will be added.</p>
+                      <p className="text-sm font-bold text-gray-500">Manual processing fee <span className="text-[#a64d24]">₹10.00</span> will be added.</p>
                     </div>
                   )}
                 </div>
