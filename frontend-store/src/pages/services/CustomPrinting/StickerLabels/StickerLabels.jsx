@@ -215,24 +215,22 @@ export default function StickerLabels() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col md:flex-row font-sans">
-      <aside className="w-full md:w-64 bg-[#f2eee9] border-r border-[#e8dfd5] flex flex-col p-6 shrink-0">
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Service Index</h2>
-          <p className="text-xs text-gray-500">Explore categories</p>
+      <aside className="w-full md:w-64 bg-[#f2eee9] border-b md:border-b-0 md:border-r border-[#e8dfd5] flex flex-col p-4 md:p-6 shrink-0">
+        <div className="mb-4 md:mb-8 text-left hidden md:block">
+          <h2 className="text-xl font-bold text-gray-900 mb-1 font-outfit uppercase tracking-tighter text-left">Service Index</h2>
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-left">Explore Categories</p>
         </div>
-        <nav className="flex-1 space-y-2 mb-8">
+        <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
           {SIDEBAR_LINKS.map((link) => {
             const Icon = link.icon;
             return (
-              <Link
-                key={link.id}
-                to={link.to}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
-                  link.active ? 'bg-[#b65e2e] text-white shadow-md' : 'text-gray-600 hover:bg-[#e8dfd5]'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {link.label}
+              <Link key={link.id} to={link.to}
+                className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${link.active 
+                  ? 'bg-[#b65e2e] text-white shadow-lg' 
+                  : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
+                }`}>
+                <Icon className={`w-3.5 h-3.5 md:w-4 h-4 ${link.active ? 'text-white' : 'text-gray-400'}`} />
+                <span className="uppercase tracking-widest">{link.label}</span>
               </Link>
             );
           })}
