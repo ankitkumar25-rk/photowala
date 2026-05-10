@@ -54,7 +54,8 @@ exports.createServiceOrder = async (req, res, next) => {
 
     res.status(201).json({ 
       success: true, 
-      orderId: order.orderNumber,
+      orderId: order.id,
+      orderNumber: order.orderNumber,
       data: order 
     });
   } catch (err) {

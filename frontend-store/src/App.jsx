@@ -44,6 +44,7 @@ const CO2LaserService = lazy(() => import('./pages/services/MachineServices/CO2L
 const LaserMarkingService = lazy(() => import('./pages/services/MachineServices/LaserMarkingService'));
 const CNCRouterService = lazy(() => import('./pages/services/MachineServices/CNCRouterService'));
 const MyServiceOrders = lazy(() => import('./pages/MyServiceOrders'));
+const ServiceCheckout = lazy(() => import('./pages/ServiceCheckout'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 const queryClient = new QueryClient({
@@ -104,6 +105,7 @@ export default function App() {
 
                 {/* Protected Routes */}
                 <Route path="checkout"  element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                <Route path="checkout/service" element={<ProtectedRoute><ServiceCheckout /></ProtectedRoute>} />
                 <Route path="orders"    element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
                 <Route path="account"   element={<ProtectedRoute><Account /></ProtectedRoute>} />

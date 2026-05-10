@@ -7,7 +7,6 @@ import {
 import api from '../../../../api/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../../../store';
-import PaymentModal from '../../../../components/PaymentModal';
 import { serviceAssets } from '../../../../data/assets';
 
 const SIDEBAR_LINKS = [
@@ -40,7 +39,6 @@ export default function LaserPrintedPen() {
   const [remark, setRemark] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [currentOrderData, setCurrentOrderData] = useState(null);
 
   const queryClient = useQueryClient();
@@ -136,15 +134,16 @@ export default function LaserPrintedPen() {
 
       const res = await api.post('/service-orders', payload);
       if (res.data.success) {
-        setCurrentOrderData({
+        const orderData = {
           orderId: res.data.orderId,
+          orderNumber: res.data.orderNumber,
           orderType: 'SERVICE_ORDER',
           totalAmount: Number(pricing.total),
-          userName: user?.name || 'Customer',
-          userEmail: user?.email || '',
-          userPhone: user?.phone || '',
-        });
-        setShowPaymentModal(true);
+          serviceName: 'Laser Printed Pen',
+          category: 'PRINTING',
+        };
+
+        navigate('/checkout/service', { state: { orderData } });
 
         setOrderName('');
         setPenType('');
@@ -158,12 +157,6 @@ export default function LaserPrintedPen() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handlePaymentSuccess = async (method) => {
-    queryClient.invalidateQueries({ queryKey: ['serviceOrders'] });
-    queryClient.invalidateQueries({ queryKey: ['payments'] });
-    navigate('/account/services');
   };
 
   return (
@@ -449,14 +442,6 @@ export default function LaserPrintedPen() {
           </div>
         </div>
       </main>
-      {showPaymentModal && currentOrderData && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          orderData={currentOrderData}
-          onSuccess={handlePaymentSuccess}
-        />
-      )}
     </div>
   );
 }
