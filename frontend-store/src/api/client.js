@@ -25,6 +25,12 @@ async function ensureCsrfCookie() {
 }
 
 api.interceptors.request.use((config) => {
+  // Attach token from localStorage if present
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   const method = String(config.method || 'get').toUpperCase();
   const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   if (unsafe && !readCookie('csrf_token')) {
@@ -51,28 +57,22 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config;
     const msg = String(error.response?.data?.message || '').toLowerCase();
+    
+    // CSRF Retry
     if (error.response?.status === 403 && msg.includes('csrf') && !original?._csrfRetry) {
       original._csrfRetry = true;
       await api.get('/csrf');
       return api(original);
     }
-    // Only attempt token refresh if this is not a GET request to /auth/me (auth check)
-    // This prevents infinite redirect loops when user is not authenticated
-    if (error.response?.status === 401 && !original._retry && original.url !== '/auth/me') {
-      original._retry = true;
-      try {
-        const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
-        await axios.post(`${baseURL}/auth/refresh`, {}, {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': readCookie('csrf_token') || '' },
-        });
-        return api(original);
-      } catch {
-        // Only redirect if refresh failed (means we were previously authenticated)
-        // Don't redirect on initial /auth/me check - just let it fail
-        if (original.url !== '/auth/me') {
-          window.location.href = '/';
-        }
+    
+    // Token handling on 401
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      // Only redirect if not already on /login or checking self
+      if (window.location.pathname !== '/login' && original.url !== '/auth/me') {
+        // Clear auth store if using zustand persist
+        localStorage.removeItem('auth-storage');
+        window.location.href = '/';
       }
     }
     return Promise.reject(error);

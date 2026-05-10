@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStore } from '../App';
 import api from '../api/client';
@@ -18,12 +18,16 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/login', form);
-      const { user } = data.data;
+      const { user, accessToken } = data.data;
       if (!['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
         toast.error('Access denied. Admin account required.');
         return;
       }
+      
+      // Persist for header-based auth
+      localStorage.setItem('token', accessToken);
       setUser(user);
+      
       toast.success(`Welcome, ${user.name}!`);
       navigate('/', { replace: true });
     } catch (err) {

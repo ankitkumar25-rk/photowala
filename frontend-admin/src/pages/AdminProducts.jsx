@@ -1,4 +1,4 @@
-﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api/client';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -80,11 +80,11 @@ export default function AdminProducts() {
               <div className="grid grid-cols-3 gap-2 text-xs">
                 <div>
                   <p className="text-gray-400 uppercase tracking-wider">Price</p>
-                  <p className="text-sm font-semibold text-gray-800">?{product.price}</p>
+                  <p className="text-sm font-semibold text-gray-800">₹{product.price}</p>
                 </div>
                 <div>
                   <p className="text-gray-400 uppercase tracking-wider">MRP</p>
-                  <p className="text-sm text-gray-400 line-through">?{product.mrp}</p>
+                  <p className="text-sm text-gray-400 line-through">₹{product.mrp}</p>
                 </div>
                 <div>
                   <p className="text-gray-400 uppercase tracking-wider">Stock</p>
@@ -158,8 +158,8 @@ export default function AdminProducts() {
                     </div>
                   </td>
                   <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{product.category?.name}</td>
-                  <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">?{product.price}</td>
-                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-400 line-through">?{product.mrp}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">₹{product.price}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-400 line-through">₹{product.mrp}</td>
                   <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{product.stock}</td>
                   <td className="px-3 sm:px-4 py-3"><StatusBadge stock={product.stock} lowAlert={product.lowStockAlert} /></td>
                   <td className="px-3 sm:px-4 py-3">

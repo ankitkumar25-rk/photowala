@@ -199,22 +199,38 @@ exports.cancelOrder = async (req, res, next) => {
 
 exports.getAllOrders = async (req, res, next) => {
   try {
-    const { page = 1, limit = 20, status } = req.query;
+    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+    const limitNum = Math.max(1, parseInt(req.query.limit) || 20);
+    const { status } = req.query;
+    
     const where = status ? { status } : {};
+    const skip = (pageNum - 1) * limitNum;
 
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
         where,
-        skip: (Number(page) - 1) * Number(limit),
-        take: Number(limit),
+        skip,
+        take: limitNum,
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { name: true, email: true } }, payment: true },
+        include: { 
+          user: { select: { name: true, email: true } }, 
+          payment: true 
+        },
       }),
       prisma.order.count({ where }),
     ]);
 
-    res.json({ success: true, data: orders, meta: { total, page: Number(page) } });
+    res.json({ 
+      success: true, 
+      data: orders || [], 
+      meta: { 
+        total: total || 0, 
+        page: pageNum,
+        limit: limitNum
+      } 
+    });
   } catch (err) {
+    console.error('[Admin] getAllOrders error:', err);
     next(err);
   }
 };

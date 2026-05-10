@@ -191,14 +191,24 @@ export default function ServiceOrderDetail() {
                   <p className="text-[11px] text-brand-secondary font-bold uppercase tracking-wider">Attached via {order.fileOption}</p>
                 </div>
               </div>
-              <a 
-                href={order.fileUrl} 
-                target="_blank" 
-                rel="noreferrer"
+              <button 
+                onClick={() => {
+                  if (order.fileUrl === 'SEND_VIA_EMAIL') {
+                    toast.info('Customer opted to send file via email.');
+                    return;
+                  }
+                  const link = document.createElement('a');
+                  link.href = order.fileUrl;
+                  link.target = '_blank';
+                  link.download = `artwork-${order.orderNumber}`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
                 className="bg-brand-secondary hover:bg-brand-secondary/90 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-brand-secondary/20 uppercase text-xs tracking-widest"
               >
-                <Download className="w-4 h-4" /> Download File
-              </a>
+                <Download className="w-4 h-4" /> {order.fileUrl === 'SEND_VIA_EMAIL' ? 'Sent via Email' : 'Download File'}
+              </button>
             </div>
           )}
         </div>

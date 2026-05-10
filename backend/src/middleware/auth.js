@@ -51,7 +51,22 @@ async function authenticate(req, res, next) {
 }
 
 /**
- * Authorize — restrict to specific roles
+ * isAdmin — Middleware to restrict access to ADMIN or SUPER_ADMIN only
+ * Must be used AFTER authenticate
+ */
+function isAdmin(req, res, next) {
+  if (!req.user) {
+    return next(createError('Authentication required', 401));
+  }
+  const role = String(req.user.role || '').toUpperCase();
+  if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
+    return next(createError('Admin access required', 403));
+  }
+  next();
+}
+
+/**
+ * Authorize — restrict to specific roles (legacy/generic version)
  */
 function authorize(...roles) {
   return (req, res, next) => {
@@ -59,7 +74,7 @@ function authorize(...roles) {
     const allowedRoles = roles.map((role) => String(role).toUpperCase());
     const currentRole = String(req.user.role || '').toUpperCase();
     if (!allowedRoles.includes(currentRole)) {
-      return next(createError('You do not have permission to perform this action', 403));
+      return next(createError('Insufficient permissions', 403));
     }
     next();
   };
@@ -90,4 +105,4 @@ async function optionalAuth(req, res, next) {
   next();
 }
 
-module.exports = { authenticate, authorize, optionalAuth };
+module.exports = { authenticate, authorize, optionalAuth, isAdmin };

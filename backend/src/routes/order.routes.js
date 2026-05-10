@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, isAdmin } = require('../middleware/auth');
 const orderController = require('../controllers/order.controller');
 
 // Customer routes
@@ -9,9 +9,9 @@ router.get('/',             authenticate, orderController.getUserOrders);
 router.post('/pen/laser',   authenticate, orderController.createLaserPenOrder);
 
 // Admin routes
-router.get('/admin/all',        authenticate, authorize('ADMIN', 'SUPER_ADMIN'), orderController.getAllOrders);
-router.patch('/:id/status',     authenticate, authorize('ADMIN', 'SUPER_ADMIN'), orderController.updateOrderStatus);
-router.patch('/:id/tracking',   authenticate, authorize('ADMIN', 'SUPER_ADMIN'), orderController.updateTracking);
+router.get('/admin/all',        authenticate, isAdmin, orderController.getAllOrders);
+router.patch('/:id/status',     authenticate, isAdmin, orderController.updateOrderStatus);
+router.patch('/:id/tracking',   authenticate, isAdmin, orderController.updateTracking);
 
 router.get('/:id',          authenticate, orderController.getOrder);
 router.post('/:id/cancel',  authenticate, orderController.cancelOrder);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth');
+const { authenticate, isAdmin } = require('../middleware/auth');
 const serviceOrderController = require('../controllers/serviceOrder.controller');
 
 // Customer routes
@@ -9,9 +9,9 @@ router.get('/my',               authenticate, serviceOrderController.getMyServic
 router.get('/:id',              authenticate, serviceOrderController.getServiceOrderDetail);
 
 // Admin routes
-router.get('/admin/all',        authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.getAllServiceOrders);
-router.patch('/admin/:id/status', authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.updateServiceOrderStatus);
-router.patch('/admin/:id/tracking', authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.updateTrackingNumber);
-router.delete('/admin/:id',      authenticate, authorize('ADMIN', 'SUPER_ADMIN'), serviceOrderController.deleteServiceOrder);
+router.get('/admin/all',        authenticate, isAdmin, serviceOrderController.getAllServiceOrders);
+router.patch('/admin/:id/status', authenticate, isAdmin, serviceOrderController.updateServiceOrderStatus);
+router.patch('/admin/:id/tracking', authenticate, isAdmin, serviceOrderController.updateTrackingNumber);
+router.delete('/admin/:id',      authenticate, isAdmin, serviceOrderController.deleteServiceOrder);
 
 module.exports = router;

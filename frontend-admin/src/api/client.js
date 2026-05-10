@@ -25,6 +25,12 @@ async function ensureCsrfCookie() {
 }
 
 api.interceptors.request.use((config) => {
+  // Attach token from localStorage if present
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   const method = String(config.method || 'get').toUpperCase();
   const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   if (unsafe && !readCookie('csrf_token')) {
@@ -58,29 +64,12 @@ api.interceptors.response.use(
       return api(original);
     }
 
-    // Auto-refresh on 401
-    // Only attempt token refresh if this is not a GET request to /auth/me
-    if (err.response?.status === 401 && !original._retry && original.url !== '/auth/me') {
-      original._retry = true;
-      try {
-        const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
-        await axios.post(`${baseURL}/auth/refresh`, {}, {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': readCookie('csrf_token') || '' },
-        });
-        return api(original);
-      } catch (refreshErr) {
-        // Refresh failed → logout
-        console.error('[Admin Auth] Refresh failed, logging out', refreshErr);
-        sessionStorage.removeItem('admin-auth');
-        window.location.href = '/login';
-      }
-    }
-
-    // Handle standard 401 for /auth/me or other failures
+    // Handle 401: Clear token and redirect to login
     if (err.response?.status === 401) {
-      sessionStorage.removeItem('admin-auth');
-      // Only redirect if we're not already on the login page
+      localStorage.removeItem('token');
+      localStorage.removeItem('admin-auth'); // Clear any legacy store state
+      
+      // Prevent redirect loop if already on login or checking self
       if (window.location.pathname !== '/login' && original.url !== '/auth/me') {
         window.location.href = '/login';
       }

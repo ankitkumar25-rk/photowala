@@ -158,15 +158,30 @@ export default function PrintOrders() {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {order.fileUrl && (
-                          <a 
-                            href={order.fileUrl} 
-                            target="_blank" 
-                            rel="noreferrer"
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Download Artwork"
+                          <button 
+                            onClick={() => {
+                              if (order.fileUrl === 'SEND_VIA_EMAIL') {
+                                toast.info('Customer opted to send file via email.');
+                                return;
+                              }
+                              // Robust download helper
+                              const link = document.createElement('a');
+                              link.href = order.fileUrl;
+                              link.target = '_blank';
+                              link.download = `artwork-${order.orderNumber}`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }}
+                            className={`p-2 rounded-lg transition-colors ${
+                              order.fileUrl === 'SEND_VIA_EMAIL' 
+                                ? 'text-gray-400 hover:bg-gray-100' 
+                                : 'text-blue-600 hover:bg-blue-50'
+                            }`}
+                            title={order.fileUrl === 'SEND_VIA_EMAIL' ? 'Sent via Email' : 'Download Artwork'}
                           >
-                            <Download className="w-4 h-4" />
-                          </a>
+                            {order.fileUrl === 'SEND_VIA_EMAIL' ? <Mail className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+                          </button>
                         )}
                         <Link 
                           to={`/services/orders/${order.id}`}

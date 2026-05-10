@@ -82,7 +82,11 @@ exports.register = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: 'Account created successfully',
-      data: { user: { id: user.id, name: user.name, email: user.email, role: user.role } },
+      data: { 
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        accessToken,
+        refreshToken
+      },
     });
   } catch (err) {
     next(err);
@@ -111,7 +115,11 @@ exports.login = async (req, res, next) => {
 
     res.json({
       success: true,
-      data: { user: { id: user.id, name: user.name, email: user.email, role: user.role } },
+      data: { 
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
+        accessToken,
+        refreshToken
+      },
     });
   } catch (err) {
     next(err);
@@ -120,7 +128,7 @@ exports.login = async (req, res, next) => {
 
 exports.logout = async (req, res, next) => {
   try {
-    const token = req.cookies?.refresh_token;
+    const token = req.cookies?.refresh_token || req.body.refreshToken;
     if (token) {
       await prisma.refreshToken.deleteMany({ where: { token } });
     }
@@ -134,7 +142,7 @@ exports.logout = async (req, res, next) => {
 
 exports.refresh = async (req, res, next) => {
   try {
-    const token = req.cookies?.refresh_token;
+    const token = req.cookies?.refresh_token || req.body.refreshToken;
     if (!token) throw createError('Refresh token required', 401);
 
     const payload = await verifyToken(token);
@@ -155,7 +163,9 @@ exports.refresh = async (req, res, next) => {
 
     res.json({ 
       success: true, 
-      user: { id: user.id, name: user.name, email: user.email, role: user.role } 
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      accessToken,
+      refreshToken: newRefreshToken
     });
   } catch (err) {
     next(err);

@@ -17,7 +17,11 @@ export const useAdminStore = create(
       isInitialized: false, // Added to track if initial auth check is done
       
       setUser: (user) => set({ user }),
-      logout: () => { set({ user: null }); adminFetchMePromise = null; },
+      logout: () => { 
+        set({ user: null }); 
+        adminFetchMePromise = null; 
+        localStorage.removeItem('token'); 
+      },
       
       fetchMe: async () => {
         // Prevent concurrent fetchMe calls
