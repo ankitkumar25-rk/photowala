@@ -112,31 +112,50 @@ exports.getServiceOrderDetail = async (req, res, next) => {
 };
 
 /**
- * Admin: Get all service orders (filtered by category)
+ * Admin: Get all service orders (filtered by category, status, or search)
  */
 exports.getAllServiceOrders = async (req, res, next) => {
   try {
-    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
-    const limitNum = Math.max(1, parseInt(req.query.limit) || 20);
+    const { category, status, page, limit, search } = req.query;
+
+    const pageNum = Math.max(1, parseInt(page) || 1);
+    const limitNum = Math.max(1, parseInt(limit) || 20);
     const skip = (pageNum - 1) * limitNum;
 
-    const where = {};
-    if (category) where.category = category;
-    if (status) where.status = status;
+    const whereClause = {
+      ...(category && { category }),
+      ...(status && { status }),
+      ...(search && {
+        OR: [
+          { customerName: { contains: search, mode: 'insensitive' } },
+          { orderNumber: { contains: search, mode: 'insensitive' } },
+          { id: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+    };
 
     const [orders, total] = await Promise.all([
       prisma.serviceOrder.findMany({
-        where,
+        where: whereClause,
         skip,
         take: limitNum,
         orderBy: { createdAt: 'desc' },
-        include: { user: { select: { name: true, email: true } } }
+        include: { user: { select: { id: true, name: true, email: true } } }
       }),
-      prisma.serviceOrder.count({ where })
+      prisma.serviceOrder.count({ where: whereClause })
     ]);
 
-    res.json({ success: true, data: orders, meta: { total, page: pageNum } });
+    res.json({
+      success: true,
+      data: orders,
+      meta: {
+        total,
+        page: pageNum,
+        limit: limitNum
+      }
+    });
   } catch (err) {
+    console.error('[admin] getAllServiceOrders error:', err);
     next(err);
   }
 };
