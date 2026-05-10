@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   MapPin, Plus, Check, Truck, Package,
   ShoppingBag, ArrowLeft, X, ChevronDown, ChevronUp,
-  Shield, Tag, Info
+  Shield, Tag, Info, CreditCard, Banknote
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useCartStore } from '../store';
-import { usersApi, ordersApi } from '../api';
+import { usersApi, ordersApi, paymentsApi } from '../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../store';
-import PaymentModal from '../components/PaymentModal';
 
 /* -- Mini address form modal -- */
 function QuickAddressModal({ onClose, onSave }) {
@@ -120,7 +119,6 @@ export default function Checkout() {
   const [notes, setNotes] = useState('');
   const [placing, setPlacing] = useState(false);
   const [showItems, setShowItems] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [currentOrderData, setCurrentOrderData] = useState(null);
   
   const queryClient = useQueryClient();
@@ -161,38 +159,79 @@ export default function Checkout() {
   };
 
   /* -- Step 1: Create Order In DB -- */
-  const handleCreateOrder = async () => {
+  const handleCreateOrder = async (method) => {
     if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
     setPlacing(true);
 
     try {
-      // Create order with PENDING status
+      // 1. Create order with PENDING status
       const { data: orderRes } = await ordersApi.create({ addressId: selectedAddr, notes });
       const order = orderRes.data;
-      
-      setCurrentOrderData({
-        orderId: order.id,
-        orderType: 'ORDER',
-        totalAmount: total,
-        userName: user?.name || 'Customer',
-        userEmail: user?.email || '',
-        userPhone: user?.phone || '',
-      });
-      
-      setShowPaymentModal(true);
+
+      // 2. Handle Payment
+      if (method === 'COD') {
+        await paymentsApi.confirmCOD({
+          internalOrderId: order.id,
+          orderType: 'ORDER',
+        });
+        toast.success('Order placed successfully via COD! 🚚');
+        handlePaymentSuccess('COD', order.id);
+      } else {
+        // Razorpay
+        const { data: rzpOrder } = await paymentsApi.createOrder({
+          amount: total,
+          currency: 'INR',
+          orderId: order.id,
+          orderType: 'ORDER',
+        });
+
+        const options = {
+          key: rzpOrder.keyId,
+          amount: rzpOrder.amount,
+          currency: rzpOrder.currency,
+          name: 'Photowala',
+          description: 'Product Order Checkout',
+          order_id: rzpOrder.razorpayOrderId,
+          handler: async (resp) => {
+            try {
+              await paymentsApi.verifyPayment({
+                razorpay_order_id: resp.razorpay_order_id,
+                razorpay_payment_id: resp.razorpay_payment_id,
+                razorpay_signature: resp.razorpay_signature,
+                internalOrderId: order.id,
+                orderType: 'ORDER',
+              });
+              toast.success('Payment successful! 🎉');
+              handlePaymentSuccess('RAZORPAY', order.id);
+            } catch (vErr) {
+              toast.error('Verification failed. Contact support.');
+            }
+          },
+          prefill: {
+            name: user?.name || '',
+            email: user?.email || '',
+            contact: user?.phone || '',
+          },
+          theme: { color: '#b88a2f' },
+          modal: { ondismiss: () => setPlacing(false) },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      }
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to initiate order');
+      toast.error(err.response?.data?.message || 'Failed to place order');
     } finally {
       setPlacing(false);
     }
   };
 
-  const handlePaymentSuccess = async (method) => {
+  const handlePaymentSuccess = async (method, orderId) => {
     await clearCart();
     await fetchCart();
     queryClient.invalidateQueries({ queryKey: ['orders'] });
     queryClient.invalidateQueries({ queryKey: ['payments'] });
-    navigate(`/orders/${currentOrderData.orderId}`);
+    navigate(`/orders/${orderId}`);
   };
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddr);
@@ -387,37 +426,62 @@ export default function Checkout() {
               </div>
             )}
 
-            {/* STEP 3 â€” Payment */}
+            {/* STEP 3 — Payment */}
             {step >= 3 && (
               <div className="card">
                 <div className="p-4 border-b border-cream-200">
                   <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
                     <div className="w-7 h-7 rounded-full bg-brand-surface text-brand-primary flex items-center justify-center text-sm font-bold">3</div>
-                    Payment Selection
+                    Select Payment Method
                   </h2>
                 </div>
-                <div className="p-4 space-y-4">
-                  <div className="p-6 rounded-2xl bg-cream-50 border-2 border-brand-secondary/20 flex flex-col items-center text-center">
-                    <Shield className="w-12 h-12 text-brand-secondary mb-3" />
-                    <h3 className="font-bold text-[#5b3f2f] text-lg">Secure Your Order</h3>
-                    <p className="text-sm text-[#5b3f2f]/60 mt-1 max-w-xs">
-                      Secure your order via <strong>Razorpay</strong> (UPI, Cards, Wallets) or <strong>Cash on Delivery</strong>.
-                    </p>
+                <div className="p-6 space-y-6">
+                  <p className="text-sm text-gray-500 text-center max-w-sm mx-auto">
+                    Please choose your preferred payment method to complete your purchase.
+                  </p>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {/* Pay Online */}
                     <button
-                      onClick={handleCreateOrder}
+                      onClick={() => handleCreateOrder('RAZORPAY')}
                       disabled={placing}
-                      className="btn-primary w-full justify-center mt-6 py-4 text-lg shadow-xl shadow-brand-primary/20"
+                      className="group flex flex-col items-center gap-3 p-6 rounded-3xl border-2 border-[#b88a2f]/20 hover:border-[#b88a2f] hover:bg-[#b88a2f]/5 transition-all duration-300 text-center"
                     >
-                      {placing ? 'Processing...' : `Complete Order â€¢ ?${total.toFixed(2)}`}
+                      <div className="w-14 h-14 rounded-2xl bg-[#b88a2f]/10 text-[#b88a2f] flex items-center justify-center group-hover:bg-[#b88a2f] group-hover:text-white transition-all duration-300">
+                        <CreditCard className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-[#5b3f2f]">Pay Online</h4>
+                        <p className="text-[10px] text-[#5b3f2f]/60 uppercase tracking-widest font-black mt-1">UPI · Cards · Wallets</p>
+                      </div>
+                      <div className="mt-auto pt-4">
+                        <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold uppercase">Secure Checkout</span>
+                      </div>
+                    </button>
+
+                    {/* COD */}
+                    <button
+                      onClick={() => handleCreateOrder('COD')}
+                      disabled={placing}
+                      className="group flex flex-col items-center gap-3 p-6 rounded-3xl border-2 border-green-200 hover:border-green-500 hover:bg-green-50 transition-all duration-300 text-center"
+                    >
+                      <div className="w-14 h-14 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                        <Banknote className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900">Cash on Delivery</h4>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-black mt-1">Pay at your doorstep</p>
+                      </div>
+                      <div className="mt-auto pt-4">
+                        <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold uppercase">No extra charges</span>
+                      </div>
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center gap-4 text-xs text-gray-400 mt-2">
-                    <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Secure Checkout</span>
-                    <span>â€¢</span>
-                    <span className="flex items-center gap-1"><Truck className="w-3 h-3" /> Fast Delivery</span>
-                    <span>â€¢</span>
-                    <span>Easy Returns</span>
+                  <div className="flex items-center justify-center gap-4 text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">
+                    <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Secure Payment</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1"><Truck className="w-3 h-3" /> Fast Shipping</span>
                   </div>
                 </div>
               </div>
@@ -522,15 +586,6 @@ export default function Checkout() {
 
       {showAddrModal && (
         <QuickAddressModal onClose={() => setShowAddrModal(false)} onSave={addAddress} />
-      )}
-
-      {showPaymentModal && currentOrderData && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          orderData={currentOrderData}
-          onSuccess={handlePaymentSuccess}
-        />
       )}
     </div>
   );

@@ -115,52 +115,46 @@ export default function PaymentModal({ isOpen, onClose, orderData, onSuccess }) 
           </div>
 
           {/* Options */}
-          <div className="space-y-6">
-            {/* Online Methods */}
-            <div className="space-y-3">
-              <p className="text-[10px] font-black text-[#5b3f2f]/40 uppercase tracking-[0.2em] ml-1">Pay Online Now</p>
-              <button
-                onClick={handleRazorpay}
-                disabled={!!loading}
-                className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left group
-                  ${loading === 'razorpay' ? 'border-[#b88a2f] bg-[#b88a2f]/5 shadow-inner' : 'border-[#b88a2f]/20 hover:border-[#b88a2f] hover:bg-[#b88a2f]/5'}
-                  ${loading && loading !== 'razorpay' ? 'opacity-50 grayscale' : ''}`}
-              >
-                <div className={`p-3 rounded-xl transition-colors duration-300 ${loading === 'razorpay' ? 'bg-[#b88a2f] text-white' : 'bg-[#b88a2f]/10 text-[#b88a2f] group-hover:bg-[#b88a2f] group-hover:text-white'}`}>
-                  {loading === 'razorpay' ? <Loader2 className="w-7 h-7 animate-spin" /> : <CreditCard className="w-7 h-7" />}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Razorpay Option */}
+            <button
+              onClick={handleRazorpay}
+              disabled={!!loading}
+              className={`flex flex-col items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-center group
+                ${loading === 'razorpay' ? 'border-[#b88a2f] bg-[#b88a2f]/5 shadow-inner' : 'border-[#b88a2f]/20 hover:border-[#b88a2f] hover:bg-[#b88a2f]/5'}
+                ${loading && loading !== 'razorpay' ? 'opacity-50 grayscale' : ''}`}
+            >
+              <div className={`p-4 rounded-2xl transition-colors duration-300 ${loading === 'razorpay' ? 'bg-[#b88a2f] text-white' : 'bg-[#b88a2f]/10 text-[#b88a2f] group-hover:bg-[#b88a2f] group-hover:text-white'}`}>
+                {loading === 'razorpay' ? <Loader2 className="w-8 h-8 animate-spin" /> : <CreditCard className="w-8 h-8" />}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-[#b88a2f] text-lg">Razorpay</h3>
+                <p className="text-[10px] font-black text-[#b88a2f]/60 uppercase tracking-[0.1em] mt-1">UPI · Cards · Net Banking</p>
+                <div className="mt-4">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">Secure & Instant</span>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-[#b88a2f]">Razorpay Checkout</h3>
-                    <span className="text-[10px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">Secure & Instant</span>
-                  </div>
-                  <p className="text-xs text-[#b88a2f]/60 mt-0.5">UPI, Cards, Net Banking, Wallets</p>
-                </div>
-              </button>
-            </div>
+              </div>
+            </button>
 
-            {/* Offline Methods */}
-            <div className="space-y-3 pt-2">
-              <p className="text-[10px] font-black text-[#5b3f2f]/40 uppercase tracking-[0.2em] ml-1">Pay on Delivery</p>
-              <button
-                onClick={handleCOD}
-                disabled={!!loading}
-                className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 transition-all duration-300 text-left group
-                  ${loading === 'cod' ? 'border-green-500 bg-green-50/50 shadow-inner' : 'border-[#5b3f2f]/10 hover:border-[#5b3f2f] hover:bg-[#5b3f2f]/5'}
-                  ${loading && loading !== 'cod' ? 'opacity-50 grayscale' : ''}`}
-              >
-                <div className={`p-3 rounded-xl transition-colors duration-300 ${loading === 'cod' ? 'bg-green-500 text-white' : 'bg-[#5b3f2f]/5 text-[#5b3f2f] group-hover:bg-[#5b3f2f] group-hover:text-white'}`}>
-                  {loading === 'cod' ? <Loader2 className="w-7 h-7 animate-spin" /> : <Banknote className="w-7 h-7" />}
+            {/* COD Option */}
+            <button
+              onClick={handleCOD}
+              disabled={!!loading}
+              className={`flex flex-col items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-center group
+                ${loading === 'cod' ? 'border-green-500 bg-green-50/50 shadow-inner' : 'border-[#5b3f2f]/10 hover:border-[#5b3f2f] hover:bg-[#5b3f2f]/5'}
+                ${loading && loading !== 'cod' ? 'opacity-50 grayscale' : ''}`}
+            >
+              <div className={`p-4 rounded-2xl transition-colors duration-300 ${loading === 'cod' ? 'bg-green-500 text-white' : 'bg-[#5b3f2f]/5 text-[#5b3f2f] group-hover:bg-[#5b3f2f] group-hover:text-white'}`}>
+                {loading === 'cod' ? <Loader2 className="w-8 h-8 animate-spin" /> : <Banknote className="w-8 h-8" />}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-[#5b3f2f] text-lg">Cash on Delivery</h3>
+                <p className="text-[10px] font-black text-[#5b3f2f]/60 uppercase tracking-[0.1em] mt-1">Pay when your order arrives</p>
+                <div className="mt-4">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-green-100 text-green-700 px-3 py-1 rounded-full">No Extra Charges</span>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-[#5b3f2f]">Cash on Delivery</h3>
-                    <span className="text-[10px] font-black uppercase tracking-wider bg-green-100 text-green-700 px-2 py-0.5 rounded-full">No Extra Charges</span>
-                  </div>
-                  <p className="text-xs text-[#5b3f2f]/60 mt-0.5">Pay when your order arrives</p>
-                </div>
-              </button>
-            </div>
+              </div>
+            </button>
           </div>
 
           {/* Footer Info */}

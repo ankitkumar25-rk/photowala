@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store';
 import toast from 'react-hot-toast';
@@ -41,11 +41,14 @@ export default function Register() {
           {/* Google OAuth */}
           <a
             href={googleAuthUrl}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-cream-300 rounded-xl text-gray-700 font-semibold text-sm hover:bg-cream-100 transition-colors mb-6"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-cream-300 rounded-xl text-gray-700 font-semibold text-sm hover:bg-cream-100 transition-colors mb-2"
           >
             <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" />
             Sign up with Google
           </a>
+          <p className="text-[10px] text-gray-400 text-center mb-6 px-4">
+            Tip: If sign-in is blocked, click the three dots in your app's corner and select <strong>"Open in Browser"</strong>.
+          </p>
 
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-cream-300" /></div>

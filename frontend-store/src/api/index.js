@@ -49,8 +49,9 @@ export const ordersApi = {
 };
 
 export const paymentsApi = {
-  createOrder:    (orderId) => api.post('/payments/create-order', { orderId }),
+  createOrder:    (data)    => api.post('/payments/create-order', data),
   verifyPayment:  (data)    => api.post('/payments/verify', data),
+  confirmCOD:     (data)    => api.post('/payments/cod', data),
 };
 
 export const usersApi = {
