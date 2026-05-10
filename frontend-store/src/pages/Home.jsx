@@ -88,13 +88,13 @@ function HeroSection() {
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 const CATEGORY_EMOJIS = {
-  'trophies': '🏆',
-  '3d-models': '🧱',
-  'corporate-gifts': '💼',
-  'momentos': '💎',
-  'others': '🎁',
-  'pen-holders': '🖋️',
-  'temples': '🕍',
+  'trophies': 'https://cdn-icons-png.flaticon.com/512/3112/3112946.png',
+  '3d-models': 'https://cdn-icons-png.flaticon.com/512/4882/4882807.png',
+  'corporate-gifts': 'https://cdn-icons-png.flaticon.com/512/2612/2612154.png',
+  'momentos': 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png',
+  'others': 'https://cdn-icons-png.flaticon.com/512/2652/2652234.png',
+  'pen-holders': 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png',
+  'temples': 'https://cdn-icons-png.flaticon.com/512/2151/2151320.png',
 };
 
 function CategoryGrid({ categories }) {
@@ -114,8 +114,12 @@ function CategoryGrid({ categories }) {
               to={`/categories/${cat.slug}`}
               className="group card p-5 flex flex-col items-center text-center gap-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="w-16 h-16 rounded-2xl bg-[#f5e7d8] flex items-center justify-center text-3xl group-hover:bg-[#efe0cf] transition-colors border border-[#d8a45f]/40">
-                {CATEGORY_EMOJIS[cat.slug] || <img src={brandAssets.favicon} className="w-8 h-8 object-contain opacity-40 grayscale" alt="" />}
+              <div className="w-16 h-16 rounded-2xl bg-[#f5e7d8] flex items-center justify-center group-hover:bg-[#efe0cf] transition-colors border border-[#d8a45f]/40 p-3">
+                {CATEGORY_EMOJIS[cat.slug] ? (
+                  <img src={CATEGORY_EMOJIS[cat.slug]} className="w-10 h-10 object-contain" alt={cat.name} />
+                ) : (
+                  <img src={brandAssets.favicon} className="w-8 h-8 object-contain opacity-40 grayscale" alt="" />
+                )}
               </div>
               <div>
                 <h3 className="font-semibold text-[#5b3f2f] text-sm leading-snug group-hover:text-[#b88a2f] transition-colors">
@@ -134,10 +138,10 @@ function CategoryGrid({ categories }) {
 // ── Trust Badges ──────────────────────────────────────────────
 function TrustBadges() {
   const badges = [
-    { icon: Shield, label: 'Premium Quality Assured', desc: 'Sustainably crafted & highly rated' },
-    { icon: Truck, label: 'Free Delivery above ₹999', desc: 'Pan-India secure delivery in 2-5 days' },
-    { icon: RotateCcw, label: 'Easy 7-Day Returns', desc: 'Hassle-free return policy' },
-    { icon: CheckCircle, label: 'Exquisite Craftsmanship', desc: 'Precision finishes for every award' },
+    { icon: 'https://cdn-icons-png.flaticon.com/512/2592/2592317.png', label: 'Premium Quality Assured', desc: 'Sustainably crafted & highly rated' },
+    { icon: 'https://cdn-icons-png.flaticon.com/512/2362/2362252.png', label: 'Free Delivery above ₹999', desc: 'Pan-India secure delivery in 2-5 days' },
+    { icon: 'https://cdn-icons-png.flaticon.com/512/3503/3503930.png', label: 'Easy 7-Day Returns', desc: 'Hassle-free return policy' },
+    { icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png', label: 'Exquisite Craftsmanship', desc: 'Precision finishes for every award' },
   ];
 
   return (
@@ -146,8 +150,8 @@ function TrustBadges() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {badges.map(({ icon, label, desc }) => (
             <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300">
-                {createElement(icon, { className: 'w-6 h-6 text-[#b88a2f]' })}
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300 p-2.5">
+                <img src={icon} alt={label} className="w-7 h-7 object-contain" />
               </div>
               <div>
                 <p className="font-semibold text-[#5b3f2f] text-sm">{label}</p>
@@ -221,7 +225,7 @@ export default function Home() {
       <section className="bg-linear-to-r from-[#7a3218] via-[#a6431a] to-[#c85212] py-16 border-t border-[#f6b889]/45">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-[#fff6f0] mb-4">
-            Celebrate Every Moment Better 🎁
+            Celebrate Every Moment Better
           </h2>
           <p className="text-[#ffe7d6] mb-8 text-lg max-w-xl mx-auto">
             Join thousands of customers choosing premium photogifts for birthdays, anniversaries, teams, and milestones.

@@ -6,7 +6,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from './api/client';
 
-// â”€â”€ Auth Store â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Auth Store ───────────────────────────────────────────────
 // eslint-disable-next-line react-refresh/only-export-components
 let adminFetchMePromise = null;
 export const useAdminStore = create(
@@ -55,7 +55,7 @@ export const useAdminStore = create(
   )
 );
 
-// â”€â”€ Pages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Pages ────────────────────────────────────────────────────
 const AdminLogin      = lazy(() => import('./pages/AdminLogin'));
 const Dashboard       = lazy(() => import('./pages/Dashboard'));
 const AdminProducts   = lazy(() => import('./pages/AdminProducts'));
@@ -81,7 +81,7 @@ function Loader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">
-        <div className="text-4xl mb-3">ðŸ†</div>
+        <div className="text-4xl mb-3">🏆</div>
         <p className="text-gray-500 font-medium">Loading admin...</p>
       </div>
     </div>

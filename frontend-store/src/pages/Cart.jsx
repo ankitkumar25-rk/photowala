@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ShoppingCart, Trash2, Plus, Minus, ArrowRight,
@@ -63,7 +63,9 @@ function CartItem({ item }) {
            {img ? (
              <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" width={96} height={96} />
            ) : (
-            <div className="w-full h-full flex items-center justify-center text-3xl">??</div>
+            <div className="w-full h-full flex items-center justify-center bg-cream-100">
+              <Package className="w-8 h-8 text-cream-400" />
+            </div>
           )}
         </div>
       </Link>
@@ -212,7 +214,11 @@ export default function Cart() {
         ) : items.length === 0 ? (
           /* -- Empty state -- */
           <div className="card p-16 text-center max-w-lg mx-auto">
-            <div className="text-7xl mb-5">??</div>
+            <div className="flex justify-center mb-5">
+               <div className="w-24 h-24 bg-brand-surface rounded-full flex items-center justify-center text-brand-primary border-2 border-brand-surface shadow-inner">
+                  <ShoppingCart className="w-12 h-12" />
+               </div>
+            </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               Your cart is empty
             </h2>
@@ -233,10 +239,10 @@ export default function Cart() {
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Browse Categories</p>
               <div className="flex flex-wrap gap-2 justify-center">
                 {[
-                  ['?? Trophies', '/categories/trophies'],
-                  ['?? Corporate Gifts', '/categories/corporate-gifts'],
-                  ['?? Momentos', '/categories/momentos'],
-                  ['?? Personalized Gifts', '/products'],
+                  ['Trophies', '/categories/trophies'],
+                  ['Corporate Gifts', '/categories/corporate-gifts'],
+                  ['Momentos', '/categories/momentos'],
+                  ['Personalized Gifts', '/products'],
                 ].map(([label, to]) => (
                   <Link key={to} to={to} className="px-3 py-1.5 bg-brand-surface text-brand-primary text-sm font-semibold rounded-xl hover:bg-brand-surface transition-colors">
                     {label}

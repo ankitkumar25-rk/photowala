@@ -174,7 +174,7 @@ export default function Checkout() {
           internalOrderId: order.id,
           orderType: 'ORDER',
         });
-        toast.success('Order placed successfully via COD! 🚚');
+        toast.success('Order placed successfully via COD!');
         handlePaymentSuccess('COD', order.id);
       } else {
         // Razorpay
@@ -201,7 +201,7 @@ export default function Checkout() {
                 internalOrderId: order.id,
                 orderType: 'ORDER',
               });
-              toast.success('Payment successful! 🎉');
+              toast.success('Payment successful!');
               handlePaymentSuccess('RAZORPAY', order.id);
             } catch (vErr) {
               toast.error('Verification failed. Contact support.');
@@ -569,13 +569,13 @@ export default function Checkout() {
               {/* Trust badges */}
               <div className="px-4 pb-4 grid grid-cols-3 gap-2">
                 {[
-                  { Icon: Shield, label: 'Secure\nPayment' },
-                  { Icon: Truck, label: 'Fast\nDelivery' },
-                  { Icon: Package, label: 'Easy\nReturns' },
-                ].map(({ Icon, label }) => (
+                  { icon: 'https://cdn-icons-png.flaticon.com/512/2592/2592317.png', label: 'Secure\nPayment' },
+                  { icon: 'https://cdn-icons-png.flaticon.com/512/2362/2362252.png', label: 'Fast\nDelivery' },
+                  { icon: 'https://cdn-icons-png.flaticon.com/512/3503/3503930.png', label: 'Easy\nReturns' },
+                ].map(({ icon, label }) => (
                   <div key={label} className="flex flex-col items-center gap-1 p-2 bg-cream-50 rounded-xl">
-                    {createElement(Icon, { className: 'w-5 h-5 text-brand-secondary' })}
-                    <p className="text-[10px] text-gray-500 font-medium text-center leading-tight whitespace-pre-line">{label}</p>
+                    <img src={icon} alt={label} className="w-6 h-6 object-contain" />
+                    <p className="text-[9px] text-gray-500 font-medium text-center leading-tight whitespace-pre-line">{label}</p>
                   </div>
                 ))}
               </div>

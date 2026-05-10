@@ -10,13 +10,13 @@ import { useAuthStore } from '../../../../store';
 import PaymentModal from '../../../../components/PaymentModal';
 
 const SIDEBAR_LINKS = [
-  { id: 'pen', icon: PenTool, label: 'Pen', to: '/services/custom-printing/pen' },
-  { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital', icon: Printer, label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing', active: true },
-  { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
-  { id: 'garment', icon: Tag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook', icon: Book, label: 'Bill Book', to: '/services/custom-printing/bill-book' },
-  { id: 'envelope', icon: Mail, label: 'Envelope', to: '/services/custom-printing/envelope' },
+  { id: 'pen', icon: 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png', label: 'Pen', to: '/services/custom-printing/pen' },
+  { id: 'sticker', icon: 'https://cdn-icons-png.flaticon.com/512/2122/2122247.png', label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
+  { id: 'digital', icon: 'https://cdn-icons-png.flaticon.com/512/300/300222.png', label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing', active: true },
+  { id: 'letterhead', icon: 'https://cdn-icons-png.flaticon.com/512/2361/2361405.png', label: 'Letterhead', to: '/services/custom-printing/letterhead' },
+  { id: 'garment', icon: 'https://cdn-icons-png.flaticon.com/512/892/892230.png', label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
+  { id: 'billbook', icon: 'https://cdn-icons-png.flaticon.com/512/2666/2666505.png', label: 'Bill Book', to: '/services/custom-printing/bill-book' },
+  { id: 'envelope', icon: 'https://cdn-icons-png.flaticon.com/512/1001/1001022.png', label: 'Envelope', to: '/services/custom-printing/envelope' },
 ];
 
 const PAPER_PRODUCTS = [
@@ -232,17 +232,16 @@ export default function DigitalPrinting() {
           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-left">Explore Categories</p>
         </div>
         <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
-          {SIDEBAR_LINKS.map((link) => {
-            const Icon = link.icon;
-            return (
-              <Link key={link.id} to={link.to}
-                className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${link.active ? 'bg-[#b65e2e] text-white shadow-lg' : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
-                  }`}>
-                <Icon className={`w-3.5 h-3.5 md:w-4 h-4 ${link.active ? 'text-white' : 'text-gray-400'}`} />
-                <span className="uppercase tracking-widest">{link.label}</span>
-              </Link>
-            );
-          })}
+          {SIDEBAR_LINKS.map((link) => (
+            <Link key={link.id} to={link.to}
+              className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${link.active
+                ? 'bg-[#b65e2e] text-white shadow-lg'
+                : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
+                }`}>
+              <img src={link.icon} className={`w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'grayscale opacity-70'}`} alt="" />
+              <span className="uppercase tracking-widest">{link.label}</span>
+            </Link>
+          ))}
         </nav>
       </aside>
 

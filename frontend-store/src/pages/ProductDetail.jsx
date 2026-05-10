@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useRef, createElement } from 'react';
+import { useState, useEffect, useCallback, useRef, createElement } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, Heart, Share2, Star, Shield,
@@ -76,7 +76,7 @@ function ImageGallery({ images, name }) {
   if (!images?.length) {
     return (
       <div className="aspect-square rounded-3xl bg-brand-surface flex items-center justify-center text-8xl border border-cream-300">
-        ??
+        <Package className="w-20 h-20 text-cream-400" />
       </div>
     );
   }
@@ -166,7 +166,7 @@ function ImageGallery({ images, name }) {
             onClick={() => setZoomed(false)}
             className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors text-xl"
           >
-            ?
+            <X className="w-6 h-6" />
           </button>
         </div>
       )}
@@ -364,7 +364,7 @@ export default function ProductDetail() {
         toast.success('Removed from wishlist');
       } else {
         await triggerWishlist({ productId: product.id, isWishlisted: false });
-        toast.success('Added to wishlist ??');
+        toast.success('Added to wishlist!');
       }
     } catch { toast.error('Failed to update wishlist'); }
   };
@@ -386,7 +386,7 @@ export default function ProductDetail() {
     try {
       const { data } = await uploadApi.uploadCustomization(file);
       setCustomizationImage({ url: data.data.url, publicId: data.data.publicId });
-      toast.success('Image uploaded to Cloudinary ?');
+      toast.success('Image uploaded successfully');
     } catch {
       toast.error('Failed to upload image');
     } finally {
@@ -486,7 +486,7 @@ export default function ProductDetail() {
               )}
               {product.isFeatured && (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-brand-secondary text-white">
-                  ? Featured
+                  Featured
                 </span>
               )}
             </div>
@@ -517,11 +517,11 @@ export default function ProductDetail() {
 
             {/* Price */}
             <div className="flex items-end gap-3">
-              <span className="text-4xl font-extrabold text-brand-primary">?{Number(product.price).toFixed(2)}</span>
+              <span className="text-4xl font-extrabold text-brand-primary">₹{Number(product.price).toFixed(2)}</span>
               <span className="text-gray-400 mb-1 text-sm">/ {product.unit}</span>
               {discountPct > 0 && (
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xl text-gray-400 line-through">?{Number(product.mrp).toFixed(2)}</span>
+                  <span className="text-xl text-gray-400 line-through">₹{Number(product.mrp).toFixed(2)}</span>
                   <span className="px-2 py-0.5 bg-brand-secondary text-white text-sm font-extrabold rounded-lg">
                     {discountPct}% OFF
                   </span>
@@ -650,7 +650,7 @@ export default function ProductDetail() {
                     </button>
                   </div>
                   <p className="text-sm text-gray-500">
-                    Total: <span className="font-bold text-brand-primary text-base">?{(Number(product.price) * qty).toFixed(2)}</span>
+                    Total: <span className="font-bold text-brand-primary text-base">₹{(Number(product.price) * qty).toFixed(2)}</span>
                   </p>
                 </div>
 
@@ -700,21 +700,21 @@ export default function ProductDetail() {
             {/* Go to cart link */}
             <div>
               <Link to="/cart" className="text-sm font-semibold text-brand-primary hover:text-brand-primary transition-colors flex items-center gap-1.5">
-                <ShoppingCart className="w-4 h-4" /> View Cart ?
+                <ShoppingCart className="w-4 h-4" /> View Cart
               </Link>
             </div>
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-3 pt-2 border-t border-cream-200">
               {[
-                { icon: Shield, label: 'Secure Payment', sub: 'SSL encrypted' },
-                { icon: Truck,  label: 'Fast Delivery',  sub: 'Free above ?999' },
-                { icon: RefreshCw, label: 'Easy Returns', sub: '7-day policy' },
+                { icon: 'https://cdn-icons-png.flaticon.com/512/2592/2592317.png', label: 'Secure Payment', sub: 'SSL encrypted' },
+                { icon: 'https://cdn-icons-png.flaticon.com/512/2362/2362252.png', label: 'Fast Delivery',  sub: 'Free above ₹999' },
+                { icon: 'https://cdn-icons-png.flaticon.com/512/3503/3503930.png', label: 'Easy Returns', sub: '7-day policy' },
               ].map(({ icon, label, sub }) => (
                 <div key={label} className="flex flex-col items-center text-center gap-1 p-3 bg-cream-50 rounded-2xl">
-                  {createElement(icon, { className: 'w-5 h-5 text-brand-secondary' })}
-                  <p className="text-xs font-bold text-gray-800 leading-tight">{label}</p>
-                  <p className="text-[10px] text-gray-400">{sub}</p>
+                  <img src={icon} alt={label} className="w-8 h-8 object-contain mb-1" />
+                  <p className="text-[10px] font-bold text-gray-800 leading-tight">{label}</p>
+                  <p className="text-[9px] text-gray-400">{sub}</p>
                 </div>
               ))}
             </div>
