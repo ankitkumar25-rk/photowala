@@ -1,11 +1,14 @@
-import { useState, useEffect, useCallback, useRef, createElement } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  ShoppingCart, Heart, Share2, Star, Shield,
-  Truck, RefreshCw, ChevronRight, ChevronLeft, Plus,
+  ShoppingCart, Heart, Share2, Star,
+  ChevronRight, ChevronLeft, Plus,
   Minus, Check, Award, Package, AlertCircle, ZoomIn,
-  MessageSquare, ThumbsUp, ArrowLeft, Pencil, ImagePlus, X
+  MessageSquare, Pencil, ImagePlus, X
 } from 'lucide-react';
+import { 
+  MdSecurity, MdLocalShipping, MdAssignmentReturn 
+} from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { productsApi, usersApi, uploadApi } from '../api';
 import { useCartStore, useAuthStore } from '../store';
@@ -703,16 +706,16 @@ export default function ProductDetail() {
                 <ShoppingCart className="w-4 h-4" /> View Cart
               </Link>
             </div>
-
+            
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-3 pt-2 border-t border-cream-200">
               {[
-                { icon: 'https://cdn-icons-png.flaticon.com/512/2592/2592317.png', label: 'Secure Payment', sub: 'SSL encrypted' },
-                { icon: 'https://cdn-icons-png.flaticon.com/512/2362/2362252.png', label: 'Fast Delivery',  sub: 'Free above ₹999' },
-                { icon: 'https://cdn-icons-png.flaticon.com/512/3503/3503930.png', label: 'Easy Returns', sub: '7-day policy' },
+                { icon: <MdSecurity className="w-5 h-5 text-brand-primary" />, label: 'Secure Payment', sub: 'SSL encrypted' },
+                { icon: <MdLocalShipping className="w-5 h-5 text-brand-primary" />, label: 'Fast Delivery',  sub: 'Free above ₹999' },
+                { icon: <MdAssignmentReturn className="w-5 h-5 text-brand-primary" />, label: 'Easy Returns', sub: '7-day policy' },
               ].map(({ icon, label, sub }) => (
                 <div key={label} className="flex flex-col items-center text-center gap-1 p-3 bg-cream-50 rounded-2xl">
-                  <img src={icon} alt={label} className="w-8 h-8 object-contain mb-1" />
+                  <div className="bg-white p-2 rounded-xl shadow-sm mb-1">{icon}</div>
                   <p className="text-[10px] font-bold text-gray-800 leading-tight">{label}</p>
                   <p className="text-[9px] text-gray-400">{sub}</p>
                 </div>

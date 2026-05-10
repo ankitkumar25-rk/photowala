@@ -1,19 +1,23 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, createElement } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   HelpCircle, UploadCloud, AlertTriangle, ShoppingCart, Package, File, Loader2, Truck
 } from 'lucide-react';
 import api from '../../../../api/client';
+import { 
+  FaPenNib, FaStickyNote, FaPrint, FaFileSignature, 
+  FaTag, FaFileInvoiceDollar, FaEnvelope
+} from 'react-icons/fa6';
 
 const SIDEBAR_LINKS = [
-  { id: 'pen', icon: 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png', label: 'Pen', to: '/services/custom-printing/pen' },
-  { id: 'sticker', icon: 'https://cdn-icons-png.flaticon.com/512/2122/2122247.png', label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital', icon: 'https://cdn-icons-png.flaticon.com/512/300/300222.png', label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
-  { id: 'letterhead', icon: 'https://cdn-icons-png.flaticon.com/512/2361/2361405.png', label: 'Letterhead', to: '/services/custom-printing/letterhead', active: true },
-  { id: 'garment', icon: 'https://cdn-icons-png.flaticon.com/512/892/892230.png', label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook', icon: 'https://cdn-icons-png.flaticon.com/512/2666/2666505.png', label: 'Bill Book', to: '/services/custom-printing/bill-book' },
-  { id: 'envelope', icon: 'https://cdn-icons-png.flaticon.com/512/1001/1001022.png', label: 'Envelope', to: '/services/custom-printing/envelope' },
+  { id: 'pen', icon: FaPenNib, label: 'Pen', to: '/services/custom-printing/pen' },
+  { id: 'sticker', icon: FaStickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
+  { id: 'digital', icon: FaPrint, label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
+  { id: 'letterhead', icon: FaFileSignature, label: 'Letterhead', to: '/services/custom-printing/letterhead', active: true },
+  { id: 'garment', icon: FaTag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
+  { id: 'billbook', icon: FaFileInvoiceDollar, label: 'Bill Book', to: '/services/custom-printing/bill-book' },
+  { id: 'envelope', icon: FaEnvelope, label: 'Envelope', to: '/services/custom-printing/envelope' },
 ];
 
 const LETTERHEAD_PRODUCTS_LIST = [
@@ -190,7 +194,7 @@ export default function Letterhead() {
                 ? 'bg-[#b65e2e] text-white shadow-lg'
                 : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
                 }`}>
-              <img src={link.icon} className={`w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'grayscale opacity-70'}`} alt="" />
+              {createElement(link.icon, { className: `w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'text-gray-400'}` })}
               <span className="uppercase tracking-widest">{link.label}</span>
             </Link>
           ))}

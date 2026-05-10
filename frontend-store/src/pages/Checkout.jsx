@@ -5,6 +5,9 @@ import {
   ShoppingBag, ArrowLeft, X, ChevronDown, ChevronUp,
   Shield, Tag, Info, CreditCard, Banknote
 } from 'lucide-react';
+import { 
+  MdSecurity, MdLocalShipping, MdAssignmentReturn 
+} from 'react-icons/md';
 import toast from 'react-hot-toast';
 import { useCartStore } from '../store';
 import { usersApi, ordersApi, paymentsApi } from '../api';
@@ -569,12 +572,12 @@ export default function Checkout() {
               {/* Trust badges */}
               <div className="px-4 pb-4 grid grid-cols-3 gap-2">
                 {[
-                  { icon: 'https://cdn-icons-png.flaticon.com/512/2592/2592317.png', label: 'Secure\nPayment' },
-                  { icon: 'https://cdn-icons-png.flaticon.com/512/2362/2362252.png', label: 'Fast\nDelivery' },
-                  { icon: 'https://cdn-icons-png.flaticon.com/512/3503/3503930.png', label: 'Easy\nReturns' },
+                  { icon: <MdSecurity className="w-5 h-5 text-brand-primary" />, label: 'Secure\nPayment' },
+                  { icon: <MdLocalShipping className="w-5 h-5 text-brand-primary" />, label: 'Fast\nDelivery' },
+                  { icon: <MdAssignmentReturn className="w-5 h-5 text-brand-primary" />, label: 'Easy\nReturns' },
                 ].map(({ icon, label }) => (
                   <div key={label} className="flex flex-col items-center gap-1 p-2 bg-cream-50 rounded-xl">
-                    <img src={icon} alt={label} className="w-6 h-6 object-contain" />
+                    <div className="bg-white p-1.5 rounded-lg shadow-sm">{icon}</div>
                     <p className="text-[9px] text-gray-500 font-medium text-center leading-tight whitespace-pre-line">{label}</p>
                   </div>
                 ))}

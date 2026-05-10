@@ -2,6 +2,12 @@ import { useState, useEffect, createElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Truck, RotateCcw, Star, CheckCircle } from 'lucide-react';
+import { 
+  MdSecurity, MdLocalShipping, MdAssignmentReturn, 
+  Md3dRotation, MdCardGiftcard, MdWorkspacePremium,
+  MdCreate, MdHome, MdStars
+} from 'react-icons/md';
+import { GiTrophyCup } from 'react-icons/gi';
 import { brandAssets } from '../data/assets';
 import { productsApi, categoriesApi } from '../api';
 import ProductCard from '../components/ProductCard';
@@ -87,14 +93,14 @@ function HeroSection() {
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------
-const CATEGORY_EMOJIS = {
-  'trophies': 'https://cdn-icons-png.flaticon.com/512/3112/3112946.png',
-  '3d-models': 'https://cdn-icons-png.flaticon.com/512/4882/4882807.png',
-  'corporate-gifts': 'https://cdn-icons-png.flaticon.com/512/2612/2612154.png',
-  'momentos': 'https://cdn-icons-png.flaticon.com/512/1048/1048953.png',
-  'others': 'https://cdn-icons-png.flaticon.com/512/2652/2652234.png',
-  'pen-holders': 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png',
-  'temples': 'https://cdn-icons-png.flaticon.com/512/2151/2151320.png',
+const CATEGORY_ICONS = {
+  'trophies': <GiTrophyCup className="w-8 h-8 text-brand-primary" />,
+  '3d-models': <Md3dRotation className="w-8 h-8 text-brand-primary" />,
+  'corporate-gifts': <MdCardGiftcard className="w-8 h-8 text-brand-primary" />,
+  'momentos': <MdWorkspacePremium className="w-8 h-8 text-brand-primary" />,
+  'others': <MdStars className="w-8 h-8 text-brand-primary" />,
+  'pen-holders': <MdCreate className="w-8 h-8 text-brand-primary" />,
+  'temples': <MdHome className="w-8 h-8 text-brand-primary" />,
 };
 
 function CategoryGrid({ categories }) {
@@ -115,9 +121,7 @@ function CategoryGrid({ categories }) {
               className="group card p-5 flex flex-col items-center text-center gap-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <div className="w-16 h-16 rounded-2xl bg-[#f5e7d8] flex items-center justify-center group-hover:bg-[#efe0cf] transition-colors border border-[#d8a45f]/40 p-3">
-                {CATEGORY_EMOJIS[cat.slug] ? (
-                  <img src={CATEGORY_EMOJIS[cat.slug]} className="w-10 h-10 object-contain" alt={cat.name} />
-                ) : (
+                {CATEGORY_ICONS[cat.slug] || (
                   <img src={brandAssets.favicon} className="w-8 h-8 object-contain opacity-40 grayscale" alt="" />
                 )}
               </div>
@@ -138,10 +142,10 @@ function CategoryGrid({ categories }) {
 // ── Trust Badges ──────────────────────────────────────────────
 function TrustBadges() {
   const badges = [
-    { icon: 'https://cdn-icons-png.flaticon.com/512/2592/2592317.png', label: 'Premium Quality Assured', desc: 'Sustainably crafted & highly rated' },
-    { icon: 'https://cdn-icons-png.flaticon.com/512/2362/2362252.png', label: 'Free Delivery above ₹999', desc: 'Pan-India secure delivery in 2-5 days' },
-    { icon: 'https://cdn-icons-png.flaticon.com/512/3503/3503930.png', label: 'Easy 7-Day Returns', desc: 'Hassle-free return policy' },
-    { icon: 'https://cdn-icons-png.flaticon.com/512/190/190411.png', label: 'Exquisite Craftsmanship', desc: 'Precision finishes for every award' },
+    { icon: <MdStars className="w-7 h-7 text-brand-primary" />, label: 'Premium Quality Assured', desc: 'Sustainably crafted & highly rated' },
+    { icon: <MdLocalShipping className="w-7 h-7 text-brand-primary" />, label: 'Free Delivery above ₹999', desc: 'Pan-India secure delivery in 2-5 days' },
+    { icon: <MdAssignmentReturn className="w-7 h-7 text-brand-primary" />, label: 'Easy 7-Day Returns', desc: 'Hassle-free return policy' },
+    { icon: <MdSecurity className="w-7 h-7 text-brand-primary" />, label: 'Exquisite Craftsmanship', desc: 'Precision finishes for every award' },
   ];
 
   return (
@@ -150,8 +154,8 @@ function TrustBadges() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {badges.map(({ icon, label, desc }) => (
             <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300 p-2.5">
-                <img src={icon} alt={label} className="w-7 h-7 object-contain" />
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300 p-2.5 shadow-sm">
+                {icon}
               </div>
               <div>
                 <p className="font-semibold text-[#5b3f2f] text-sm">{label}</p>

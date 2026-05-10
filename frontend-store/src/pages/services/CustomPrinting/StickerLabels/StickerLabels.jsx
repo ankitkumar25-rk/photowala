@@ -1,25 +1,29 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, createElement } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   PenTool, StickyNote, Printer, FileText, Tag, Book, Mail,
   UploadCloud, ShoppingCart, HelpCircle, ChevronLeft, CheckCircle2, Info, Loader2, Paperclip
 } from 'lucide-react';
 import api from '../../../../api/client';
+import { 
+  FaPenNib, FaStickyNote, FaPrint, FaFileSignature, 
+  FaTag, FaFileInvoiceDollar, FaEnvelope, FaRegSquare, FaRegCircle, FaBorderAll
+} from 'react-icons/fa6';
 
 const SIDEBAR_LINKS = [
-  { id: 'pen', icon: 'https://cdn-icons-png.flaticon.com/512/2921/2921226.png', label: 'Pen', to: '/services/custom-printing/pen' },
-  { id: 'sticker', icon: 'https://cdn-icons-png.flaticon.com/512/2122/2122247.png', label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels', active: true },
-  { id: 'digital', icon: 'https://cdn-icons-png.flaticon.com/512/300/300222.png', label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
-  { id: 'letterhead', icon: 'https://cdn-icons-png.flaticon.com/512/2361/2361405.png', label: 'Letterhead', to: '/services/custom-printing/letterhead' },
-  { id: 'garment', icon: 'https://cdn-icons-png.flaticon.com/512/892/892230.png', label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook', icon: 'https://cdn-icons-png.flaticon.com/512/2666/2666505.png', label: 'Bill Book', to: '/services/custom-printing/bill-book' },
-  { id: 'envelope', icon: 'https://cdn-icons-png.flaticon.com/512/1001/1001022.png', label: 'Envelope', to: '/services/custom-printing/envelope' },
+  { id: 'pen', icon: FaPenNib, label: 'Pen', to: '/services/custom-printing/pen' },
+  { id: 'sticker', icon: FaStickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels', active: true },
+  { id: 'digital', icon: FaPrint, label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
+  { id: 'letterhead', icon: FaFileSignature, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
+  { id: 'garment', icon: FaTag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
+  { id: 'billbook', icon: FaFileInvoiceDollar, label: 'Bill Book', to: '/services/custom-printing/bill-book' },
+  { id: 'envelope', icon: FaEnvelope, label: 'Envelope', to: '/services/custom-printing/envelope' },
 ];
 
 const CUT_TYPES = [
-  { id: 'no-cut', label: 'Sticker', subLabel: '(Without Half Cut)', path: '/services/custom-printing/sticker-labels/no-cut', image: 'https://cdn-icons-png.flaticon.com/512/4127/4127248.png' },
-  { id: 'round-cut', label: 'Sticker', subLabel: '(With Round Cut)', path: '/services/custom-printing/sticker-labels/round-cut', image: 'https://cdn-icons-png.flaticon.com/512/4127/4127249.png' },
-  { id: 'straight-cut', label: 'Sticker', subLabel: '(With Straight Cut)', path: '/services/custom-printing/sticker-labels/straight-cut', image: 'https://cdn-icons-png.flaticon.com/512/4127/4127250.png' },
+  { id: 'no-cut', label: 'Sticker', subLabel: '(Without Half Cut)', path: '/services/custom-printing/sticker-labels/no-cut', icon: FaRegSquare },
+  { id: 'round-cut', label: 'Sticker', subLabel: '(With Round Cut)', path: '/services/custom-printing/sticker-labels/round-cut', icon: FaRegCircle },
+  { id: 'straight-cut', label: 'Sticker', subLabel: '(With Straight Cut)', path: '/services/custom-printing/sticker-labels/straight-cut', icon: FaBorderAll },
 ];
 
 const SHEET_SIZES = ['7"x9.5" (Inch)'];
@@ -236,7 +240,7 @@ export default function StickerLabels() {
                 ? 'bg-[#b65e2e] text-white shadow-lg'
                 : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
                 }`}>
-              <img src={link.icon} className={`w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'grayscale contrast-125 brightness-50'}`} alt="" />
+              {createElement(link.icon, { className: `w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'text-gray-400'}` })}
               <span className="uppercase tracking-widest">{link.label}</span>
             </Link>
           ))}
@@ -275,7 +279,7 @@ export default function StickerLabels() {
                    </div>
                 )}
                 <div className="w-20 h-20 bg-gray-50 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
-                   <img src={type.image} alt={type.label} className="w-12 h-12 object-contain opacity-80" />
+                   {createElement(type.icon, { className: "w-10 h-10 text-gray-400" })}
                 </div>
                 <h3 className="font-bold text-gray-900 leading-tight">{type.label}</h3>
                 <p className="text-[11px] text-gray-500 mt-1">{type.subLabel}</p>

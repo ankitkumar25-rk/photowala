@@ -8,6 +8,11 @@ import {
 import { useCartStore, useAuthStore } from '../store';
 import toast from 'react-hot-toast';
 
+import { 
+  MdSecurity, MdLocalShipping, MdAssignmentReturn, 
+  MdPhotoLibrary, MdBrush, MdPalette 
+} from 'react-icons/md';
+
 /* -- Quantity stepper -- */
 function QtyControl({ item }) {
   const updateItem = useCartStore((s) => s.updateItem);
@@ -274,7 +279,7 @@ export default function Cart() {
               )}
               {shipping === 0 && (
                 <div className="px-5 py-3 bg-green-50 border-b border-green-100 flex items-center gap-2 text-sm font-semibold text-green-700">
-                  <Tag className="w-4 h-4" /> ?? You've unlocked FREE shipping!
+                  <CheckCircle className="w-4 h-4" /> You've unlocked FREE shipping!
                 </div>
               )}
 
@@ -372,12 +377,12 @@ export default function Cart() {
               {/* Trust row */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { icon: '??', label: 'Secure\nPayment' },
-                  { icon: '??', label: 'Fast\nDelivery' },
-                  { icon: '??', label: 'Easy\nReturns' },
+                  { icon: <MdSecurity className="w-6 h-6 text-brand-primary" />, label: 'Secure\nPayment' },
+                  { icon: <MdLocalShipping className="w-6 h-6 text-brand-primary" />, label: 'Fast\nDelivery' },
+                  { icon: <MdAssignmentReturn className="w-6 h-6 text-brand-primary" />, label: 'Easy\nReturns' },
                 ].map(({ icon, label }) => (
                   <div key={label} className="card p-3 flex flex-col items-center gap-1.5 text-center">
-                    <span className="text-xl">{icon}</span>
+                    <div className="bg-brand-surface p-2 rounded-xl">{icon}</div>
                     <p className="text-[10px] font-semibold text-gray-500 leading-tight whitespace-pre-line">{label}</p>
                   </div>
                 ))}
@@ -388,12 +393,12 @@ export default function Cart() {
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">You might also like</p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    ['?? Grains', '/categories/grains-cereals'],
-                    ['?? Oils', '/categories/cold-pressed-oils'],
-                    ['??? Spices', '/categories/spices-masalas'],
-                  ].map(([label, to]) => (
-                    <Link key={to} to={to} className="px-2.5 py-1 text-xs font-semibold bg-brand-surface text-brand-primary rounded-lg hover:bg-brand-surface transition-colors">
-                      {label}
+                    { icon: <MdPhotoLibrary className="w-3.5 h-3.5" />, label: 'Canvas Prints', to: '/products' },
+                    { icon: <MdBrush className="w-3.5 h-3.5" />, label: 'Custom Gifts', to: '/products' },
+                    { icon: <MdPalette className="w-3.5 h-3.5" />, label: 'Design Service', to: '/products' },
+                  ].map(({ icon, label, to }) => (
+                    <Link key={label} to={to} className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold bg-brand-surface text-brand-primary rounded-lg hover:bg-brand-surface transition-colors">
+                      {icon} {label}
                     </Link>
                   ))}
                 </div>
