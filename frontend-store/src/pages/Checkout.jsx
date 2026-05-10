@@ -401,7 +401,7 @@ export default function Checkout() {
                     <Shield className="w-12 h-12 text-brand-secondary mb-3" />
                     <h3 className="font-bold text-[#5b3f2f] text-lg">Secure Your Order</h3>
                     <p className="text-sm text-[#5b3f2f]/60 mt-1 max-w-xs">
-                      Click below to choose your preferred payment method and complete your purchase.
+                      Secure your order via <strong>Razorpay</strong> (UPI, Cards, Wallets) or <strong>Cash on Delivery</strong>.
                     </p>
                     <button
                       onClick={handleCreateOrder}

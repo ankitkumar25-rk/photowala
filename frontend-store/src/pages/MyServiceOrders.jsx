@@ -148,6 +148,14 @@ function OrderCard({ order, onPay }) {
                 >
                    <ChevronDown className="w-6 h-6" />
                 </button>
+                {order.paymentStatus !== 'PAID' && (
+                  <button 
+                    onClick={() => onPay(order)}
+                    className="bg-brand-primary text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/20 hover:scale-105 active:scale-95 transition-all"
+                  >
+                    Pay Now
+                  </button>
+                )}
              </div>
           </div>
         </div>
