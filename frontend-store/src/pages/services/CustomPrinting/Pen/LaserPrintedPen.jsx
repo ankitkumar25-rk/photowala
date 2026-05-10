@@ -8,43 +8,35 @@ import api from '../../../../api/client';
 import { serviceAssets } from '../../../../data/assets';
 
 const SIDEBAR_LINKS = [
-  { id: 'pen',        icon: PenTool,    label: 'Pen',                   to: '/services/custom-printing/pen', active: true },
-  { id: 'sticker',   icon: StickyNote,  label: 'Sticker Labels',        to: '/services/custom-printing/sticker-labels' },
-  { id: 'digital',   icon: Printer,     label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
-  { id: 'letterhead',icon: FileText,    label: 'Letterhead',             to: '/services/custom-printing/letterhead' },
-  { id: 'garment',   icon: Tag,         label: 'Garment Tag',            to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook',  icon: Book,        label: 'Bill Book',              to: '/services/custom-printing/bill-book' },
-  { id: 'envelope',   icon: Mail,        label: 'Envelope',                to: '/services/custom-printing/envelope' },
+  { id: 'pen', icon: PenTool, label: 'Pen', to: '/services/custom-printing/pen', active: true },
+  { id: 'sticker', icon: StickyNote, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
+  { id: 'digital', icon: Printer, label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing' },
+  { id: 'letterhead', icon: FileText, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
+  { id: 'garment', icon: Tag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
+  { id: 'billbook', icon: Book, label: 'Bill Book', to: '/services/custom-printing/bill-book' },
+  { id: 'envelope', icon: Mail, label: 'Envelope', to: '/services/custom-printing/envelope' },
 ];
 
 // Pen type price per unit (₹)
 const PEN_PRICES = {
-  101: 66,
-  102: 70,
-  103: 83,
-  104: 105,
-  105: 115,
-  106: 115,
-  107: 120,
-  108: 220,
-  109: 225,
-  110: 190,
+  1: 22,  2: 24,  3: 26,  4: 31,  5: 32,  6: 32,  7: 39,  8: 36,  9: 44,  10: 44,
+  11: 44, 12: 44, 13: 37, 14: 37, 15: 44, 16: 49, 17: 54, 18: 69, 19: 74, 20: 74,
 };
 
 const PEN_TYPES = Object.keys(PEN_PRICES).map(Number);
-const QTY_OPTIONS = [1, 2, 5, 10, 20, 30, 40, 50, 75, 100];
+const QTY_OPTIONS = [1, 10, 25, 50, 100, 250, 500];
 const GST_RATE = 0.18;
 
 export default function LaserPrintedPen() {
   const navigate = useNavigate();
-  const [orderName, setOrderName]       = useState('');
-  const [penType, setPenType]           = useState('');
-  const [qty, setQty]                   = useState('');
+  const [orderName, setOrderName] = useState('');
+  const [penType, setPenType] = useState('');
+  const [qty, setQty] = useState('');
   const [deliveryOption, setDeliveryOption] = useState('courier');
   const [designOption, setDesignOption] = useState('online');
-  const [remark, setRemark]             = useState('');
+  const [remark, setRemark] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
-  const [loading, setLoading]           = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -61,13 +53,22 @@ export default function LaserPrintedPen() {
 
   // Live price calculation
   const pricing = useMemo(() => {
-    if (!penType || !qty) return null;
-    const unitCost   = PEN_PRICES[Number(penType)];
-    const baseCost   = unitCost * Number(qty);
+    if (!penType || !qty || Number(qty) <= 0) return null;
+    
+    const target = PEN_PRICES[Number(penType)] || 74;
+    const q = Number(qty);
+    
+    // Logarithmic decay formula: price = target + (150 - target) * (1 - log(qty) / log(500))
+    // Clamp effective qty to [1, 500] for unit price curve
+    const effectiveQtyForDecay = Math.min(Math.max(q, 1), 500);
+    const unitCost = Math.round(target + (150 - target) * (1 - Math.log(effectiveQtyForDecay) / Math.log(500)));
+    
+    const baseCost = unitCost * q;
     const emailCharge = designOption === 'email' ? 10 : 0;
     const applicable = baseCost + emailCharge;
-    const gst        = applicable * GST_RATE;
-    const total      = applicable + gst;
+    const gst = applicable * GST_RATE;
+    const total = applicable + gst;
+    
     return {
       unitCost,
       baseCost: baseCost.toFixed(2),
@@ -88,7 +89,7 @@ export default function LaserPrintedPen() {
 
   const handleAddOrder = async () => {
     if (!canOrder) return;
-    
+
     try {
       setLoading(true);
       let fileUrl = '';
@@ -156,11 +157,10 @@ export default function LaserPrintedPen() {
             const Icon = link.icon;
             return (
               <Link key={link.id} to={link.to}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
-                  link.active
-                    ? 'bg-[#b65e2e] shadow-md text-white'
-                    : 'text-gray-600 hover:bg-[#e8dfd5] hover:text-gray-900'
-                }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${link.active
+                  ? 'bg-[#b65e2e] shadow-md text-white'
+                  : 'text-gray-600 hover:bg-[#e8dfd5] hover:text-gray-900'
+                  }`}
               >
                 <Icon className="w-4 h-4" />{link.label}
               </Link>
@@ -446,12 +446,11 @@ export default function LaserPrintedPen() {
                   </span>
                 </div>
 
-                <button 
+                <button
                   onClick={handleAddOrder}
                   disabled={!canOrder}
-                  className={`w-full flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-colors mb-4 ${
-                    canOrder ? 'bg-[#b65e2e] hover:bg-[#a15024] text-white cursor-pointer' : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                  }`}>
+                  className={`w-full flex items-center justify-center gap-2 font-bold py-3.5 rounded-xl transition-colors mb-4 ${canOrder ? 'bg-[#b65e2e] hover:bg-[#a15024] text-white cursor-pointer' : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                    }`}>
                   {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShoppingCart className="w-5 h-5" />}
                   {loading ? 'Processing...' : 'Add Order'}
                 </button>
