@@ -23,7 +23,6 @@ router.post('/reset-password',  authRateLimiter, authController.resetPassword);
 if (googleConfigured) {
   router.get('/google', passport.authenticate('google', {
     scope: ['profile', 'email'],
-    state: true,
   }));
   router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: `${process.env.CLIENT_URL}/login?error=oauth` }),

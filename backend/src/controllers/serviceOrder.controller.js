@@ -68,20 +68,21 @@ exports.createServiceOrder = async (req, res, next) => {
  */
 exports.getMyServiceOrders = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
+    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+    const limitNum = Math.max(1, parseInt(req.query.limit) || 10);
+    const skip = (pageNum - 1) * limitNum;
 
     const [orders, total] = await Promise.all([
       prisma.serviceOrder.findMany({
         where: { userId: req.user.id },
         skip,
-        take: Number(limit),
+        take: limitNum,
         orderBy: { createdAt: 'desc' }
       }),
       prisma.serviceOrder.count({ where: { userId: req.user.id } })
     ]);
 
-    res.json({ success: true, data: orders, meta: { total, page: Number(page) } });
+    res.json({ success: true, data: orders, meta: { total, page: pageNum } });
   } catch (err) {
     next(err);
   }
@@ -115,7 +116,10 @@ exports.getServiceOrderDetail = async (req, res, next) => {
  */
 exports.getAllServiceOrders = async (req, res, next) => {
   try {
-    const { category, status, page = 1, limit = 20 } = req.query;
+    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+    const limitNum = Math.max(1, parseInt(req.query.limit) || 20);
+    const skip = (pageNum - 1) * limitNum;
+
     const where = {};
     if (category) where.category = category;
     if (status) where.status = status;
@@ -123,15 +127,15 @@ exports.getAllServiceOrders = async (req, res, next) => {
     const [orders, total] = await Promise.all([
       prisma.serviceOrder.findMany({
         where,
-        skip: (Number(page) - 1) * Number(limit),
-        take: Number(limit),
+        skip,
+        take: limitNum,
         orderBy: { createdAt: 'desc' },
         include: { user: { select: { name: true, email: true } } }
       }),
       prisma.serviceOrder.count({ where })
     ]);
 
-    res.json({ success: true, data: orders, meta: { total, page: Number(page) } });
+    res.json({ success: true, data: orders, meta: { total, page: pageNum } });
   } catch (err) {
     next(err);
   }
