@@ -80,8 +80,12 @@ app.use(cors({
 // ================================
 // PARSING MIDDLEWARE
 // ================================
-// Raw body needed for Razorpay webhook signature verification
-app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
+// ================================
+// PAYMENTS WEBHOOK (MUST BE BEFORE express.json)
+// ================================
+const paymentController = require('./controllers/payment.controller');
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), paymentController.razorpayWebhook);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

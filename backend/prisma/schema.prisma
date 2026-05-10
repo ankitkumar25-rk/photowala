@@ -47,15 +47,21 @@ enum TicketStatus {
 
 enum PaymentStatus {
   PENDING
+  CREATED
   PAID
+  COD_PENDING
   FAILED
   REFUNDED
 }
 
 enum PaymentMethod {
-  RAZORPAY
   COD
-  WALLET
+  RAZORPAY
+}
+
+enum OrderType {
+  ORDER
+  SERVICE_ORDER
 }
 
 // ================================
@@ -86,6 +92,7 @@ model User {
   returns              Return[]
   supportTickets       SupportTicket[]
   serviceOrders        ServiceOrder[] @relation("UserServices")
+  payments             Payment[]
 
   @@map("users")
 }
@@ -110,6 +117,8 @@ model ServiceOrder {
   quantity        Int
   totalAmount     Decimal         @db.Decimal(10, 2)
   status          OrderStatus     @default(PENDING)
+  paymentMethod   PaymentMethod?
+  paymentStatus   PaymentStatus   @default(PENDING)
   
   // Form details stored as JSON
   details         Json?           
@@ -296,7 +305,8 @@ model Order {
   total           Decimal       @db.Decimal(10, 2)
   notes           String?
   trackingNumber  String?
-  payment         Payment?
+  paymentMethod   PaymentMethod?
+  paymentStatus   PaymentStatus @default(PENDING)
   returns         Return[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -332,18 +342,20 @@ model OrderItem {
 // ================================
 
 model Payment {
-  id                String        @id @default(uuid())
-  orderId           String        @unique
-  order             Order         @relation(fields: [orderId], references: [id])
-  razorpayOrderId   String?       @unique
-  razorpayPaymentId String?
-  razorpaySignature String?
-  method            PaymentMethod @default(RAZORPAY)
-  status            PaymentStatus @default(PENDING)
-  amount            Decimal       @db.Decimal(10, 2)
-  currency          String        @default("INR")
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id                String         @id @default(cuid())
+  userId            String
+  internalOrderId   String
+  orderType         OrderType
+  razorpayOrderId   String?        @unique
+  razorpayPaymentId String?        @unique
+  amount            Int            // stored in paise
+  currency          String         @default("INR")
+  status            PaymentStatus  @default(PENDING)
+  paymentMethod     PaymentMethod?
+  paidAt            DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  user              User           @relation(fields: [userId], references: [id])
 
   @@map("payments")
 }

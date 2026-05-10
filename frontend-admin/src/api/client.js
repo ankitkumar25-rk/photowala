@@ -50,21 +50,42 @@ api.interceptors.response.use(
   async (err) => {
     const original = err.config;
     const msg = String(err.response?.data?.message || '').toLowerCase();
+    
+    // Handle CSRF retry
     if (err.response?.status === 403 && msg.includes('csrf') && !original?._csrfRetry) {
       original._csrfRetry = true;
       await api.get('/csrf');
       return api(original);
     }
-    // Admin and store apps share backend cookie names. Avoid auto-refresh here,
-    // otherwise admin can accidentally pick up a customer session token.
-    if (err.response?.status === 401) {
-      sessionStorage.removeItem('admin-auth');
-      // Don't redirect on initial auth check (GET /auth/me) - let it fail silently
-      // Only redirect if we're already authenticated but token expired on other endpoints
-      if (window.location.pathname !== '/' && original.url !== '/auth/me') {
-        window.location.href = '/';
+
+    // Auto-refresh on 401
+    // Only attempt token refresh if this is not a GET request to /auth/me
+    if (err.response?.status === 401 && !original._retry && original.url !== '/auth/me') {
+      original._retry = true;
+      try {
+        const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+        await axios.post(`${baseURL}/auth/refresh`, {}, {
+          withCredentials: true,
+          headers: { 'X-CSRF-Token': readCookie('csrf_token') || '' },
+        });
+        return api(original);
+      } catch (refreshErr) {
+        // Refresh failed → logout
+        console.error('[Admin Auth] Refresh failed, logging out', refreshErr);
+        sessionStorage.removeItem('admin-auth');
+        window.location.href = '/login';
       }
     }
+
+    // Handle standard 401 for /auth/me or other failures
+    if (err.response?.status === 401) {
+      sessionStorage.removeItem('admin-auth');
+      // Only redirect if we're not already on the login page
+      if (window.location.pathname !== '/login' && original.url !== '/auth/me') {
+        window.location.href = '/login';
+      }
+    }
+    
     return Promise.reject(err);
   }
 );

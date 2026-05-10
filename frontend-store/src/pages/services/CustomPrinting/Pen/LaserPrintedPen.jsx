@@ -5,6 +5,9 @@ import {
   HelpCircle, UploadCloud, AlertTriangle, ShieldCheck, Award, ShoppingCart, Truck, Loader2, Paperclip
 } from 'lucide-react';
 import api from '../../../../api/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '../../../../store';
+import PaymentModal from '../../../../components/PaymentModal';
 import { serviceAssets } from '../../../../data/assets';
 
 const SIDEBAR_LINKS = [
@@ -37,6 +40,11 @@ export default function LaserPrintedPen() {
   const [remark, setRemark] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentOrderData, setCurrentOrderData] = useState(null);
+
+  const queryClient = useQueryClient();
+  const user = useAuthStore((s) => s.user);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -128,13 +136,21 @@ export default function LaserPrintedPen() {
 
       const res = await api.post('/service-orders', payload);
       if (res.data.success) {
-        alert(`Order Placed Successfully!\nOrder ID: ${res.data.orderId}`);
+        setCurrentOrderData({
+          orderId: res.data.orderId,
+          orderType: 'SERVICE_ORDER',
+          totalAmount: Number(pricing.total),
+          userName: user?.name || 'Customer',
+          userEmail: user?.email || '',
+          userPhone: user?.phone || '',
+        });
+        setShowPaymentModal(true);
+
         setOrderName('');
         setPenType('');
         setQty('');
         setSelectedFile(null);
         setRemark('');
-        navigate('/account/services');
       }
     } catch (err) {
       console.error(err);
@@ -142,6 +158,12 @@ export default function LaserPrintedPen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = async (method) => {
+    queryClient.invalidateQueries({ queryKey: ['serviceOrders'] });
+    queryClient.invalidateQueries({ queryKey: ['payments'] });
+    navigate('/account/services');
   };
 
   return (
@@ -399,7 +421,7 @@ export default function LaserPrintedPen() {
                 <div className="absolute top-4 right-4 bg-green-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow">
                   Free Delivery
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1c1a19] to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-[#1c1a19] to-transparent" />
               </div>
 
               <div className="p-6">
@@ -464,6 +486,14 @@ export default function LaserPrintedPen() {
           </div>
         </div>
       </main>
+      {showPaymentModal && currentOrderData && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          orderData={currentOrderData}
+          onSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,76 @@
+# TASK: Razorpay Payment Integration for PHOTOWALA (Refined)
+
+## Project Context
+- **Frontend**: React 18 (Vite) + Zustand + TanStack Query + Axios (withCredentials, CSRF interceptors)
+- **Backend**: Node/Express + Prisma + PostgreSQL + PASETO (httpOnly cookies)
+- **Security**: CSRF double-submit cookies (`X-CSRF-Token` header)
+- **Theme**: Luxury Aesthetic (Brown: `#5b3f2f`, Gold: `#b88a2f`, Cream: `#fdfaf7`)
+- **Structure**: `/backend` | `/frontend-store` | `/frontend-admin`
+
+---
+
+## BACKEND TASKS (/backend)
+
+### 1. Configuration
+- **Install**: `npm install razorpay`
+- **Create `/backend/src/config/razorpay.js`**:
+  ```javascript
+  const Razorpay = require('razorpay');
+  module.exports = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+  ```
+
+### 2. Controller (`/backend/src/controllers/payment.controller.js`)
+Implement:
+- `createRazorpayOrder`: Create RZP order, save to `Payment` table (status: `CREATED`), return RZP order details.
+- `verifyPayment`: Verify HMAC signature. If valid, update `Payment` (status: `PAID`), update `Order`/`ServiceOrder` (paymentStatus: `PAID`, paymentMethod: `RAZORPAY`), send email.
+- `confirmCOD`: Update `Order`/`ServiceOrder` (paymentMethod: `COD`, paymentStatus: `COD_PENDING`), create `Payment` record (status: `COD_PENDING`), send email.
+- `razorpayWebhook`: Handle `payment.captured`, `payment.failed`, `refund.created` using RZP signature verification.
+
+### 3. Routes & App Integration
+- **Routes (`/backend/src/routes/payment.routes.js`)**:
+  - `POST /create-order` (Auth)
+  - `POST /verify` (Auth + CSRF)
+  - `POST /cod` (Auth + CSRF)
+  - `POST /webhook` (Raw Body)
+- **App.js**: Register `paymentRoutes` at `/api/payments`. Ensure webhook uses `express.raw` BEFORE global `express.json()`.
+
+### 4. Prisma Schema Updates
+- **Update `Payment` Model**: Add `userId`, `internalOrderId`, `orderType` (Enum: `ORDER`, `SERVICE_ORDER`), `paymentMethod`, `paidAt`.
+- **Update `Order` & `ServiceOrder` Models**: Add `paymentMethod` and `paymentStatus` fields.
+- **Enums**: Add `PaymentMethod` (`COD`, `RAZORPAY`), `PaymentStatus` (`PENDING`, `PAID`, `COD_PENDING`, `FAILED`, `REFUNDED`), `OrderType`.
+
+---
+
+## FRONTEND TASKS
+
+### 5. Shared Component: `PaymentModal.jsx`
+Create in `src/components/PaymentModal.jsx` for both frontends:
+- **Design**: Luxury theme overlay (backdrop-blur), centered card.
+- **Options**:
+  - **Cash on Delivery**: Brown themed card with 💵 icon.
+  - **Online Payment (Razorpay)**: Gold themed card with 💳 icon and RZP logo.
+- **Logic**: 
+  - Use `api` client (axios) which handles `withCredentials` and `X-CSRF-Token` automatically.
+  - Load Razorpay script via `checkout.js` in `index.html`.
+  - Handle success/failure with `react-hot-toast`.
+
+### 6. Wiring Logic
+- **Storefront Checkout**: After order creation, show `PaymentModal`. On success, redirect to `/orders/:id`.
+- **Service Forms**: After service request submission, show `PaymentModal`. On success, redirect to `/account/services`.
+- **Admin Panel**: Add payment selection flow after creating orders/service orders manually.
+
+### 7. Global State & Cache
+- Update Zustand `useAuthStore` or create `usePaymentStore` if needed.
+- Use `queryClient.invalidateQueries` for `['orders']`, `['serviceOrders']`, and `['payments']` on success.
+
+---
+
+## ENVIRONMENT VARIABLES
+```env
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=...
+RAZORPAY_WEBHOOK_SECRET=...
+```

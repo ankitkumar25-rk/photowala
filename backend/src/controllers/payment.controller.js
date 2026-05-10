@@ -1,173 +1,237 @@
-const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const prisma = require('../config/database');
+const razorpay = require('../config/razorpay');
 const { createError } = require('../middleware/errorHandler');
+const { sendEmail, emailTemplates } = require('../config/email');
 
-const razorpayConfigured = Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
-const razorpay = razorpayConfigured
-  ? new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  })
-  : null;
-
-function secureCompareHex(a, b) {
-  if (!a || !b) return false;
-  const left = Buffer.from(String(a), 'utf8');
-  const right = Buffer.from(String(b), 'utf8');
-  if (left.length !== right.length) return false;
-  return crypto.timingSafeEqual(left, right);
-}
-
+/**
+ * A) Create Razorpay Order
+ */
 exports.createRazorpayOrder = async (req, res, next) => {
   try {
-    if (!razorpay) throw createError('Razorpay is not configured', 503);
+    const { amount, currency = 'INR', orderId, orderType } = req.body;
 
-    const { orderId } = req.body;
-    if (!orderId) throw createError('orderId is required', 400);
+    if (!amount || !orderId || !orderType) {
+      throw createError('Missing required fields', 400);
+    }
 
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: { payment: true },
-    });
-    if (!order) throw createError('Order not found', 404);
-    if (order.userId !== req.user.id) throw createError('Forbidden', 403);
-    if (order.payment?.status === 'PAID') throw createError('Order already paid', 400);
+    // Razorpay expects amount in PAISE (rupees * 100)
+    const amountInPaise = Math.round(Number(amount) * 100);
 
-    // Amount in paise (INR smallest unit)
-    const amountPaise = Math.round(Number(order.total) * 100);
+    const options = {
+      amount: amountInPaise,
+      currency,
+      receipt: orderId,
+    };
 
-    const rzpOrder = await razorpay.orders.create({
-      amount: amountPaise,
-      currency: 'INR',
-      receipt: order.orderNumber,
-      notes: { orderId: order.id },
-    });
+    const rzpOrder = await razorpay.orders.create(options);
 
-    // Persist razorpay order ID
-    await prisma.payment.upsert({
-      where: { orderId },
-      create: {
-        orderId,
+    // Save to Payments table
+    await prisma.payment.create({
+      data: {
+        userId: req.user.id,
+        internalOrderId: orderId,
+        orderType,
         razorpayOrderId: rzpOrder.id,
-        amount: order.total,
-        status: 'PENDING',
+        amount: amountInPaise,
+        currency,
+        status: 'CREATED',
+        paymentMethod: 'RAZORPAY',
       },
-      update: { razorpayOrderId: rzpOrder.id },
     });
 
     res.json({
       success: true,
-      data: {
-        razorpayOrderId: rzpOrder.id,
-        amount: amountPaise,
-        currency: 'INR',
-        key: process.env.RAZORPAY_KEY_ID,
-      },
+      razorpayOrderId: rzpOrder.id,
+      amount: rzpOrder.amount,
+      currency: rzpOrder.currency,
+      keyId: process.env.RAZORPAY_KEY_ID,
     });
   } catch (err) {
     next(err);
   }
 };
 
+/**
+ * B) Verify Razorpay Payment
+ */
 exports.verifyPayment = async (req, res, next) => {
   try {
-    if (!process.env.RAZORPAY_KEY_SECRET) throw createError('Razorpay is not configured', 503);
-
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
-
-    if (!orderId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      throw createError('Missing payment verification fields', 400);
-    }
-
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: { payment: true },
-    });
-    if (!order) throw createError('Order not found', 404);
-    if (order.userId !== req.user.id) throw createError('Forbidden', 403);
-    if (order.payment?.status === 'PAID') {
-      return res.json({ success: true, message: 'Payment already verified' });
-    }
-    if (order.payment?.razorpayOrderId && order.payment.razorpayOrderId !== razorpay_order_id) {
-      throw createError('Razorpay order mismatch', 400);
-    }
+    const { 
+      razorpay_order_id, 
+      razorpay_payment_id, 
+      razorpay_signature, 
+      internalOrderId, 
+      orderType 
+    } = req.body;
 
     // Verify signature
-    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const expectedSig = crypto
+    const body = razorpay_order_id + '|' + razorpay_payment_id;
+    const expected = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
       .update(body)
-      .digest('hex');
+      .toString('hex');
 
-    if (!secureCompareHex(expectedSig, razorpay_signature)) {
+    const isValid = expected === razorpay_signature;
+
+    if (!isValid) {
+      await prisma.payment.update({
+        where: { razorpayOrderId: razorpay_order_id },
+        data: { status: 'FAILED' },
+      });
       throw createError('Payment verification failed', 400);
     }
 
-    // Update payment and order in a transaction
+    // Success
     await prisma.$transaction([
+      // Update Payment record
       prisma.payment.update({
-        where: { orderId },
-        data: {
-          razorpayPaymentId: razorpay_payment_id,
-          razorpaySignature: razorpay_signature,
-          status: 'PAID',
+        where: { razorpayOrderId: razorpay_order_id },
+        data: { 
+          status: 'PAID', 
+          razorpayPaymentId: razorpay_payment_id, 
+          paidAt: new Date() 
         },
       }),
-      prisma.order.update({
-        where: { id: orderId },
-        data: { status: 'CONFIRMED' },
-      }),
+      // Update Order or ServiceOrder
+      orderType === 'ORDER' 
+        ? prisma.order.update({
+            where: { id: internalOrderId },
+            data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' },
+            include: { user: true }
+          })
+        : prisma.serviceOrder.update({
+            where: { id: internalOrderId },
+            data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' },
+            include: { user: true }
+          })
     ]);
 
-    res.json({ success: true, message: 'Payment verified successfully' });
+    // Send confirmation email (non-blocking)
+    // You would typically fetch the user and order details here
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (user) {
+      // Logic for sending email... 
+      // Assuming a generic template or specialized one exists
+      // const tpl = emailTemplates.orderConfirmation(user, order);
+      // await sendEmail({ to: user.email, ...tpl });
+    }
+
+    res.json({ success: true, paymentId: razorpay_payment_id });
   } catch (err) {
     next(err);
   }
 };
 
-exports.webhook = async (req, res, next) => {
+/**
+ * C) Confirm Cash on Delivery
+ */
+exports.confirmCOD = async (req, res, next) => {
   try {
-    if (!process.env.RAZORPAY_WEBHOOK_SECRET) throw createError('Razorpay webhook is not configured', 503);
+    const { internalOrderId, orderType } = req.body;
 
-    const signature = req.headers['x-razorpay-signature'];
-    const body = req.body; // raw buffer (set in app.js)
-
-    const expectedSig = crypto
-      .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET)
-      .update(body)
-      .digest('hex');
-
-    if (!secureCompareHex(expectedSig, signature)) {
-      return res.status(400).json({ success: false });
+    if (!internalOrderId || !orderType) {
+      throw createError('Missing required fields', 400);
     }
 
-    const event = JSON.parse(body.toString());
-
-    if (event.event === 'payment.captured') {
-      const paymentId = event.payload.payment.entity.id;
-      const rzpOrderId = event.payload.payment.entity.order_id;
-      const payment = await prisma.payment.findUnique({
-        where: { razorpayOrderId: rzpOrderId },
-        select: { orderId: true },
-      });
-
-      if (payment) {
-        await prisma.$transaction([
-          prisma.payment.update({
-            where: { razorpayOrderId: rzpOrderId },
-            data: { razorpayPaymentId: paymentId, status: 'PAID' },
+    await prisma.$transaction([
+      orderType === 'ORDER'
+        ? prisma.order.update({
+            where: { id: internalOrderId },
+            data: { paymentMethod: 'COD', paymentStatus: 'COD_PENDING' }
+          })
+        : prisma.serviceOrder.update({
+            where: { id: internalOrderId },
+            data: { paymentMethod: 'COD', paymentStatus: 'COD_PENDING' }
           }),
-          prisma.order.update({
-            where: { id: payment.orderId },
-            data: { status: 'CONFIRMED' },
-          }),
-        ]);
-      }
-    }
+      prisma.payment.create({
+        data: {
+          userId: req.user.id,
+          internalOrderId,
+          orderType,
+          amount: 0, // No online payment amount
+          status: 'COD_PENDING',
+          paymentMethod: 'COD'
+        }
+      })
+    ]);
 
-    res.json({ received: true });
+    // Send COD confirmation email...
+
+    res.json({ success: true, message: 'COD order confirmed' });
   } catch (err) {
     next(err);
+  }
+};
+
+/**
+ * D) Razorpay Webhook
+ */
+exports.razorpayWebhook = async (req, res, next) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const signature = req.headers['x-razorpay-signature'];
+
+    // Verify webhook signature
+    // req.body is already a Buffer because of express.raw()
+    const expected = crypto
+      .createHmac('sha256', webhookSecret)
+      .update(req.body)
+      .digest('hex');
+
+    if (signature !== expected) {
+      console.warn('[webhook] Invalid signature received');
+      return res.status(400).send('Invalid signature');
+    }
+
+    const event = JSON.parse(req.body.toString());
+    const { payload, event: eventType } = event;
+
+    console.log(`[webhook] Received event: ${eventType}`);
+
+    if (eventType === 'payment.captured') {
+      const razorpayOrderId = payload.payment.entity.order_id;
+      const razorpayPaymentId = payload.payment.entity.id;
+
+      // Update payment record to PAID if not already
+      const payment = await prisma.payment.findUnique({ where: { razorpayOrderId } });
+      if (payment && payment.status !== 'PAID') {
+        await prisma.$transaction([
+          prisma.payment.update({
+            where: { razorpayOrderId },
+            data: { status: 'PAID', razorpayPaymentId, paidAt: new Date() }
+          }),
+          payment.orderType === 'ORDER'
+            ? prisma.order.update({
+                where: { id: payment.internalOrderId },
+                data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' }
+              })
+            : prisma.serviceOrder.update({
+                where: { id: payment.internalOrderId },
+                data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' }
+              })
+        ]);
+      }
+    } else if (eventType === 'payment.failed') {
+      const razorpayOrderId = payload.payment.entity.order_id;
+      await prisma.payment.update({
+        where: { razorpayOrderId },
+        data: { status: 'FAILED' }
+      });
+      // Optionally notify user via email about failed payment
+    } else if (eventType === 'refund.created') {
+       const razorpayOrderId = payload.payment.entity.order_id;
+       await prisma.payment.update({
+         where: { razorpayOrderId },
+         data: { status: 'REFUNDED' }
+       });
+    }
+
+    res.status(200).json({ received: true });
+  } catch (err) {
+    console.error('[webhook] Error processing webhook:', err.message);
+    // Always return 200 to RZP to stop retries if it's a code error, 
+    // but log it for investigation.
+    res.status(200).json({ received: true, error: err.message });
   }
 };

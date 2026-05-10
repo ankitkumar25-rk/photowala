@@ -76,9 +76,7 @@ export default function App() {
     });
   }, []); // Empty array: run only once on mount
 
-    // Aggressive logout on exit removed to prevent logouts on page refresh/reload.
-    // Session is now maintained via persistent cookies and /auth/me restoration.
-  }, []);
+
 
   return (
     <QueryClientProvider client={queryClient}>

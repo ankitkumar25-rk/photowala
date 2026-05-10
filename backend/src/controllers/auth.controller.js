@@ -10,7 +10,13 @@ const COOKIE_OPTS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
+  maxAge: 15 * 60 * 1000, // 15 minutes
+  path: '/',
+};
+
+const REFRESH_COOKIE_OPTS = {
+  ...COOKIE_OPTS,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
 // ── Validation Schemas ────────────────────────────────────────
@@ -34,8 +40,6 @@ async function issueTokens(user) {
     signRefreshToken(payload),
   ]);
 
-  // Store refresh token in DB when the schema is available.
-  // Login should still succeed if this persistence layer is unavailable.
   try {
     await prisma.refreshToken.create({
       data: {
@@ -71,12 +75,12 @@ exports.register = async (req, res, next) => {
     sendEmail({ to: user.email, ...tpl }).catch(console.error);
 
     res.cookie('access_token', accessToken, COOKIE_OPTS);
-    res.cookie('refresh_token', refreshToken, COOKIE_OPTS);
+    res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTS);
 
     res.status(201).json({
       success: true,
       message: 'Account created successfully',
-      data: { accessToken, user: { id: user.id, name: user.name, email: user.email, role: user.role } },
+      data: { user: { id: user.id, name: user.name, email: user.email, role: user.role } },
     });
   } catch (err) {
     next(err);
@@ -87,29 +91,11 @@ exports.login = async (req, res, next) => {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
-    // Defensive guard: ensure email is a defined string before calling Prisma
     if (typeof email !== 'string' || !email) {
-      console.error('[auth] login called with invalid email:', email);
       throw createError('Invalid credentials', 401);
     }
 
-    // Log the incoming email (masked) to help diagnose malformed requests in production
-    try {
-      console.debug('[auth] login attempt for email:', `${String(email).slice(0, 3)}***@***`);
-    } catch (_) {}
-
-    let user;
-    try {
-      user = await prisma.user.findFirst({ where: { email } });
-    } catch (err) {
-      console.error('[auth] prisma lookup by email failed', {
-        email,
-        message: err?.message,
-        code: err?.code,
-        meta: err?.meta,
-      });
-      throw err;
-    }
+    const user = await prisma.user.findFirst({ where: { email } });
     if (!user || !user.passwordHash) throw createError('Invalid credentials', 401);
 
     const valid = await bcrypt.compare(password, user.passwordHash);
@@ -118,11 +104,11 @@ exports.login = async (req, res, next) => {
     const { accessToken, refreshToken } = await issueTokens(user);
 
     res.cookie('access_token', accessToken, COOKIE_OPTS);
-    res.cookie('refresh_token', refreshToken, COOKIE_OPTS);
+    res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTS);
 
     res.json({
       success: true,
-      data: { accessToken, user: { id: user.id, name: user.name, email: user.email, role: user.role } },
+      data: { user: { id: user.id, name: user.name, email: user.email, role: user.role } },
     });
   } catch (err) {
     next(err);
@@ -135,8 +121,8 @@ exports.logout = async (req, res, next) => {
     if (token) {
       await prisma.refreshToken.deleteMany({ where: { token } });
     }
-    res.clearCookie('access_token');
-    res.clearCookie('refresh_token');
+    res.clearCookie('access_token', { path: '/' });
+    res.clearCookie('refresh_token', { path: '/' });
     res.json({ success: true, message: 'Logged out successfully' });
   } catch (err) {
     next(err);
@@ -162,9 +148,28 @@ exports.refresh = async (req, res, next) => {
     const { accessToken, refreshToken: newRefreshToken } = await issueTokens(user);
 
     res.cookie('access_token', accessToken, COOKIE_OPTS);
-    res.cookie('refresh_token', newRefreshToken, COOKIE_OPTS);
+    res.cookie('refresh_token', newRefreshToken, REFRESH_COOKIE_OPTS);
 
-    res.json({ success: true, data: { accessToken } });
+    res.json({ 
+      success: true, 
+      user: { id: user.id, name: user.name, email: user.email, role: user.role } 
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getMe = async (req, res, next) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { id: true, name: true, email: true, phone: true, role: true, avatarUrl: true, createdAt: true },
+    });
+    if (!user) throw createError('User not found', 404);
+    res.json({ 
+      success: true, 
+      user: { id: user.id, name: user.name, email: user.email, role: user.role, avatarUrl: user.avatarUrl } 
+    });
   } catch (err) {
     next(err);
   }
@@ -173,12 +178,9 @@ exports.refresh = async (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
   try {
     const { email } = z.object({ email: z.string().email() }).parse(req.body);
-
     const user = await prisma.user.findFirst({ where: { email } });
-    // Always 200 to prevent email enumeration
     if (!user) return res.json({ success: true, message: 'If that email exists, a reset link was sent.' });
 
-    // Invalidate old tokens
     await prisma.passwordResetToken.updateMany({ where: { userId: user.id, used: false }, data: { used: true } });
 
     const resetToken = uuidv4();
@@ -195,9 +197,7 @@ exports.forgotPassword = async (req, res, next) => {
     await sendEmail({ to: user.email, ...tpl });
 
     res.json({ success: true, message: 'If that email exists, a reset link was sent.' });
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 };
 
 exports.resetPassword = async (req, res, next) => {
@@ -216,39 +216,20 @@ exports.resetPassword = async (req, res, next) => {
     await prisma.$transaction([
       prisma.user.update({ where: { id: resetRecord.userId }, data: { passwordHash } }),
       prisma.passwordResetToken.update({ where: { token }, data: { used: true } }),
-      prisma.refreshToken.deleteMany({ where: { userId: resetRecord.userId } }), // revoke all sessions
+      prisma.refreshToken.deleteMany({ where: { userId: resetRecord.userId } }),
     ]);
 
     res.json({ success: true, message: 'Password reset successfully. Please log in again.' });
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 };
-
 
 exports.googleCallback = async (req, res, next) => {
   try {
     const user = req.user;
     const { accessToken, refreshToken } = await issueTokens(user);
-
     res.cookie('access_token', accessToken, COOKIE_OPTS);
-    res.cookie('refresh_token', refreshToken, COOKIE_OPTS);
-
+    res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTS);
     res.redirect(`${process.env.CLIENT_URL}/auth/success`);
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 };
 
-exports.getMe = async (req, res, next) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: { id: true, name: true, email: true, phone: true, role: true, avatarUrl: true, createdAt: true },
-    });
-    if (!user) throw createError('User not found', 404);
-    res.json({ success: true, data: user });
-  } catch (err) {
-    next(err);
-  }
-};

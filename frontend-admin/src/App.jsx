@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { lazy, Suspense, useEffect } from 'react';
@@ -14,6 +14,8 @@ export const useAdminStore = create(
     (set, get) => ({
       user: null,
       isFetching: false,
+      isInitialized: false, // Added to track if initial auth check is done
+      
       setUser: (user) => set({ user }),
       logout: () => { set({ user: null }); adminFetchMePromise = null; },
       
@@ -25,13 +27,14 @@ export const useAdminStore = create(
         adminFetchMePromise = (async () => {
           try {
             const { data } = await api.get('/auth/me');
-            if (!['ADMIN', 'SUPER_ADMIN'].includes(data?.data?.role)) {
+            const userData = data?.user || data?.data; // Support both formats
+            if (!['ADMIN', 'SUPER_ADMIN'].includes(userData?.role)) {
               throw new Error('Admin role required');
             }
-            set({ user: data.data, isFetching: false });
-            return data.data;
+            set({ user: userData, isFetching: false, isInitialized: true });
+            return userData;
           } catch (err) {
-            set({ user: null, isFetching: false });
+            set({ user: null, isFetching: false, isInitialized: true });
             throw err;
           } finally {
             adminFetchMePromise = null;
@@ -43,9 +46,9 @@ export const useAdminStore = create(
     { 
       name: 'admin-auth', 
       storage: {
-        getItem: (name) => sessionStorage.getItem(name),
-        setItem: (name, value) => sessionStorage.setItem(name, value),
-        removeItem: (name) => sessionStorage.removeItem(name),
+        getItem: (name) => localStorage.getItem(name),
+        setItem: (name, value) => localStorage.setItem(name, value),
+        removeItem: (name) => localStorage.removeItem(name),
       },
       partialize: (s) => ({ user: s.user }) 
     }
@@ -88,11 +91,17 @@ function Loader() {
 function RequireAdmin({ children }) {
   const user = useAdminStore((s) => s.user);
   const isFetching = useAdminStore((s) => s.isFetching);
+  const isInitialized = useAdminStore((s) => s.isInitialized);
 
-  // Show loader only if actively fetching, not if user is simply not logged in
-  if (isFetching && !user) return <Loader />;
-  if (!user) return <Navigate to="/login" replace />;
-  if (!['ADMIN', 'SUPER_ADMIN'].includes(user.role)) return <Navigate to="/login" replace />;
+  // While fetching initial state and not initialized yet, show loader
+  if (!isInitialized && isFetching) return <Loader />;
+  
+  // If check is done and no user, or user is not admin, redirect
+  if (isInitialized && (!user || !['ADMIN', 'SUPER_ADMIN'].includes(user.role))) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // If we have a user and they are an admin, proceed
   return children;
 }
 

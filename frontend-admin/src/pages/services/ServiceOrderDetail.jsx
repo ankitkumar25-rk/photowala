@@ -4,10 +4,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ArrowLeft, Download, Clock, User, 
   Mail, Phone, Package, Info, CheckCircle2,
-  AlertCircle, Trash2, Printer, Settings, FileText
+  AlertCircle, Trash2, Printer, Settings, FileText, CreditCard
 } from 'lucide-react';
 import api from '../../api/client';
 import toast from 'react-hot-toast';
+import PaymentModal from '../../components/PaymentModal';
 
 const STATUS_FLOW = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
 
@@ -15,6 +16,7 @@ export default function ServiceOrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const { data: order, isLoading } = useQuery({
     queryKey: ['service-order', id],
@@ -126,6 +128,30 @@ export default function ServiceOrderDetail() {
                 <p className="text-sm font-bold text-gray-900 uppercase">{order.fileOption}</p>
               </div>
             </div>
+          </div>
+
+          {/* Payment Status Card */}
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-2xl ${order.paymentStatus === 'PAID' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                <CreditCard className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Payment Status</p>
+                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight">
+                  {order.paymentStatus || 'PENDING'} 
+                  {order.paymentMethod && <span className="text-xs text-gray-400 font-bold ml-2">via {order.paymentMethod}</span>}
+                </h3>
+              </div>
+            </div>
+            {order.paymentStatus !== 'PAID' && (
+              <button 
+                onClick={() => setShowPaymentModal(true)}
+                className="bg-brand-primary text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-brand-primary/90 transition-all shadow-lg shadow-brand-primary/20"
+              >
+                Initiate Payment
+              </button>
+            )}
           </div>
 
           {/* Details Card */}
@@ -268,6 +294,24 @@ export default function ServiceOrderDetail() {
         </div>
 
       </div>
+      {showPaymentModal && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          orderData={{
+            orderId: order.id,
+            orderType: 'SERVICE_ORDER',
+            totalAmount: Number(order.totalAmount),
+            userName: order.customerName || order.user?.name || 'Customer',
+            userEmail: order.user?.email || '',
+            userPhone: order.user?.phone || '',
+          }}
+          onSuccess={() => {
+            queryClient.invalidateQueries(['service-order', id]);
+            toast.success('Payment recorded successfully');
+          }}
+        />
+      )}
     </div>
   );
 }
