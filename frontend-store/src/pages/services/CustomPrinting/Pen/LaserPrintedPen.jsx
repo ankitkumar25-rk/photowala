@@ -207,7 +207,7 @@ export default function LaserPrintedPen() {
         <div className="mb-10">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">Laser Printed Pens</h1>
           <p className="text-gray-600 max-w-3xl leading-relaxed">
-            Precision-etched branding for executive gifts and corporate identity. Choose your pen model and quantity — price updates live.
+            Precision-etched branding for executive gifts and corporate identity. Choose your pen model and quantity —  price updates live.
           </p>
         </div>
 

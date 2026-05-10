@@ -246,7 +246,7 @@ export default function StickerLabels() {
             <span className="text-[#a64d24]">Sticker Labels</span>
           </div>
           
-          <div className="mb-10">
+        <div className="mb-10">
             <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Sticker Labels Customization</h1>
             <p className="text-sm text-gray-500">Select Cut Type and configure your order details below.</p>
           </div>

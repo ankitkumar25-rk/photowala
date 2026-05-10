@@ -336,18 +336,7 @@ export default function GarmentTag() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
-        <header className="bg-white border-b border-gray-100 px-4 md:px-8 py-4 md:py-5 flex justify-between items-center sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center gap-3">
-             <div className="w-1.5 h-6 bg-[#b65e2e] rounded-full" />
-             <div className="flex flex-col">
-                <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-1 text-left">Custom Printing</span>
-                <span className="text-base md:text-lg font-black text-gray-900 uppercase tracking-tighter leading-none text-left">{activeData.title}</span>
-             </div>
-          </div>
-          <h1 className="text-[9px] md:text-xs font-black text-gray-400 uppercase tracking-widest hidden sm:block">Order Portal v2.0</h1>
-        </header>
-
-        <div className="p-4 md:p-8">
+        <div className="p-4 md:p-10 lg:p-12">
           {/* Breadcrumbs */}
           <div className="text-[10px] md:text-sm font-medium mb-4 md:mb-8 flex flex-wrap items-center gap-2">
             <Link to="/" className="text-[#3b71ca] hover:text-[#285192]">Home</Link><span className="text-gray-500">›</span>
