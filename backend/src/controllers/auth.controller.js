@@ -232,7 +232,12 @@ exports.googleCallback = async (req, res, next) => {
     const { accessToken, refreshToken } = await issueTokens(user);
     res.cookie('access_token', accessToken, COOKIE_OPTS);
     res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTS);
-    res.redirect(`${process.env.CLIENT_URL}/auth/success`);
-  } catch (err) { next(err); }
+
+    // Pass tokens in URL as fallback for browsers that block third-party cookies
+    res.redirect(`${process.env.CLIENT_URL}/auth/success?access_token=${accessToken}&refresh_token=${refreshToken}&success=true`);
+  } catch (err) {
+    console.error('[auth] Google callback error:', err);
+    next(err);
+  }
 };
 

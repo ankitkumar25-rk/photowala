@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store';
 import toast from 'react-hot-toast';
@@ -11,7 +11,20 @@ export default function AuthSuccess() {
   const fetchMe = useAuthStore((s) => s.fetchMe);
 
   useEffect(() => {
-    // Fetch user info using the cookie that was just set by backend
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
+
+    // If tokens are in URL, save them as non-httpOnly cookies as a fallback
+    // This helps in environments where third-party httpOnly cookies are blocked.
+    if (accessToken) {
+      document.cookie = `access_token=${accessToken}; path=/; max-age=900; SameSite=Lax`;
+    }
+    if (refreshToken) {
+      document.cookie = `refresh_token=${refreshToken}; path=/; max-age=604800; SameSite=Lax`;
+    }
+
+    // Fetch user info
     fetchMe()
       .then(() => {
         toast.success('Signed in successfully!');
