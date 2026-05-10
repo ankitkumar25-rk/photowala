@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Share2, MessageCircle, Send, Mail, Phone, MapPin } from 'lucide-react';
+import { Share2, MessageCircle, Send, Mail, Phone, MapPin, Shield, Heart } from 'lucide-react';
 import { brandAssets } from '../data/assets';
 const Instagram = Share2, Facebook = MessageCircle, Twitter = Send;
 
@@ -96,7 +96,10 @@ export default function Footer() {
             <div className="mt-6">
               <p className="text-[#d4b49e] text-xs font-semibold uppercase tracking-wider mb-2">Certifications</p>
               <div className="flex gap-2">
-                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40 flex items-center gap-1"><Award className="w-3 h-3 text-[#d8a45f]" /> Crafted Premium</span>
+                <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40 flex items-center gap-1">
+                  <img src={brandAssets.logo} alt="Logo" className="w-3 h-3 object-contain" />
+                  Crafted Premium
+                </span>
                 <span className="px-2 py-1 bg-white/8 rounded text-xs text-[#d7c4b0] border border-[#d8a45f]/40 flex items-center gap-1"><Shield className="w-3 h-3 text-[#d8a45f]" /> Trusted India</span>
               </div>
             </div>
