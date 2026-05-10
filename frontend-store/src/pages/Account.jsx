@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, createElement } from 'react';
+import { useState, useEffect, createElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   User, Lock, MapPin, Heart, Package, ChevronRight,
@@ -14,7 +14,7 @@ const TABS = [
   { id: 'addresses', label: 'Addresses', icon: MapPin },
   { id: 'security',  label: 'Security',  icon: Lock },
   { id: 'wishlist',  label: 'Wishlist',  icon: Heart },
-  { id: 'services',  label: 'Services',  icon: Settings },
+  { id: 'services',  label: 'Services Ledger', icon: Settings },
 ];
 
 /* Ã¢â€â‚¬Ã¢â€â‚¬ Status badge Ã¢â€â‚¬Ã¢â€â‚¬ */
@@ -446,7 +446,7 @@ export default function Account() {
                 onClick={() => navigate('/account/services')}
                 className="w-full py-2 bg-white text-brand-primary rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg hover:scale-[1.02] transition-transform"
               >
-                View Service History
+                View Services Ledger
               </button>
             </div>
           </div>

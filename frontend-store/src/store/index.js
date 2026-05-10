@@ -7,19 +7,18 @@ export const useAuthStore = create(
     (set, get) => ({
       user: null,
       isLoading: false,
-      _fetchMePromise: null, // Track in-flight fetchMe requests
+      isInitialized: false, // Added tracking
+      _fetchMePromise: null, 
 
       setUser: (user) => set({ user }),
       login: async (credentials) => {
         set({ isLoading: true });
         try {
           const { data } = await authApi.login(credentials);
-          set({ user: data.data.user, isLoading: false });
-          // Merge guest cart into user cart
+          const userData = data?.user || data?.data?.user || data?.data;
+          set({ user: userData, isLoading: false, isInitialized: true });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
-          // Optionally fetch full user profile to get avatarUrl, phone etc.
-          // (non-critical, can wait for next fetchMe)
           return data;
         } catch (err) {
           set({ isLoading: false });
@@ -31,7 +30,8 @@ export const useAuthStore = create(
         set({ isLoading: true });
         try {
           const { data } = await authApi.register(userData);
-          set({ user: data.data.user, isLoading: false });
+          const userObj = data?.user || data?.data?.user || data?.data;
+          set({ user: userObj, isLoading: false, isInitialized: true });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
           return data;
@@ -43,36 +43,33 @@ export const useAuthStore = create(
 
       logout: async () => {
         await authApi.logout().catch(() => {});
-        set({ user: null, _fetchMePromise: null });
+        set({ user: null, _fetchMePromise: null, isInitialized: true });
         useCartStore.getState().resetCart();
       },
 
       fetchMe: async () => {
-        // Prevent concurrent fetchMe calls - return existing promise if one is in flight
         if (get()._fetchMePromise) return get()._fetchMePromise;
         
-        const hadUserBefore = !!get().user; // Capture state before request
+        const hadUserBefore = !!get().user;
         const promise = (async () => {
           try {
             const { data } = await authApi.getMe();
-            // Prevent admin leakage: only allow CUSTOMER role in the store frontend
-            if (data.data?.role !== 'CUSTOMER') {
-              console.warn('[Auth] Non-CUSTOMER role detected:', data.data?.role);
-              set({ user: null, _fetchMePromise: null });
+            const userData = data?.user || data?.data;
+            
+            if (userData?.role !== 'CUSTOMER') {
+              set({ user: null, _fetchMePromise: null, isInitialized: true });
               useCartStore.getState().resetCart();
               return null;
             }
-            set({ user: data.data, _fetchMePromise: null });
+            set({ user: userData, _fetchMePromise: null, isInitialized: true });
             await useCartStore.getState().fetchCart();
-            return data.data;
+            return userData;
           } catch (err) {
-            // Only clear user if we previously thought we were authenticated
             if (hadUserBefore) {
-              console.error('[Auth] fetchMe failed, clearing user', err);
-              set({ user: null, _fetchMePromise: null });
+              set({ user: null, _fetchMePromise: null, isInitialized: true });
               useCartStore.getState().resetCart();
             } else {
-              set({ _fetchMePromise: null });
+              set({ _fetchMePromise: null, isInitialized: true });
             }
             throw err;
           }
