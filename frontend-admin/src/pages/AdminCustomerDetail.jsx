@@ -10,6 +10,7 @@ export default function AdminCustomerDetail() {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-customer', id],
     queryFn: () => api.get('/admin/customers/' + id).then((r) => r.data.data),
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const banMut = useMutation({

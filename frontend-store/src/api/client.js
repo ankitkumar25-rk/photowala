@@ -80,14 +80,21 @@ api.interceptors.response.use(
       try {
         // Attempt to refresh tokens
         const res = await api.post('/auth/refresh');
-        if (res.data?.accessToken) {
-          localStorage.setItem('token', res.data.accessToken);
-          original.headers.Authorization = `Bearer ${res.data.accessToken}`;
+        const accessToken = res.data?.data?.accessToken;
+        const refreshToken = res.data?.data?.refreshToken;
+        
+        if (accessToken) {
+          localStorage.setItem('token', accessToken);
+          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+          original.headers.Authorization = `Bearer ${accessToken}`;
           return api(original); // Retry original request
+        } else {
+          throw new Error('No access token in refresh response');
         }
       } catch (refreshError) {
         // Refresh failed (e.g. refresh token expired)
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('auth-storage');
         if (window.location.pathname !== '/') {
           window.location.href = '/';

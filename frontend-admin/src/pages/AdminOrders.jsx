@@ -12,10 +12,15 @@ export default function AdminOrders() {
   const [page, setPage] = useState(1);
   const qc = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['admin-orders', status, page],
     queryFn: () => api.get('/orders/admin/all', { params: { status: status || undefined, page, limit: 20 } }).then(r => r.data),
+    staleTime: 1000 * 60, // 1 minute
   });
+
+  if (error) {
+    return <div className="card p-5 bg-red-50 border border-red-200"><p className="text-red-700 font-semibold">Failed to load orders: {error.message}</p></div>;
+  }
 
   const statusMut = useMutation({
     mutationFn: ({id, status, trackingNumber}) => api.patch('/orders/' + id + '/status', { status, trackingNumber }),

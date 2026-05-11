@@ -21,11 +21,13 @@ export default function Products() {
   const { data, isLoading } = useQuery({
     queryKey: ['products', filters, sort, order],
     queryFn: () => productsApi.list({ ...filters, sort, order }).then((r) => r.data),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const { data: catData } = useQuery({
     queryKey: ['categories'],
     queryFn:  () => categoriesApi.list().then((r) => r.data.data),
+    staleTime: 1000 * 60 * 30, // 30 minutes - categories change rarely
   });
 
   const setFilter = useCallback((key, value) => {

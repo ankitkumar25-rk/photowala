@@ -17,15 +17,25 @@ export default function AdminLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await api.post('/auth/login', form);
-      const { user, accessToken } = data.data;
+      const response = await api.post('/auth/login', form);
+      const { data } = response;
+      const { user, accessToken, refreshToken } = data?.data || {};
+      
+      if (!user || !accessToken) {
+        toast.error('Invalid response from server');
+        return;
+      }
+      
       if (!['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
         toast.error('Access denied. Admin account required.');
         return;
       }
       
-      // Persist for header-based auth
+      // Persist tokens and user state
       localStorage.setItem('token', accessToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      
+      // Update store with user data - this triggers persistence
       setUser(user);
       
       toast.success(`Welcome, ${user.name}!`);

@@ -11,12 +11,13 @@ export default function AdminOrderDetail() {
   const qc = useQueryClient();
   const [trackingNumber, setTrackingNumber] = useState('');
 
-  const { data: order, isLoading } = useQuery({
+  const { data: order, isLoading, error } = useQuery({
     queryKey: ['admin-order', id],
     queryFn: async () => {
       const res = await api.get('/orders/' + id);
       return res.data?.data;
     },
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const statusMut = useMutation({
@@ -40,6 +41,7 @@ export default function AdminOrderDetail() {
     onError: (err) => toast.error(err?.response?.data?.message || 'Unable to update tracking'),
   });
 
+  if (error) return <div className="card p-5 bg-red-50 border border-red-200"><p className="text-red-700 font-semibold">Failed to load order: {error.message}</p></div>;
   if (isLoading) return <div className="card p-5">Loading order details...</div>;
   if (!order) return <div className="card p-5">Order not found.</div>;
 

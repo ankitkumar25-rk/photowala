@@ -44,6 +44,7 @@ export default function AdminProductForm() {
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: () => api.get('/categories').then((r) => r.data.data || []),
+    staleTime: 1000 * 60 * 30, // 30 minutes - categories rarely change
   });
 
   const { data: productData, isLoading: loadingProduct } = useQuery({
@@ -64,6 +65,7 @@ export default function AdminProductForm() {
       return bySlug.data?.data;
     },
     retry: false,
+    staleTime: 1000 * 60, // 1 minute
   });
 
   useEffect(() => {

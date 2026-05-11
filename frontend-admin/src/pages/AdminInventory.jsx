@@ -6,10 +6,12 @@ import { useState } from 'react';
 export default function AdminInventory() {
   const [editing, setEditing] = useState({});
   const qc = useQueryClient();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['admin-inventory'],
     queryFn: () => api.get('/admin/inventory').then(r => r.data.data),
+    staleTime: 1000 * 60, // 1 minute
   });
+  if (error) return <div className="card p-5 bg-red-50 border border-red-200"><p className="text-red-700 font-semibold">Failed to load inventory: {error.message}</p></div>;
   const updateMut = useMutation({
     mutationFn: ({id, stock}) => api.patch('/products/' + id + '/stock', { stock }),
     onSuccess: () => { qc.invalidateQueries(['admin-inventory']); toast.success('Stock updated'); setEditing({}); },

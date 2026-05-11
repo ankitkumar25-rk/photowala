@@ -255,7 +255,8 @@ export default function MyServiceOrders() {
     queryFn: async () => {
       const { data } = await api.get('/service-orders/my');
       return data.data;
-    }
+    },
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
   const handlePay = (order) => {

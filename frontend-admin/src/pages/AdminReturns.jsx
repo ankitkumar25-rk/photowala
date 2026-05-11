@@ -7,10 +7,12 @@ export default function AdminReturns() {
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
   const qc = useQueryClient();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['admin-returns', status, page],
     queryFn: () => api.get('/returns/admin', { params: { status: status || undefined, page, limit: 20 } }).then(r => r.data),
+    staleTime: 1000 * 60, // 1 minute
   });
+  if (error) return <div className="card p-5 bg-red-50 border border-red-200"><p className="text-red-700 font-semibold">Failed to load returns: {error.message}</p></div>;
   const approveMut = useMutation({
     mutationFn: ({id, refundAmount}) => api.patch('/returns/' + id + '/approve', { refundAmount: Number(refundAmount), refundMethod: 'original' }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-returns'] }); toast.success('Return approved'); },

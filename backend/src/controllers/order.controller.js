@@ -60,14 +60,13 @@ exports.createOrder = async (req, res, next) => {
 
     if (!cart || cart.items.length === 0) throw createError('Cart is empty', 400);
 
-    // Check stock and calculate totals
+    // Calculate totals and prepare order items (validation done inside transaction)
     let subtotal = 0;
     const orderItems = [];
 
     for (const item of cart.items) {
       const { product } = item;
       if (!product.isActive) throw createError(`${product.name} is no longer available`, 400);
-      if (product.stock < item.quantity) throw createError(`Insufficient stock for ${product.name}`, 400);
 
       const itemTotal = Number(product.price) * item.quantity;
       subtotal += itemTotal;
@@ -86,8 +85,19 @@ exports.createOrder = async (req, res, next) => {
     const shippingCost = subtotal >= 1000 ? 0 : 49; // Free shipping above ₹999
     const total = subtotal + shippingCost;
 
-    // Create order + decrement stock atomically
+    // Create order + validate stock + decrement stock atomically
     const order = await prisma.$transaction(async (tx) => {
+      // Re-validate stock inside transaction to prevent race conditions
+      for (const item of cart.items) {
+        const currentProduct = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { stock: true, name: true },
+        });
+        if (currentProduct.stock < item.quantity) {
+          throw createError(`Insufficient stock for ${currentProduct.name}`, 400);
+        }
+      }
+
       // Decrement stock
       for (const item of cart.items) {
         await tx.product.update({

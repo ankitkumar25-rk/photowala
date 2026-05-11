@@ -5,10 +5,16 @@ import { Link } from 'react-router-dom';
 import PaginationControls from '../components/PaginationControls';
 export default function AdminCustomers() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['admin-customers', page],
     queryFn: () => api.get('/admin/customers', { params: { page, limit: 20 } }).then(r => r.data),
+    staleTime: 1000 * 60, // 1 minute
   });
+  
+  if (error) {
+    return <div className="card p-5 bg-red-50 border border-red-200"><p className="text-red-700 font-semibold">Failed to load customers: {error.message}</p></div>;
+  }
+
   return (
     <div className="space-y-5">
       <div><h1 className="text-2xl font-bold text-gray-800">Customers</h1><p className="text-gray-400 text-sm">{data?.meta?.total || 0} registered customers</p></div>

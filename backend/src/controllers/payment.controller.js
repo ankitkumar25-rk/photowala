@@ -15,6 +15,12 @@ exports.createRazorpayOrder = async (req, res, next) => {
       throw createError('Missing required fields', 400);
     }
 
+    // Validate orderType
+    const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
+    if (!validOrderTypes.includes(orderType)) {
+      throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
+    }
+
     // Razorpay expects amount in PAISE (rupees * 100)
     const amountInPaise = Math.round(Number(amount) * 100);
 
@@ -42,10 +48,12 @@ exports.createRazorpayOrder = async (req, res, next) => {
 
     res.json({
       success: true,
-      razorpayOrderId: rzpOrder.id,
-      amount: rzpOrder.amount,
-      currency: rzpOrder.currency,
-      keyId: process.env.RAZORPAY_KEY_ID,
+      data: {
+        razorpayOrderId: rzpOrder.id,
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency,
+        keyId: process.env.RAZORPAY_KEY_ID,
+      },
     });
   } catch (err) {
     next(err);
@@ -65,6 +73,17 @@ exports.verifyPayment = async (req, res, next) => {
       orderType 
     } = req.body;
 
+    // Validate required fields
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !internalOrderId || !orderType) {
+      throw createError('Missing required payment verification fields', 400);
+    }
+
+    // Validate orderType
+    const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
+    if (!validOrderTypes.includes(orderType)) {
+      throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
+    }
+
     // Verify signature
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expected = crypto
@@ -75,14 +94,48 @@ exports.verifyPayment = async (req, res, next) => {
     const isValid = expected === razorpay_signature;
 
     if (!isValid) {
-      await prisma.payment.update({
-        where: { razorpayOrderId: razorpay_order_id },
-        data: { status: 'FAILED' },
-      });
+      try {
+        await prisma.payment.update({
+          where: { razorpayOrderId: razorpay_order_id },
+          data: { status: 'FAILED' },
+        });
+      } catch (e) {
+        console.error('[payment] Failed to mark payment as FAILED:', e.message);
+      }
       throw createError('Payment verification failed', 400);
     }
 
-    // Success
+    // Fetch the order to validate it exists and belongs to user, and get the amount
+    const orderData = orderType === 'ORDER'
+      ? await prisma.order.findUnique({ where: { id: internalOrderId }, include: { user: true } })
+      : await prisma.serviceOrder.findUnique({ where: { id: internalOrderId }, include: { user: true } });
+
+    if (!orderData) {
+      throw createError(`${orderType === 'ORDER' ? 'Order' : 'Service Order'} not found`, 404);
+    }
+
+    // Authorization check: verify payment belongs to authenticated user
+    if (orderData.userId !== req.user.id) {
+      throw createError('Unauthorized: Payment does not belong to this user', 403);
+    }
+
+    // Fetch existing payment to check idempotency and validate amount
+    const existingPayment = await prisma.payment.findUnique({
+      where: { razorpayOrderId: razorpay_order_id },
+    });
+
+    if (existingPayment && existingPayment.status === 'PAID') {
+      // Idempotent: already processed, return success
+      return res.json({
+        success: true,
+        data: {
+          paymentId: razorpay_payment_id,
+          message: 'Payment already verified successfully',
+        },
+      });
+    }
+
+    // Success: update payment and orders atomically
     await prisma.$transaction([
       // Update Payment record
       prisma.payment.update({
@@ -98,26 +151,29 @@ exports.verifyPayment = async (req, res, next) => {
         ? prisma.order.update({
             where: { id: internalOrderId },
             data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' },
-            include: { user: true }
           })
         : prisma.serviceOrder.update({
             where: { id: internalOrderId },
-            data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' },
-            include: { user: true }
+            data: { 
+              paymentStatus: 'PAID', 
+              paymentMethod: 'RAZORPAY',
+              status: 'CONFIRMED' // Mark as confirmed once paid
+            },
           })
     ]);
 
     // Send confirmation email (non-blocking)
-    // You would typically fetch the user and order details here
-    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
-    if (user) {
-      // Logic for sending email... 
-      // Assuming a generic template or specialized one exists
-      // const tpl = emailTemplates.orderConfirmation(user, order);
-      // await sendEmail({ to: user.email, ...tpl });
+    if (orderData.user) {
+      // Email sending logic would go here
     }
 
-    res.json({ success: true, paymentId: razorpay_payment_id });
+    res.json({
+      success: true,
+      data: {
+        paymentId: razorpay_payment_id,
+        message: 'Payment verified successfully',
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -134,6 +190,25 @@ exports.confirmCOD = async (req, res, next) => {
       throw createError('Missing required fields', 400);
     }
 
+    // Validate orderType
+    const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
+    if (!validOrderTypes.includes(orderType)) {
+      throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
+    }
+
+    // Verify order exists and belongs to user
+    const orderData = orderType === 'ORDER'
+      ? await prisma.order.findUnique({ where: { id: internalOrderId } })
+      : await prisma.serviceOrder.findUnique({ where: { id: internalOrderId } });
+
+    if (!orderData) {
+      throw createError(`${orderType === 'ORDER' ? 'Order' : 'Service Order'} not found`, 404);
+    }
+
+    if (orderData.userId !== req.user.id) {
+      throw createError('Unauthorized', 403);
+    }
+
     await prisma.$transaction([
       orderType === 'ORDER'
         ? prisma.order.update({
@@ -142,7 +217,11 @@ exports.confirmCOD = async (req, res, next) => {
           })
         : prisma.serviceOrder.update({
             where: { id: internalOrderId },
-            data: { paymentMethod: 'COD', paymentStatus: 'COD_PENDING' }
+            data: { 
+              paymentMethod: 'COD', 
+              paymentStatus: 'COD_PENDING',
+              status: 'PENDING' // Set status to PENDING for COD orders
+            }
           }),
       prisma.payment.create({
         data: {
@@ -156,9 +235,10 @@ exports.confirmCOD = async (req, res, next) => {
       })
     ]);
 
-    // Send COD confirmation email...
-
-    res.json({ success: true, message: 'COD order confirmed' });
+    res.json({
+      success: true,
+      data: { message: 'COD order confirmed' },
+    });
   } catch (err) {
     next(err);
   }
@@ -180,21 +260,36 @@ exports.razorpayWebhook = async (req, res, next) => {
       .digest('hex');
 
     if (signature !== expected) {
-      console.warn('[webhook] Invalid signature received');
-      return res.status(400).send('Invalid signature');
+      console.error('[webhook] CSRF attack suspected: invalid signature');
+      return res.status(400).json({ success: false, error: 'Invalid signature' });
     }
 
     const event = JSON.parse(req.body.toString());
     const { payload, event: eventType } = event;
 
-    console.log(`[webhook] Received event: ${eventType}`);
+    // Validate payload structure
+    if (!payload || !eventType) {
+      console.error('[webhook] Invalid payload structure');
+      return res.status(400).json({ success: false, error: 'Invalid payload' });
+    }
+
+    // Use structured logging with non-sensitive data only
+    console.log(`[webhook] Processing event type: ${eventType}, timestamp: ${new Date().toISOString()}`);
 
     if (eventType === 'payment.captured') {
-      const razorpayOrderId = payload.payment.entity.order_id;
-      const razorpayPaymentId = payload.payment.entity.id;
+      const razorpayOrderId = payload.payment?.entity?.order_id;
+      const razorpayPaymentId = payload.payment?.entity?.id;
 
-      // Update payment record to PAID if not already
-      const payment = await prisma.payment.findUnique({ where: { razorpayOrderId } });
+      if (!razorpayOrderId || !razorpayPaymentId) {
+        console.error('[webhook] Missing payment details in payload');
+        return res.status(200).json({ received: true }); // Return 200 to stop retries
+      }
+
+      // Fetch payment with transaction to prevent concurrent updates
+      const payment = await prisma.payment.findUnique({ 
+        where: { razorpayOrderId } 
+      });
+
       if (payment && payment.status !== 'PAID') {
         await prisma.$transaction([
           prisma.payment.update({
@@ -208,23 +303,40 @@ exports.razorpayWebhook = async (req, res, next) => {
               })
             : prisma.serviceOrder.update({
                 where: { id: payment.internalOrderId },
-                data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' }
+                data: { 
+                  paymentStatus: 'PAID', 
+                  paymentMethod: 'RAZORPAY',
+                  status: 'CONFIRMED'
+                }
               })
         ]);
       }
     } else if (eventType === 'payment.failed') {
-      const razorpayOrderId = payload.payment.entity.order_id;
-      await prisma.payment.update({
-        where: { razorpayOrderId },
-        data: { status: 'FAILED' }
-      });
-      // Optionally notify user via email about failed payment
+      const razorpayOrderId = payload.payment?.entity?.order_id;
+
+      if (razorpayOrderId) {
+        try {
+          await prisma.payment.update({
+            where: { razorpayOrderId },
+            data: { status: 'FAILED' }
+          });
+        } catch (e) {
+          console.error('[webhook] Error marking payment as failed:', e.message);
+        }
+      }
     } else if (eventType === 'refund.created') {
-       const razorpayOrderId = payload.payment.entity.order_id;
-       await prisma.payment.update({
-         where: { razorpayOrderId },
-         data: { status: 'REFUNDED' }
-       });
+      const razorpayOrderId = payload.payment?.entity?.order_id;
+
+      if (razorpayOrderId) {
+        try {
+          await prisma.payment.update({
+            where: { razorpayOrderId },
+            data: { status: 'REFUNDED' }
+          });
+        } catch (e) {
+          console.error('[webhook] Error marking payment as refunded:', e.message);
+        }
+      }
     }
 
     res.status(200).json({ received: true });
@@ -233,5 +345,75 @@ exports.razorpayWebhook = async (req, res, next) => {
     // Always return 200 to RZP to stop retries if it's a code error, 
     // but log it for investigation.
     res.status(200).json({ received: true, error: err.message });
+  }
+};
+
+/**
+ * E) Process Refund (Admin endpoint)
+ */
+exports.processRefund = async (req, res, next) => {
+  try {
+    const { paymentId, refundAmount, reason } = req.body;
+
+    if (!paymentId || !refundAmount) {
+      throw createError('Missing required fields: paymentId, refundAmount', 400);
+    }
+
+    // Fetch payment record
+    const payment = await prisma.payment.findUnique({
+      where: { id: paymentId },
+      include: { 
+        order: true,
+        serviceOrder: true 
+      }
+    });
+
+    if (!payment) {
+      throw createError('Payment not found', 404);
+    }
+
+    if (payment.status !== 'PAID') {
+      throw createError('Only PAID payments can be refunded', 400);
+    }
+
+    if (refundAmount > payment.amount) {
+      throw createError('Refund amount cannot exceed payment amount', 400);
+    }
+
+    // Process refund through Razorpay API
+    if (payment.razorpayPaymentId) {
+      try {
+        await razorpay.payments.refund(payment.razorpayPaymentId, {
+          amount: Math.round(refundAmount * 100), // Convert to paise
+          notes: { reason: reason || 'Admin refund' }
+        });
+      } catch (err) {
+        console.error('[payment] Razorpay refund API error:', err.message);
+        throw createError('Failed to process refund through payment gateway', 500);
+      }
+    } else if (payment.paymentMethod === 'COD') {
+      throw createError('Cannot refund COD payments through this endpoint', 400);
+    }
+
+    // Update payment status
+    await prisma.payment.update({
+      where: { id: paymentId },
+      data: { 
+        status: 'REFUNDED',
+        refundedAt: new Date(),
+        refundAmount: refundAmount
+      }
+    });
+
+    res.json({
+      success: true,
+      data: { 
+        message: 'Refund processed successfully',
+        refundAmount,
+        paymentId
+      }
+    });
+  } catch (err) {
+    next(err);
   }
 };

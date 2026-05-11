@@ -174,11 +174,13 @@ export default function Home() {
   const { data: featuredData, isLoading: loadingFeatured } = useQuery({
     queryKey: ['featured-products'],
     queryFn: () => productsApi.featured().then((r) => r.data.data),
+    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
     queryFn: () => categoriesApi.list().then((r) => r.data.data),
+    staleTime: 1000 * 60 * 30, // 30 minutes - categories change rarely
   });
 
   return (

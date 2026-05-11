@@ -14,15 +14,26 @@ export const useAuthStore = create(
       login: async (credentials) => {
         set({ isLoading: true });
         try {
-          const { data } = await authApi.login(credentials);
-          const userData = data?.user || data?.data?.user || data?.data;
-          const token = data?.accessToken || data?.data?.accessToken;
-          if (token) localStorage.setItem('token', token);
+          const response = await authApi.login(credentials);
+          const { data } = response;
+          
+          // Extract user and token from nested response structure
+          const userData = data?.data?.user;
+          const accessToken = data?.data?.accessToken;
+          const refreshToken = data?.data?.refreshToken;
+          
+          if (!userData || !accessToken) {
+            throw new Error('Invalid response format: missing user or token');
+          }
+          
+          // Store tokens
+          localStorage.setItem('token', accessToken);
+          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
           
           set({ user: userData, isLoading: false, isInitialized: true });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
-          return data;
+          return response.data;
         } catch (err) {
           set({ isLoading: false });
           throw err;
@@ -32,15 +43,26 @@ export const useAuthStore = create(
       register: async (userData) => {
         set({ isLoading: true });
         try {
-          const { data } = await authApi.register(userData);
-          const userObj = data?.user || data?.data?.user || data?.data;
-          const token = data?.accessToken || data?.data?.accessToken;
-          if (token) localStorage.setItem('token', token);
+          const response = await authApi.register(userData);
+          const { data } = response;
+          
+          // Extract user and token from nested response structure
+          const userObj = data?.data?.user;
+          const accessToken = data?.data?.accessToken;
+          const refreshToken = data?.data?.refreshToken;
+          
+          if (!userObj || !accessToken) {
+            throw new Error('Invalid response format: missing user or token');
+          }
+          
+          // Store tokens
+          localStorage.setItem('token', accessToken);
+          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
 
           set({ user: userObj, isLoading: false, isInitialized: true });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
-          return data;
+          return response.data;
         } catch (err) {
           set({ isLoading: false });
           throw err;
@@ -48,10 +70,15 @@ export const useAuthStore = create(
       },
 
       logout: async () => {
-        await authApi.logout().catch(() => {});
-        localStorage.removeItem('token');
-        set({ user: null, _fetchMePromise: null, isInitialized: true });
-        useCartStore.getState().resetCart();
+        try {
+          await authApi.logout().catch(() => {});
+        } finally {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('auth-storage');
+          set({ user: null, _fetchMePromise: null, isInitialized: true });
+          useCartStore.getState().resetCart();
+        }
       },
 
       fetchMe: async () => {
@@ -60,10 +87,12 @@ export const useAuthStore = create(
         const hadUserBefore = !!get().user;
         const promise = (async () => {
           try {
-            const { data } = await authApi.getMe();
-            const userData = data?.user || data?.data;
-            const token = data?.accessToken || data?.data?.accessToken;
-            if (token) localStorage.setItem('token', token);
+            const response = await authApi.getMe();
+            const { data } = response;
+            const userData = data?.data?.user || data?.data;
+            const accessToken = data?.data?.accessToken;
+            
+            if (accessToken) localStorage.setItem('token', accessToken);
             
             const allowedRoles = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'];
             if (!userData?.role || !allowedRoles.includes(userData.role)) {

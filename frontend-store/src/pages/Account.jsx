@@ -228,15 +228,15 @@ export default function Account() {
   }, [tab]);
 
   const loadAddresses = async () => {
-    try { const { data } = await usersApi.getAddresses(); setAddresses(data.data); } catch (err) { console.error('Failed to load addresses', err); }
+    try { const { data } = await usersApi.getAddresses(); setAddresses(data.data); } catch (err) { toast.error('Failed to load addresses'); }
   };
 
   const loadWishlist = async () => {
-    try { const { data } = await usersApi.getWishlist(); setWishlist(data.data); } catch (err) { console.error('Failed to load wishlist', err); }
+    try { const { data } = await usersApi.getWishlist(); setWishlist(data.data); } catch (err) { toast.error('Failed to load wishlist'); }
   };
 
   const loadRecentOrders = async () => {
-    try { const { data } = await ordersApi.myOrders({ limit: 3 }); setRecentOrders(data.data); } catch (err) { console.error('Failed to load recent orders', err); }
+    try { const { data } = await ordersApi.myOrders({ limit: 3 }); setRecentOrders(data.data); } catch (err) { toast.error('Failed to load recent orders'); }
   };
 
   /* ── Profile save ── */

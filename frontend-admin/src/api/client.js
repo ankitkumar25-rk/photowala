@@ -80,13 +80,20 @@ api.interceptors.response.use(
 
       try {
         const refreshRes = await api.post('/auth/refresh');
-        if (refreshRes.data?.accessToken) {
-          localStorage.setItem('token', refreshRes.data.accessToken);
-          original.headers.Authorization = `Bearer ${refreshRes.data.accessToken}`;
+        const accessToken = refreshRes.data?.data?.accessToken;
+        const refreshToken = refreshRes.data?.data?.refreshToken;
+        
+        if (accessToken) {
+          localStorage.setItem('token', accessToken);
+          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+          original.headers.Authorization = `Bearer ${accessToken}`;
           return api(original);
+        } else {
+          throw new Error('No access token in refresh response');
         }
       } catch (refreshErr) {
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('admin-auth');
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';

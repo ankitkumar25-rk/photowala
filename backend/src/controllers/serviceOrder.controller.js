@@ -74,12 +74,20 @@ exports.getMyServiceOrders = async (req, res, next) => {
 
     const [orders, total] = await Promise.all([
       prisma.serviceOrder.findMany({
-        where: { userId: req.user.id },
+        where: { 
+          userId: req.user.id,
+          paymentStatus: 'PAID' // Only show paid orders
+        },
         skip,
         take: limitNum,
         orderBy: { createdAt: 'desc' }
       }),
-      prisma.serviceOrder.count({ where: { userId: req.user.id } })
+      prisma.serviceOrder.count({ 
+        where: { 
+          userId: req.user.id,
+          paymentStatus: 'PAID'
+        } 
+      })
     ]);
 
     res.json({ success: true, data: orders, meta: { total, page: pageNum } });
@@ -125,6 +133,7 @@ exports.getAllServiceOrders = async (req, res, next) => {
     const whereClause = {
       ...(category && { category }),
       ...(status && { status }),
+      paymentStatus: 'PAID', // The "Ledger" should only contain paid orders
       ...(search && {
         OR: [
           { customerName: { contains: search, mode: 'insensitive' } },

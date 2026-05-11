@@ -95,15 +95,26 @@ function SkeletonChartCard({ compact = false }) {
 }
 
 export default function Dashboard() {
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading, error: statsError } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: () => api.get('/admin/dashboard/stats').then((r) => r.data.data),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-  const { data: salesData } = useQuery({
+  const { data: salesData, error: salesError } = useQuery({
     queryKey: ['admin-sales', 30],
     queryFn: () => api.get('/admin/dashboard/sales?days=30').then((r) => r.data.data),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  if (statsError) {
+    return (
+      <div className="card p-6 bg-red-50 border border-red-200">
+        <p className="text-red-700 font-semibold">Failed to load dashboard stats</p>
+        <p className="text-sm text-red-600 mt-1">{statsError.message}</p>
+      </div>
+    );
+  }
 
   const pieData = stats?.statusBreakdown
     ? Object.entries(stats.statusBreakdown).map(([name, value]) => ({ name, value }))

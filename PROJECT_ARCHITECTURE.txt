@@ -1,0 +1,75 @@
+================================================================================
+PHOTOWALA - PREMIUM PHOTO & CUSTOM PRINTING PLATFORM
+PROJECT ARCHITECTURE & KNOWLEDGE BASE FOR AI MODELS
+================================================================================
+
+1. PROJECT SUMMARY
+------------------
+Photowala is a high-end e-commerce platform specializing in premium gifts, trophies, 
+momentos, and professional custom printing services. The platform is divided into 
+three main modules:
+- Backend: Express/Node.js API with Prisma/PostgreSQL.
+- Frontend Store: Customer-facing React application.
+- Frontend Admin: Administrative dashboard for business operations.
+
+2. TECH STACK
+-------------
+- Backend: Node.js (v22.12.0), Express, Prisma ORM, PostgreSQL.
+- Frontend: React 18, Vite, Zustand (State), React Query (Data Fetching).
+- Security: PASETO (Token-based Auth), CSRF Protection, CORS (Strict Origin Filtering).
+- Payments: Razorpay (Dynamic SDK loading, Webhook integration).
+- Storage: Cloudinary (Image uploads).
+- Email: Resend SDK (Transactional emails).
+
+3. DATABASE ARCHITECTURE (PRISMA)
+---------------------------------
+- Polymorphic Payments: The 'Payment' model is linked to either 'Order' (Physical Products) 
+  or 'ServiceOrder' (Custom Printing) via the 'internalOrderId' and 'orderType' fields. 
+  There are NO strict DB-level foreign key constraints on these relations to prevent 
+  deployment errors on Render/PostgreSQL; the relationship is managed in the application layer.
+- User Roles: [CUSTOMER, ADMIN, SUPER_ADMIN].
+- Service Orders: Specialized for custom printing (e.g., Pen, Letterhead, Garment Tags).
+
+4. AUTHENTICATION STRATEGY
+--------------------------
+- Primary: httpOnly cookies (access_token, refresh_token).
+- Fallback: 'token' and 'refreshToken' are stored in localStorage to ensure 
+  persistence in browsers that block third-party cookies (Safari, In-App browsers).
+- Interceptors: Axios interceptors automatically attach the Bearer token from 
+  localStorage and handle 401 errors by attempting a transparent token refresh.
+
+5. CUSTOM PRINTING SERVICES (SERVICE SUITE)
+-------------------------------------------
+- Logic: Orders are created as 'PENDING' when the user clicks 'Add Order'.
+- Checkout: The user is redirected to /checkout/service where payment is initiated.
+- Visibility: Service orders are filtered out of the "Service Ledger" and 
+  User History unless their 'paymentStatus' is 'PAID'.
+- Promotion: Upon successful payment, the ServiceOrder status is promoted to 'CONFIRMED'.
+
+6. PAYMENT FLOW (RAZORPAY)
+--------------------------
+- Front-end: Razorpay script is lazy-loaded only when the 'Pay' button is clicked.
+- Creation: /api/payments/create-order generates a Razorpay Order and a 'CREATED' payment record.
+- Verification: /api/payments/verify checks the signature and updates the 
+  internalOrder (Order or ServiceOrder) to 'PAID'.
+- Webhook: The backend listens for 'payment.captured' to ensure order completion 
+  even if the user closes the browser before verification.
+
+7. CRITICAL FILE PATHS
+----------------------
+- Backend Controllers: /backend/src/controllers/
+- Backend Schema: /backend/prisma/schema.prisma
+- API Client (Frontend): /frontend-store/src/api/client.js
+- Auth Store (Frontend): /frontend-store/src/store/index.js
+- Service Pages: /frontend-store/src/pages/services/
+
+8. RECENT ARCHITECTURAL FIXES
+-----------------------------
+- Removed strict FK constraints on Payments to support polymorphic IDs.
+- Fixed 401 interceptor loop that prevented token refresh on /auth/me.
+- Standardized Custom Printing UI to a mobile-responsive grid layout.
+- Added 'Admin Panel' access from the storefront navbar for admin users.
+
+================================================================================
+Generated on: 2026-05-11
+================================================================================

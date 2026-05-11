@@ -18,9 +18,11 @@ export const useAdminStore = create(
       
       setUser: (user) => set({ user }),
       logout: () => { 
-        set({ user: null }); 
+        set({ user: null, isInitialized: true }); 
         adminFetchMePromise = null; 
-        localStorage.removeItem('token'); 
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('admin-auth');
       },
       
       fetchMe: async () => {
@@ -30,8 +32,15 @@ export const useAdminStore = create(
         set({ isFetching: true });
         adminFetchMePromise = (async () => {
           try {
-            const { data } = await api.get('/auth/me');
-            const userData = data?.user || data?.data; // Support both formats
+            const response = await api.get('/auth/me');
+            const { data } = response;
+            
+            // Extract user from correct response structure
+            const userData = data?.data?.user || data?.data;
+            const accessToken = data?.data?.accessToken;
+            
+            if (accessToken) localStorage.setItem('token', accessToken);
+            
             if (!['ADMIN', 'SUPER_ADMIN'].includes(userData?.role)) {
               throw new Error('Admin role required');
             }

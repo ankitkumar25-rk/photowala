@@ -33,7 +33,8 @@ export default function MachineOrders() {
         }
       });
       return data.data;
-    }
+    },
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const updateStatusMutation = useMutation({

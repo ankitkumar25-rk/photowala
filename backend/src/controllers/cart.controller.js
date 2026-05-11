@@ -164,34 +164,48 @@ exports.mergeCart = async (req, res, next) => {
     const sessionId = req.cookies?.cart_session;
     if (!sessionId) return res.json({ success: true, message: 'Nothing to merge' });
 
-    const guestCart = await prisma.cart.findUnique({
-      where: { sessionId },
-      include: { items: true },
-    });
-
-    if (!guestCart || guestCart.items.length === 0) {
-      return res.json({ success: true, message: 'Nothing to merge' });
-    }
-
-    const userCart = await prisma.cart.upsert({
-      where: { userId: req.user.id },
-      create: { userId: req.user.id },
-      update: {},
-    });
-
-    // Merge items
-    for (const item of guestCart.items) {
-      await prisma.cartItem.upsert({
-        where: { cartId_productId: { cartId: userCart.id, productId: item.productId } },
-        create: { cartId: userCart.id, productId: item.productId, quantity: item.quantity, price: item.price },
-        update: { quantity: { increment: item.quantity } },
+    await prisma.$transaction(async (tx) => {
+      const guestCart = await tx.cart.findUnique({
+        where: { sessionId },
+        include: { items: true },
       });
-    }
 
-    // Delete guest cart
-    await prisma.cart.delete({ where: { id: guestCart.id } });
+      if (!guestCart || guestCart.items.length === 0) {
+        return;
+      }
+
+      const userCart = await tx.cart.upsert({
+        where: { userId: req.user.id },
+        create: { userId: req.user.id },
+        update: {},
+      });
+
+      // Validate stock for all items before merging
+      for (const item of guestCart.items) {
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { stock: true, isActive: true }
+        });
+        
+        if (!product || !product.isActive) {
+          throw new Error(`Product ${item.productId} is no longer available`);
+        }
+      }
+
+      // Merge items
+      for (const item of guestCart.items) {
+        await tx.cartItem.upsert({
+          where: { cartId_productId: { cartId: userCart.id, productId: item.productId } },
+          create: { cartId: userCart.id, productId: item.productId, quantity: item.quantity, price: item.price },
+          update: { quantity: { increment: item.quantity } },
+        });
+      }
+
+      // Delete guest cart
+      await tx.cart.delete({ where: { id: guestCart.id } });
+    });
+
     res.clearCookie('cart_session');
-
     res.json({ success: true, message: 'Cart merged' });
   } catch (err) {
     next(err);

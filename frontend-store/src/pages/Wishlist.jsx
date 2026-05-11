@@ -15,6 +15,7 @@ export default function Wishlist() {
     queryKey: ['wishlist'],
     queryFn: () => usersApi.getWishlist().then((r) => r.data.data),
     enabled: !!user,
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
   const removeMutation = useMutation({

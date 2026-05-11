@@ -18,10 +18,12 @@ export default function AdminProducts() {
   const qc = useQueryClient();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['admin-products', page],
     queryFn: () => api.get('/products', { params: { page, limit: 20, sort: 'createdAt', order: 'desc' } }).then(r => r.data),
+    staleTime: 1000 * 60, // 1 minute
   });
+  if (error) return <div className="card p-5 bg-red-50 border border-red-200"><p className="text-red-700 font-semibold">Failed to load products: {error.message}</p></div>;
 
   const deleteMut = useMutation({
     mutationFn: (id) => api.delete('/products/' + id),

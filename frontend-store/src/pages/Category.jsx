@@ -4,7 +4,11 @@ import { categoriesApi } from '../api';
 import ProductCard from '../components/ProductCard';
 export default function Category() {
   const { slug } = useParams();
-  const { data, isLoading } = useQuery({ queryKey: ['category', slug], queryFn: () => categoriesApi.getBySlug(slug).then(r => r.data.data) });
+  const { data, isLoading } = useQuery({
+    queryKey: ['category', slug],
+    queryFn: () => categoriesApi.getBySlug(slug).then(r => r.data.data),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-2">{data?.name || slug}</h1>

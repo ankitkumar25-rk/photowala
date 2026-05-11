@@ -17,13 +17,13 @@ exports.getDashboardStats = async (req, res, next) => {
       statusBreakdown,
     ] = await Promise.all([
       prisma.order.count(),
-      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'PAID' } }),
+      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'PAID' } }).catch(() => ({ _sum: { amount: null } })),
       prisma.user.count(),
       prisma.product.count({ where: { isActive: true } }),
       prisma.order.count({ where: { createdAt: { gte: startOfMonth } } }),
-      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'PAID', createdAt: { gte: startOfMonth } } }),
+      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'PAID', createdAt: { gte: startOfMonth } } }).catch(() => ({ _sum: { amount: null } })),
       prisma.product.count({ where: { stock: { lte: 10 }, isActive: true } }),
-      prisma.order.groupBy({ by: ['status'], _count: true }),
+      prisma.order.groupBy({ by: ['status'], _count: true }).catch(() => []),
     ]);
 
     res.json({
@@ -36,7 +36,7 @@ exports.getDashboardStats = async (req, res, next) => {
         ordersThisMonth,
         revenueThisMonth: Number(revenueThisMonth._sum.amount || 0),
         lowStockCount,
-        statusBreakdown: statusBreakdown.reduce((acc, item) => {
+        statusBreakdown: (statusBreakdown || []).reduce((acc, item) => {
           acc[item.status] = item._count;
           return acc;
         }, {}),
@@ -49,24 +49,29 @@ exports.getDashboardStats = async (req, res, next) => {
 
 exports.getSalesChart = async (req, res, next) => {
   try {
-    const days = parseInt(req.query.days) || 30;
+    const days = Math.max(1, parseInt(req.query.days) || 30);
     const from = new Date();
     from.setDate(from.getDate() - days);
 
     // Use queryRaw for accurate daily aggregation in PostgreSQL
     // This is more robust than manual JS grouping for large datasets
-    const sales = await prisma.$queryRaw`
-      SELECT 
-        DATE_TRUNC('day', o."createdAt") as "date",
-        SUM(o."total") as "revenue",
-        COUNT(o."id")::int as "orders"
-      FROM "orders" o
-      LEFT JOIN "payments" p ON p."internalOrderId" = o."id"
-      WHERE o."createdAt" >= ${from} 
-        AND p."status" = 'PAID'
-      GROUP BY DATE_TRUNC('day', o."createdAt")
-      ORDER BY "date" ASC
-    `;
+    let sales = [];
+    try {
+      sales = await prisma.$queryRaw`
+        SELECT 
+          DATE_TRUNC('day', o."createdAt") as "date",
+          SUM(o."total") as "revenue",
+          COUNT(o."id")::int as "orders"
+        FROM "orders" o
+        WHERE o."createdAt" >= ${from}
+        GROUP BY DATE_TRUNC('day', o."createdAt")
+        ORDER BY "date" ASC
+      `;
+    } catch (queryErr) {
+      console.error('[Dashboard] Sales chart query error:', queryErr.message);
+      // Return error to frontend instead of silent failure
+      throw createError('Failed to fetch sales data', 500);
+    }
 
     // Map result to a cleaner format
     const formattedSales = sales.map(s => ({
@@ -77,9 +82,7 @@ exports.getSalesChart = async (req, res, next) => {
 
     res.json({ success: true, data: formattedSales });
   } catch (err) {
-    console.error('[Dashboard] Sales chart error:', err);
-    // Fallback to empty data instead of 500 if something is wrong with raw query
-    res.json({ success: true, data: [] });
+    next(err);
   }
 };
 
@@ -87,7 +90,7 @@ exports.listCustomers = async (req, res, next) => {
   try {
     const pageNum = Math.max(1, parseInt(req.query.page) || 1);
     const limitNum = Math.max(1, parseInt(req.query.limit) || 20);
-    const { search } = req.query;
+    const search = (req.query.search || '').trim().slice(0, 100); // Sanitize: trim and limit length
 
     const where = { role: 'CUSTOMER' };
     if (search) {
@@ -130,9 +133,26 @@ exports.getCustomer = async (req, res, next) => {
 
 exports.banCustomer = async (req, res, next) => {
   try {
-    // Flag: set a banned role or deactivate — implementation-specific
-    // Here, simply update role to a "banned" state if needed
-    res.json({ success: true, message: 'Customer action recorded' });
+    const { id } = req.params;
+    const { action } = req.body; // 'ban' or 'unban'
+
+    if (!['ban', 'unban'].includes(action)) {
+      throw createError('Invalid action. Must be "ban" or "unban"', 400);
+    }
+
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) throw createError('Customer not found', 404);
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { isBanned: action === 'ban' }
+    });
+
+    res.json({ 
+      success: true, 
+      data: updatedUser,
+      message: action === 'ban' ? 'Customer banned successfully' : 'Customer unbanned successfully'
+    });
   } catch (err) {
     next(err);
   }
@@ -140,12 +160,22 @@ exports.banCustomer = async (req, res, next) => {
 
 exports.getInventory = async (req, res, next) => {
   try {
-    const products = await prisma.product.findMany({
-      where: { isActive: true },
-      select: { id: true, name: true, sku: true, stock: true, lowStockAlert: true, category: { select: { name: true } } },
-      orderBy: { stock: 'asc' },
-    });
-    res.json({ success: true, data: products });
+    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+    const limitNum = Math.max(1, parseInt(req.query.limit) || 50);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: { isActive: true },
+        select: { id: true, name: true, sku: true, stock: true, lowStockAlert: true, category: { select: { name: true } } },
+        orderBy: { stock: 'asc' },
+        skip,
+        take: limitNum,
+      }),
+      prisma.product.count({ where: { isActive: true } }),
+    ]);
+
+    res.json({ success: true, data: products, meta: { total, page: pageNum, limit: limitNum } });
   } catch (err) {
     next(err);
   }
@@ -153,20 +183,32 @@ exports.getInventory = async (req, res, next) => {
 
 exports.getLowStockProducts = async (req, res, next) => {
   try {
-    // Fix: Cannot use fields reference directly in lte. 
-    // Usually we compare against a static value or fetch first.
-    // Here we get all active products and filter in JS if complex, 
-    // or better: use raw query or just a simple threshold for now.
-    const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
-        stock: { lte: 10 } // Default low stock threshold
-      },
-      select: { id: true, name: true, stock: true, lowStockAlert: true },
-    });
-    res.json({ success: true, data: products });
+    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+    const limitNum = Math.max(1, parseInt(req.query.limit) || 50);
+    const skip = (pageNum - 1) * limitNum;
+    const threshold = parseInt(req.query.threshold) || 10; // Configurable threshold
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: {
+          isActive: true,
+          stock: { lte: threshold }
+        },
+        select: { id: true, name: true, sku: true, stock: true, lowStockAlert: true, category: { select: { name: true } } },
+        orderBy: { stock: 'asc' },
+        skip,
+        take: limitNum,
+      }),
+      prisma.product.count({
+        where: {
+          isActive: true,
+          stock: { lte: threshold }
+        }
+      })
+    ]);
+
+    res.json({ success: true, data: products, meta: { total, page: pageNum, limit: limitNum } });
   } catch (err) {
-    console.error('[Dashboard] Low stock query error:', err);
     next(err);
   }
 };

@@ -23,7 +23,8 @@ export default function ServiceOrderDetail() {
     queryFn: async () => {
       const { data } = await api.get(`/service-orders/${id}`);
       return data.data;
-    }
+    },
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const updateStatusMutation = useMutation({

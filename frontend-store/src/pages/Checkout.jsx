@@ -149,7 +149,7 @@ export default function Checkout() {
       const def = data.data.find((a) => a.isDefault) || data.data[0];
       if (def && !selectedAddr) setSelectedAddr(def.id);
     } catch (err) {
-      console.error('Failed to load addresses:', err);
+      toast.error('Failed to load addresses');
     }
   }, [selectedAddr]);
 
