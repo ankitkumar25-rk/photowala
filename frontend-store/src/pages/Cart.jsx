@@ -356,16 +356,16 @@ export default function Cart() {
 
                 {/* CTA */}
                 {user ? (
-                  <Link to="/checkout" className="w-full px-8 py-5 rounded-pill bg-linear-to-r from-brand-primary to-brand-secondary text-white font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-brand-primary/30 transition-all duration-300">
-                    Proceed to Checkout <ArrowRight className="w-4 h-4" />
+                  <Link to="/checkout" className="w-full px-8 py-5 rounded-full bg-gradient-to-b from-brand-primary via-brand-primary to-brand-secondary text-white font-black text-base uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-brand-primary/40 hover:scale-105 transition-all duration-300 border border-brand-secondary/20">
+                    Proceed to Checkout <ArrowRight className="w-5 h-5" />
                   </Link>
                 ) : (
                   <div className="mt-5 space-y-3">
                     <Link
                       to="/login?redirect=/checkout"
-                      className="w-full px-8 py-5 rounded-pill bg-linear-to-r from-brand-primary to-brand-secondary text-white font-bold text-sm uppercase tracking-widest flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-brand-primary/30 transition-all duration-300"
+                      className="w-full px-8 py-5 rounded-full bg-gradient-to-b from-brand-primary via-brand-primary to-brand-secondary text-white font-black text-base uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-brand-primary/40 hover:scale-105 transition-all duration-300 border border-brand-secondary/20"
                     >
-                      Login to Checkout <ArrowRight className="w-4 h-4" />
+                      Login to Checkout <ArrowRight className="w-5 h-5" />
                     </Link>
                     <p className="text-center text-xs text-gray-400">
                       or{' '}
