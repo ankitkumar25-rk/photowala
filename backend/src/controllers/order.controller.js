@@ -147,7 +147,6 @@ exports.getUserOrders = async (req, res, next) => {
           items: {
             include: { product: { select: { name: true, images: { where: { isPrimary: true }, take: 1 } } } },
           },
-          payments: { select: { status: true, paymentMethod: true } },
         },
       }),
       prisma.order.count({ where: { userId: req.user.id } }),
@@ -166,7 +165,6 @@ exports.getOrder = async (req, res, next) => {
       include: {
         items: { include: { product: { include: { images: { take: 1 } } } } },
         address: true,
-        payments: true,
       },
     });
     if (!order) throw createError('Order not found', 404);
@@ -214,7 +212,6 @@ exports.getAllOrders = async (req, res, next) => {
         orderBy: { createdAt: 'desc' },
         include: { 
           user: { select: { name: true, email: true } }, 
-          payments: true 
         },
       }),
       prisma.order.count({ where }),

@@ -117,7 +117,7 @@ exports.getCustomer = async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { id: req.params.id },
       include: {
-        orders: { take: 10, orderBy: { createdAt: 'desc' }, include: { payments: true } },
+        orders: { take: 10, orderBy: { createdAt: 'desc' } },
         addresses: true,
       },
     });

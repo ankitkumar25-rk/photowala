@@ -56,7 +56,7 @@ exports.getReturnsQueue = async (req, res, next) => {
         orderBy: { createdAt: 'desc' },
         include: {
           user: { select: { name: true, email: true } },
-          order: { select: { orderNumber: true, total: true, payments: true } },
+          order: { select: { orderNumber: true, total: true } },
         },
       }),
       prisma.return.count({ where }),
