@@ -65,7 +65,8 @@ export const useAuthStore = create(
             const token = data?.accessToken || data?.data?.accessToken;
             if (token) localStorage.setItem('token', token);
             
-            if (userData?.role !== 'CUSTOMER') {
+            const allowedRoles = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'];
+            if (!userData?.role || !allowedRoles.includes(userData.role)) {
               localStorage.removeItem('token');
               set({ user: null, _fetchMePromise: null, isInitialized: true });
               useCartStore.getState().resetCart();

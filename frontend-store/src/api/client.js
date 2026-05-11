@@ -69,13 +69,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !original?._retry) {
       original._retry = true;
       
-      // If the request was for /auth/me or /auth/refresh, don't retry refresh to avoid loops
-      if (original.url.includes('/auth/me') || original.url.includes('/auth/refresh')) {
+      // If the request was for /auth/refresh, don't retry refresh to avoid loops
+      if (original.url.includes('/auth/refresh')) {
         localStorage.removeItem('token');
         localStorage.removeItem('auth-storage');
-        if (window.location.pathname !== '/') {
-           window.location.href = '/';
-        }
+        // Do not force redirect here, let the calling code handle it
         return Promise.reject(error);
       }
 
