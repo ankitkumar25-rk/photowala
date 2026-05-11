@@ -356,16 +356,16 @@ export default function Cart() {
 
                 {/* CTA */}
                 {user ? (
-                  <Link to="/checkout" className="w-full px-8 py-5 rounded-full bg-gradient-to-b from-brand-primary via-brand-primary to-brand-secondary text-white font-black text-base uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-brand-primary/40 hover:scale-105 transition-all duration-300 border border-brand-secondary/20">
-                    Proceed to Checkout <ArrowRight className="w-5 h-5" />
+                  <Link to="/checkout" className="btn-primary w-full justify-center mt-5 text-base py-3.5 gap-2">
+                    Proceed to Checkout <ArrowRight className="w-4 h-4" />
                   </Link>
                 ) : (
-                  <div className="mt-5 space-y-3">
+                  <div className="mt-5 space-y-2">
                     <Link
                       to="/login?redirect=/checkout"
-                      className="w-full px-8 py-5 rounded-full bg-gradient-to-b from-brand-primary via-brand-primary to-brand-secondary text-white font-black text-base uppercase tracking-wider flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-brand-primary/40 hover:scale-105 transition-all duration-300 border border-brand-secondary/20"
+                      className="btn-primary w-full justify-center text-base py-3.5 gap-2"
                     >
-                      Login to Checkout <ArrowRight className="w-5 h-5" />
+                      Login to Checkout <ArrowRight className="w-4 h-4" />
                     </Link>
                     <p className="text-center text-xs text-gray-400">
                       or{' '}
