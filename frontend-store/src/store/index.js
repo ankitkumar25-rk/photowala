@@ -20,12 +20,12 @@ export const useAuthStore = create(
           console.log('[Auth] Login response structure:', JSON.stringify(data, null, 2));
           
           // Extract user and token from nested response structure
-          const userData = data?.data?.user;
-          const accessToken = data?.data?.accessToken;
-          const refreshToken = data?.data?.refreshToken;
+          const userData = data?.data?.user || data?.user || data?.data;
+          const accessToken = data?.data?.accessToken || data?.accessToken;
+          const refreshToken = data?.data?.refreshToken || data?.refreshToken;
           
           if (!userData || !accessToken) {
-            console.error('[Auth] Missing user or accessToken:', { userData: !!userData, accessToken: !!accessToken });
+            console.error('[Auth] Extraction failed from:', data);
             throw new Error('Invalid response format: missing user or token');
           }
           
@@ -58,12 +58,12 @@ export const useAuthStore = create(
           console.log('[Auth] Register response structure:', JSON.stringify(data, null, 2));
           
           // Extract user and token from nested response structure
-          const userObj = data?.data?.user;
-          const accessToken = data?.data?.accessToken;
-          const refreshToken = data?.data?.refreshToken;
+          const userObj = data?.data?.user || data?.user || data?.data;
+          const accessToken = data?.data?.accessToken || data?.accessToken;
+          const refreshToken = data?.data?.refreshToken || data?.refreshToken;
           
           if (!userObj || !accessToken) {
-            console.error('[Auth] Missing user or accessToken:', { userObj: !!userObj, accessToken: !!accessToken });
+            console.error('[Auth] Extraction failed from:', data);
             throw new Error('Invalid response format: missing user or token');
           }
           
@@ -108,14 +108,23 @@ export const useAuthStore = create(
           try {
             const response = await authApi.getMe();
             const { data } = response;
-            const userData = data?.data?.user || data?.data;
-            const accessToken = data?.data?.accessToken;
+            const userData = data?.data?.user || data?.user || data?.data;
+            const accessToken = data?.data?.accessToken || data?.accessToken;
             
             if (accessToken) localStorage.setItem('token', accessToken);
             
+            console.log('[Auth] fetchMe detailed check:', { 
+              responseKeys: Object.keys(data || {}),
+              userFound: !!userData,
+              role: userData?.role,
+              id: userData?.id
+            });
+            
             const allowedRoles = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'];
-            if (!userData?.role || !allowedRoles.includes(userData.role)) {
+            if (!userData || !userData.role || !allowedRoles.includes(userData.role)) {
+              console.warn('[Auth] Invalid user or role, clearing session. User:', userData);
               localStorage.removeItem('token');
+              localStorage.removeItem('refreshToken');
               set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
               useCartStore.getState().resetCart();
               return null;
