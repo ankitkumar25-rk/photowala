@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft, Package, MapPin, CreditCard, Truck,
   Clock, CheckCircle, XCircle, RefreshCw, Copy, Check,
-  Pencil, Download
+  Pencil, Download, ChevronRight
 } from 'lucide-react';
 import { ordersApi } from '../api';
 import toast from 'react-hot-toast';
@@ -107,47 +107,59 @@ export default function OrderDetail() {
   });
 
   return (
-    <div className="min-h-screen bg-cream-100 page-enter">
-      {/* Header */}
-      <div className="bg-linear-to-br from-[#a06f20] to-[#d96a22] text-white">
-        <div className="max-w-5xl mx-auto px-4 py-8">
-          <button
-            onClick={() => navigate('/orders')}
-            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm font-medium mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to Orders
-          </button>
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="text-2xl text-white font-bold">
-                Order Details
-              </h1>
-              <p className="text-white/90 font-mono text-sm mt-1">{order.orderNumber}</p>
-              <p className="text-white/80 text-xs mt-0.5">{formattedDate}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <StatusBadge status={order.status} />
-              {canCancel && (
-                <button
-                  onClick={cancelOrder}
-                  disabled={cancelling}
-                  className="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-600 rounded-xl text-sm font-semibold transition-colors"
-                >
-                  {cancelling ? 'Cancelling...' : 'Cancel Order'}
-                </button>
-              )}
+    <div className="min-h-screen bg-cream-100 luxury-grain pt-32 pb-24 px-4 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
+
+      <div className="max-w-5xl mx-auto relative z-10">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-widest mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
+          <Link to="/" className="hover:text-brand-secondary transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <Link to="/orders" className="hover:text-brand-secondary transition-colors">Orders</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <span className="text-brand-primary">Order Details</span>
+        </div>
+
+        {/* Luxury header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+              Order <br />
+              <span className="text-brand-secondary">Details</span>
+            </h1>
+            <div className="flex items-center gap-4">
+              <div className="h-0.5 w-12 bg-brand-secondary" />
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">{order.orderNumber}</p>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+          <div className="flex items-center gap-3">
+            <StatusBadge status={order.status} />
+            {canCancel && (
+              <button
+                onClick={cancelOrder}
+                disabled={cancelling}
+                className="px-6 py-3 rounded-pill bg-red-50 border border-red-100 text-red-600 font-semibold text-xs uppercase tracking-wider hover:shadow-md transition-all"
+              >
+                {cancelling ? 'Cancelling...' : 'Cancel Order'}
+              </button>
+            )}
+          </div>
+        </div>
+        {/* Order info and date */}
+        <p className="text-xs text-gray-500 font-medium">{formattedDate}</p>
+
         {/* Order Progress (non-cancelled) */}
         {!isCancelled && (
-          <div className="card p-6 bg-white">
-            <h2 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Truck className="w-5 h-5 text-brand-primary" /> Order Progress
-            </h2>
+          <div className="card p-8 space-y-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center">
+                <Truck className="w-5 h-5 text-brand-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">Order Progress</h2>
+            </div>
             <div className="relative">
               {/* progress line */}
               <div className="absolute left-4 top-4 bottom-4 w-0.5 bg-cream-200" />
@@ -201,21 +213,26 @@ export default function OrderDetail() {
         )}
 
         {isCancelled && (
-          <div className="card p-6 border-red-200 bg-red-50 flex items-center gap-4">
-            <XCircle className="w-8 h-8 text-red-500 shrink-0" />
-            <div>
-              <p className="font-bold text-red-700">Order Cancelled</p>
+          <div className="card p-8 border-l-4 border-red-500 bg-red-50 flex items-start gap-4">
+            <div className="w-10 h-10 rounded-2xl bg-red-100 flex items-center justify-center shrink-0">
+              <XCircle className="w-5 h-5 text-red-500" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-red-700 mb-1">Order Cancelled</p>
               <p className="text-sm text-red-600">This order has been cancelled. Refund will be processed within 5-7 business days if payment was made.</p>
             </div>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-8">
           {/* Items */}
-          <div className="lg:col-span-2 card p-6 bg-white">
-            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Package className="w-5 h-5 text-brand-primary" /> Order Items ({order.items.length})
-            </h2>
+          <div className="lg:col-span-2 card p-8 space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center">
+                <Package className="w-5 h-5 text-brand-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">Order Items <span className="text-brand-secondary text-lg">({order.items.length})</span></h2>
+            </div>
             <div className="divide-y divide-cream-200">
               {order.items.map((item) => (
                 <div key={item.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
@@ -298,27 +315,33 @@ export default function OrderDetail() {
           <div className="space-y-4">
             {/* Delivery address */}
             {order.address && (
-              <div className="card p-4 bg-white">
-                <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-brand-primary" /> Delivery Address
-                </h3>
-                <div className="text-sm text-gray-700 space-y-0.5">
+              <div className="card p-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-brand-surface flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-brand-primary" />
+                  </div>
+                  <h3 className="font-bold text-gray-900">Delivery Address</h3>
+                </div>
+                <div className="text-sm text-gray-700 space-y-1">
                   <p className="font-semibold text-gray-900">{order.address.fullName}</p>
                   <p>{order.address.line1}</p>
                   {order.address.line2 && <p>{order.address.line2}</p>}
                   <p>{order.address.city}, {order.address.state} – {order.address.pincode}</p>
-                  <p className="text-gray-600">{order.address.phone}</p>
+                  <p className="text-gray-600 font-medium">{order.address.phone}</p>
                 </div>
               </div>
             )}
 
             {/* Payment info */}
             {order.payment && (
-              <div className="card p-4 bg-white">
-                <h3 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-brand-primary" /> Payment
-                </h3>
-                <div className="space-y-1.5">
+              <div className="card p-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-brand-surface flex items-center justify-center">
+                    <CreditCard className="w-4 h-4 text-brand-primary" />
+                  </div>
+                  <h3 className="font-bold text-gray-900">Payment</h3>
+                </div>
+                <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Status</span>
                     <span className={`font-semibold ${
@@ -333,34 +356,29 @@ export default function OrderDetail() {
                       <span className="font-medium text-gray-800 capitalize">{order.payment.method}</span>
                     </div>
                   )}
-                  {order.payment.razorpayPaymentId && (
-                    <div className="text-xs text-gray-500 mt-1 font-mono break-all">
-                      {order.payment.razorpayPaymentId}
-                    </div>
-                  )}
                 </div>
               </div>
             )}
 
             {/* Notes */}
             {order.notes && (
-              <div className="card p-4 bg-white">
-                <h3 className="font-bold text-gray-900 text-sm mb-2">Order Notes</h3>
+              <div className="card p-6 space-y-3 border-l-4 border-brand-secondary">
+                <p className="font-bold text-gray-900">Order Notes</p>
                 <p className="text-sm text-gray-700 italic">"{order.notes}"</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Help */}
-        <div className="card p-4 flex items-center justify-between bg-white">
-          <div>
-            <p className="font-semibold text-gray-900 text-sm">Need help with this order?</p>
-            <p className="text-xs text-gray-600 mt-0.5">Our support team is ready to assist you</p>
+        {/* Help section */}
+        <div className="card p-8 flex items-center justify-between hover:shadow-lg transition-shadow">
+          <div className="space-y-2">
+            <p className="font-bold text-gray-900">Need help with this order?</p>
+            <p className="text-sm text-gray-600">Our support team is ready to assist you</p>
           </div>
           <a
             href="mailto:support@premiumstore.com"
-            className="btn-secondary py-2 px-4 text-sm"
+            className="btn-primary py-3 px-8 text-sm"
           >
             Contact Support
           </a>
