@@ -22,6 +22,9 @@ import serviceDrawing from "../assets/service_drawing.png";
 import serviceMachine from "../assets/service_machine.png";
 import serviceMaterial from "../assets/service_material.png";
 import servicePenPreview from "../assets/service_pen_preview.png";
+import garmentTagGloss from "../assets/images/services/garment_tag_gloss.png";
+import letterhead1 from "../assets/images/services/letterhead_1.png";
+import letterhead2 from "../assets/images/services/letterhead_2.png";
 
 // Brand exports
 export const brandAssets = {
@@ -71,4 +74,7 @@ export const serviceAssets = {
   machine: serviceMachine,
   material: serviceMaterial,
   penPreview: servicePenPreview,
+  garmentTagGloss,
+  letterhead1,
+  letterhead2,
 };

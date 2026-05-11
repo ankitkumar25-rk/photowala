@@ -10,6 +10,7 @@ import {
   FaPenNib, FaNoteSticky, FaPrint, FaFileSignature, 
   FaTag, FaFileInvoiceDollar, FaEnvelope
 } from 'react-icons/fa6';
+import { serviceAssets } from '../../../../data/assets';
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: FaPenNib, label: 'Pen', to: '/services/custom-printing/pen' },
@@ -41,7 +42,7 @@ const DATA = {
         core: 'Gloss Coat with Excellent printing',
         lamination: 'Hi-Gloss',
         images: [
-            { id: 1, url: '/assets/images/services/garment_tag_1.png', title: 'Gloss Tag Layout' },
+            { id: 1, url: serviceAssets.garmentTagGloss, title: 'Gloss Tag Layout' },
             { id: 2, url: '/assets/images/services/garment_tag_2.png', title: 'Large & Medium Size Die' },
             { id: 3, url: '/assets/images/services/garment_tag_3.png', title: 'Small Size Die' },
         ],

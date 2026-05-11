@@ -9,6 +9,8 @@ import {
   FaPenNib, FaNoteSticky, FaPrint, FaFileSignature, 
   FaTag, FaFileInvoiceDollar, FaEnvelope
 } from 'react-icons/fa6';
+import { serviceAssets } from '../../../../data/assets';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: FaPenNib, label: 'Pen', to: '/services/custom-printing/pen' },
@@ -58,6 +60,16 @@ export default function Letterhead() {
   const [foilSide, setFoilSide] = useState('Front Side');
   const [foilColor, setFoilColor] = useState('Gold');
   const [loading, setLoading] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const images = [
+    { id: 1, url: serviceAssets.letterhead1, title: 'Letterhead Preview 1' },
+    { id: 2, url: serviceAssets.letterhead2, title: 'Letterhead Preview 2' },
+  ];
+
+  const nextImage = () => setActiveImageIndex((prev) => (prev + 1) % images.length);
+  const prevImage = () => setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
+
 
   const selected = LETTERHEAD_PRODUCTS_LIST.find(p => p.id === selProduct);
 
@@ -444,9 +456,37 @@ export default function Letterhead() {
               
               {/* Product Preview */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="relative h-[240px] md:h-[320px] bg-[#fdfaf7] flex items-center justify-center p-6 md:p-10">
-                  <img src="https://images.unsplash.com/photo-1586075010633-247fe9edac7b?q=80&w=1000&auto=format&fit=crop" alt="Letterhead" 
-                    className="max-w-full max-h-full object-contain drop-shadow-2xl rounded-lg" />
+                <div className="relative h-[240px] md:h-[320px] bg-[#fdfaf7] flex items-center justify-center p-6 md:p-10 overflow-hidden group">
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {images.map((img, idx) => (
+                      <div key={img.id}
+                        className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
+                          idx === activeImageIndex ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
+                        }`}>
+                        <img src={img.url} alt={img.title} 
+                          className="w-full h-full object-contain drop-shadow-2xl rounded-lg" />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Slider Controls */}
+                  <button onClick={prevImage}
+                    className="absolute left-4 w-8 h-8 bg-white/90 rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-gray-800 hover:bg-[#b65e2e] hover:text-white transition-all transform -translate-x-12 group-hover:translate-x-0 z-20">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button onClick={nextImage}
+                    className="absolute right-4 w-8 h-8 bg-white/90 rounded-full shadow-lg border border-gray-100 flex items-center justify-center text-gray-800 hover:bg-[#b65e2e] hover:text-white transition-all transform translate-x-12 group-hover:translate-x-0 z-20">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+
+                  <div className="absolute bottom-4 flex gap-1.5 z-20">
+                    {images.map((_, idx) => (
+                      <button key={idx} onClick={() => setActiveImageIndex(idx)}
+                        className={`transition-all duration-300 rounded-full ${
+                          idx === activeImageIndex ? 'w-6 h-1.5 bg-[#b65e2e]' : 'w-1.5 h-1.5 bg-gray-300'
+                        }`} />
+                    ))}
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/20" />
                 </div>
                 <div className="p-8 border-l-4 border-[#b65e2e] bg-white">
