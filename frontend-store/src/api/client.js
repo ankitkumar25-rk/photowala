@@ -66,13 +66,35 @@ api.interceptors.response.use(
     }
     
     // Token handling on 401
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      // Only redirect if not already on /login or checking self
-      if (window.location.pathname !== '/login' && original.url !== '/auth/me') {
-        // Clear auth store if using zustand persist
+    if (error.response?.status === 401 && !original?._retry) {
+      original._retry = true;
+      
+      // If the request was for /auth/me or /auth/refresh, don't retry refresh to avoid loops
+      if (original.url.includes('/auth/me') || original.url.includes('/auth/refresh')) {
+        localStorage.removeItem('token');
         localStorage.removeItem('auth-storage');
-        window.location.href = '/';
+        if (window.location.pathname !== '/') {
+           window.location.href = '/';
+        }
+        return Promise.reject(error);
+      }
+
+      try {
+        // Attempt to refresh tokens
+        const res = await api.post('/auth/refresh');
+        if (res.data?.accessToken) {
+          localStorage.setItem('token', res.data.accessToken);
+          original.headers.Authorization = `Bearer ${res.data.accessToken}`;
+          return api(original); // Retry original request
+        }
+      } catch (refreshError) {
+        // Refresh failed (e.g. refresh token expired)
+        localStorage.removeItem('token');
+        localStorage.removeItem('auth-storage');
+        if (window.location.pathname !== '/') {
+          window.location.href = '/';
+        }
+        return Promise.reject(refreshError);
       }
     }
     return Promise.reject(error);

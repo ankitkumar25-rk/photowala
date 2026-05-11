@@ -85,7 +85,7 @@ function CartItem({ item }) {
         {item.product?.unit && (
           <p className="text-sm text-gray-500 mt-0.5">{item.product.unit}</p>
         )}
-        <p className="text-brand-primary font-bold mt-1">?{Number(item.price).toFixed(2)}<span className="text-xs font-normal text-gray-400 ml-1">each</span></p>
+        <p className="text-brand-primary font-bold mt-1">₹{Number(item.price).toFixed(2)}<span className="text-xs font-normal text-gray-400 ml-1">each</span></p>
 
         {/* Customization badge */}
         {item.customizationText && (
@@ -125,9 +125,9 @@ function CartItem({ item }) {
 
       {/* Line total */}
       <div className="text-right shrink-0 hidden sm:block">
-        <p className="font-bold text-xl text-gray-900">?{lineTotal}</p>
+        <p className="font-bold text-xl text-gray-900">₹{lineTotal}</p>
         {item.quantity > 1 && (
-          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} × ?{Number(item.price).toFixed(2)}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} × ₹{Number(item.price).toFixed(2)}</p>
         )}
       </div>
     </div>
@@ -265,7 +265,7 @@ export default function Cart() {
                 <div className="px-5 pt-4 pb-3 bg-brand-surface border-b border-brand-secondary">
                   <div className="flex items-center justify-between text-sm mb-2">
                     <span className="font-semibold text-brand-secondary flex items-center gap-1.5">
-                      <Truck className="w-4 h-4" /> Add ?{freeShipRemaining.toFixed(0)} more for FREE shipping!
+                      <Truck className="w-4 h-4" /> Add ₹{freeShipRemaining.toFixed(0)} more for FREE shipping!
                     </span>
                     <span className="text-brand-secondary font-bold">{Math.round(freeShipProgress)}%</span>
                   </div>
@@ -314,7 +314,7 @@ export default function Cart() {
                           {item.product?.name} × {item.quantity}
                         </span>
                         <span className="font-semibold text-gray-900 shrink-0">
-                          ?{(Number(item.price) * item.quantity).toFixed(2)}
+                          ₹{(Number(item.price) * item.quantity).toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -322,7 +322,7 @@ export default function Cart() {
 
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Subtotal</span>
-                    <span className="font-semibold text-gray-900">?{subtotal.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-900">₹{subtotal.toFixed(2)}</span>
                   </div>
 
                   <div className="flex justify-between text-sm">
@@ -334,20 +334,20 @@ export default function Cart() {
                         <Tag className="w-3 h-3" /> FREE
                       </span>
                     ) : (
-                      <span className="font-semibold text-gray-900">?{shipping.toFixed(2)}</span>
+                      <span className="font-semibold text-gray-900">₹{shipping.toFixed(2)}</span>
                     )}
                   </div>
 
                   <div className="flex justify-between text-lg font-bold pt-3 border-t border-cream-200">
                     <span className="text-gray-900">Total</span>
-                    <span className="text-brand-primary">?{total.toFixed(2)}</span>
+                    <span className="text-brand-primary">₹{total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {shipping > 0 && (
                   <div className="mt-4 p-3 bg-brand-surface rounded-xl text-xs text-brand-secondary font-medium flex items-center gap-2 border border-brand-secondary">
                     <Tag className="w-3.5 h-3.5 shrink-0" />
-                    Add ?{freeShipRemaining.toFixed(0)} more to get FREE shipping on this order
+                    Add ₹{freeShipRemaining.toFixed(0)} more to get FREE shipping on this order
                   </div>
                 )}
 

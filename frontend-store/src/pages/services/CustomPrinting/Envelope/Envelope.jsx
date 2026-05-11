@@ -381,21 +381,21 @@ export default function Envelope() {
                 <div className="p-6 space-y-4">
                   <div className="flex justify-between items-center text-sm">
                     <span className="font-bold text-gray-500 text-left">Applicable Cost</span>
-                    <span className="font-bold text-gray-900">Rs. {pricing.subtotal}/-</span>
+                    <span className="font-bold text-gray-900">₹{pricing.subtotal}/-</span>
                   </div>
                   {pricing.emailFee > 0 && (
                     <div className="flex justify-between items-center text-sm text-[#a64d24]">
                       <span className="font-bold">Manual Handling Fee</span>
-                      <span className="font-bold">Rs. {pricing.emailFee.toFixed(2)}/-</span>
+                      <span className="font-bold">₹{pricing.emailFee.toFixed(2)}/-</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center text-sm text-left">
                     <span className="font-bold text-gray-500 text-left">GST (18.00%)</span>
-                    <span className="font-bold text-gray-900">Rs. {pricing.gst}/-</span>
+                    <span className="font-bold text-gray-900">₹{pricing.gst}/-</span>
                   </div>
                   <div className="flex justify-between items-center pt-5 border-t border-gray-100 text-left">
                     <span className="font-bold text-gray-400 uppercase tracking-widest text-[10px] text-left">Total Amount Payable</span>
-                    <span className="text-2xl font-black text-[#a64d24]">Rs. {pricing.total}/-</span>
+                    <span className="text-2xl font-black text-[#a64d24]">₹{pricing.total}/-</span>
                   </div>
                 </div>
                 <div className="bg-gray-50/50 p-6 border-t border-gray-100 text-left">

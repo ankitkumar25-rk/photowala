@@ -145,17 +145,30 @@ exports.refresh = async (req, res, next) => {
     const token = req.cookies?.refresh_token || req.body.refreshToken;
     if (!token) throw createError('Refresh token required', 401);
 
-    const payload = await verifyToken(token);
+    let payload;
+    try {
+      payload = await verifyToken(token);
+    } catch (err) {
+      // Clear expired cookies if verification fails
+      res.clearCookie('access_token', { path: '/' });
+      res.clearCookie('refresh_token', { path: '/' });
+      return res.status(401).json({ success: false, error: 'REFRESH_TOKEN_EXPIRED', message: 'Session expired' });
+    }
+
     if (payload.purpose !== 'refresh') throw createError('Invalid token', 401);
 
     const stored = await prisma.refreshToken.findUnique({ where: { token } });
-    if (!stored || stored.expiresAt < new Date()) throw createError('Token expired', 401);
+    if (!stored || stored.expiresAt < new Date()) {
+      res.clearCookie('access_token', { path: '/' });
+      res.clearCookie('refresh_token', { path: '/' });
+      return res.status(401).json({ success: false, error: 'REFRESH_TOKEN_EXPIRED', message: 'Session expired' });
+    }
 
     const user = await prisma.user.findUnique({ where: { id: payload.sub } });
     if (!user) throw createError('User not found', 401);
 
     // Rotate refresh token
-    await prisma.refreshToken.delete({ where: { token } });
+    await prisma.refreshToken.delete({ where: { token } }).catch(() => {});
     const { accessToken, refreshToken: newRefreshToken } = await issueTokens(user);
 
     res.cookie('access_token', accessToken, COOKIE_OPTS);
@@ -168,7 +181,10 @@ exports.refresh = async (req, res, next) => {
       refreshToken: newRefreshToken
     });
   } catch (err) {
-    next(err);
+    console.error('[Auth] Refresh error:', err);
+    res.clearCookie('access_token', { path: '/' });
+    res.clearCookie('refresh_token', { path: '/' });
+    res.status(401).json({ success: false, error: 'REFRESH_TOKEN_EXPIRED', message: 'Authentication failed' });
   }
 };
 

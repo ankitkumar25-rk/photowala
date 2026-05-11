@@ -64,14 +64,34 @@ api.interceptors.response.use(
       return api(original);
     }
 
-    // Handle 401: Clear token and redirect to login
-    if (err.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('admin-auth'); // Clear any legacy store state
-      
-      // Prevent redirect loop if already on login or checking self
-      if (window.location.pathname !== '/login' && original.url !== '/auth/me') {
-        window.location.href = '/login';
+    // Handle 401: Attempt refresh or redirect
+    if (err.response?.status === 401 && !original?._retry) {
+      original._retry = true;
+
+      // Skip refresh for auth-related calls to avoid loops
+      if (original.url.includes('/auth/me') || original.url.includes('/auth/refresh')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('admin-auth');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        return Promise.reject(err);
+      }
+
+      try {
+        const refreshRes = await api.post('/auth/refresh');
+        if (refreshRes.data?.accessToken) {
+          localStorage.setItem('token', refreshRes.data.accessToken);
+          original.headers.Authorization = `Bearer ${refreshRes.data.accessToken}`;
+          return api(original);
+        }
+      } catch (refreshErr) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('admin-auth');
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+        return Promise.reject(refreshErr);
       }
     }
     

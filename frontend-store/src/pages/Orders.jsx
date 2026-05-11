@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Package, ChevronRight, Clock, Truck, CheckCircle,
@@ -235,7 +235,7 @@ export default function Orders() {
             </p>
             {!statusFilter && (
               <a href="/products" className="btn-primary">
-                Shop Products ðŸ" 
+                Shop Products
               </a>
             )}
           </div>

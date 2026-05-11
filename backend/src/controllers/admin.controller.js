@@ -60,8 +60,8 @@ exports.getSalesChart = async (req, res, next) => {
         DATE_TRUNC('day', o."createdAt") as "date",
         SUM(o."total") as "revenue",
         COUNT(o."id")::int as "orders"
-      FROM "Order" o
-      LEFT JOIN "Payment" p ON p."internalOrderId" = o."id"
+      FROM "orders" o
+      LEFT JOIN "payments" p ON p."internalOrderId" = o."id"
       WHERE o."createdAt" >= ${from} 
         AND p."status" = 'PAID'
       GROUP BY DATE_TRUNC('day', o."createdAt")
@@ -117,7 +117,7 @@ exports.getCustomer = async (req, res, next) => {
     const user = await prisma.user.findUnique({
       where: { id: req.params.id },
       include: {
-        orders: { take: 10, orderBy: { createdAt: 'desc' }, include: { payment: true } },
+        orders: { take: 10, orderBy: { createdAt: 'desc' }, include: { payments: true } },
         addresses: true,
       },
     });
