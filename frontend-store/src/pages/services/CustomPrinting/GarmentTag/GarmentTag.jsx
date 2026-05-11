@@ -9,7 +9,7 @@ import api from '../../../../api/client';
 import { 
   FaPenNib, FaNoteSticky, FaPrint, FaFileSignature, 
   FaTag, FaFileInvoiceDollar, FaEnvelope,
-  FaSparkles, FaLayerGroup, FaWandMagicSparkles, FaSitemap
+  FaStar, FaLayerGroup, FaWandMagicSparkles, FaSitemap
 } from 'react-icons/fa6';
 import { serviceAssets } from '../../../../data/assets';
 
@@ -24,7 +24,7 @@ const SIDEBAR_LINKS = [
 ];
 
 const GARMENT_TYPES = [
-  { id: 'gloss', label: 'Gloss Coated Tags', to: '/services/custom-printing/garment-gloss', icon: FaSparkles, imageBg: '#3a3a3a', detail: 'Hi-Gloss Finish' },
+  { id: 'gloss', label: 'Gloss Coated Tags', to: '/services/custom-printing/garment-gloss', icon: FaStar, imageBg: '#3a3a3a', detail: 'Hi-Gloss Finish' },
   { id: 'matt', label: 'Matt Lamination Tags', to: '/services/custom-printing/garment-matt', icon: FaLayerGroup, imageBg: '#2d4a3e', detail: 'Smooth Matt' },
   { id: 'uv', label: 'Matt Lamination + UV', to: '/services/custom-printing/garment-uv', icon: FaWandMagicSparkles, imageBg: '#c9a227', detail: 'Fine UV Effect' },
   { id: 'threads', label: 'Garment Threads', to: '/services/custom-printing/garment-thread', icon: FaSitemap, imageBg: '#e8dfd5', detail: 'Premium Seals' },
