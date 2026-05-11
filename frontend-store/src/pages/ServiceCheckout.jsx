@@ -28,22 +28,6 @@ export default function ServiceCheckout() {
 
   if (!orderData) return null;
 
-  const handleCOD = async () => {
-    setLoading('cod');
-    try {
-      await api.post('/payments/cod', {
-        internalOrderId: orderData.orderId,
-        orderType: 'SERVICE_ORDER',
-      });
-      toast.success('Order confirmed via COD! 🚚');
-      handleSuccess();
-    } catch (err) {
-      console.error('COD error:', err);
-      toast.error('Could not confirm COD. Please try again.');
-    } finally {
-      setLoading(null);
-    }
-  };
 
   const handleRazorpay = async () => {
     setLoading('razorpay');
@@ -133,44 +117,23 @@ export default function ServiceCheckout() {
               <p className="text-gray-500 text-sm ml-12">Select your preferred transaction mode for this professional service request.</p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-6 ml-0 lg:ml-12">
+            <div className="ml-0 lg:ml-12">
                {/* Razorpay Option */}
                <button
                 onClick={handleRazorpay}
                 disabled={!!loading}
-                className={`group flex flex-col items-center gap-6 p-8 rounded-[2.5rem] border-2 transition-all duration-500 text-center relative overflow-hidden
-                  ${loading === 'razorpay' ? 'border-brand-secondary bg-brand-surface shadow-inner' : 'border-cream-200 bg-white hover:border-brand-secondary hover:shadow-2xl hover:-translate-y-1'}
-                  ${loading && loading !== 'razorpay' ? 'opacity-50 grayscale pointer-events-none' : ''}`}
+                className={`group w-full flex flex-col items-center gap-6 p-10 rounded-[2.5rem] border-2 transition-all duration-500 text-center relative overflow-hidden
+                  ${loading === 'razorpay' ? 'border-brand-secondary bg-brand-surface shadow-inner' : 'border-cream-200 bg-white hover:border-brand-secondary hover:shadow-2xl hover:-translate-y-1'}`}
                >
                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${loading === 'razorpay' ? 'bg-brand-secondary text-white' : 'bg-brand-surface text-brand-secondary group-hover:bg-brand-secondary group-hover:text-white'}`}>
                     {loading === 'razorpay' ? <Loader2 className="w-8 h-8 animate-spin" /> : <CreditCard className="w-8 h-8" />}
                  </div>
                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-brand-primary">Razorpay</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Cards · UPI · NetBanking</p>
+                    <h3 className="text-2xl font-bold text-brand-primary">Pay with Razorpay</h3>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Debit/Credit Cards · UPI · NetBanking · Wallets</p>
                  </div>
-                 <div className="pt-4 border-t border-cream-100 w-full">
-                    <span className="text-[9px] font-black text-brand-secondary uppercase tracking-[0.2em] bg-brand-surface px-3 py-1 rounded-full">Secure Gateway</span>
-                 </div>
-               </button>
-
-               {/* COD Option */}
-               <button
-                onClick={handleCOD}
-                disabled={!!loading}
-                className={`group flex flex-col items-center gap-6 p-8 rounded-[2.5rem] border-2 transition-all duration-500 text-center relative overflow-hidden
-                  ${loading === 'cod' ? 'border-brand-primary bg-cream-50 shadow-inner' : 'border-cream-200 bg-white hover:border-brand-primary hover:shadow-2xl hover:-translate-y-1'}
-                  ${loading && loading !== 'cod' ? 'opacity-50 grayscale pointer-events-none' : ''}`}
-               >
-                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${loading === 'cod' ? 'bg-brand-primary text-white' : 'bg-cream-100 text-brand-primary group-hover:bg-brand-primary group-hover:text-white'}`}>
-                    {loading === 'cod' ? <Loader2 className="w-8 h-8 animate-spin" /> : <Banknote className="w-8 h-8" />}
-                 </div>
-                 <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-brand-primary">Cash on Delivery</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pay at Delivery Center</p>
-                 </div>
-                 <div className="pt-4 border-t border-cream-100 w-full">
-                    <span className="text-[9px] font-black text-brand-primary uppercase tracking-[0.2em] bg-cream-100 px-3 py-1 rounded-full">Verified Method</span>
+                 <div className="pt-6 border-t border-cream-100 w-full">
+                    <span className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em] bg-brand-surface px-4 py-1.5 rounded-full">Secure Payment Gateway</span>
                  </div>
                </button>
             </div>
