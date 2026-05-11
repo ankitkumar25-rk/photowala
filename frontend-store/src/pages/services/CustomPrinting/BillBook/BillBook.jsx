@@ -175,7 +175,7 @@ export default function BillBook() {
                 : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
                 }`}>
               {createElement(link.icon, { className: `w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'text-gray-400'}` })}
-              <span className="uppercase tracking-widest">{link.label}</span>
+              <span className="uppercase tracking-wider">{link.label}</span>
             </Link>
           ))}
         </nav>

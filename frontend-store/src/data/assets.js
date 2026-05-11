@@ -25,6 +25,8 @@ import servicePenPreview from "../assets/service_pen_preview.png";
 import garmentTagGloss from "../assets/images/services/garment_tag_gloss.png";
 import letterhead1 from "../assets/images/services/letterhead_1.png";
 import letterhead2 from "../assets/images/services/letterhead_2.png";
+import threadPremium from "../assets/images/services/thread_premium.png";
+import threadStandard from "../assets/images/services/thread_standard.png";
 
 // Brand exports
 export const brandAssets = {
@@ -77,4 +79,6 @@ export const serviceAssets = {
   garmentTagGloss,
   letterhead1,
   letterhead2,
+  threadPremium,
+  threadStandard,
 };

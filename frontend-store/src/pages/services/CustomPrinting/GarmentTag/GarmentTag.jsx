@@ -117,8 +117,8 @@ const DATA = {
         ],
         colors: ['White', 'Black', 'Red', 'Blue', 'Brown', 'Cream', 'Orange', 'Green'],
         images: [
-            { id: 1, url: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=1000&auto=format&fit=crop', title: 'Premium Threads' },
-            { id: 2, url: 'https://images.unsplash.com/photo-1586075010633-247fe9edac7b?q=80&w=1000&auto=format&fit=crop', title: 'Standard Threads' },
+            { id: 1, url: serviceAssets.threadPremium, title: 'Premium Threads' },
+            { id: 2, url: serviceAssets.threadStandard, title: 'Standard Threads' },
         ]
     }
 };
@@ -340,7 +340,7 @@ export default function GarmentTag() {
                 : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
                 }`}>
               {createElement(link.icon, { className: `w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'text-gray-400'}` })}
-              <span className="uppercase tracking-widest">{link.label}</span>
+              <span className="uppercase tracking-wider">{link.label}</span>
             </Link>
           ))}
         </nav>
