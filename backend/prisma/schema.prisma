@@ -309,7 +309,6 @@ model Order {
   paymentMethod   PaymentMethod?
   paymentStatus   PaymentStatus @default(PENDING)
   returns         Return[]
-  payments        Payment[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
