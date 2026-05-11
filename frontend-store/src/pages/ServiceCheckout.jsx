@@ -40,21 +40,22 @@ export default function ServiceCheckout() {
         return;
       }
 
-      const { data } = await api.post('/payments/create-order', {
+      const { data: responseBody } = await api.post('/payments/create-order', {
         amount: orderData.totalAmount,
         currency: 'INR',
         orderId: orderData.orderId,
         orderType: 'SERVICE_ORDER',
       });
+      const rzpData = responseBody.data;
 
       const options = {
-        key: data.keyId,
-        amount: data.amount,
-        currency: data.currency,
+        key: rzpData.keyId,
+        amount: rzpData.amount,
+        currency: rzpData.currency,
         name: 'Photowala',
         description: 'Professional Service Order',
         image: '/logo.png', 
-        order_id: data.razorpayOrderId,
+        order_id: rzpData.razorpayOrderId,
         handler: async (response) => {
           try {
             await api.post('/payments/verify', {

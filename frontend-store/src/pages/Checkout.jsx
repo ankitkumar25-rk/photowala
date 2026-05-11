@@ -198,20 +198,21 @@ export default function Checkout() {
           return;
         }
 
-        const { data: rzpOrder } = await paymentsApi.createOrder({
+        const { data: responseBody } = await paymentsApi.createOrder({
           amount: total,
           currency: 'INR',
           orderId: order.id,
           orderType: 'ORDER',
         });
+        const rzpData = responseBody.data;
 
         const options = {
-          key: rzpOrder.keyId,
-          amount: rzpOrder.amount,
-          currency: rzpOrder.currency,
+          key: rzpData.keyId,
+          amount: rzpData.amount,
+          currency: rzpData.currency,
           name: 'Photowala',
           description: 'Product Order Checkout',
-          order_id: rzpOrder.razorpayOrderId,
+          order_id: rzpData.razorpayOrderId,
           handler: async (resp) => {
             try {
               await paymentsApi.verifyPayment({
