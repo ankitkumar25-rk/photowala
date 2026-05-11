@@ -8,7 +8,8 @@ import {
 import api from '../../../../api/client';
 import { 
   FaPenNib, FaNoteSticky, FaPrint, FaFileSignature, 
-  FaTag, FaFileInvoiceDollar, FaEnvelope
+  FaTag, FaFileInvoiceDollar, FaEnvelope,
+  FaSparkles, FaLayerGroup, FaWandMagicSparkles, FaSitemap
 } from 'react-icons/fa6';
 import { serviceAssets } from '../../../../data/assets';
 
@@ -23,10 +24,10 @@ const SIDEBAR_LINKS = [
 ];
 
 const GARMENT_TYPES = [
-  { id: 'gloss', label: 'Gloss Coated Tags', to: '/services/custom-printing/garment-gloss' },
-  { id: 'matt', label: 'Matt Lamination Tags', to: '/services/custom-printing/garment-matt' },
-  { id: 'uv', label: 'Matt Lamination + UV', to: '/services/custom-printing/garment-uv' },
-  { id: 'threads', label: 'Garment Threads', to: '/services/custom-printing/garment-thread' },
+  { id: 'gloss', label: 'Gloss Coated Tags', to: '/services/custom-printing/garment-gloss', icon: FaSparkles, imageBg: '#3a3a3a', detail: 'Hi-Gloss Finish' },
+  { id: 'matt', label: 'Matt Lamination Tags', to: '/services/custom-printing/garment-matt', icon: FaLayerGroup, imageBg: '#2d4a3e', detail: 'Smooth Matt' },
+  { id: 'uv', label: 'Matt Lamination + UV', to: '/services/custom-printing/garment-uv', icon: FaWandMagicSparkles, imageBg: '#c9a227', detail: 'Fine UV Effect' },
+  { id: 'threads', label: 'Garment Threads', to: '/services/custom-printing/garment-thread', icon: FaSitemap, imageBg: '#e8dfd5', detail: 'Premium Seals' },
 ];
 
 const SIZE_OPTIONS = ['Large', 'Medium', 'Small'];
@@ -43,8 +44,8 @@ const DATA = {
         lamination: 'Hi-Gloss',
         images: [
             { id: 1, url: serviceAssets.garmentTagGloss, title: 'Gloss Tag Layout' },
-            { id: 2, url: '/assets/images/services/garment_tag_2.png', title: 'Large & Medium Size Die' },
-            { id: 3, url: '/assets/images/services/garment_tag_3.png', title: 'Small Size Die' },
+            { id: 2, url: serviceAssets.garmentTagDie2, title: 'Large & Medium Size Die' },
+            { id: 3, url: serviceAssets.garmentTagDie3, title: 'Small Size Die' },
         ],
         rates: {
             'Small':  { 2000: 1.20, 4000: 1.10, 6000: 1.00, 8000: 0.95, 10000: 0.90 },
@@ -65,9 +66,9 @@ const DATA = {
         core: 'Smooth Matt',
         lamination: 'Matt',
         images: [
-            { id: 1, url: '/assets/images/services/garment_tag_2.png', title: 'Matt Lamination Tags' },
-            { id: 2, url: '/assets/images/services/garment_tag_1.png', title: 'Large & Medium Size Die' },
-            { id: 3, url: '/assets/images/services/garment_tag_3.png', title: 'Small Size Die' },
+            { id: 1, url: serviceAssets.garmentTagDie2, title: 'Matt Lamination Tags' },
+            { id: 2, url: serviceAssets.garmentTagDie1, title: 'Large & Medium Size Die' },
+            { id: 3, url: serviceAssets.garmentTagDie3, title: 'Small Size Die' },
         ],
         rates: {
             'Small':  { 2000: 1.40, 4000: 1.30, 6000: 1.20, 8000: 1.15, 10000: 1.10 },
@@ -88,9 +89,9 @@ const DATA = {
         core: 'Smooth Matt with Fine UV',
         lamination: 'Matt',
         images: [
-            { id: 1, url: '/assets/images/services/garment_tag_3.png', title: 'Spot UV Detail' },
-            { id: 2, url: '/assets/images/services/garment_tag_1.png', title: 'Premium UV Finish' },
-            { id: 3, url: '/assets/images/services/garment_tag_2.png', title: 'Large & Medium Size Die' },
+            { id: 1, url: serviceAssets.garmentTagDie3, title: 'Spot UV Detail' },
+            { id: 2, url: serviceAssets.garmentTagDie1, title: 'Premium UV Finish' },
+            { id: 3, url: serviceAssets.garmentTagDie2, title: 'Large & Medium Size Die' },
         ],
         rates: {
             'Small':  { 2000: 1.60, 4000: 1.50, 6000: 1.40, 8000: 1.35, 10000: 1.30 },
@@ -357,17 +358,6 @@ export default function GarmentTag() {
             <span className="text-[#a64d24]">{activeData.title}</span>
           </div>
 
-          {/* Sub Navigation Tabs */}
-          <div className="flex gap-4 mb-10 overflow-x-auto pb-2 scrollbar-hide">
-            {GARMENT_TYPES.map(type => (
-              <Link key={type.id} to={type.to}
-                className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all shrink-0 ${
-                  activeTab === type.id ? 'bg-[#a64d24] text-white shadow-lg' : 'bg-white text-gray-400 border border-gray-100 hover:text-gray-900'
-                }`}>
-                {type.label}
-              </Link>
-            ))}
-          </div>
 
           <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
             {/* Left Form Column */}
@@ -381,27 +371,65 @@ export default function GarmentTag() {
                   className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all placeholder:text-gray-300" />
               </div>
 
-              {/* Product Selection */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Select Product</label>
-                {activeTab === 'uv' ? (
-                    <select value={productType} onChange={(e)=>setProductType(e.target.value)}
-                        className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none">
-                        <option value="">--Select Product--</option>
-                        {activeData.productVariants.map(v => <option key={v} value={v}>{v}</option>)}
-                    </select>
-                ) : activeTab === 'threads' ? (
-                    <select value={selThread} onChange={(e)=>setSelThread(e.target.value)}
-                        className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none">
-                        <option value="">--Select Thread Type--</option>
-                        {activeData.products.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-                    </select>
-                ) : (
-                    <select className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none" defaultValue={activeTab}>
-                        <option value={activeTab}>{activeData.title}</option>
-                    </select>
-                )}
+              <div className="bg-white rounded-2xl border border-[#e8dfd5] overflow-hidden shadow-sm">
+                <div className="p-4 md:p-6 lg:p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Layers className="w-5 h-5 text-[#a64d24]" />
+                    <h3 className="text-base md:text-lg font-bold text-gray-900 uppercase tracking-wider">Select Product</h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-2">
+                    {GARMENT_TYPES.map((p) => (
+                      <Link 
+                        key={p.id} 
+                        to={p.to}
+                        className={`rounded-xl overflow-hidden border-2 cursor-pointer transition-all duration-200 ${activeTab === p.id ? 'border-[#a64d24] shadow-md scale-[1.02]' : 'border-[#e8dfd5] hover:border-[#d1a88b] hover:shadow'}`}
+                      >
+                        <div className="relative h-24 flex items-center justify-center text-3xl" style={{ background: p.imageBg }}>
+                           <div className={`${activeTab === p.id ? 'text-white' : 'text-white/70'}`}>
+                             {createElement(p.icon)}
+                           </div>
+                          {activeTab === p.id && (
+                            <span className="absolute top-1.5 right-1.5 bg-[#a64d24] text-white text-[9px] font-bold px-2 py-0.5 rounded-full">SELECTED</span>
+                          )}
+                        </div>
+                        <div className="p-2.5 bg-white">
+                          <p className={`font-bold text-[11px] leading-tight mb-0.5 truncate ${activeTab === p.id ? 'text-[#a64d24]' : 'text-gray-800'}`}>{p.label}</p>
+                          <p className="text-[10px] text-[#b65e2e]">{p.detail}</p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </div>
+
+              {activeTab === 'uv' && (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Select UV Variant</label>
+                  <select 
+                    value={productType} 
+                    onChange={(e)=>setProductType(e.target.value)}
+                    className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none"
+                  >
+                    <option value="">--Select Variant--</option>
+                    {activeData.productVariants.map(v => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+              )}
+
+              {activeTab === 'threads' && (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Select Thread Type</label>
+                  <select 
+                    value={selThread} 
+                    onChange={(e)=>setSelThread(e.target.value)}
+                    className="w-full bg-[#fffaf5] border border-[#e8dfd5] rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#b65e2e]/20 outline-none transition-all appearance-none"
+                  >
+                    <option value="">--Select Thread Type--</option>
+                    {activeData.products.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+                  </select>
+                </div>
+              )}
 
               {/* Detail Dropdowns */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

@@ -22,7 +22,10 @@ import serviceDrawing from "../assets/service_drawing.png";
 import serviceMachine from "../assets/service_machine.png";
 import serviceMaterial from "../assets/service_material.png";
 import servicePenPreview from "../assets/service_pen_preview.png";
+import garmentTagDie1 from "../assets/images/services/garment_tag_1.png";
 import garmentTagGloss from "../assets/images/services/garment_tag_gloss.png";
+import garmentTagDie2 from "../assets/images/services/garment_tag_2.png";
+import garmentTagDie3 from "../assets/images/services/garment_tag_3.png";
 import letterhead1 from "../assets/images/services/letterhead_1.png";
 import letterhead2 from "../assets/images/services/letterhead_2.png";
 import threadPremium from "../assets/images/services/thread_premium.png";
@@ -76,7 +79,10 @@ export const serviceAssets = {
   machine: serviceMachine,
   material: serviceMaterial,
   penPreview: servicePenPreview,
+  garmentTagDie1,
   garmentTagGloss,
+  garmentTagDie2,
+  garmentTagDie3,
   letterhead1,
   letterhead2,
   threadPremium,
