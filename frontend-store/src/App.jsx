@@ -122,7 +122,7 @@ export default function App() {
                 <Route path="services/custom-printing/pen" element={<ProtectedRoute><LaserPrintedPen /></ProtectedRoute>} />
                 <Route path="services/custom-printing/letterhead" element={<ProtectedRoute><Letterhead /></ProtectedRoute>} />
                 <Route path="services/custom-printing/envelope" element={<ProtectedRoute><Envelope /></ProtectedRoute>} />
-                <Route path="services/custom-printing/sticker-labels" element={<Navigate to="/services/custom-printing/sticker-labels/no-cut" replace />} />
+                <Route path="services/custom-printing/sticker-labels" element={<ProtectedRoute><StickerLabels /></ProtectedRoute>} />
                 <Route path="services/custom-printing/sticker-labels/:type" element={<ProtectedRoute><StickerLabels /></ProtectedRoute>} />
                 <Route path="services/custom-printing/garment-tag" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
                 <Route path="services/custom-printing/garment-thread" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
