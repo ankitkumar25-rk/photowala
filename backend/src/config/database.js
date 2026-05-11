@@ -1,15 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
-const { PrismaPg } = require('@prisma/adapter-pg');
-
-// Prisma v7 requires an adapter — use the official pg adapter
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  }
-});
-
-const prisma = new PrismaClient({ adapter });
+// Prisma v7 handles connections internally for PostgreSQL.
+// Only use adapters if using specialized drivers like pg-lite or edge functions.
+const prisma = new PrismaClient();
 
 // Graceful shutdown
 process.on('beforeExit', async () => {
