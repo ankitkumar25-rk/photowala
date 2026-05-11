@@ -9,6 +9,7 @@ import api from '../api/client';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../store';
 import { useQueryClient } from '@tanstack/react-query';
+import { loadRazorpayScript } from '../utils/razorpay';
 
 export default function ServiceCheckout() {
   const location = useLocation();
@@ -32,6 +33,13 @@ export default function ServiceCheckout() {
   const handleRazorpay = async () => {
     setLoading('razorpay');
     try {
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        toast.error('Failed to load payment gateway. Please check your connection.');
+        setLoading(null);
+        return;
+      }
+
       const { data } = await api.post('/payments/create-order', {
         amount: orderData.totalAmount,
         currency: 'INR',

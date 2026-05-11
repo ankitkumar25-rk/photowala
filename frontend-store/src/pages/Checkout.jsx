@@ -13,6 +13,7 @@ import { useCartStore } from '../store';
 import { usersApi, ordersApi, paymentsApi } from '../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../store';
+import { loadRazorpayScript } from '../utils/razorpay';
 
 /* -- Mini address form modal -- */
 function QuickAddressModal({ onClose, onSave }) {
@@ -191,6 +192,12 @@ export default function Checkout() {
         handlePaymentSuccess('COD', order.id);
       } else {
         // Razorpay
+        const isLoaded = await loadRazorpayScript();
+        if (!isLoaded) {
+          toast.error('Failed to load payment gateway. Please check your connection.');
+          return;
+        }
+
         const { data: rzpOrder } = await paymentsApi.createOrder({
           amount: total,
           currency: 'INR',
