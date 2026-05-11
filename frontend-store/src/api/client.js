@@ -13,6 +13,9 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+// Module-level lock to prevent multiple simultaneous refresh requests
+let refreshPromise = null;
+
 let csrfBootstrapPromise = null;
 async function ensureCsrfCookie() {
   if (readCookie('csrf_token')) return;
@@ -72,20 +75,32 @@ api.interceptors.response.use(
       // If the request was for /auth/refresh, don't retry refresh to avoid loops
       if (original.url.includes('/auth/refresh')) {
         localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('auth-storage');
         // Do not force redirect here, let the calling code handle it
         return Promise.reject(error);
       }
 
       try {
-        // Attempt to refresh tokens
-        const res = await api.post('/auth/refresh');
-        const accessToken = res.data?.data?.accessToken;
-        const refreshToken = res.data?.data?.refreshToken;
+        // Use a module-level lock to prevent multiple simultaneous refresh requests
+        // If a refresh is already in flight, wait for it instead of starting a new one
+        if (!refreshPromise) {
+          const refreshToken = localStorage.getItem('refreshToken');
+          refreshPromise = api.post('/auth/refresh', {}, {
+            headers: refreshToken
+              ? { Authorization: `Bearer ${refreshToken}` }
+              : {},
+            withCredentials: true
+          }).finally(() => { refreshPromise = null; });
+        }
+        
+        const res = await refreshPromise;
+        const accessToken = res.data?.accessToken;
+        const newRefreshToken = res.data?.refreshToken;
         
         if (accessToken) {
           localStorage.setItem('token', accessToken);
-          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+          if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
           original.headers.Authorization = `Bearer ${accessToken}`;
           return api(original); // Retry original request
         } else {

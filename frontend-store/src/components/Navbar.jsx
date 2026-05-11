@@ -16,6 +16,7 @@ export default function Navbar() {
   const location = useLocation();
 
   const user = useAuthStore((s) => s.user);
+  const isHydrating = useAuthStore((s) => s.isHydrating);
   const logout = useAuthStore((s) => s.logout);
   const itemCount = useCartStore((s) => s.itemCount());
 
@@ -180,7 +181,9 @@ export default function Navbar() {
             </Link>
 
             {/* User */}
-            {user ? (
+            {isHydrating ? (
+              <div className="w-8 h-8 bg-brand-primary/10 rounded-full" />
+            ) : user ? (
               <div className="relative group">
                  <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-surface transition-colors">
                    {user.avatarUrl ? (
@@ -251,7 +254,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            {user && (
+            {!isHydrating && user && (
               <>
                 <Link
                   to="/account"
@@ -275,7 +278,7 @@ export default function Navbar() {
                 </button>
               </>
             )}
-            {!user && (
+            {!isHydrating && !user && (
               <Link
                 to="/login"
                 onClick={() => setMenuOpen(false)}

@@ -8,11 +8,12 @@ export const useAuthStore = create(
       user: null,
       isLoading: false,
       isInitialized: false, // Added tracking
+      isHydrating: true, // NEW: True while checking auth on initial load
       _fetchMePromise: null, 
 
       setUser: (user) => set({ user }),
       login: async (credentials) => {
-        set({ isLoading: true });
+        set({ isLoading: true, isHydrating: false });
         try {
           const response = await authApi.login(credentials);
           const { data } = response;
@@ -30,18 +31,18 @@ export const useAuthStore = create(
           localStorage.setItem('token', accessToken);
           if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
           
-          set({ user: userData, isLoading: false, isInitialized: true });
+          set({ user: userData, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
           return response.data;
         } catch (err) {
-          set({ isLoading: false });
+          set({ isLoading: false, isHydrating: false });
           throw err;
         }
       },
 
       register: async (userData) => {
-        set({ isLoading: true });
+        set({ isLoading: true, isHydrating: false });
         try {
           const response = await authApi.register(userData);
           const { data } = response;
@@ -59,12 +60,12 @@ export const useAuthStore = create(
           localStorage.setItem('token', accessToken);
           if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
 
-          set({ user: userObj, isLoading: false, isInitialized: true });
+          set({ user: userObj, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
           return response.data;
         } catch (err) {
-          set({ isLoading: false });
+          set({ isLoading: false, isHydrating: false });
           throw err;
         }
       },
@@ -76,7 +77,7 @@ export const useAuthStore = create(
           localStorage.removeItem('token');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('auth-storage');
-          set({ user: null, _fetchMePromise: null, isInitialized: true });
+          set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
           useCartStore.getState().resetCart();
         }
       },
@@ -97,19 +98,19 @@ export const useAuthStore = create(
             const allowedRoles = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'];
             if (!userData?.role || !allowedRoles.includes(userData.role)) {
               localStorage.removeItem('token');
-              set({ user: null, _fetchMePromise: null, isInitialized: true });
+              set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
               useCartStore.getState().resetCart();
               return null;
             }
-            set({ user: userData, _fetchMePromise: null, isInitialized: true });
+            set({ user: userData, _fetchMePromise: null, isInitialized: true, isHydrating: false });
             await useCartStore.getState().fetchCart();
             return userData;
           } catch (err) {
             if (hadUserBefore) {
-              set({ user: null, _fetchMePromise: null, isInitialized: true });
+              set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
               useCartStore.getState().resetCart();
             } else {
-              set({ _fetchMePromise: null, isInitialized: true });
+              set({ _fetchMePromise: null, isInitialized: true, isHydrating: false });
             }
             throw err;
           }

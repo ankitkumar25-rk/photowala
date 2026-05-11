@@ -142,7 +142,18 @@ exports.logout = async (req, res, next) => {
 
 exports.refresh = async (req, res, next) => {
   try {
-    const token = req.cookies?.refresh_token || req.body.refreshToken;
+    // Extract refresh token from three sources in order of preference:
+    // 1. httpOnly cookie (works in Chrome/Firefox)
+    // 2. Authorization: Bearer header (fallback for Brave/Safari)
+    // 3. request body (last resort)
+    const authHeader = req.headers?.authorization;
+    let token = req.cookies?.refresh_token;
+    if (!token && authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+    if (!token) {
+      token = req.body?.refreshToken;
+    }
     if (!token) throw createError('Refresh token required', 401);
 
     let payload;
