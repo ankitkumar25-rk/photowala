@@ -77,6 +77,7 @@ api.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('auth-storage');
+        console.warn('[Auth] Refresh token expired or invalid, logging out');
         // Do not force redirect here, let the calling code handle it
         return Promise.reject(error);
       }
@@ -86,28 +87,46 @@ api.interceptors.response.use(
         // If a refresh is already in flight, wait for it instead of starting a new one
         if (!refreshPromise) {
           const refreshToken = localStorage.getItem('refreshToken');
+          console.log('[Auth] Attempting refresh with token:', refreshToken ? 'present' : 'missing');
+          
+          if (!refreshToken) {
+            console.warn('[Auth] No refresh token in localStorage, cannot refresh');
+            throw new Error('No refresh token available');
+          }
+          
           refreshPromise = api.post('/auth/refresh', {}, {
-            headers: refreshToken
-              ? { Authorization: `Bearer ${refreshToken}` }
-              : {},
+            headers: { Authorization: `Bearer ${refreshToken}` },
             withCredentials: true
-          }).finally(() => { refreshPromise = null; });
+          })
+            .then(res => {
+              console.log('[Auth] Refresh successful, response:', res.data);
+              return res;
+            })
+            .catch(err => {
+              console.error('[Auth] Refresh failed:', err.response?.data || err.message);
+              throw err;
+            })
+            .finally(() => { refreshPromise = null; });
         }
         
         const res = await refreshPromise;
-        const accessToken = res.data?.accessToken;
-        const newRefreshToken = res.data?.refreshToken;
+        const accessToken = res.data?.accessToken || res.data?.data?.accessToken;
+        const newRefreshToken = res.data?.refreshToken || res.data?.data?.refreshToken;
+        
+        console.log('[Auth] Extracted tokens - access:', !!accessToken, 'refresh:', !!newRefreshToken);
         
         if (accessToken) {
           localStorage.setItem('token', accessToken);
           if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
           original.headers.Authorization = `Bearer ${accessToken}`;
+          console.log('[Auth] Retry original request with new token');
           return api(original); // Retry original request
         } else {
           throw new Error('No access token in refresh response');
         }
       } catch (refreshError) {
         // Refresh failed (e.g. refresh token expired)
+        console.error('[Auth] Refresh failed, clearing auth:', refreshError.message);
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('auth-storage');

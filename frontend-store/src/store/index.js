@@ -17,6 +17,7 @@ export const useAuthStore = create(
         try {
           const response = await authApi.login(credentials);
           const { data } = response;
+          console.log('[Auth] Login response structure:', JSON.stringify(data, null, 2));
           
           // Extract user and token from nested response structure
           const userData = data?.data?.user;
@@ -24,18 +25,26 @@ export const useAuthStore = create(
           const refreshToken = data?.data?.refreshToken;
           
           if (!userData || !accessToken) {
+            console.error('[Auth] Missing user or accessToken:', { userData: !!userData, accessToken: !!accessToken });
             throw new Error('Invalid response format: missing user or token');
+          }
+          
+          if (!refreshToken) {
+            console.error('[Auth] WARNING: No refreshToken in response! Token extraction failed.', { refreshToken });
+            throw new Error('No refresh token in response. Cannot establish session.');
           }
           
           // Store tokens
           localStorage.setItem('token', accessToken);
-          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          console.log('[Auth] Tokens saved to localStorage:', { token: 'token' in localStorage, refreshToken: 'refreshToken' in localStorage });
           
           set({ user: userData, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
           return response.data;
         } catch (err) {
+          console.error('[Auth] Login error:', err.message);
           set({ isLoading: false, isHydrating: false });
           throw err;
         }
@@ -46,6 +55,7 @@ export const useAuthStore = create(
         try {
           const response = await authApi.register(userData);
           const { data } = response;
+          console.log('[Auth] Register response structure:', JSON.stringify(data, null, 2));
           
           // Extract user and token from nested response structure
           const userObj = data?.data?.user;
@@ -53,18 +63,26 @@ export const useAuthStore = create(
           const refreshToken = data?.data?.refreshToken;
           
           if (!userObj || !accessToken) {
+            console.error('[Auth] Missing user or accessToken:', { userObj: !!userObj, accessToken: !!accessToken });
             throw new Error('Invalid response format: missing user or token');
+          }
+          
+          if (!refreshToken) {
+            console.error('[Auth] WARNING: No refreshToken in response! Token extraction failed.', { refreshToken });
+            throw new Error('No refresh token in response. Cannot establish session.');
           }
           
           // Store tokens
           localStorage.setItem('token', accessToken);
-          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('refreshToken', refreshToken);
+          console.log('[Auth] Tokens saved to localStorage:', { token: 'token' in localStorage, refreshToken: 'refreshToken' in localStorage });
 
           set({ user: userObj, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
           return response.data;
         } catch (err) {
+          console.error('[Auth] Register error:', err.message);
           set({ isLoading: false, isHydrating: false });
           throw err;
         }
