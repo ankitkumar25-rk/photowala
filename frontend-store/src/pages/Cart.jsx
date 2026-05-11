@@ -250,11 +250,12 @@ export default function Cart() {
                     ['Corporate Gifts', '/categories/corporate-gifts'],
                     ['Momentos', '/categories/momentos'],
                     ['Personalized Gifts', '/products'],
-                ].map(([label, to]) => (
-                  <Link key={to} to={to} className="px-3 py-1.5 bg-brand-surface text-brand-primary text-sm font-semibold rounded-xl hover:bg-brand-surface transition-colors">
-                    {label}
-                  </Link>
-                ))}
+                  ].map(([label, to]) => (
+                    <Link key={to} to={to} className="px-3 py-1.5 bg-brand-surface text-brand-primary text-sm font-semibold rounded-xl hover:bg-brand-surface transition-colors">
+                      {label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -412,4 +413,3 @@ export default function Cart() {
     </div>
   );
 }
-
