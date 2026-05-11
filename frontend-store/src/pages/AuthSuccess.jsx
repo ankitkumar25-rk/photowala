@@ -19,9 +19,11 @@ export default function AuthSuccess() {
     // This helps in environments where third-party httpOnly cookies are blocked.
     if (accessToken) {
       document.cookie = `access_token=${accessToken}; path=/; max-age=900; SameSite=Lax`;
+      localStorage.setItem('token', accessToken);
     }
     if (refreshToken) {
       document.cookie = `refresh_token=${refreshToken}; path=/; max-age=604800; SameSite=Lax`;
+      localStorage.setItem('refreshToken', refreshToken);
     }
 
     // Fetch user info

@@ -16,6 +16,9 @@ export const useAuthStore = create(
         try {
           const { data } = await authApi.login(credentials);
           const userData = data?.user || data?.data?.user || data?.data;
+          const token = data?.accessToken || data?.data?.accessToken;
+          if (token) localStorage.setItem('token', token);
+          
           set({ user: userData, isLoading: false, isInitialized: true });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
@@ -31,6 +34,9 @@ export const useAuthStore = create(
         try {
           const { data } = await authApi.register(userData);
           const userObj = data?.user || data?.data?.user || data?.data;
+          const token = data?.accessToken || data?.data?.accessToken;
+          if (token) localStorage.setItem('token', token);
+
           set({ user: userObj, isLoading: false, isInitialized: true });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
@@ -43,6 +49,7 @@ export const useAuthStore = create(
 
       logout: async () => {
         await authApi.logout().catch(() => {});
+        localStorage.removeItem('token');
         set({ user: null, _fetchMePromise: null, isInitialized: true });
         useCartStore.getState().resetCart();
       },
@@ -55,8 +62,11 @@ export const useAuthStore = create(
           try {
             const { data } = await authApi.getMe();
             const userData = data?.user || data?.data;
+            const token = data?.accessToken || data?.data?.accessToken;
+            if (token) localStorage.setItem('token', token);
             
             if (userData?.role !== 'CUSTOMER') {
+              localStorage.removeItem('token');
               set({ user: null, _fetchMePromise: null, isInitialized: true });
               useCartStore.getState().resetCart();
               return null;
