@@ -1,5 +1,5 @@
 import { useState, useEffect, createElement } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   User, Lock, MapPin, Heart, Package, ChevronRight,
   Edit2, Trash2, Plus, Check, Star, LogOut, Camera,
@@ -48,7 +48,7 @@ function AddressCard({ addr, onEdit, onDelete, onSetDefault }) {
         </span>
       )}
       <div className="flex items-start gap-3">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
           addr.isDefault ? 'bg-brand-primary/10' : 'bg-cream-200'
         }`}>
           {addr.label === 'Work' ? (
@@ -317,63 +317,65 @@ export default function Account() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-cream-100 page-enter">
-      {/* Header */}
-      <div className="bg-cream-100 text-gray-900">
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          <div className="flex flex-wrap items-center gap-5 justify-between">
-            <div className="flex items-center gap-5">
-              <div className="relative">
-                {user.avatarUrl ? (
-                  <img src={user.avatarUrl} alt={user.name} className="w-24 h-24 rounded-2xl object-cover shadow-sm" />
-                ) : (
-                  <div className="w-24 h-24 rounded-2xl bg-[#f43f5e] flex items-center justify-center text-4xl font-normal text-white shadow-sm">
-                    {user.name?.[0]?.toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Hello, {user.name?.split(' ')[0]?.toUpperCase()} 👋
-                </h1>
-                <p className="text-gray-700 flex items-center gap-1.5 mt-1 text-sm">
-                  <Mail className="w-4 h-4 text-gray-600" /> {user.email}
-                </p>
-                {user.phone && (
-                  <p className="text-gray-700 flex items-center gap-1.5 mt-0.5 text-sm">
-                    <Phone className="w-4 h-4 text-gray-600" /> {user.phone}
-                  </p>
-                )}
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-[#c26e27] hover:bg-[#a85f22] text-white rounded-xl text-sm font-semibold transition-colors"
-            >
-              <LogOut className="w-4 h-4" /> Logout
-            </button>
-          </div>
+    <div className="min-h-screen bg-cream-100 luxury-grain pt-24 pb-12 px-4 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
 
-          {/* Tabs */}
-          <div className="flex gap-2 mt-12 overflow-x-auto pb-2">
-            {TABS.map(({ id, label, icon }) => (
-              <button
-                key={id}
-                onClick={() => setTab(id)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
-                  tab === id
-                    ? 'bg-white text-gray-900 shadow-sm border border-gray-100'
-                    : 'text-gray-700 hover:bg-white/50'
-                }`}
-              >
-                {createElement(icon, { className: 'w-4 h-4' })} {label}
-              </button>
-            ))}
-          </div>
+      <div className="max-w-6xl mx-auto relative z-10">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-widest mb-8 animate-in fade-in slide-in-from-left-4 duration-500">
+          <Link to="/" className="hover:text-brand-secondary transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <span className="text-brand-primary">My Account</span>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 p-8 bg-white rounded-card border border-cream-200 shadow-sm">
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt={user.name} className="w-24 h-24 rounded-2xl object-cover shadow-sm border-2 border-cream-200" />
+              ) : (
+                <div className="w-24 h-24 rounded-2xl bg-brand-primary text-white flex items-center justify-center text-3xl font-bold shadow-sm">
+                  {user.name?.[0]?.toUpperCase()}
+                </div>
+              )}
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-brand-primary">
+                Welcome, {user.name?.split(' ')[0]?.toUpperCase()} 👋
+              </h1>
+              <p className="text-gray-500 flex items-center gap-1.5 mt-2 text-sm font-medium">
+                <Mail className="w-4 h-4 text-gray-400" /> {user.email}
+              </p>
+              {user.phone && (
+                <p className="text-gray-500 flex items-center gap-1.5 mt-1 text-sm font-medium">
+                  <Phone className="w-4 h-4 text-gray-400" /> {user.phone}
+                </p>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-6 py-3 rounded-pill bg-red-50 border border-red-100 text-red-600 font-bold text-xs uppercase tracking-widest hover:shadow-md transition-all"
+          >
+            <LogOut className="w-4 h-4" /> Logout
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex items-center p-1.5 bg-white rounded-pill border border-cream-200 mb-12 flex-wrap gap-2">
+          {TABS.map(({ id, label, icon }) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-pill text-xs font-bold uppercase tracking-wider transition-all duration-300 ${tab === id ? 'bg-brand-primary text-white shadow-lg' : 'text-gray-500 hover:text-brand-primary'}`}
+            >
+              {createElement(icon, { className: 'w-4 h-4' })} {label}
+            </button>
+          ))}
+        </div>
         {/* ── PROFILE TAB ── */}
         {tab === 'profile' && (
           <div className="grid lg:grid-cols-3 gap-6">

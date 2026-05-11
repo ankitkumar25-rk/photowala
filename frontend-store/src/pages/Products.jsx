@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { productsApi, categoriesApi } from '../api';
 import ProductCard from '../components/ProductCard';
 
@@ -47,30 +48,46 @@ export default function Products() {
     : [];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">All Products</h1>
-          <p className="text-gray-400 text-sm mt-1">{data?.meta?.total || 0} products found</p>
+    <div className="min-h-screen bg-cream-100 pt-32 pb-24 px-4 luxury-grain relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
+
+      <div className="max-w-6xl mx-auto relative z-10">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-widest mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
+          <Link to="/" className="hover:text-brand-secondary transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <span className="text-brand-primary">Shop All Products</span>
         </div>
-        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+              All <br />
+              <span className="text-brand-secondary">Products</span>
+            </h1>
+            <div className="flex items-center gap-4">
+              <div className="h-0.5 w-12 bg-brand-secondary" />
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">{data?.meta?.total || 0} premium items available</p>
+            </div>
+          </div>
 
           <select
             value={sortValue}
             onChange={(e) => setSortValue(e.target.value)}
-            className="input-field py-2 text-sm flex-1 sm:flex-none min-w-[140px]"
+            className="px-6 py-3 rounded-pill border border-cream-200 bg-white text-brand-primary font-semibold text-xs uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
           >
             {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
-      </div>
 
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Sidebar Filters */}
         <aside className={`${
           showFilters ? 'fixed inset-0 z-40 md:static md:z-auto' : 'hidden md:block'
-        } w-full md:w-64 md:flex-shrink-0`}>
+        } w-full md:w-64 md:shrink-0`}>
           {showFilters && (
             <div
               className="md:hidden fixed inset-0 bg-black/50"
@@ -143,10 +160,18 @@ export default function Products() {
               ))}
             </div>
           ) : data?.data?.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="text-5xl mb-4">🔍</div>
-              <h3 className="font-bold text-xl text-gray-700">No products found</h3>
-              <p className="text-gray-400 mt-2">Try adjusting your filters</p>
+            <div className="card p-16 md:p-24 text-center relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-b from-brand-surface/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="relative z-10">
+                <div className="w-20 h-20 bg-brand-surface rounded-3xl flex items-center justify-center mx-auto mb-8 text-brand-secondary border border-cream-200 shadow-sm">
+                  🔍
+                </div>
+                <h3 className="text-2xl font-bold text-brand-primary mb-3">No Products Found</h3>
+                <p className="text-gray-500 text-sm mb-10 max-w-sm mx-auto font-medium leading-relaxed">Try adjusting your filters or browse our categories to find what you're looking for.</p>
+                <Link to="/products" className="inline-flex items-center gap-2 px-10 py-4 rounded-pill bg-brand-primary text-white font-bold text-xs uppercase tracking-widest hover:bg-brand-deep transition-all shadow-lg hover:shadow-brand-primary/20">
+                  Clear Filters <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -176,6 +201,7 @@ export default function Products() {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

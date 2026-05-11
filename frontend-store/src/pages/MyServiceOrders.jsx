@@ -65,9 +65,9 @@ function TrackingTimeline({ currentStatus }) {
 
         {/* Desktop Horizontal View */}
         <div className="hidden md:block">
-          <div className="absolute top-4 left-0 right-0 h-[2px] bg-cream-200" />
+          <div className="absolute top-4 left-0 right-0 h-0.5 bg-cream-200" />
           <div
-            className="absolute top-4 left-0 h-[2px] bg-brand-primary transition-all duration-1000 ease-in-out"
+            className="absolute top-4 left-0 h-0.5 bg-brand-primary transition-all duration-1000 ease-in-out"
             style={{ width: `${(statusIndex / (STATUSES.length - 1)) * 100}%` }}
           />
           <div className="flex justify-between relative z-10">
@@ -76,7 +76,7 @@ function TrackingTimeline({ currentStatus }) {
               const isCurrent = currentStatus === s.key;
               const Icon = s.icon;
               return (
-                <div key={s.key} className="flex flex-col items-center text-center max-w-[100px]">
+                <div key={s.key} className="flex flex-col items-center text-center max-w-25">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all mb-3 ${isCompleted ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'bg-white border-2 border-cream-200 text-cream-300'
                     } ${isCurrent ? 'ring-4 ring-brand-primary/10 scale-110' : ''}`}>
                     <Icon className="w-4 h-4" />
@@ -171,7 +171,7 @@ function OrderCard({ order, onPay }) {
                     return (
                       <div key={key} className="p-5 bg-cream-50/50 rounded-2xl border border-cream-100 hover:border-brand-secondary/30 transition-colors">
                         <p className="text-[9px] font-bold text-gray-400 uppercase mb-1.5 tracking-wider">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                        <p className="text-xs font-bold text-brand-primary break-words">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</p>
+                        <p className="text-xs font-bold text-brand-primary wrap-break-word">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</p>
                       </div>
                     );
                   })}
@@ -294,8 +294,8 @@ export default function MyServiceOrders() {
   return (
     <div className="min-h-screen bg-cream-100 pt-32 pb-24 px-4 luxury-grain relative overflow-hidden">
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
+      <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Breadcrumb */}

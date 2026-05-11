@@ -1,7 +1,7 @@
 import { useState, useEffect, createElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Shield, Truck, RotateCcw, Star, CheckCircle } from 'lucide-react';
+import { ArrowRight, Shield, Truck, RotateCcw, Star, CheckCircle, ChevronRight } from 'lucide-react';
 import { 
   MdSecurity, MdLocalShipping, MdAssignmentReturn, 
   Md3dRotation, MdCardGiftcard, MdWorkspacePremium,
@@ -105,31 +105,35 @@ const CATEGORY_ICONS = {
 
 function CategoryGrid({ categories }) {
   return (
-    <section className="py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-[#5b3f2f]">
-            Shop by Category
+    <section className="py-24 px-4 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="space-y-4 mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+            Shop by <br />
+            <span className="text-brand-secondary">Category</span>
           </h2>
-          <p className="text-[#a68971] mt-2">Explore our curated range of premium products and keepsakes</p>
+          <div className="flex items-center gap-4">
+            <div className="h-0.5 w-12 bg-brand-secondary" />
+            <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Explore our curated range of premium products and keepsakes</p>
+          </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {categories.map((cat) => (
             <Link
               key={cat.id}
               to={`/categories/${cat.slug}`}
-              className="group card p-5 flex flex-col items-center text-center gap-3 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              className="group card p-6 flex flex-col items-center text-center gap-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="w-16 h-16 rounded-2xl bg-[#f5e7d8] flex items-center justify-center group-hover:bg-[#efe0cf] transition-colors border border-[#d8a45f]/40 p-3">
+              <div className="w-16 h-16 rounded-2xl bg-brand-surface flex items-center justify-center group-hover:bg-brand-primary group-hover:text-white transition-all border border-cream-200 p-3">
                 {CATEGORY_ICONS[cat.slug] || (
-                  <img src={brandAssets.favicon} className="w-8 h-8 object-contain opacity-40 grayscale" alt="" />
+                  <img src={brandAssets.favicon} className="w-8 h-8 object-contain" alt="" />
                 )}
               </div>
               <div>
-                <h3 className="font-semibold text-[#5b3f2f] text-sm leading-snug group-hover:text-[#b88a2f] transition-colors">
+                <h3 className="font-bold text-brand-primary text-sm leading-snug group-hover:text-brand-secondary transition-colors">
                   {cat.name}
                 </h3>
-                <p className="text-xs text-[#a68971] mt-0.5">{cat._count?.products || 0} products</p>
+                <p className="text-xs text-gray-500 mt-1.5 font-medium">{cat._count?.products || 0} products</p>
               </div>
             </Link>
           ))}
@@ -149,17 +153,17 @@ function TrustBadges() {
   ];
 
   return (
-    <section className="bg-[#f5e7d8] py-12 border-y border-[#d8a45f]/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="bg-brand-surface py-16 border-y border-cream-200">
+      <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {badges.map(({ icon, label, desc }) => (
-            <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left">
+            <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left p-4 rounded-2xl hover:bg-white/50 transition-colors">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300 p-2.5 shadow-sm">
                 {icon}
               </div>
               <div>
-                <p className="font-semibold text-[#5b3f2f] text-sm">{label}</p>
-                <p className="text-[#a68971] text-xs mt-0.5">{desc}</p>
+                <p className="font-bold text-brand-primary text-sm">{label}</p>
+                <p className="text-gray-500 text-xs mt-0.5 font-medium">{desc}</p>
               </div>
             </div>
           ))}
@@ -184,23 +188,31 @@ export default function Home() {
   });
 
   return (
-    <div>
+    <div className="bg-cream-100 luxury-grain">
       <HeroSection />
       <TrustBadges />
 
       {categoriesData && <CategoryGrid categories={categoriesData} />}
 
       {/* Featured Products */}
-      <section className="pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-brand-primary">
-                Featured Products
+      <section className="py-24 px-4 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+                Featured <br />
+                <span className="text-brand-secondary">Products</span>
               </h2>
-              <p className="text-[#876b5f] mt-1">Handpicked bestsellers loved by our customers</p>
+              <div className="flex items-center gap-4">
+                <div className="h-0.5 w-12 bg-brand-secondary" />
+                <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Handpicked bestsellers loved by our customers</p>
+              </div>
             </div>
-            <Link to="/products" className="btn-secondary text-sm py-2 px-5">
+            <Link to="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-pill bg-brand-primary text-white font-bold text-xs uppercase tracking-widest hover:shadow-lg hover:shadow-brand-primary/20 hover:scale-105 active:scale-95 transition-all">
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -228,15 +240,20 @@ export default function Home() {
       </section>
 
       {/* CTA Banner */}
-      <section className="bg-linear-to-r from-[#7a3218] via-[#a6431a] to-[#c85212] py-16 border-t border-[#f6b889]/45">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#fff6f0] mb-4">
-            Celebrate Every Moment Better
+      <section className="bg-linear-to-r from-brand-primary via-brand-secondary to-orange-500 py-20 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 luxury-grain" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-pill bg-white/20 backdrop-blur-md border border-white/30 text-brand-surface text-sm font-semibold mb-6">
+            <Star className="w-4 h-4" /> Limited Time Offers
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+            Celebrate Every <br />
+            Moment Better
           </h2>
-          <p className="text-[#ffe7d6] mb-8 text-lg max-w-xl mx-auto">
+          <p className="text-white/90 mb-10 text-lg max-w-xl mx-auto font-medium">
             Join thousands of customers choosing premium photogifts for birthdays, anniversaries, teams, and milestones.
           </p>
-          <Link to="/products" className="inline-flex items-center gap-2 px-8 py-4 rounded-pill bg-cream-50 text-[#5e2916] font-bold hover:bg-[#fff2e9] hover:text-[#4a2012] transition-all hover:shadow-lg">
+          <Link to="/products" className="inline-flex items-center gap-2 px-10 py-4 rounded-pill bg-white text-brand-primary font-bold hover:bg-cream-50 transition-all hover:shadow-lg hover:shadow-white/20">
             Start Shopping <ArrowRight className="w-5 h-5" />
           </Link>
         </div>

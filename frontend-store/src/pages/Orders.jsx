@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Package, ChevronRight, Clock, Truck, CheckCircle,
   XCircle, RefreshCw, Filter, ShoppingBag
@@ -192,56 +192,73 @@ export default function Orders() {
   const currentFilters = ORDER_STATUS_FILTERS;
 
   return (
-    <div className="min-h-screen bg-cream-100 page-enter">
-      <div className="bg-linear-to-br from-brand-primary to-brand-secondary text-white">
-        <div className="max-w-5xl mx-auto px-4 pt-10 pb-6">
-          <div className="flex items-center gap-3 mb-6">
-            <Package className="w-8 h-8" />
-            <h1 className="text-3xl font-bold">Order History & Tracking</h1>
-          </div>
-          
-          {/* Status filter pills */}
-          <div className="flex gap-2 flex-wrap">
-            {currentFilters.map(({ value, label }) => (
-              <button
-                key={value}
-                onClick={() => setStatusFilter(value)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  statusFilter === value
-                    ? 'bg-white text-brand-primary shadow-md'
-                    : 'bg-white/15 text-white hover:bg-white/25'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+    <div className="min-h-screen bg-cream-100 pt-32 pb-24 px-4 luxury-grain relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
+
+      <div className="max-w-5xl mx-auto relative z-10">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-widest mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
+          <Link to="/" className="hover:text-brand-secondary transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <Link to="/account" className="hover:text-brand-secondary transition-colors">Account</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <span className="text-brand-primary">Order History</span>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+              Order <br />
+              <span className="text-brand-secondary">History</span>
+            </h1>
+            <div className="flex items-center gap-4">
+              <div className="h-0.5 w-12 bg-brand-secondary" />
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Track & manage your orders</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
+        {/* Status Filter Pills */}
+        <div className="flex items-center p-1.5 bg-white rounded-pill border border-cream-200 mb-12 flex-wrap gap-2">
+          {currentFilters.map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => setStatusFilter(value)}
+              className={`px-6 py-2.5 rounded-pill text-xs font-bold uppercase tracking-wider transition-all duration-300 ${statusFilter === value ? 'bg-brand-primary text-white shadow-lg' : 'text-gray-500 hover:text-brand-primary'}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         {loading ? (
           <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => <OrderSkeleton key={i} />)}
           </div>
         ) : items.length === 0 ? (
-          <div className="card p-16 text-center bg-white">
-            <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-gray-500" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              {statusFilter ? 'No items with this status' : 'Nothing found'}
-            </h2>
-            <p className="text-gray-600 mb-6">
-              You haven't placed any orders yet. Start shopping to see them here!
-            </p>
-            {!statusFilter && (
-              <a href="/products" className="btn-primary">
-                Shop Products
-              </a>
-            )}
+          <div className="card p-16 md:p-24 text-center relative overflow-hidden group">
+            <div className="absolute inset-0 bg-linear-to-b from-brand-surface/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="relative z-10">
+              <div className="w-20 h-20 bg-brand-surface rounded-3xl flex items-center justify-center mx-auto mb-8 text-brand-secondary border border-cream-200 shadow-sm">
+                <ShoppingBag className="w-10 h-10" />
+              </div>
+              <h3 className="text-2xl font-bold text-brand-primary mb-3">
+                {statusFilter ? 'No orders with this status' : 'No Orders Yet'}
+              </h3>
+              <p className="text-gray-500 text-sm mb-10 max-w-sm mx-auto font-medium leading-relaxed">
+                {statusFilter ? 'Try a different filter or' : 'Start your shopping journey'} place your first order to see it here.
+              </p>
+              {!statusFilter && (
+                <Link to="/products" className="inline-flex items-center gap-2 px-10 py-4 rounded-pill bg-brand-primary text-white font-bold text-xs uppercase tracking-widest hover:shadow-lg hover:shadow-brand-primary/20 transition-all">
+                  Start Shopping <ChevronRight className="w-4 h-4" />
+                </Link>
+              )}
+            </div>
           </div>
         ) : (
           <>
-            <div className="space-y-4">
+            <div className="space-y-6">
               {items.map((item) => (
                 <OrderCard key={item.id} order={item} onCancel={cancelOrder} />
               ))}
@@ -249,22 +266,22 @@ export default function Orders() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8">
+              <div className="flex items-center justify-center gap-2 mt-12 flex-wrap">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
+                  className="px-6 py-3 rounded-pill border border-cream-200 bg-white text-brand-primary font-semibold text-xs uppercase tracking-wider hover:shadow-md disabled:opacity-40 transition-all"
                 >
-                  ← Prev
+                  ← Previous
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`w-9 h-9 rounded-xl text-sm font-bold transition-all ${
+                    className={`w-11 h-11 rounded-xl text-sm font-bold transition-all ${
                       page === p
-                        ? 'bg-brand-primary text-white shadow-md'
-                        : 'bg-white text-gray-600 border border-cream-300 hover:border-brand-secondary'
+                        ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/30'
+                        : 'bg-white text-gray-600 border border-cream-200 hover:border-brand-secondary'
                     }`}
                   >
                     {p}
@@ -273,7 +290,7 @@ export default function Orders() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="btn-secondary px-4 py-2 text-sm disabled:opacity-40"
+                  className="px-6 py-3 rounded-pill border border-cream-200 bg-white text-brand-primary font-semibold text-xs uppercase tracking-wider hover:shadow-md disabled:opacity-40 transition-all"
                 >
                   Next →
                 </button>
