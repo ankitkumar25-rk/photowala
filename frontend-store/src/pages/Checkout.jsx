@@ -337,24 +337,28 @@ export default function Checkout() {
               </div>
 
               {step === 1 && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {addresses.length === 0 ? (
-                    <div className="text-center py-6">
-                      <MapPin className="w-10 h-10 mx-auto mb-2 text-cream-50/80" />
-                      <p className="text-gray-600 text-sm mb-3">No saved addresses. Add one to continue.</p>
-                      <button onClick={() => setShowAddrModal(true)} className="btn-primary">
-                        <Plus className="w-4 h-4" /> Add Address
+                    <div className="text-center py-12 px-4 rounded-2xl bg-linear-to-br from-brand-surface to-cream-50 border-2 border-dashed border-cream-300">
+                      <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mx-auto mb-4 shadow-sm">
+                        <MapPin className="w-6 h-6 text-brand-primary" />
+                      </div>
+                      <p className="text-gray-700 text-sm font-semibold mb-1">No Saved Addresses Yet</p>
+                      <p className="text-gray-500 text-xs mb-6">Add a delivery address to continue with checkout</p>
+                      <button onClick={() => setShowAddrModal(true)} className="btn-primary mx-auto inline-flex items-center gap-2">
+                        <Plus className="w-4 h-4" /> Add Your First Address
                       </button>
                     </div>
                   ) : (
-                    <>
+                    <div className="space-y-3">
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Select Delivery Address</p>
                       {addresses.map((a) => (
                         <label
                           key={a.id}
-                          className={`flex items-start gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                          className={`flex items-start gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all group ${
                             selectedAddr === a.id
-                              ? 'border-brand-secondary bg-brand-surface'
-                              : 'border-cream-300 hover:border-brand-secondary'
+                              ? 'border-brand-secondary bg-linear-to-r from-brand-surface to-transparent shadow-md'
+                              : 'border-cream-300 hover:border-brand-secondary hover:bg-cream-50'
                           }`}
                         >
                           <input
@@ -363,55 +367,87 @@ export default function Checkout() {
                             value={a.id}
                             checked={selectedAddr === a.id}
                             onChange={() => setSelectedAddr(a.id)}
-                            className="mt-1 accent-brand-primary"
+                            className="mt-0.5 accent-brand-primary w-5 h-5 shrink-0"
                           />
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-gray-900 text-sm">{a.label} — {a.fullName}</span>
-                              {a.isDefault && <span className="badge-featured text-[10px]">Default</span>}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-bold text-gray-900">{a.label}</span>
+                              {a.isDefault && (
+                                <span className="badge-featured text-[11px] px-2 py-1">Default</span>
+                              )}
                             </div>
-                            <p className="text-sm text-gray-600 mt-0.5">
-                              {a.line1}{a.line2 ? `, ${a.line2}` : ''}, {a.city}, {a.state} – {a.pincode}
+                            <p className="font-semibold text-gray-800 text-sm">{a.fullName}</p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              {a.line1}{a.line2 ? `, ${a.line2}` : ''}
                             </p>
-                            <p className="text-xs text-gray-500 mt-0.5">{a.phone}</p>
+                            <p className="text-sm text-gray-600">
+                              {a.city}, {a.state} – {a.pincode}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-2 font-medium">{a.phone}</p>
                           </div>
                           {selectedAddr === a.id && (
-                            <Check className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
+                            <div className="shrink-0 mt-1">
+                              <div className="w-6 h-6 rounded-full bg-brand-primary flex items-center justify-center shadow-sm">
+                                <Check className="w-4 h-4 text-white" />
+                              </div>
+                            </div>
                           )}
                         </label>
                       ))}
+
+                      {/* Add New Address Button */}
                       <button
                         onClick={() => setShowAddrModal(true)}
-                        className="w-full py-3 border-2 border-dashed border-cream-300 rounded-2xl text-sm font-semibold text-brand-primary hover:border-brand-secondary hover:bg-brand-surface transition-all flex items-center justify-center gap-2"
+                        className="w-full py-4 border-2 border-dashed border-cream-400 rounded-2xl text-sm font-bold text-brand-primary hover:border-brand-secondary hover:bg-brand-surface transition-all flex items-center justify-center gap-3 group mt-2"
                       >
-                        <Plus className="w-4 h-4" /> Add New Address
+                        <div className="w-5 h-5 rounded-full border-2 border-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-all flex items-center justify-center">
+                          <Plus className="w-3 h-3" />
+                        </div>
+                        Add New Delivery Address
                       </button>
-                    </>
+                    </div>
                   )}
 
-                  {/* Notes */}
-                  <div className="mt-2">
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">
-                      Order Notes (Optional)
+                  {/* Divider */}
+                  <div className="flex items-center gap-4 py-2">
+                    <div className="flex-1 h-0.5 bg-linear-to-r from-cream-300 to-transparent" />
+                    <span className="text-xs text-gray-400 font-semibold uppercase">Additional Info</span>
+                    <div className="flex-1 h-0.5 bg-linear-to-l from-cream-300 to-transparent" />
+                  </div>
+
+                  {/* Order Notes */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-700 uppercase tracking-widest flex items-center gap-2">
+                      <span>Special Instructions</span>
+                      <span className="text-gray-400 font-normal">(Optional)</span>
                     </label>
                     <textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      rows={2}
-                      className="input-field resize-none"
-                      placeholder="Special instructions for your order..."
+                      rows={3}
+                      className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors resize-none placeholder-gray-400"
+                      placeholder="Add any special instructions or delivery notes (e.g., please ring doorbell twice, leave with security guard, etc.)"
                     />
                   </div>
 
-                  <button
-                    onClick={() => {
-                      if (!selectedAddr) { toast.error('Select an address first'); return; }
-                      setStep(2);
-                    }}
-                    className="btn-primary w-full justify-center"
-                  >
-                    Continue to Review
-                  </button>
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={() => navigate('/cart')}
+                      className="flex-1 px-6 py-4 rounded-2xl border-2 border-cream-300 text-gray-700 font-bold hover:bg-cream-50 transition-colors"
+                    >
+                      Back to Cart
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
+                        setStep(2);
+                      }}
+                      className="flex-1 px-6 py-4 rounded-2xl bg-brand-primary text-white font-bold hover:bg-brand-secondary transition-colors shadow-md"
+                    >
+                      Review Order
+                    </button>
+                  </div>
                 </div>
               )}
 
