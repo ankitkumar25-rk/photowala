@@ -9,7 +9,9 @@ const { z } = require('zod');
 const COOKIE_OPTS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  // Use 'lax' for same-origin requests (which handles OAuth redirects correctly)
+  // The frontend should always be same-origin with the API for cookies to work
+  sameSite: 'lax',
   maxAge: 15 * 60 * 1000, // 15 minutes
   path: '/',
 };
@@ -267,11 +269,26 @@ exports.googleCallback = async (req, res, next) => {
   try {
     const user = req.user;
     const { accessToken, refreshToken } = await issueTokens(user);
+    
+    console.log('[auth] Google callback - issuing tokens:', {
+      userId: user.id,
+      accessTokenLength: accessToken?.length,
+      refreshTokenLength: refreshToken?.length,
+      clientUrl: process.env.CLIENT_URL
+    });
+    
     res.cookie('access_token', accessToken, COOKIE_OPTS);
     res.cookie('refresh_token', refreshToken, REFRESH_COOKIE_OPTS);
 
     // Pass tokens in URL as fallback for browsers that block third-party cookies
-    res.redirect(`${process.env.CLIENT_URL}/auth/success?access_token=${accessToken}&refresh_token=${refreshToken}&success=true`);
+    // Properly encode tokens to preserve special characters
+    const encodedAccessToken = encodeURIComponent(accessToken);
+    const encodedRefreshToken = encodeURIComponent(refreshToken);
+    const redirectUrl = `${process.env.CLIENT_URL}/auth/success?access_token=${encodedAccessToken}&refresh_token=${encodedRefreshToken}&success=true`;
+    
+    console.log('[auth] Google callback - redirect URL length:', redirectUrl.length);
+    
+    res.redirect(redirectUrl);
   } catch (err) {
     console.error('[auth] Google callback error:', err);
     next(err);
