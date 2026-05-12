@@ -118,25 +118,28 @@ function CategoryGrid({ categories }) {
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              to={`/categories/${cat.slug}`}
-              className="group card p-6 flex flex-col items-center text-center gap-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-brand-surface flex items-center justify-center group-hover:bg-brand-primary group-hover:text-white transition-all border border-cream-200 p-3">
-                {CATEGORY_ICONS[cat.slug] || (
-                  <img src={brandAssets.favicon} className="w-8 h-8 object-contain" alt="" />
-                )}
-              </div>
-              <div>
-                <h3 className="font-bold text-brand-primary text-sm leading-snug group-hover:text-brand-secondary transition-colors">
-                  {cat.name}
-                </h3>
-                <p className="text-xs text-gray-500 mt-1.5 font-medium">{cat._count?.products || 0} products</p>
-              </div>
-            </Link>
-          ))}
+          {categories.map((cat, index) => {
+            const isFirst = index === 0;
+            return (
+              <Link
+                key={cat.id}
+                to={`/categories/${cat.slug}`}
+                className="group card p-6 flex flex-col items-center text-center gap-4 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className={`${isFirst ? 'w-20 h-20' : 'w-16 h-16'} rounded-2xl ${isFirst ? 'bg-brand-primary' : 'bg-brand-surface'} flex items-center justify-center group-hover:bg-brand-primary group-hover:text-white transition-all ${!isFirst && 'border border-cream-200'} p-3 ${isFirst ? 'text-white' : 'text-brand-primary'}`}>
+                  {CATEGORY_ICONS[cat.slug] || (
+                    <img src={brandAssets.favicon} className="w-8 h-8 object-contain" alt="" />
+                  )}
+                </div>
+                <div>
+                  <h3 className={`font-bold text-sm leading-snug group-hover:text-brand-secondary transition-colors ${isFirst ? 'text-brand-secondary' : 'text-brand-primary'}`}>
+                    {cat.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1.5 font-medium">{cat._count?.products || 0} products</p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
