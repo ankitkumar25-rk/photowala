@@ -2,8 +2,8 @@ import { useState, useEffect, createElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Shield, Truck, RotateCcw, Star, CheckCircle, ChevronRight } from 'lucide-react';
-import { 
-  MdSecurity, MdLocalShipping, MdAssignmentReturn, 
+import {
+  MdSecurity, MdLocalShipping, MdAssignmentReturn,
   Md3dRotation, MdCardGiftcard, MdWorkspacePremium,
   MdCreate, MdHome, MdStars
 } from 'react-icons/md';
@@ -199,7 +199,7 @@ export default function Home() {
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
         <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
-        
+
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
             <div className="space-y-4">

@@ -120,23 +120,23 @@ hr {
 }
 
 .btn-primary {
-    cursor: pointer;
-    color: #fff;
-    font-family: var(--font-body);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: #5a3f2f;
-    border: 0;
-    border-radius: 32px;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 1.5rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: transform .2s, box-shadow .2s, filter .2s;
-    display: inline-flex;
-    box-shadow: 0 10px 20px #855a1e40;
+  cursor: pointer;
+  color: #fff;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: #5a3f2f;
+  border: 0;
+  border-radius: 32px;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform .2s, box-shadow .2s, filter .2s;
+  display: inline-flex;
+  box-shadow: 0 10px 20px #855a1e40;
 }
 
 .btn-primary:hover {

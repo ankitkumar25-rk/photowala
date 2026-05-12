@@ -48,23 +48,23 @@ export default function Products() {
     : [];
 
   return (
-    <div className="min-h-screen bg-cream-100 pt-32 pb-24 px-4 luxury-grain relative overflow-hidden">
+    <div className="min-h-screen bg-cream-100 pt-24 md:pt-32 pb-24 px-4 luxury-grain relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
       <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-widest mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
+        <div className="flex items-center gap-2 text-gray-400 text-[10px] sm:text-xs font-semibold uppercase tracking-widest mb-6 sm:mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
           <Link to="/" className="hover:text-brand-secondary transition-colors">Home</Link>
           <ChevronRight className="w-3 h-3 text-gray-300" />
           <span className="text-brand-primary">Shop All Products</span>
         </div>
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 mb-8 sm:mb-12">
+          <div className="space-y-2 sm:space-y-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
               All <br />
               <span className="text-brand-secondary">Products</span>
             </h1>

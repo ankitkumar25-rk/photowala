@@ -54,25 +54,25 @@ export default function Navbar() {
   ];
 
   return (
-    <header className={`sticky top-0 z-50 border-b transition-all duration-300 ${
-      isScrolled
+    <header className={`sticky top-0 z-50 border-b transition-all duration-300 ${isScrolled
         ? 'glass-surface border-brand-primary/20 shadow-[0_10px_30px_-20px_rgba(122,50,24,0.5)]'
         : 'bg-cream-100/90 backdrop-blur-lg border-brand-primary/10'
-    }`}>
+      }`}>
       {/* Top bar */}
-      <div className="bg-[#5a3f2f] text-[#fff6ef] text-xs text-center py-2 font-semibold tracking-wide border-b border-[#d8a45f]/25">
-        Free shipping on orders above ₹999 | Personalized gifts crafted for memorable moments
+      <div className="bg-[#5a3f2f] text-[#fff6ef] text-[10px] sm:text-xs text-center py-2 px-4 font-semibold tracking-wide border-b border-[#d8a45f]/25">
+        <span className="hidden sm:inline">Free shipping on orders above ₹999 | </span>
+        Personalized gifts crafted for memorable moments
       </div>
 
       <div className="relative max-w-screen-2xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="flex items-center justify-between h-20 md:h-24 gap-6">
           {/* Logo */}
           <Link to="/" className="flex items-center shrink-0">
-            <div className="h-16 md:h-20 flex items-center justify-center">
+            <div className="h-12 md:h-20 flex items-center justify-center">
               <img
                 src={brandAssets.logo}
                 alt="Photo Wala Gift"
-                className="h-12 md:h-14 w-auto object-contain"
+                className="h-8 md:h-14 w-auto object-contain"
               />
             </div>
           </Link>
@@ -88,11 +88,10 @@ export default function Navbar() {
                   onClick={(e) => {
                     if (l.to === '#') e.preventDefault();
                   }}
-                  className={`relative px-3 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center ${
-                    isActive
+                  className={`relative px-3 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center ${isActive
                       ? 'bg-brand-primary/10 text-brand-secondary'
                       : 'text-brand-primary hover:bg-brand-surface hover:text-brand-secondary'
-                  }`}
+                    }`}
                 >
                   {l.label}
                   {l.badge && (
@@ -131,16 +130,16 @@ export default function Navbar() {
                   )}
                   {searchResults.length > 0 && (
                     <div className="mt-2 space-y-1 max-h-64 overflow-y-auto">
-                       {searchResults.map((p) => (
-                         <Link
-                           key={p.id}
-                           to={`/products/${p.slug}`}
-                           onClick={() => { setShowSearch(false); setSearchQuery(''); }}
-                           className="flex items-center gap-3 p-2 rounded-xl hover:bg-brand-surface transition-colors"
-                         >
-                           {p.images?.[0] && (
-                             <img src={p.images[0].url} alt={p.name} className="w-10 h-10 rounded-lg object-cover" loading="lazy" width={40} height={40} />
-                           )}
+                      {searchResults.map((p) => (
+                        <Link
+                          key={p.id}
+                          to={`/products/${p.slug}`}
+                          onClick={() => { setShowSearch(false); setSearchQuery(''); }}
+                          className="flex items-center gap-3 p-2 rounded-xl hover:bg-brand-surface transition-colors"
+                        >
+                          {p.images?.[0] && (
+                            <img src={p.images[0].url} alt={p.name} className="w-10 h-10 rounded-lg object-cover" loading="lazy" width={40} height={40} />
+                          )}
                           <div>
                             <p className="text-sm font-semibold text-brand-primary">{p.name}</p>
                             <p className="text-xs text-brand-secondary font-bold">₹{p.price}</p>
@@ -185,29 +184,29 @@ export default function Navbar() {
               <div className="w-8 h-8 bg-brand-primary/10 rounded-full" />
             ) : user ? (
               <div className="relative group">
-                 <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-surface transition-colors">
-                   {user.avatarUrl ? (
-                     <img src={user.avatarUrl} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
-                   ) : (
-                     <div className="w-7 h-7 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xs font-bold">
-                       {user.name?.[0]?.toUpperCase() || 'U'}
-                     </div>
-                   )}
-                   <span className="text-sm font-semibold text-brand-primary hidden sm:block">{user.name?.split(' ')[0] || 'User'}</span>
-                 </button>
+                <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-surface transition-colors">
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-7 h-7 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xs font-bold">
+                      {user.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                  )}
+                  <span className="text-sm font-semibold text-brand-primary hidden sm:block">{user.name?.split(' ')[0] || 'User'}</span>
+                </button>
                 <div className="absolute right-0 top-12 w-48 bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <Link to="/account"  className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Account</Link>
+                  <Link to="/account" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Account</Link>
                   {['ADMIN', 'SUPER_ADMIN'].includes(user.role) && (
                     <a href="https://photowala-three.vercel.app/admin" target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm text-brand-secondary hover:bg-brand-surface font-bold">Admin Panel</a>
                   )}
-                  <Link to="/orders"   className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Orders</Link>
+                  <Link to="/orders" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Orders</Link>
                   <Link to="/account/services" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Services</Link>
                   <hr className="my-1 border-brand-primary/20" />
                   <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Logout</button>
                 </div>
               </div>
             ) : (
-              <Link to="/login" className="btn-primary py-2 rounded-3xl px-4 text-sm hidden sm:inline-flex">
+              <Link to="/login" className="btn-primary py-2 rounded-3xl px-4 text-xs hidden lg:inline-flex">
                 <User className="w-4 h-4" /> Login
               </Link>
             )}
@@ -228,7 +227,14 @@ export default function Navbar() {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute left-0 right-0 top-full z-40 border-t border-brand-primary/10 bg-cream-50 p-4 shadow-[0_18px_40px_-24px_rgba(91,63,47,0.35)] space-y-2">
+          <div className="md:hidden fixed inset-0 top-0 left-0 w-full h-screen z-[100] bg-cream-50 p-6 flex flex-col overflow-y-auto">
+            <div className="flex items-center justify-between mb-8">
+               <img src={brandAssets.logo} alt="Logo" className="h-8 w-auto" />
+               <button onClick={() => setMenuOpen(false)} className="p-2 bg-cream-200 rounded-full">
+                 <X className="w-6 h-6 text-brand-primary" />
+               </button>
+            </div>
+            <div className="space-y-4">
             {navLinks.map((l) => {
               const isActive = location.pathname.startsWith(l.to);
               return (
@@ -239,11 +245,10 @@ export default function Navbar() {
                     if (l.to === '#') e.preventDefault();
                     else setMenuOpen(false);
                   }}
-                  className={`flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
-                    isActive
+                  className={`flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${isActive
                       ? 'bg-brand-primary/10 text-brand-secondary'
                       : 'text-brand-primary hover:bg-brand-surface hover:text-brand-secondary'
-                  }`}
+                    }`}
                 >
                   {l.label}
                   {l.badge && (
@@ -287,6 +292,8 @@ export default function Navbar() {
                 Sign In
               </Link>
             )}
+          </div>
+            </div>
           </div>
         )}
       </div>
