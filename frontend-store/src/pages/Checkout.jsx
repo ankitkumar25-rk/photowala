@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, createElement } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   MapPin, Plus, Check, Truck, Package,
-  ShoppingBag, ArrowLeft, X, ChevronDown, ChevronUp,
+  ShoppingBag, ArrowLeft, X, ChevronDown, ChevronUp, ChevronRight,
   Shield, Tag, Info, CreditCard, Banknote
 } from 'lucide-react';
 import { 
@@ -33,77 +33,91 @@ function QuickAddressModal({ onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-cream-200">
-          <h3 className="font-bold text-xl text-gray-900">
-            Add Delivery Address
-          </h3>
-          <button onClick={onClose} className="btn-ghost p-2"><X className="w-5 h-5" /></button>
+        <div className="flex items-center justify-between p-8 border-b-2 border-cream-200">
+          <div>
+            <h3 className="font-bold text-2xl text-brand-primary">
+              Add Delivery <span className="text-brand-secondary">Address</span>
+            </h3>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-cream-100 rounded-xl transition-colors">
+            <X className="w-6 h-6 text-gray-600" />
+          </button>
         </div>
-        <form onSubmit={submit} className="p-6 space-y-4">
+        <form onSubmit={submit} className="p-8 space-y-6">
+          {/* Address type tabs */}
           <div className="flex gap-2">
             {['Home', 'Work', 'Other'].map((l) => (
               <button key={l} type="button"
                 onClick={() => setForm((f) => ({ ...f, label: l }))}
-                className={`px-4 py-1.5 rounded-full text-sm font-semibold border-2 transition-all ${
-                  form.label === l ? 'border-brand-secondary bg-brand-surface text-brand-primary' : 'border-cream-300 text-gray-500'
+                className={`flex-1 px-4 py-2.5 rounded-2xl text-sm font-bold transition-all ${
+                  form.label === l ? 'bg-brand-primary text-white shadow-md' : 'bg-cream-100 text-gray-700 hover:bg-cream-200'
                 }`}
               >{l}</button>
             ))}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Full Name *</label>
-              <input name="fullName" value={form.fullName} onChange={handle} required className="input-field" placeholder="John Doe" />
+
+          {/* Form fields */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Full Name *</label>
+              <input name="fullName" value={form.fullName} onChange={handle} required className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="John Doe" />
             </div>
-            <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Phone *</label>
-              <input type="number" name="phone" value={form.phone} onChange={handle} required className="input-field" placeholder="9876543210" />
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Phone *</label>
+              <input type="number" name="phone" value={form.phone} onChange={handle} required className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="9876543210" />
             </div>
           </div>
-          <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Address Line 1 *</label>
-            <input name="line1" value={form.line1} onChange={handle} required className="input-field" placeholder="House/Flat No., Street" />
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Address Line 1 *</label>
+            <input name="line1" value={form.line1} onChange={handle} required className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="House/Flat No., Street" />
           </div>
-          <div>
-            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Address Line 2</label>
-            <input name="line2" value={form.line2} onChange={handle} className="input-field" placeholder="Area, Landmark (optional)" />
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Address Line 2</label>
+            <input name="line2" value={form.line2} onChange={handle} className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="Area, Landmark (optional)" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">City *</label>
-              <input name="city" value={form.city} onChange={handle} required className="input-field" placeholder="Mumbai" />
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">City *</label>
+              <input name="city" value={form.city} onChange={handle} required className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="Mumbai" />
             </div>
-            <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">State *</label>
-              <select name="state" value={form.state} onChange={handle} required className="input-field">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">State *</label>
+              <select name="state" value={form.state} onChange={handle} required className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors">
                 <option value="">Select State</option>
                 {[
-                  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", 
-                  "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", 
-                  "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", 
-                  "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", 
-                  "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
+                  "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar",
+                  "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa",
+                  "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka",
+                  "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+                  "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
                   "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
                 ].map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
-            <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Pincode *</label>
-              <input type="number" name="pincode" value={form.pincode} onChange={handle} required maxLength={6} className="input-field" placeholder="400001" />
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Pincode *</label>
+              <input type="number" name="pincode" value={form.pincode} onChange={handle} required maxLength={6} className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="400001" />
             </div>
           </div>
-          <label className="flex items-center gap-2 cursor-pointer">
+
+          <label className="flex items-center gap-3 p-3 rounded-2xl hover:bg-cream-50 cursor-pointer transition-colors">
             <input type="checkbox" checked={form.isDefault}
               onChange={(e) => setForm((f) => ({ ...f, isDefault: e.target.checked }))}
-              className="w-4 h-4 accent-brand-primary rounded"
+              className="w-5 h-5 accent-brand-primary rounded"
             />
             <span className="text-sm font-medium text-gray-700">Set as default address</span>
           </label>
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Cancel</button>
-            <button type="submit" disabled={saving} className="btn-primary flex-1 justify-center">
+
+          <div className="flex gap-3 pt-6 border-t border-cream-200">
+            <button type="button" onClick={onClose} className="flex-1 px-6 py-3 rounded-2xl border-2 border-cream-300 text-gray-700 font-bold hover:bg-cream-50 transition-colors">
+              Cancel
+            </button>
+            <button type="submit" disabled={saving} className="flex-1 px-6 py-3 rounded-2xl bg-brand-primary text-white font-bold hover:bg-brand-secondary transition-colors">
               {saving ? 'Saving...' : 'Save & Use'}
             </button>
           </div>
@@ -122,25 +136,25 @@ const STEPS = [
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const items        = useCartStore((s) => s.items);
-  const fetchCart    = useCartStore((s) => s.fetchCart);
-  const clearCart    = useCartStore((s) => s.clearCart);
+  const items     = useCartStore((s) => s.items);
+  const fetchCart = useCartStore((s) => s.fetchCart);
+  const clearCart = useCartStore((s) => s.clearCart);
 
-  const [step, setStep] = useState(1);
-  const [addresses, setAddresses] = useState([]);
+  const [step, setStep]               = useState(1);
+  const [addresses, setAddresses]     = useState([]);
   const [selectedAddr, setSelectedAddr] = useState(null);
   const [showAddrModal, setShowAddrModal] = useState(false);
-  const [notes, setNotes] = useState('');
-  const [placing, setPlacing] = useState(false);
-  const [showItems, setShowItems] = useState(false);
+  const [notes, setNotes]             = useState('');
+  const [placing, setPlacing]         = useState(false);
+  const [showItems, setShowItems]     = useState(false);
   const [currentOrderData, setCurrentOrderData] = useState(null);
-  
+
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
 
   const subtotal = items.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
   const shipping = subtotal >= 1000 ? 0 : 49;
-  const total = subtotal + shipping;
+  const total    = subtotal + shipping;
 
   const loadAddresses = useCallback(async () => {
     try {
@@ -172,26 +186,19 @@ export default function Checkout() {
     }
   };
 
-  /* -- Step 1: Create Order In DB -- */
   const handleCreateOrder = async (method) => {
     if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
     setPlacing(true);
 
     try {
-      // 1. Create order with PENDING status
       const { data: orderRes } = await ordersApi.create({ addressId: selectedAddr, notes });
       const order = orderRes.data;
 
-      // 2. Handle Payment
       if (method === 'COD') {
-        await paymentsApi.confirmCOD({
-          internalOrderId: order.id,
-          orderType: 'ORDER',
-        });
+        await paymentsApi.confirmCOD({ internalOrderId: order.id, orderType: 'ORDER' });
         toast.success('Order placed successfully via COD!');
         handlePaymentSuccess('COD', order.id);
       } else {
-        // Razorpay
         const isLoaded = await loadRazorpayScript();
         if (!isLoaded) {
           toast.error('Failed to load payment gateway. Please check your connection.');
@@ -199,10 +206,7 @@ export default function Checkout() {
         }
 
         const { data: responseBody } = await paymentsApi.createOrder({
-          amount: total,
-          currency: 'INR',
-          orderId: order.id,
-          orderType: 'ORDER',
+          amount: total, currency: 'INR', orderId: order.id, orderType: 'ORDER',
         });
         const rzpData = responseBody.data;
 
@@ -258,59 +262,82 @@ export default function Checkout() {
   const selectedAddress = addresses.find((a) => a.id === selectedAddr);
 
   return (
-    <div className="min-h-screen bg-cream-100 page-enter">
-      {/* Header */}
-      <div className="bg-white border-b border-cream-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <button onClick={() => navigate('/cart')} className="flex items-center gap-2 text-gray-600 hover:text-brand-primary transition-colors text-sm font-medium">
-            <ArrowLeft className="w-4 h-4" /> Back to Cart
-          </button>
-          <div className="flex items-center gap-0">
-            {STEPS.map((s, i) => (
-              <div key={s.id} className="flex items-center">
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold transition-all ${
-                  step === s.id
-                    ? 'bg-brand-primary text-white'
-                    : step > s.id
-                    ? 'text-brand-primary'
-                    : 'text-gray-400'
-                }`}>
-                  {step > s.id ? <Check className="w-3.5 h-3.5" /> : <span>{s.id}</span>}
-                  <span className="hidden sm:inline">{s.label}</span>
-                </div>
-                {i < STEPS.length - 1 && (
-                  <div className={`w-8 h-0.5 mx-1 ${step > s.id ? 'bg-brand-secondary' : 'bg-cream-300'}`} />
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="w-24" />
-        </div>
-      </div>
+    <div className="min-h-screen bg-cream-100 luxury-grain pt-32 pb-24 px-4 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-5 gap-8">
-          {/* -- Left column (steps) -- */}
-          <div className="lg:col-span-3 space-y-6">
+      <div className="max-w-6xl mx-auto relative z-10">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-3 text-gray-400 text-xs font-semibold uppercase tracking-widest mb-10 animate-in fade-in slide-in-from-left-4 duration-500">
+          <Link to="/" className="hover:text-brand-secondary transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <Link to="/cart" className="hover:text-brand-secondary transition-colors">Cart</Link>
+          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <span className="text-brand-primary">Checkout</span>
+        </div>
+
+        {/* Header */}
+        <div className="flex items-end justify-between gap-8 mb-12">
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+              Secure <br />
+              <span className="text-brand-secondary">Checkout</span>
+            </h1>
+            <div className="flex items-center gap-4">
+              <div className="h-0.5 w-12 bg-brand-secondary" />
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Step {step} of 3</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Step Progress Indicator */}
+        <div className="mb-12 p-6 card flex items-center justify-between">
+          {STEPS.map((s, i) => (
+            <div key={s.id} className="flex items-center flex-1">
+              <div className="flex items-center gap-2">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                  step === s.id
+                    ? 'bg-brand-primary text-white ring-4 ring-brand-primary/20'
+                    : step > s.id
+                    ? 'bg-brand-secondary text-white'
+                    : 'bg-cream-200 text-gray-400'
+                }`}>
+                  {step > s.id ? <Check className="w-4 h-4" /> : s.id}
+                </div>
+                <span className="font-semibold text-sm text-gray-700 hidden sm:inline">{s.label}</span>
+              </div>
+              {i < STEPS.length - 1 && (
+                <div className={`flex-1 h-0.5 mx-4 ${step > s.id ? 'bg-brand-secondary' : 'bg-cream-200'}`} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* ✅ Grid layout */}
+        <div className="grid lg:grid-cols-3 gap-8 items-start">
+
+          {/* ✅ Left column - Steps */}
+          <div className="lg:col-span-1 space-y-6">
 
             {/* STEP 1 — Address */}
-            <div className={`card transition-all ${step >= 1 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
-              <div className="flex items-center justify-between p-4 border-b border-cream-200">
-                <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${step > 1 ? 'bg-brand-secondary text-white' : 'bg-brand-surface text-brand-primary'}`}>
-                    {step > 1 ? <Check className="w-4 h-4" /> : '1'}
+            <div className={`card p-8 transition-all ${step >= 1 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
+              <div className="flex items-center justify-between gap-4 pb-6 border-b border-cream-200 mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-brand-primary" />
                   </div>
-                  Delivery Address
-                </h2>
+                  <h2 className="text-xl font-bold text-gray-900">Delivery Address</h2>
+                </div>
                 {step > 1 && (
-                  <button onClick={() => setStep(1)} className="text-xs font-semibold text-brand-primary hover:text-brand-primary">
+                  <button onClick={() => setStep(1)} className="text-xs font-semibold text-brand-primary hover:text-brand-secondary transition-colors uppercase tracking-wider">
                     Change
                   </button>
                 )}
               </div>
 
               {step === 1 && (
-                <div className="p-4 space-y-3">
+                <div className="space-y-4">
                   {addresses.length === 0 ? (
                     <div className="text-center py-6">
                       <MapPin className="w-10 h-10 mx-auto mb-2 text-cream-50/80" />
@@ -376,20 +403,20 @@ export default function Checkout() {
                     />
                   </div>
 
-                    <button
-                      onClick={() => {
-                        if (!selectedAddr) { toast.error('Select an address first'); return; }
-                        setStep(2);
-                      }}
-                      className="btn-primary w-full justify-center"
-                    >
-                      Continue to Review
-                    </button>
+                  <button
+                    onClick={() => {
+                      if (!selectedAddr) { toast.error('Select an address first'); return; }
+                      setStep(2);
+                    }}
+                    className="btn-primary w-full justify-center"
+                  >
+                    Continue to Review
+                  </button>
                 </div>
               )}
 
               {step > 1 && selectedAddress && (
-                <div className="p-4 bg-brand-surface">
+                <div className="p-4 bg-brand-surface rounded-2xl">
                   <p className="text-sm font-semibold text-gray-900">{selectedAddress.label} — {selectedAddress.fullName}</p>
                   <p className="text-sm text-gray-600">
                     {selectedAddress.line1}{selectedAddress.line2 ? `, ${selectedAddress.line2}` : ''}, {selectedAddress.city}, {selectedAddress.state} – {selectedAddress.pincode}
@@ -400,47 +427,53 @@ export default function Checkout() {
 
             {/* STEP 2 — Review */}
             {step >= 2 && (
-              <div className="card">
-                <div className="flex items-center justify-between p-4 border-b border-cream-200">
-                  <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold ${step > 2 ? 'bg-brand-secondary text-white' : 'bg-brand-surface text-brand-primary'}`}>
-                      {step > 2 ? <Check className="w-4 h-4" /> : '2'}
+              <div className="card p-8">
+                <div className="flex items-center justify-between gap-4 pb-6 border-b border-cream-200 mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center">
+                      <Package className="w-5 h-5 text-brand-primary" />
                     </div>
-                    Review Items
-                  </h2>
+                    <h2 className="text-xl font-bold text-gray-900">Review Items</h2>
+                  </div>
                   {step > 2 && (
-                    <button onClick={() => setStep(2)} className="text-xs font-semibold text-brand-primary">Change</button>
+                    <button onClick={() => setStep(2)} className="text-xs font-semibold text-brand-primary hover:text-brand-secondary transition-colors uppercase tracking-wider">
+                      Change
+                    </button>
                   )}
                 </div>
+
                 {step === 2 && (
-                  <div className="p-4">
-                    <div className="divide-y divide-cream-200">
+                  <div>
+                    <div className="divide-y divide-cream-200 mb-6">
                       {items.map((item) => (
-                        <div key={item.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                        <div key={item.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
                           <img
                             src={item.product?.images?.[0]?.url || 'https://placehold.co/64x64/d8f3dc/2d6a4f?text=??'}
                             alt={item.product?.name}
-                            className="w-14 h-14 rounded-xl object-cover bg-cream-100 shrink-0"
+                            className="w-16 h-16 rounded-xl object-cover bg-cream-100 shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-gray-900 text-sm truncate">{item.product?.name}</p>
-                            {item.product?.unit && <p className="text-xs text-gray-500">{item.product.unit}</p>}
-                            <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity}</p>
+                            <p className="font-bold text-gray-900 truncate">{item.product?.name}</p>
+                            {item.product?.unit && <p className="text-xs text-gray-500 mt-0.5">{item.product.unit}</p>}
+                            <p className="text-sm text-gray-600 mt-1">Qty: <span className="font-semibold">{item.quantity}</span></p>
                           </div>
-                          <p className="font-bold text-gray-900 shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                          <p className="font-bold text-lg text-brand-primary shrink-0">
+                            ₹{(Number(item.price) * item.quantity).toFixed(2)}
+                          </p>
                         </div>
                       ))}
                     </div>
-                      <button
-                        onClick={() => setStep(3)}
-                        className="btn-primary w-full justify-center mt-4"
-                      >
-                        Continue to Payment
-                      </button>
+                    <button
+                      onClick={() => setStep(3)}
+                      className="btn-primary w-full justify-center mt-4"
+                    >
+                      Continue to Payment
+                    </button>
                   </div>
                 )}
+
                 {step > 2 && (
-                  <div className="p-4 bg-brand-surface text-sm text-gray-600">
+                  <div className="p-4 bg-brand-surface rounded-2xl text-sm text-gray-600">
                     {items.length} item{items.length !== 1 ? 's' : ''} reviewed
                   </div>
                 )}
@@ -449,16 +482,17 @@ export default function Checkout() {
 
             {/* STEP 3 — Payment */}
             {step >= 3 && (
-              <div className="card">
-                <div className="p-4 border-b border-cream-200">
-                  <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-brand-surface text-brand-primary flex items-center justify-center text-sm font-bold">3</div>
-                    Select Payment Method
-                  </h2>
+              <div className="card p-8">
+                <div className="flex items-center gap-4 pb-6 border-b border-cream-200 mb-8">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center">
+                    <CreditCard className="w-5 h-5 text-brand-primary" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Select Payment Method</h2>
                 </div>
-                <div className="p-6 space-y-6">
-                  <p className="text-sm text-gray-500 text-center max-w-sm mx-auto">
-                    Please choose your preferred payment method to complete your purchase.
+
+                <div className="space-y-6">
+                  <p className="text-sm text-gray-600 text-center max-w-sm mx-auto">
+                    Choose your preferred payment method to complete your purchase securely.
                   </p>
 
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -507,9 +541,10 @@ export default function Checkout() {
                 </div>
               </div>
             )}
-          </div>
 
-          {/* -- Right column (order summary) -- */}
+          </div> {/* ✅ closes left column (lg:col-span-1) */}
+
+          {/* ✅ Right column — Order Summary */}
           <div className="lg:col-span-2">
             <div className="card sticky top-20">
               <button
@@ -545,7 +580,9 @@ export default function Checkout() {
                         <p className="font-semibold text-gray-900 text-xs leading-tight truncate">{item.product?.name}</p>
                         {item.product?.unit && <p className="text-[10px] text-gray-400">{item.product.unit}</p>}
                       </div>
-                      <p className="font-bold text-gray-900 text-sm shrink-0">₹{(Number(item.price) * item.quantity).toFixed(2)}</p>
+                      <p className="font-bold text-gray-900 text-sm shrink-0">
+                        ₹{(Number(item.price) * item.quantity).toFixed(2)}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -601,14 +638,14 @@ export default function Checkout() {
                 ))}
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </div> {/* ✅ closes right column (lg:col-span-2) */}
+
+        </div> {/* ✅ closes grid */}
+      </div> {/* ✅ closes max-w-6xl */}
 
       {showAddrModal && (
         <QuickAddressModal onClose={() => setShowAddrModal(false)} onSave={addAddress} />
       )}
-    </div>
+    </div> // ✅ closes min-h-screen
   );
 }
-
