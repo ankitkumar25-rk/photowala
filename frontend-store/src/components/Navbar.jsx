@@ -55,8 +55,8 @@ export default function Navbar() {
 
   return (
     <header className={`sticky top-0 z-50 border-b transition-all duration-300 ${isScrolled
-        ? 'glass-surface border-brand-primary/20 shadow-[0_10px_30px_-20px_rgba(122,50,24,0.5)]'
-        : 'bg-cream-100/90 backdrop-blur-lg border-brand-primary/10'
+      ? 'glass-surface border-brand-primary/20 shadow-[0_10px_30px_-20px_rgba(122,50,24,0.5)]'
+      : 'bg-cream-100/90 backdrop-blur-lg border-brand-primary/10'
       }`}>
       {/* Top bar */}
       <div className="bg-[#5a3f2f] text-[#fff6ef] text-[10px] sm:text-xs text-center py-2 px-4 font-semibold tracking-wide border-b border-[#d8a45f]/25">
@@ -89,8 +89,8 @@ export default function Navbar() {
                     if (l.to === '#') e.preventDefault();
                   }}
                   className={`relative px-3 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center ${isActive
-                      ? 'bg-brand-primary/10 text-brand-secondary'
-                      : 'text-brand-primary hover:bg-brand-surface hover:text-brand-secondary'
+                    ? 'bg-brand-primary/10 text-brand-secondary'
+                    : 'text-brand-primary hover:bg-brand-surface hover:text-brand-secondary'
                     }`}
                 >
                   {l.label}
@@ -229,73 +229,73 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden fixed inset-0 top-0 left-0 w-full h-screen z-[100] bg-cream-50 p-6 flex flex-col overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
-               <img src={brandAssets.logo} alt="Logo" className="h-8 w-auto" />
-               <button onClick={() => setMenuOpen(false)} className="p-2 bg-cream-200 rounded-full">
-                 <X className="w-6 h-6 text-brand-primary" />
-               </button>
+              <img src={brandAssets.logo} alt="Logo" className="h-8 w-auto" />
+              <button onClick={() => setMenuOpen(false)} className="p-2 bg-cream-200 rounded-full">
+                <X className="w-6 h-6 text-brand-primary" />
+              </button>
             </div>
             <div className="space-y-4">
-            {navLinks.map((l) => {
-              const isActive = location.pathname.startsWith(l.to);
-              return (
-                <Link
-                  key={l.label}
-                  to={l.to}
-                  onClick={(e) => {
-                    if (l.to === '#') e.preventDefault();
-                    else setMenuOpen(false);
-                  }}
-                  className={`flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${isActive
+              {navLinks.map((l) => {
+                const isActive = location.pathname.startsWith(l.to);
+                return (
+                  <Link
+                    key={l.label}
+                    to={l.to}
+                    onClick={(e) => {
+                      if (l.to === '#') e.preventDefault();
+                      else setMenuOpen(false);
+                    }}
+                    className={`flex items-center justify-between px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${isActive
                       ? 'bg-brand-primary/10 text-brand-secondary'
                       : 'text-brand-primary hover:bg-brand-surface hover:text-brand-secondary'
-                    }`}
-                >
-                  {l.label}
-                  {l.badge && (
-                    <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
-                      {l.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-            {!isHydrating && user && (
-              <>
+                      }`}
+                  >
+                    {l.label}
+                    {l.badge && (
+                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#d96a22] text-white rounded-md shadow-sm whitespace-nowrap">
+                        {l.badge}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+              {!isHydrating && user && (
+                <>
+                  <Link
+                    to="/account"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+                  >
+                    My Account
+                  </Link>
+                  <Link
+                    to="/account/services"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+                  >
+                    My Services
+                  </Link>
+                  <button
+                    onClick={() => { logout(); setMenuOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </>
+              )}
+              {!isHydrating && !user && (
                 <Link
-                  to="/account"
+                  to="/login"
                   onClick={() => setMenuOpen(false)}
                   className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
                 >
-                  My Account
+                  Sign In
                 </Link>
-                <Link
-                  to="/account/services"
-                  onClick={() => setMenuOpen(false)}
-                  className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
-                >
-                  My Services
-                </Link>
-                <button
-                  onClick={() => { logout(); setMenuOpen(false); }}
-                  className="w-full text-left px-4 py-2 text-sm font-semibold text-red-500 rounded-lg hover:bg-red-50 transition-colors"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-            {!isHydrating && !user && (
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
-              >
-                Sign In
-              </Link>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  </header>
-);
+        )}
+      </div>
+    </header>
+  );
 }
