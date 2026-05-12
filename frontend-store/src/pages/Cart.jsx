@@ -262,27 +262,27 @@ export default function Cart() {
         ) : (
           <div className="grid lg:grid-cols-5 gap-8 items-start">
             {/* -- Cart items -- */}
-            <div className="lg:col-span-3 card overflow-hidden">
+            <div className="lg:col-span-3 card overflow-hidden border-2 border-cream-200 shadow-lg rounded-3xl">
               {/* Free shipping progress bar */}
               {shipping > 0 && (
-                <div className="px-5 pt-4 pb-3 bg-brand-surface border-b border-brand-secondary">
-                  <div className="flex items-center justify-between text-sm mb-2">
-                    <span className="font-semibold text-brand-secondary flex items-center gap-1.5">
-                      <Truck className="w-4 h-4" /> Add ₹{freeShipRemaining.toFixed(0)} more for FREE shipping!
+                <div className="px-6 py-4 bg-linear-to-r from-brand-surface/40 to-transparent border-b-2 border-brand-secondary/20">
+                  <div className="flex items-center justify-between text-sm mb-2.5">
+                    <span className="font-bold text-brand-secondary flex items-center gap-2">
+                      <Truck className="w-4 h-4" /> Add ₹{freeShipRemaining.toFixed(0)} for FREE shipping
                     </span>
-                    <span className="text-brand-secondary font-bold">{Math.round(freeShipProgress)}%</span>
+                    <span className="text-brand-secondary font-bold text-xs bg-brand-surface px-2.5 py-1 rounded-full">{Math.round(freeShipProgress)}%</span>
                   </div>
-                  <div className="h-2 bg-brand-secondary rounded-full overflow-hidden">
+                  <div className="h-2.5 bg-cream-200 rounded-full overflow-hidden shadow-inner">
                     <div
-                      className="h-full bg-linear-to-r from-amber-400 to-brand-surface0 rounded-full transition-all duration-500"
+                      className="h-full bg-linear-to-r from-brand-secondary to-brand-primary rounded-full transition-all duration-500"
                       style={{ width: `${freeShipProgress}%` }}
                     />
                   </div>
                 </div>
               )}
               {shipping === 0 && (
-                <div className="px-5 py-3 bg-green-50 border-b border-green-100 flex items-center gap-2 text-sm font-semibold text-green-700">
-                  <CheckCircle className="w-4 h-4" /> You've unlocked FREE shipping!
+                <div className="px-6 py-4 bg-linear-to-r from-green-50 to-transparent border-b-2 border-green-100 flex items-center gap-2 text-sm font-bold text-green-700">
+                  <CheckCircle className="w-5 h-5" /> You've unlocked FREE shipping!
                 </div>
               )}
 
@@ -294,23 +294,27 @@ export default function Cart() {
               </div>
 
               {/* Continue shopping */}
-              <div className="p-4 border-t border-cream-200 bg-cream-50">
-                <Link to="/products" className="flex items-center gap-2 text-sm font-semibold text-brand-primary hover:text-brand-primary transition-colors">
-                  <Gift className="w-4 h-4" /> Continue Shopping
+              <div className="p-6 border-t-2 border-cream-200 bg-linear-to-r from-cream-50 to-transparent">
+                <Link to="/products" className="inline-flex items-center gap-2.5 text-sm font-bold text-brand-primary hover:text-brand-secondary transition-colors group">
+                  <Gift className="w-5 h-5 group-hover:scale-110 transition-transform" /> Continue Shopping
                 </Link>
               </div>
             </div>
 
             {/* -- Order summary -- */}
             <div className="lg:col-span-2 space-y-4 sticky top-24">
-              <div className="card p-6">
-                <h2 className="font-bold text-xl text-gray-900 mb-5">
-                  Order Summary
-                </h2>
+              <div className="card p-8 border-2 border-cream-200 shadow-lg rounded-3xl">
+                <div className="flex items-center gap-3 pb-6 border-b-2 border-cream-200 mb-6">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center">
+                    <ShoppingCart className="w-5 h-5 text-brand-primary" />
+                  </div>
+                  <h2 className="font-bold text-xl text-gray-900">Order Summary</h2>
+                  <span className="badge-featured ml-auto">{items.length}</span>
+                </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {/* Per-item breakdown */}
-                  <div className="space-y-2 pb-3 border-b border-cream-200 max-h-52 overflow-y-auto pr-1">
+                  <div className="space-y-2.5 pb-4 border-b-2 border-cream-200 max-h-52 overflow-y-auto pr-2">
                     {items.map((item) => (
                       <div key={item.id ?? item.productId} className="flex justify-between text-sm">
                         <span className="text-gray-600 truncate mr-2 max-w-[60%]">
@@ -324,53 +328,55 @@ export default function Cart() {
                   </div>
 
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Subtotal</span>
-                    <span className="font-semibold text-gray-900">₹{subtotal.toFixed(2)}</span>
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-bold text-gray-900">₹{subtotal.toFixed(2)}</span>
                   </div>
 
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500 flex items-center gap-1">
+                    <span className="text-gray-600 flex items-center gap-2">
                       <Truck className="w-3.5 h-3.5" /> Shipping
                     </span>
                     {shipping === 0 ? (
-                      <span className="font-semibold text-green-600 flex items-center gap-1">
+                      <span className="font-bold text-green-600 flex items-center gap-1.5">
                         <Tag className="w-3 h-3" /> FREE
                       </span>
                     ) : (
-                      <span className="font-semibold text-gray-900">₹{shipping.toFixed(2)}</span>
+                      <span className="font-bold text-gray-900">₹{shipping.toFixed(2)}</span>
                     )}
                   </div>
 
-                  <div className="flex justify-between text-lg font-bold pt-3 border-t border-cream-200">
+                  <div className="flex justify-between text-lg font-bold pt-4 border-t-2 border-cream-200 mt-2">
                     <span className="text-gray-900">Total</span>
                     <span className="text-brand-primary">₹{total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {shipping > 0 && (
-                  <div className="mt-4 p-3 bg-brand-surface rounded-xl text-xs text-brand-secondary font-medium flex items-center gap-2 border border-brand-secondary">
-                    <Tag className="w-3.5 h-3.5 shrink-0" />
-                    Add ₹{freeShipRemaining.toFixed(0)} more to get FREE shipping on this order
+                  <div className="mt-4 p-4 bg-linear-to-r from-brand-surface/60 to-transparent rounded-2xl text-xs text-brand-secondary font-bold flex items-center gap-2 border-2 border-brand-secondary/20">
+                    <Tag className="w-4 h-4 shrink-0" />
+                    <span>Add ₹{freeShipRemaining.toFixed(0)} more to unlock FREE shipping</span>
                   </div>
                 )}
 
                 {/* CTA */}
                 {user ? (
-                  <Link to="/checkout" className="btn-primary w-full justify-center mt-5 text-base py-3.5 gap-2">
-                    Proceed to Checkout <ArrowRight className="w-4 h-4" />
+                  <Link to="/checkout" className="btn-primary w-full justify-center mt-6 text-base py-4 gap-2 rounded-2xl shadow-md hover:shadow-lg transition-all">
+                    <span>Proceed to Checkout</span>
+                    <ArrowRight className="w-5 h-5" />
                   </Link>
                 ) : (
-                  <div className="mt-5 space-y-2">
+                  <div className="mt-6 space-y-3">
                     <Link
                       to="/login?redirect=/checkout"
-                      className="btn-primary w-full justify-center text-base py-3.5 gap-2"
+                      className="btn-primary w-full justify-center text-base py-4 gap-2 rounded-2xl shadow-md hover:shadow-lg transition-all"
                     >
-                      Login to Checkout <ArrowRight className="w-4 h-4" />
+                      <span>Login to Checkout</span>
+                      <ArrowRight className="w-5 h-5" />
                     </Link>
-                    <p className="text-center text-xs text-gray-400">
+                    <p className="text-center text-xs text-gray-500 font-medium">
                       or{' '}
-                      <Link to="/register" className="text-brand-primary font-semibold hover:underline">
-                        create an account
+                      <Link to="/register" className="text-brand-primary font-bold hover:text-brand-secondary transition-colors">
+                        create account
                       </Link>
                     </p>
                   </div>
@@ -380,20 +386,20 @@ export default function Cart() {
               {/* Trust row */}
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { icon: <MdSecurity className="w-6 h-6 text-brand-primary" />, label: 'Secure\nPayment' },
-                  { icon: <MdLocalShipping className="w-6 h-6 text-brand-primary" />, label: 'Fast\nDelivery' },
-                  { icon: <MdAssignmentReturn className="w-6 h-6 text-brand-primary" />, label: 'Easy\nReturns' },
+                  { icon: <MdSecurity className="w-5 h-5 text-brand-primary" />, label: 'Secure\nPayment' },
+                  { icon: <MdLocalShipping className="w-5 h-5 text-brand-primary" />, label: 'Fast\nDelivery' },
+                  { icon: <MdAssignmentReturn className="w-5 h-5 text-brand-primary" />, label: 'Easy\nReturns' },
                 ].map(({ icon, label }) => (
-                  <div key={label} className="card p-3 flex flex-col items-center gap-1.5 text-center">
-                    <div className="bg-brand-surface p-2 rounded-xl">{icon}</div>
-                    <p className="text-[10px] font-semibold text-gray-500 leading-tight whitespace-pre-line">{label}</p>
+                  <div key={label} className="card p-4 flex flex-col items-center gap-2 text-center border-2 border-cream-200 rounded-2xl hover:border-brand-secondary transition-all">
+                    <div className="bg-white p-2 rounded-lg shadow-sm">{icon}</div>
+                    <p className="text-[9px] font-bold text-gray-600 leading-tight whitespace-pre-line uppercase tracking-wider">{label}</p>
                   </div>
                 ))}
               </div>
 
               {/* Recently continue browsing */}
-              <div className="card p-4">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">You might also like</p>
+              <div className="card p-6 border-2 border-cream-200 rounded-2xl">
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Continue Exploring</p>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { icon: <MdPhotoLibrary className="w-3.5 h-3.5" />, label: 'Canvas Prints', to: '/products' },
