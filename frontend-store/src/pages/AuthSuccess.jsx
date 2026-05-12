@@ -12,8 +12,12 @@ export default function AuthSuccess() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
+    const urlAccessToken = params.get('access_token') || params.get('accessToken');
+    const urlRefreshToken = params.get('refresh_token') || params.get('refreshToken');
+    const storedAccessToken = localStorage.getItem('token');
+    const storedRefreshToken = localStorage.getItem('refreshToken');
+    const accessToken = urlAccessToken || storedAccessToken;
+    const refreshToken = urlRefreshToken || storedRefreshToken;
     const fullUrl = window.location.href;
 
     console.log('[Auth] AuthSuccess - Full URL:', fullUrl);
@@ -26,40 +30,35 @@ export default function AuthSuccess() {
       refreshTokenPreview: refreshToken ? `${refreshToken.substring(0, 20)}...${refreshToken.substring(refreshToken.length - 20)}` : 'N/A',
     });
 
-    // If tokens are in URL, save them as non-httpOnly cookies as a fallback
-    // This helps in environments where third-party httpOnly cookies are blocked.
-    if (accessToken) {
-      // Validate token format before saving
-      if (typeof accessToken !== 'string' || accessToken.length < 50) {
-        console.error('[Auth] ERROR: Invalid access_token format!', { length: accessToken?.length, token: accessToken });
+    // If tokens are in URL, save them (fallback for cookie-blocking browsers).
+    // If URL is already cleaned by App bootstrap, fall back to localStorage.
+    if (urlAccessToken) {
+      if (typeof urlAccessToken !== 'string' || urlAccessToken.length < 50) {
+        console.error('[Auth] ERROR: Invalid access_token format!', { length: urlAccessToken?.length, token: urlAccessToken });
         toast.error('Sign-in failed: Invalid token format. Please try again.');
         navigate('/login', { replace: true });
         return;
       }
-      document.cookie = `access_token=${accessToken}; path=/; max-age=900; SameSite=Lax`;
-      localStorage.setItem('token', accessToken);
-      console.log('[Auth] Access token saved to localStorage, length:', accessToken.length);
-    } else {
-      console.error('[Auth] ERROR: No access_token in URL params! Google OAuth may have failed.');
-      toast.error('Sign-in failed: No access token received. Please try again.');
-      navigate('/login', { replace: true });
-      return;
+      document.cookie = `access_token=${urlAccessToken}; path=/; max-age=900; SameSite=Lax`;
+      localStorage.setItem('token', urlAccessToken);
+      console.log('[Auth] Access token saved to localStorage, length:', urlAccessToken.length);
     }
-    
-    if (refreshToken) {
-      // Validate token format before saving
-      if (typeof refreshToken !== 'string' || refreshToken.length < 50) {
-        console.error('[Auth] ERROR: Invalid refresh_token format!', { length: refreshToken?.length, token: refreshToken });
+
+    if (urlRefreshToken) {
+      if (typeof urlRefreshToken !== 'string' || urlRefreshToken.length < 50) {
+        console.error('[Auth] ERROR: Invalid refresh_token format!', { length: urlRefreshToken?.length, token: urlRefreshToken });
         toast.error('Sign-in failed: Invalid refresh token format. Please try again.');
         navigate('/login', { replace: true });
         return;
       }
-      document.cookie = `refresh_token=${refreshToken}; path=/; max-age=604800; SameSite=Lax`;
-      localStorage.setItem('refreshToken', refreshToken);
-      console.log('[Auth] Refresh token saved to localStorage, length:', refreshToken.length);
-    } else {
-      console.error('[Auth] ERROR: No refresh_token in URL params! Token extraction failed.');
-      toast.error('Sign-in failed: No refresh token received. Please try again.');
+      document.cookie = `refresh_token=${urlRefreshToken}; path=/; max-age=604800; SameSite=Lax`;
+      localStorage.setItem('refreshToken', urlRefreshToken);
+      console.log('[Auth] Refresh token saved to localStorage, length:', urlRefreshToken.length);
+    }
+
+    if (!accessToken || !refreshToken) {
+      console.error('[Auth] Google OAuth incomplete - missing tokens (URL + localStorage).');
+      toast.error('Sign-in failed: Missing authentication tokens. Please try again.');
       navigate('/login', { replace: true });
       return;
     }

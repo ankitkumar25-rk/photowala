@@ -69,6 +69,23 @@ function PageLoader() {
 
 export default function App() {
   useEffect(() => {
+    // IMPORTANT: If we just returned from OAuth, store URL tokens BEFORE any auth calls.
+    // This prevents a race where the app mounts and calls /auth/me without tokens.
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const accessToken = params.get('access_token') || params.get('accessToken');
+      const refreshToken = params.get('refresh_token') || params.get('refreshToken');
+      const hasOAuthTokens = !!(accessToken && refreshToken);
+
+      if (hasOAuthTokens) {
+        localStorage.setItem('token', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    } catch (e) {
+      console.warn('[Auth] OAuth token bootstrap failed:', e);
+    }
+
     // Initial auth check on app mount
     useAuthStore.getState().fetchMe().catch((err) => {
       // Errors are already handled inside fetchMe (user cleared if previously authenticated)
