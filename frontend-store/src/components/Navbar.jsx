@@ -227,7 +227,7 @@ export default function Navbar() {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="md:hidden fixed inset-0 top-0 left-0 w-full h-screen z-[100] bg-cream-50 p-6 flex flex-col overflow-y-auto">
+          <div className="md:hidden fixed inset-0 top-0 left-0 w-full h-screen z-100 bg-cream-50 p-6 flex flex-col overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
               <img src={brandAssets.logo} alt="Logo" className="h-8 w-auto" />
               <button onClick={() => setMenuOpen(false)} className="p-2 bg-cream-200 rounded-full">
