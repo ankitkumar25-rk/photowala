@@ -36,7 +36,9 @@
   --shadow-hover: 0 18px 34px rgba(91, 63, 47, 0.16);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -56,7 +58,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   font-weight: 700;
 }
@@ -113,23 +120,23 @@ hr {
 }
 
 .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.5rem;
-  border: 0;
-  border-radius: 2px;
-  cursor: pointer;
-  text-decoration: none;
-  background: linear-gradient(135deg, #a06f20, #d96a22);
-  color: #FFFFFF;
-  font-family: var(--font-body);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 10px 20px rgba(133, 90, 30, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    cursor: pointer;
+    color: #fff;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: #5a3f2f;
+    border: 0;
+    border-radius: 32px;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform .2s, box-shadow .2s, filter .2s;
+    display: inline-flex;
+    box-shadow: 0 10px 20px #855a1e40;
 }
 
 .btn-primary:hover {
@@ -239,6 +246,7 @@ hr {
 }
 
 @keyframes softFloat {
+
   0%,
   100% {
     transform: translateY(0);
@@ -254,7 +262,9 @@ hr {
 }
 
 @keyframes skeleton-shimmer {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
 
