@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 const prisma = require('../config/database');
 const { signAccessToken, signRefreshToken, verifyToken } = require('../config/paseto');
 const { sendEmail, emailTemplates } = require('../config/email');
@@ -9,9 +9,8 @@ const { z } = require('zod');
 const COOKIE_OPTS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  // Use 'lax' for same-origin requests (which handles OAuth redirects correctly)
-  // The frontend should always be same-origin with the API for cookies to work
-  sameSite: 'lax',
+  // Use 'none' in production for cross-domain cookies (e.g. Vercel frontend)
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 15 * 60 * 1000, // 15 minutes
   path: '/',
 };
@@ -225,7 +224,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     await prisma.passwordResetToken.updateMany({ where: { userId: user.id, used: false }, data: { used: true } });
 
-    const resetToken = uuidv4();
+    const resetToken = crypto.randomUUID();
     await prisma.passwordResetToken.create({
       data: {
         token: resetToken,
@@ -284,7 +283,8 @@ exports.googleCallback = async (req, res, next) => {
     // Properly encode tokens to preserve special characters
     const encodedAccessToken = encodeURIComponent(accessToken);
     const encodedRefreshToken = encodeURIComponent(refreshToken);
-    const redirectUrl = `${process.env.CLIENT_URL}/auth/success?access_token=${encodedAccessToken}&refresh_token=${encodedRefreshToken}&success=true`;
+    const clientUrl = String(process.env.CLIENT_URL || '').replace(/\/$/, '');
+    const redirectUrl = `${clientUrl}/auth/success?access_token=${encodedAccessToken}&refresh_token=${encodedRefreshToken}&success=true`;
     
     console.log('[auth] Google callback - redirect URL length:', redirectUrl.length);
     

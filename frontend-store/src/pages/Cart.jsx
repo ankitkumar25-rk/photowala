@@ -124,10 +124,10 @@ function CartItem({ item }) {
       </div>
 
       {/* Line total */}
-      <div className="text-right shrink-0 hidden sm:block">
-        <p className="font-bold text-xl text-gray-900">₹{lineTotal}</p>
+      <div className="text-right shrink-0">
+        <p className="font-bold text-lg sm:text-xl text-gray-900">₹{lineTotal}</p>
         {item.quantity > 1 && (
-          <p className="text-xs text-gray-400 mt-0.5">{item.quantity} × ₹{Number(item.price).toFixed(2)}</p>
+          <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">{item.quantity} × ₹{Number(item.price).toFixed(2)}</p>
         )}
       </div>
     </div>

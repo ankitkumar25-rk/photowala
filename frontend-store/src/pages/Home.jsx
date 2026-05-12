@@ -30,7 +30,7 @@ function HeroSection() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden text-white min-h-150 flex flex-col justify-center">
+    <section className="relative overflow-hidden text-white min-h-[500px] md:min-h-[600px] flex flex-col justify-center">
       {/* Slider Images */}
       {HERO_IMAGES.map((src, index) => (
         <div
@@ -52,14 +52,14 @@ function HeroSection() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-pill bg-black/30 backdrop-blur-md border border-white/20 text-[#fff2e6] text-sm font-semibold mb-6">
             <img src={brandAssets.favicon} className="w-4 h-4 animate-float" alt="" /> Handcrafted Photogifts For Every Occasion
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6 drop-shadow-lg">
             Turn Memories Into<br />
             <span className="text-[#d0a13f]">Gift-Worthy Stories</span>
           </h1>
           <p className="text-[#ffe7d6] text-lg md:text-xl leading-relaxed mb-8 max-w-lg drop-shadow-md">
             Discover premium trophies, mementos, and personalized photogifts designed to celebrate wins, milestones, and people you love.
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <Link
               to="/products"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-pill bg-cream-50 text-[#5e2916] font-bold hover:bg-[#fff1e7] transition-all hover:shadow-lg hover:-translate-y-0.5"
@@ -157,7 +157,7 @@ function TrustBadges() {
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {badges.map(({ icon, label, desc }) => (
-            <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-3 text-center sm:text-left p-4 rounded-2xl hover:bg-white/50 transition-colors">
+            <div key={label} className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left p-4 rounded-2xl hover:bg-white/40 transition-colors border border-transparent hover:border-cream-200">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0 border border-cream-300 p-2.5 shadow-sm">
                 {icon}
               </div>

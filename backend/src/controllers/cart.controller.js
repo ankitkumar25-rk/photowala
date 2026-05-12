@@ -1,6 +1,7 @@
 const prisma = require('../config/database');
 const { createError } = require('../middleware/errorHandler');
 const { z } = require('zod');
+const crypto = require('crypto');
 
 exports.getCart = async (req, res, next) => {
   try {
@@ -55,8 +56,7 @@ exports.addToCart = async (req, res, next) => {
     } else {
       let sessionId = req.cookies?.cart_session;
       if (!sessionId) {
-        const { v4: uuidv4 } = require('uuid');
-        sessionId = uuidv4();
+        sessionId = crypto.randomUUID();
         res.cookie('cart_session', sessionId, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
       }
       cartWhere = { sessionId };

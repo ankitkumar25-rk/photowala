@@ -1,7 +1,6 @@
 const prisma = require('../config/database');
 const { createError } = require('../middleware/errorHandler');
 const { z } = require('zod');
-const { v4: uuidv4 } = require('uuid');
 
 function genTicketNumber() {
   return `TKT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2,5).toUpperCase()}`;

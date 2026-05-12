@@ -114,10 +114,10 @@ export default function ServiceCheckout() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-12 lg:py-20">
-        <div className="grid lg:grid-cols-5 gap-12 lg:gap-20">
+        <div className="grid lg:grid-cols-5 gap-8 lg:gap-16">
           
           {/* Left Column: Payment Methods */}
-          <div className="lg:col-span-3 space-y-10">
+          <div className="lg:col-span-3 space-y-8 order-2 lg:order-1">
             <div>
               <div className="flex items-center gap-4 mb-2">
                  <div className="w-8 h-8 rounded-full bg-brand-primary text-white flex items-center justify-center text-sm font-bold">1</div>
@@ -161,7 +161,7 @@ export default function ServiceCheckout() {
           </div>
 
           {/* Right Column: Order Summary */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 order-1 lg:order-2">
             <div className="bg-[#1c1a19] text-white rounded-[3rem] p-8 lg:p-10 shadow-2xl sticky top-28 border border-gray-800">
                <div className="flex items-center gap-4 mb-8 border-b border-gray-800 pb-6">
                   <div className="w-14 h-14 bg-gray-800 rounded-2xl flex items-center justify-center text-brand-secondary">

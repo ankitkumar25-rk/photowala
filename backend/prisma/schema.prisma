@@ -468,3 +468,15 @@ model WishlistItem {
   @@map("wishlist_items")
 }
 
+
+// ================================
+// SESSIONS (for Passport/Express-session)
+// ================================
+
+model Session {
+  sid    String   @id
+  sess   Json
+  expire DateTime @db.Timestamp(6)
+
+  @@map("session")
+}

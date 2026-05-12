@@ -96,6 +96,9 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 // ================================
 // SESSION (for Passport/Google OAuth)
 // ================================
+const PgSession = require('connect-pg-simple')(session);
+const { Pool } = require('pg');
+
 let sessionStore;
 if (redisUrl) {
   const redis = new Redis(redisUrl, {
@@ -107,6 +110,17 @@ if (redisUrl) {
     console.warn('[session] Redis error:', err?.message || err);
   });
   sessionStore = new RedisStore({ client: redis, prefix: 'sess:' });
+} else {
+  // Fallback to PostgreSQL for session storage (Hostinger/Render fallback)
+  console.log('✔ No REDIS_URL found, using PostgreSQL for session storage');
+  sessionStore = new PgSession({
+    pool: new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    }),
+    tableName: 'session', // Matches the Prisma model name
+    createTableIfMissing: false // Prisma handles table creation
+  });
 }
 
 const sessionOptions = {

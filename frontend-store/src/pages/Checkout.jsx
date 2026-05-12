@@ -317,8 +317,8 @@ export default function Checkout() {
         {/* ✅ Grid layout */}
         <div className="grid lg:grid-cols-3 gap-8 items-start">
 
-          {/* ✅ Left column - Steps */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* ✅ Left column - Steps (Takes more space) */}
+          <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
 
             {/* STEP 1 — Address */}
             <div className={`card p-8 transition-all ${step >= 1 ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}>
@@ -580,9 +580,9 @@ export default function Checkout() {
 
           </div> {/* ✅ closes left column (lg:col-span-1) */}
 
-          {/* ✅ Right column — Order Summary */}
-          <div className="lg:col-span-2">
-            <div className="card sticky top-20">
+          {/* ✅ Right column — Order Summary (Stickier & Slimmer) */}
+          <div className="lg:col-span-1 order-1 lg:order-2">
+            <div className="card sticky top-24">
               <button
                 onClick={() => setShowItems(!showItems)}
                 className="w-full flex items-center justify-between p-4 border-b border-cream-200 lg:cursor-default"

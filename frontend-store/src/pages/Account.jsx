@@ -137,7 +137,7 @@ function AddressModal({ addr, onClose, onSave }) {
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Full Name *</label>
               <input name="fullName" value={form.fullName} onChange={handle} required className="input-field" placeholder="John Doe" />
@@ -155,7 +155,7 @@ function AddressModal({ addr, onClose, onSave }) {
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Address Line 2</label>
             <input name="line2" value={form.line2} onChange={handle} className="input-field" placeholder="Area, Landmark (optional)" />
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">City *</label>
               <input name="city" value={form.city} onChange={handle} required className="input-field" placeholder="Mumbai" />
