@@ -28,14 +28,12 @@ export const useAuthStore = create(
           }
           
           if (!refreshToken) {
-            console.error('[Auth] WARNING: No refreshToken in response! Token extraction failed.', { refreshToken });
             throw new Error('No refresh token in response. Cannot establish session.');
           }
           
           // Store tokens
           localStorage.setItem('token', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
-          console.log('[Auth] Tokens saved to localStorage:', { token: 'token' in localStorage, refreshToken: 'refreshToken' in localStorage });
           
           set({ user: userData, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
@@ -63,14 +61,12 @@ export const useAuthStore = create(
           }
           
           if (!refreshToken) {
-            console.error('[Auth] WARNING: No refreshToken in response! Token extraction failed.', { refreshToken });
             throw new Error('No refresh token in response. Cannot establish session.');
           }
           
           // Store tokens
           localStorage.setItem('token', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
-          console.log('[Auth] Tokens saved to localStorage:', { token: 'token' in localStorage, refreshToken: 'refreshToken' in localStorage });
 
           set({ user: userObj, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
