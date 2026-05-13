@@ -157,7 +157,7 @@ export default function Navbar() {
 
             {/* Wishlist */}
             {user && (
-              <Link to="/wishlist" className="btn-ghost p-2 relative hidden sm:flex" aria-label="Wishlist">
+              <Link to="/wishlist" className="btn-ghost p-2 relative hidden md:flex" aria-label="Wishlist">
                 <Heart className="w-5 h-5" />
                 {wishlistCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-brand-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center">

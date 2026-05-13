@@ -192,7 +192,7 @@ hr {
 .input-field {
   width: 100%;
   padding: 0.72rem 0.95rem;
-  border-radius: 2px;
+  border-radius: 0.75rem;
   border: 1px solid #e9c5ad;
   background: #ffffff;
   color: var(--color-text-main);

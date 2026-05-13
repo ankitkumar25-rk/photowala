@@ -331,48 +331,52 @@ export default function Account() {
         </div>
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 p-8 bg-white rounded-card border border-cream-200 shadow-sm">
-          <div className="flex items-center gap-6">
-            <div className="relative">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 p-6 md:p-8 bg-white rounded-3xl border border-cream-200 shadow-sm transition-all">
+          <div className="flex items-center gap-4 md:gap-6">
+            <div className="relative shrink-0">
               {user.avatarUrl ? (
-                <img src={user.avatarUrl} alt={user.name} className="w-24 h-24 rounded-2xl object-cover shadow-sm border-2 border-cream-200" />
+                <img src={user.avatarUrl} alt={user.name} className="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover shadow-sm border-2 border-cream-200" />
               ) : (
-                <div className="w-24 h-24 rounded-2xl bg-brand-primary text-white flex items-center justify-center text-3xl font-bold shadow-sm">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-brand-primary text-white flex items-center justify-center text-2xl md:text-3xl font-bold shadow-sm">
                   {user.name?.[0]?.toUpperCase()}
                 </div>
               )}
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-brand-primary">
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-3xl font-bold text-brand-primary truncate">
                 Welcome, {user.name?.split(' ')[0]?.toUpperCase()} 👋
               </h1>
-              <p className="text-gray-500 flex items-center gap-1.5 mt-2 text-sm font-medium">
-                <Mail className="w-4 h-4 text-gray-400" /> {user.email}
+              <p className="text-gray-500 flex items-center gap-1.5 mt-1 md:mt-2 text-xs md:text-sm font-medium truncate">
+                <Mail className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" /> {user.email}
               </p>
               {user.phone && (
-                <p className="text-gray-500 flex items-center gap-1.5 mt-1 text-sm font-medium">
-                  <Phone className="w-4 h-4 text-gray-400" /> {user.phone}
+                <p className="text-gray-500 flex items-center gap-1.5 mt-1 text-xs md:text-sm font-medium truncate">
+                  <Phone className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" /> {user.phone}
                 </p>
               )}
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-6 py-3 rounded-pill bg-red-50 border border-red-100 text-red-600 font-bold text-xs uppercase tracking-widest hover:shadow-md transition-all"
+            className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-red-50 border border-red-100 text-red-600 font-bold text-[10px] md:text-xs uppercase tracking-widest hover:bg-red-100 transition-all w-full md:w-auto"
           >
             <LogOut className="w-4 h-4" /> Logout
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center p-1.5 bg-white rounded-pill border border-cream-200 mb-12 flex-wrap gap-2">
+        <div className="flex items-center p-1.5 bg-white rounded-2xl md:rounded-pill border border-cream-200 mb-8 overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
           {TABS.map(({ id, label, icon }) => (
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-pill text-xs font-bold uppercase tracking-wider transition-all duration-300 ${tab === id ? 'bg-brand-primary text-white shadow-lg' : 'text-gray-500 hover:text-brand-primary'}`}
+              className={`flex items-center gap-2 px-5 md:px-6 py-2.5 rounded-xl md:rounded-pill text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all duration-300 shrink-0 ${
+                tab === id 
+                  ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/20' 
+                  : 'text-gray-500 hover:text-brand-primary hover:bg-brand-surface'
+              }`}
             >
-              {createElement(icon, { className: 'w-4 h-4' })} {label}
+              {createElement(icon, { className: 'w-3.5 h-3.5 md:w-4 md:h-4' })} {label}
             </button>
           ))}
         </div>
@@ -384,31 +388,36 @@ export default function Account() {
                 <h2 className="font-bold text-lg text-gray-900 mb-6 flex items-center gap-2">
                   <User className="w-5 h-5 text-brand-primary" /> Personal Information
                 </h2>
-                <form onSubmit={saveProfile} className="space-y-4">
-                  <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Full Name</label>
-                    <input
-                      value={profile.name}
-                      onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))}
-                      className="input-field text-gray-900"
-                      placeholder="Your full name"
-                    />
+                <form onSubmit={saveProfile} className="space-y-5">
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block ml-1">Full Name</label>
+                      <input
+                        value={profile.name}
+                        onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))}
+                        className="input-field bg-cream-50/50 focus:bg-white transition-all"
+                        placeholder="Your full name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block ml-1">Phone</label>
+                      <input
+                        value={profile.phone}
+                        onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
+                        className="input-field bg-cream-50/50 focus:bg-white transition-all"
+                        placeholder="Your phone number"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Email</label>
-                    <input value={user.email} disabled className="input-field opacity-60 cursor-not-allowed text-gray-900" />
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block ml-1">Email (Read-only)</label>
+                    <div className="relative">
+                      <input value={user.email} disabled className="input-field opacity-60 cursor-not-allowed bg-cream-100/50" />
+                      <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Phone</label>
-                    <input
-                      value={profile.phone}
-                      onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
-                      className="input-field text-gray-900"
-                      placeholder="Your phone number"
-                    />
-                  </div>
-                  <button type="submit" disabled={saving} className="btn-primary w-full justify-center mt-4 py-3" style={{ background: '#c26e27', boxShadow: 'none' }}>
-                    {saving ? 'SAVING...' : 'SAVE CHANGES'}
+                  <button type="submit" disabled={saving} className="btn-primary w-full justify-center mt-4 py-4 shadow-xl shadow-brand-primary/10 hover:shadow-brand-primary/20">
+                    {saving ? 'UPDATING PROFILE...' : 'UPDATE PERSONAL INFO'}
                   </button>
                 </form>
               </div>
