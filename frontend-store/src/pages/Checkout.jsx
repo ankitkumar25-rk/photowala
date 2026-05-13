@@ -278,7 +278,7 @@ export default function Checkout() {
         </div>
 
         {/* Header */}
-        <div className="flex items-end justify-between gap-8 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-8 mb-8 sm:mb-12">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
               Secure <br />
@@ -305,7 +305,7 @@ export default function Checkout() {
                 }`}>
                   {step > s.id ? <Check className="w-4 h-4" /> : s.id}
                 </div>
-                <span className="font-semibold text-sm text-gray-700 hidden sm:inline">{s.label}</span>
+                <span className="font-bold text-[10px] sm:text-sm text-gray-700 hidden xs:inline uppercase tracking-widest">{s.label}</span>
               </div>
               {i < STEPS.length - 1 && (
                 <div className={`flex-1 h-0.5 mx-4 ${step > s.id ? 'bg-brand-secondary' : 'bg-cream-200'}`} />
@@ -479,31 +479,43 @@ export default function Checkout() {
                 </div>
 
                 {step === 2 && (
-                  <div>
-                    <div className="divide-y divide-cream-200 mb-6">
+                  <div className="space-y-6">
+                    <div className="divide-y divide-cream-100">
                       {items.map((item) => (
-                        <div key={item.id} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-                          <img
-                            src={item.product?.images?.[0]?.url || 'https://placehold.co/64x64/d8f3dc/2d6a4f?text=??'}
-                            alt={item.product?.name}
-                            className="w-16 h-16 rounded-xl object-cover bg-cream-100 shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-bold text-gray-900 truncate">{item.product?.name}</p>
-                            {item.product?.unit && <p className="text-xs text-gray-500 mt-0.5">{item.product.unit}</p>}
-                            <p className="text-sm text-gray-600 mt-1">Qty: <span className="font-semibold">{item.quantity}</span></p>
+                        <div key={item.id} className="flex items-start gap-4 py-5 first:pt-0 last:pb-0">
+                          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-cream-100 border border-cream-200 shrink-0">
+                            {item.product?.images?.[0]?.url ? (
+                              <img
+                                src={item.product.images[0].url}
+                                alt={item.product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Package className="w-6 h-6 text-cream-300" />
+                              </div>
+                            )}
                           </div>
-                          <p className="font-bold text-lg text-brand-primary shrink-0">
-                            ₹{(Number(item.price) * item.quantity).toFixed(2)}
-                          </p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-gray-900 text-sm sm:text-base leading-tight mb-1">{item.product?.name}</p>
+                            <div className="flex items-center gap-2 mb-2">
+                              {item.product?.unit && <span className="text-[10px] font-bold text-gray-400 uppercase bg-cream-100 px-1.5 py-0.5 rounded-md">{item.product.unit}</span>}
+                              <span className="text-xs font-medium text-gray-500">Qty: <span className="font-bold text-gray-900">{item.quantity}</span></span>
+                            </div>
+                            <p className="font-bold text-base text-brand-primary">
+                              ₹{(Number(item.price) * item.quantity).toFixed(2)}
+                            </p>
+                          </div>
                         </div>
                       ))}
                     </div>
                     <button
                       onClick={() => setStep(3)}
-                      className="btn-primary w-full justify-center mt-4"
+                      className="group relative w-full bg-brand-primary text-white py-4 sm:py-5 rounded-2xl font-bold text-sm uppercase tracking-[0.2em] shadow-xl shadow-brand-primary/20 hover:bg-brand-secondary transition-all flex items-center justify-center gap-3 overflow-hidden"
                     >
-                      Continue to Payment
+                      <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                      <span>Continue to Payment</span>
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                 )}

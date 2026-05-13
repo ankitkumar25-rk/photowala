@@ -55,80 +55,88 @@ function CartItem({ item }) {
   const lineTotal = (Number(item.price) * item.quantity).toFixed(2);
 
   const handleRemove = async () => {
+    if (!confirm('Remove this item?')) return;
     setRemoving(true);
     await removeItem(item.productId);
     toast.success('Removed from cart');
   };
 
   return (
-    <div className={`flex gap-4 p-5 transition-opacity ${removing ? 'opacity-30' : ''}`}>
+    <div className={`flex gap-3 sm:gap-6 p-4 sm:p-6 transition-all ${removing ? 'opacity-30 scale-95' : ''}`}>
       {/* Image */}
       <Link to={`/products/${item.product?.slug}`} className="shrink-0">
-        <div className="w-24 h-24 rounded-2xl overflow-hidden bg-cream-200 border border-cream-300 group-hover:shadow-md transition-shadow">
+        <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-cream-100 border border-cream-200 group-hover:shadow-md transition-all">
            {img ? (
-             <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" width={96} height={96} />
+             <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy" />
            ) : (
-            <div className="w-full h-full flex items-center justify-center bg-cream-100">
-              <Package className="w-8 h-8 text-cream-400" />
+            <div className="w-full h-full flex items-center justify-center bg-cream-50">
+              <Package className="w-8 h-8 text-cream-300" />
             </div>
           )}
         </div>
       </Link>
 
-      {/* Details */}
-      <div className="flex-1 min-w-0">
-        <Link to={`/products/${item.product?.slug}`}>
-          <h3 className="font-bold text-gray-900 hover:text-brand-primary transition-colors leading-tight line-clamp-2">
-            {item.product?.name}
-          </h3>
-        </Link>
-        {item.product?.unit && (
-          <p className="text-sm text-gray-500 mt-0.5">{item.product.unit}</p>
-        )}
-        <p className="text-brand-primary font-bold mt-1">₹{Number(item.price).toFixed(2)}<span className="text-xs font-normal text-gray-400 ml-1">each</span></p>
-
-        {/* Customization badge */}
-        {item.customizationText && (
-          <div className="mt-2 flex items-center gap-1.5 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">
-            <Pencil className="w-3 h-3 text-amber-600 shrink-0" />
-            <div className="min-w-0">
-              <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Custom Text · </span>
-              <span className="text-xs font-semibold text-amber-900 truncate">{item.customizationText}</span>
+      {/* Content Area */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1 sm:gap-4">
+          <div className="min-w-0">
+            <Link to={`/products/${item.product?.slug}`}>
+              <h3 className="font-bold text-gray-900 text-sm sm:text-base hover:text-brand-primary transition-colors leading-snug line-clamp-2">
+                {item.product?.name}
+              </h3>
+            </Link>
+            <div className="flex items-center gap-2 mt-1">
+              {item.product?.unit && (
+                <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-wider bg-cream-100 px-1.5 py-0.5 rounded-md">{item.product.unit}</span>
+              )}
+              <p className="text-xs sm:text-sm font-bold text-brand-primary">
+                ₹{Number(item.price).toFixed(2)}
+                <span className="text-[10px] font-normal text-gray-400 ml-1 italic">each</span>
+              </p>
             </div>
-            <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 ml-auto" />
           </div>
-        )}
-        {item.customizationImageUrl && (
-          <div className="mt-2 flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1.5">
-             <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="shrink-0">
-               <img src={item.customizationImageUrl} alt="Custom logo" className="w-8 h-8 object-cover rounded-md border border-blue-200" loading="lazy" width={32} height={32} />
-             </a>
-            <div className="min-w-0">
-              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wide block">Custom Logo/Image</span>
-              <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-500 underline">View image</a>
-            </div>
-            <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0 ml-auto" />
-          </div>
-        )}
 
-        <div className="flex items-center justify-between mt-3 flex-wrap gap-3">
+          {/* Line total - shown here on desktop, moved for mobile if needed, but flex-row handles it */}
+          <div className="sm:text-right shrink-0 mt-1 sm:mt-0">
+            <p className="font-bold text-base sm:text-xl text-gray-900 leading-none">₹{lineTotal}</p>
+            {item.quantity > 1 && (
+              <p className="text-[9px] sm:text-xs text-gray-400 mt-1 font-medium italic">{item.quantity} units</p>
+            )}
+          </div>
+        </div>
+
+        {/* Customization Details */}
+        <div className="space-y-1.5 mt-2.5">
+          {item.customizationText && (
+            <div className="flex items-center gap-2 bg-amber-50/50 border border-amber-100 rounded-lg px-2.5 py-1.5">
+              <Pencil className="w-3 h-3 text-amber-600 shrink-0" />
+              <p className="text-[10px] font-medium text-amber-900 truncate">
+                <span className="font-bold uppercase text-[8px] tracking-widest opacity-60 mr-1">Text:</span>
+                {item.customizationText}
+              </p>
+            </div>
+          )}
+          {item.customizationImageUrl && (
+            <div className="flex items-center gap-2 bg-blue-50/50 border border-blue-100 rounded-lg px-2.5 py-1.5">
+               <ImageIcon className="w-3 h-3 text-blue-600 shrink-0" />
+               <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1">
+                 View Design <ArrowRight className="w-2.5 h-2.5" />
+               </a>
+            </div>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center justify-between mt-4">
           <QtyControl item={item} />
           <button
             onClick={handleRemove}
             disabled={removing}
-            className="flex items-center gap-1.5 text-sm font-medium text-red-400 hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-lg transition-all"
+            className="flex items-center gap-1.5 text-[10px] sm:text-xs font-bold text-red-400 hover:text-red-600 uppercase tracking-widest hover:bg-red-50 px-2 py-1.5 rounded-lg transition-all"
           >
-            <Trash2 className="w-4 h-4" /> Remove
+            <Trash2 className="w-3.5 h-3.5" /> Remove
           </button>
         </div>
-      </div>
-
-      {/* Line total */}
-      <div className="text-right shrink-0">
-        <p className="font-bold text-lg sm:text-xl text-gray-900">₹{lineTotal}</p>
-        {item.quantity > 1 && (
-          <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5">{item.quantity} × ₹{Number(item.price).toFixed(2)}</p>
-        )}
       </div>
     </div>
   );
@@ -303,22 +311,22 @@ export default function Cart() {
 
             {/* -- Order summary -- */}
             <div className="lg:col-span-2 space-y-4 sticky top-24">
-              <div className="card p-8 border-2 border-cream-200 shadow-lg rounded-3xl">
+              <div className="card p-6 sm:p-8 border-2 border-cream-200 shadow-lg rounded-3xl bg-white">
                 <div className="flex items-center gap-3 pb-6 border-b-2 border-cream-200 mb-6">
-                  <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-2xl bg-brand-surface flex items-center justify-center shrink-0">
                     <ShoppingCart className="w-5 h-5 text-brand-primary" />
                   </div>
-                  <h2 className="font-bold text-xl text-gray-900">Order Summary</h2>
+                  <h2 className="font-bold text-lg sm:text-xl text-gray-900 truncate">Order Summary</h2>
                   <span className="badge-featured ml-auto">{items.length}</span>
                 </div>
 
                 <div className="space-y-4">
                   {/* Per-item breakdown */}
-                  <div className="space-y-2.5 pb-4 border-b-2 border-cream-200 max-h-52 overflow-y-auto pr-2">
+                  <div className="space-y-3 pb-4 border-b-2 border-cream-200 max-h-52 overflow-y-auto pr-2 custom-scrollbar">
                     {items.map((item) => (
-                      <div key={item.id ?? item.productId} className="flex justify-between text-sm">
-                        <span className="text-gray-600 truncate mr-2 max-w-[60%]">
-                          {item.product?.name} × {item.quantity}
+                      <div key={item.id ?? item.productId} className="flex justify-between text-xs sm:text-sm gap-4">
+                        <span className="text-gray-600 truncate flex-1">
+                          {item.product?.name} <span className="text-[10px] font-bold text-gray-400">×{item.quantity}</span>
                         </span>
                         <span className="font-semibold text-gray-900 shrink-0">
                           ₹{(Number(item.price) * item.quantity).toFixed(2)}
@@ -327,13 +335,13 @@ export default function Cart() {
                     ))}
                   </div>
 
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-gray-600 font-medium">Subtotal</span>
                     <span className="font-bold text-gray-900">₹{subtotal.toFixed(2)}</span>
                   </div>
 
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 flex items-center gap-2">
+                  <div className="flex justify-between text-xs sm:text-sm">
+                    <span className="text-gray-600 flex items-center gap-2 font-medium">
                       <Truck className="w-3.5 h-3.5" /> Shipping
                     </span>
                     {shipping === 0 ? (
@@ -345,7 +353,7 @@ export default function Cart() {
                     )}
                   </div>
 
-                  <div className="flex justify-between text-lg font-bold pt-4 border-t-2 border-cream-200 mt-2">
+                  <div className="flex justify-between text-base sm:text-lg font-bold pt-4 border-t-2 border-cream-200 mt-2">
                     <span className="text-gray-900">Total</span>
                     <span className="text-brand-primary">₹{total.toFixed(2)}</span>
                   </div>
