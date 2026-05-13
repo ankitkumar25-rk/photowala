@@ -104,23 +104,23 @@ table thead th {
 }
 
 .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.5rem;
-  border: 0;
-  border-radius: 2px;
-  background: linear-gradient(135deg, #a06f20, #d96a22);
-  color: #ffffff;
-  text-decoration: none;
   cursor: pointer;
+  color: #fff;
   font-family: var(--font-body);
-  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 10px 20px rgba(133, 90, 30, 0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  background: #5a3f2f;
+  border: 0;
+  border-radius: 32px;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform .2s, box-shadow .2s, filter .2s;
+  display: inline-flex;
+  box-shadow: 0 10px 20px #855a1e40;
 }
 
 .btn-primary:hover {
@@ -128,6 +128,29 @@ table thead th {
   filter: brightness(1.03);
   transform: translateY(-1px);
   box-shadow: 0 14px 24px rgba(133, 90, 30, 0.31);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: 32px;
+  border: 2px solid var(--brand-primary);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--brand-primary);
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-secondary:hover {
+  background: var(--brand-primary);
+  color: #fff;
 }
 
 .btn-ghost {
@@ -153,12 +176,11 @@ table thead th {
 .input-field {
   width: 100%;
   padding: 0.72rem 0.95rem;
-  border-radius: 2px;
+  border-radius: 0.75rem;
   border: 1px solid #e9c5ad;
   background: #ffffff;
   color: var(--color-text-main);
   font-family: var(--font-body);
-  font-size: 0.875rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 

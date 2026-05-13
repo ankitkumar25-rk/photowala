@@ -104,7 +104,7 @@ export default function AdminInventory() {
                           onChange={e => setEditing(prev => ({...prev, [p.id]: Number(e.target.value)}))}
                           className="input-field py-1 px-2 w-16 sm:w-20 text-sm" />
                         <button onClick={() => updateMut.mutate({ id: p.id, stock: editing[p.id] ?? p.stock })}
-                          className="px-2 py-1 rounded bg-brand-primary text-white text-xs font-semibold hover:bg-brand-secondary">Save</button>
+                          className="btn-primary py-1 px-3 text-[10px] sm:text-xs">Save</button>
                       </div>
                     </td>
                   </tr>

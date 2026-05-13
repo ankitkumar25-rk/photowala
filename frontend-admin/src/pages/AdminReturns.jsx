@@ -65,13 +65,13 @@ export default function AdminReturns() {
                   <div className="flex gap-1.5">
                     <button
                       onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}
-                      className="px-2 py-1 rounded bg-green-600 text-white text-xs font-semibold hover:bg-green-700"
+                      className="btn-primary py-1 px-3 text-[10px] sm:text-xs"
                     >
                       Approve
                     </button>
                     <button
                       onClick={() => rejectMut.mutate({ id: r.id })}
-                      className="px-2 py-1 rounded bg-red-500 text-white text-xs font-semibold hover:bg-red-600"
+                      className="btn-ghost py-1 px-3 text-[10px] sm:text-xs text-red-500 hover:bg-red-50"
                     >
                       Reject
                     </button>
@@ -104,9 +104,9 @@ export default function AdminReturns() {
                     {r.status === 'PENDING' && (
                       <div className="flex gap-1">
                         <button onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}
-                          className="px-2 py-1 rounded bg-green-600 text-white text-xs font-semibold hover:bg-green-700">Approve</button>
+                          className="btn-primary py-1 px-3 text-[10px] sm:text-xs">Approve</button>
                         <button onClick={() => rejectMut.mutate({ id: r.id })}
-                          className="px-2 py-1 rounded bg-red-500 text-white text-xs font-semibold hover:bg-red-600">Reject</button>
+                          className="btn-ghost py-1 px-3 text-[10px] sm:text-xs text-red-500 hover:bg-red-50">Reject</button>
                       </div>
                     )}
                   </td>

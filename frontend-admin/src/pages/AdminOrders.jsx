@@ -38,9 +38,11 @@ export default function AdminOrders() {
         <div className="flex gap-2 flex-wrap">
           {['', ...STATUSES].map(s => (
             <button key={s} onClick={() => {setStatus(s); setPage(1);}}
-              className={'px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
-                (status === s ? 'bg-brand-primary text-white border-brand-primary' : 'border-gray-200 text-gray-600 hover:border-brand-secondary')}>
-              {s || 'All'}
+              className={'px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ' +
+                (status === s 
+                  ? 'bg-brand-primary text-white border-brand-primary shadow-md' 
+                  : 'bg-white border-brand-primary/10 text-brand-primary/60 hover:border-brand-primary/30')}>
+              {s || 'All Orders'}
             </button>
           ))}
         </div>
