@@ -5,7 +5,7 @@ import {
   TrendingUp, ShoppingCart, Users, Package,
   AlertTriangle, ArrowUp, ArrowDown, ExternalLink,
   Clock, Activity, Calendar, Zap, ChevronRight,
-  RefreshCcw, Filter, LayoutDashboard
+  RefreshCcw, Filter, LayoutDashboard, Settings
 } from 'lucide-react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, AreaChart, Area
