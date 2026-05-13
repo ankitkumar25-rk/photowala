@@ -53,11 +53,14 @@ export default function Navbar() {
     { to: '/services', label: 'Services' },
   ];
 
-  return (
-    <header className={`sticky top-0 z-50 border-b transition-all duration-300 ${isScrolled
+  const headerClass = `sticky top-0 z-50 border-b transition-all duration-300 ${
+    isScrolled
       ? 'glass-surface border-brand-primary/20 shadow-[0_10px_30px_-20px_rgba(122,50,24,0.5)]'
       : 'bg-cream-100/90 backdrop-blur-lg border-brand-primary/10'
-      }`}>
+  }`;
+
+  return (
+    <header className={headerClass}>
       {/* Top bar */}
       <div className="bg-[#5a3f2f] text-[#fff6ef] text-[10px] sm:text-xs text-center py-2 px-4 font-semibold tracking-wide border-b border-[#d8a45f]/25">
         <span className="hidden sm:inline">Free shipping on orders above ₹999 | </span>
