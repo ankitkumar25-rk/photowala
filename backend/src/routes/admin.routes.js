@@ -1,7 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import * as adminController from '../controllers/admin.controller.js';
+
 const router = express.Router();
-const { authenticate, isAdmin } = require('../middleware/auth');
-const adminController = require('../controllers/admin.controller');
+
+const isAdmin = authorize('ADMIN', 'SUPER_ADMIN');
 
 // All admin routes require ADMIN or SUPER_ADMIN role
 router.use(authenticate, isAdmin);
@@ -19,6 +22,4 @@ router.patch('/customers/:id/ban', adminController.banCustomer);
 router.get('/inventory',          adminController.getInventory);
 router.get('/inventory/low-stock', adminController.getLowStockProducts);
 
-
-
-module.exports = router;
+export default router;

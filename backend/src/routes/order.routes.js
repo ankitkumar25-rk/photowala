@@ -1,7 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import * as orderController from '../controllers/order.controller.js';
+
 const router = express.Router();
-const { authenticate, isAdmin } = require('../middleware/auth');
-const orderController = require('../controllers/order.controller');
+
+const isAdmin = authorize('ADMIN', 'SUPER_ADMIN');
 
 // Customer routes
 router.post('/',            authenticate, orderController.createOrder);
@@ -16,4 +19,4 @@ router.patch('/:id/tracking',   authenticate, isAdmin, orderController.updateTra
 router.get('/:id',          authenticate, orderController.getOrder);
 router.post('/:id/cancel',  authenticate, orderController.cancelOrder);
 
-module.exports = router;
+export default router;

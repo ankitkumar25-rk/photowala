@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import * as paymentController from '../controllers/payment.controller.js';
+import { authenticate, authorize } from '../middleware/auth.js';
+import { requireCsrf } from '../middleware/csrf.js';
+
 const router = express.Router();
-const paymentController = require('../controllers/payment.controller');
-const { authenticate, authorize } = require('../middleware/auth');
-const { requireCsrf } = require('../middleware/csrf');
 
 // Customer routes
 router.post('/create-order', authenticate, requireCsrf, paymentController.createRazorpayOrder);
@@ -12,7 +13,4 @@ router.post('/cod',          authenticate, requireCsrf, paymentController.confir
 // Admin route for processing refunds
 router.post('/refund', authenticate, authorize('ADMIN', 'SUPER_ADMIN'), requireCsrf, paymentController.processRefund);
 
-// Webhook is registered separately in app.js to handle the raw body correctly
-// router.post('/webhook', ...) 
-
-module.exports = router;
+export default router;

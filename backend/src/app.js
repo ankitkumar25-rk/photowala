@@ -1,31 +1,36 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const Redis = require('ioredis');
-const RedisStore = require('connect-redis').default;
-const path = require('path');
-const passport = require('./config/passport');   // loads Google strategy
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import passport from './config/passport.js';
 
-const { errorHandler } = require('./middleware/errorHandler');
-const { rateLimiter } = require('./middleware/rateLimiter');
-const { ensureCsrfCookie, requireCsrf } = require('./middleware/csrf');
+import { errorHandler } from './middleware/errorHandler.js';
+import { ensureCsrfCookie, requireCsrf } from './middleware/csrf.js';
+import { rateLimit } from './middleware/rateLimit.js';
+import valkey from './lib/valkey.js';
 
 // Route imports
-const authRoutes = require('./routes/auth.routes');
-const productRoutes = require('./routes/product.routes');
-const categoryRoutes = require('./routes/category.routes');
-const cartRoutes = require('./routes/cart.routes');
-const orderRoutes = require('./routes/order.routes');
-const paymentRoutes = require('./routes/payment.routes');
-const userRoutes = require('./routes/user.routes');
-const adminRoutes = require('./routes/admin.routes');
-const uploadRoutes = require('./routes/upload.routes');
-const returnsRoutes = require('./routes/returns.routes');
-const supportRoutes = require('./routes/support.routes');
-const serviceOrderRoutes = require('./routes/serviceOrder.routes');
+import authRoutes from './routes/auth.routes.js';
+import productRoutes from './routes/product.routes.js';
+import categoryRoutes from './routes/category.routes.js';
+import cartRoutes from './routes/cart.routes.js';
+import orderRoutes from './routes/order.routes.js';
+import paymentRoutes from './routes/payment.routes.js';
+import userRoutes from './routes/user.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import uploadRoutes from './routes/upload.routes.js';
+import returnsRoutes from './routes/returns.routes.js';
+import supportRoutes from './routes/support.routes.js';
+import serviceOrderRoutes from './routes/serviceOrder.routes.js';
+
+import * as paymentController from './controllers/payment.controller.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-session-secret' : '');
@@ -35,8 +40,6 @@ if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set in production');
 }
 
-// Render (and similar platforms) terminate TLS at a proxy. Trusting the first
-// proxy allows secure session cookies to work correctly behind HTTPS.
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
@@ -54,6 +57,7 @@ const allowedOrigins = [
 console.log('✔ Configuring CORS for origins:', allowedOrigins);
 
 app.use(helmet());
+
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
     const proto = req.headers['x-forwarded-proto'];
@@ -61,9 +65,9 @@ if (process.env.NODE_ENV === 'production') {
     return res.redirect(301, `https://${req.headers.host}${req.originalUrl}`);
   });
 }
+
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
       callback(null, true);
@@ -78,48 +82,37 @@ app.use(cors({
 }));
 
 // ================================
-// PARSING MIDDLEWARE
-// ================================
-// ================================
 // PAYMENTS WEBHOOK (MUST BE BEFORE express.json)
 // ================================
-const paymentController = require('./controllers/payment.controller');
 app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), paymentController.razorpayWebhook);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Serve local uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 // ================================
-// SESSION (for Passport/Google OAuth)
+// SESSION
 // ================================
-const PgSession = require('connect-pg-simple')(session);
-const { Pool } = require('pg');
+import RedisStore from 'connect-redis';
+import PgSession from 'connect-pg-simple';
+import pkg from 'pg';
+const { Pool } = pkg;
+const PgStore = PgSession(session);
 
 let sessionStore;
 if (redisUrl) {
-  const redis = new Redis(redisUrl, {
-    enableOfflineQueue: true,
-    maxRetriesPerRequest: 2,
-    retryStrategy: (times) => Math.min(times * 200, 2000),
-  });
-  redis.on('error', (err) => {
-    console.warn('[session] Redis error:', err?.message || err);
-  });
-  sessionStore = new RedisStore({ client: redis, prefix: 'sess:' });
+  sessionStore = new RedisStore({ client: valkey, prefix: 'sess:' });
 } else {
-  // Fallback to PostgreSQL for session storage (Hostinger/Render fallback)
   console.log('✔ No REDIS_URL found, using PostgreSQL for session storage');
-  sessionStore = new PgSession({
+  sessionStore = new PgStore({
     pool: new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     }),
-    tableName: 'session', // Matches the Prisma model name
-    createTableIfMissing: false // Prisma handles table creation
+    tableName: 'session',
+    createTableIfMissing: false
   });
 }
 
@@ -131,7 +124,7 @@ const sessionOptions = {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   },
   ...(sessionStore ? { store: sessionStore } : {}),
 };
@@ -150,18 +143,16 @@ if (process.env.NODE_ENV !== 'test') {
 // ================================
 // RATE LIMITING
 // ================================
-// Exempt OAuth routes from rate limiting (not direct user requests)
-app.use('/api', (req, res, next) => {
-  if (req.path === '/auth/google/callback' || req.path === '/auth/google') return next();
-  rateLimiter(req, res, next);
-});
+app.use('/api', rateLimit({ max: 100, windowSec: 60 }));
+app.use('/api/auth/login', rateLimit({ max: 5, windowSec: 60, keyPrefix: 'rl:auth' }));
+app.use('/api/auth/register', rateLimit({ max: 5, windowSec: 60, keyPrefix: 'rl:auth' }));
+
 app.use('/api', ensureCsrfCookie);
 app.use('/api', requireCsrf);
 
 // ================================
 // ROUTES
 // ================================
-// Root URL landing page
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
@@ -171,7 +162,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Base API entrypoint for health checks and browser testing
 app.get('/api', (req, res) => {
   res.status(200).json({
     success: true,
@@ -181,12 +171,10 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Explicit health check path
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// CSRF bootstrap endpoint (safe GET)
 app.get('/api/csrf', (req, res) => {
   res.json({ success: true, token: req.cookies?.csrf_token || null });
 });
@@ -204,17 +192,10 @@ app.use('/api/returns', returnsRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/service-orders', serviceOrderRoutes);
 
-// ================================
-// 404 HANDLER
-// ================================
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
 });
 
-
-// ================================
-// GLOBAL ERROR HANDLER
-// ================================
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

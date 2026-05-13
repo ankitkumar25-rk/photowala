@@ -1,11 +1,11 @@
-const { verifyToken } = require('../config/paseto');
-const { createError } = require('./errorHandler');
-const prisma = require('../config/database');
+import { verifyToken } from '../config/paseto.js';
+import { createError } from './errorHandler.js';
+import prisma from '../config/database.js';
 
 /**
  * Authenticate request — verifies PASETO token from Authorization header or cookie
  */
-async function authenticate(req, res, next) {
+export async function authenticate(req, res, next) {
   try {
     let token;
 
@@ -54,7 +54,7 @@ async function authenticate(req, res, next) {
  * isAdmin — Middleware to restrict access to ADMIN or SUPER_ADMIN only
  * Must be used AFTER authenticate
  */
-function isAdmin(req, res, next) {
+export function isAdmin(req, res, next) {
   if (!req.user) {
     return next(createError('Authentication required', 401));
   }
@@ -68,7 +68,7 @@ function isAdmin(req, res, next) {
 /**
  * Authorize — restrict to specific roles (legacy/generic version)
  */
-function authorize(...roles) {
+export function authorize(...roles) {
   return (req, res, next) => {
     if (!req.user) return next(createError('Authentication required', 401));
     const allowedRoles = roles.map((role) => String(role).toUpperCase());
@@ -83,7 +83,7 @@ function authorize(...roles) {
 /**
  * Optional authentication — doesn't error if no token
  */
-async function optionalAuth(req, res, next) {
+export async function optionalAuth(req, res, next) {
   try {
     let token;
     const authHeader = req.headers.authorization;
@@ -104,5 +104,3 @@ async function optionalAuth(req, res, next) {
   }
   next();
 }
-
-module.exports = { authenticate, authorize, optionalAuth, isAdmin };

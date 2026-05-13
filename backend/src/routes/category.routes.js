@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import * as categoryController from '../controllers/category.controller.js';
+
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth');
-const categoryController = require('../controllers/category.controller');
 
 router.get('/',     categoryController.listCategories);
 router.get('/:slug', categoryController.getCategory);
@@ -10,4 +11,4 @@ router.post('/',      authenticate, authorize('ADMIN', 'SUPER_ADMIN'), categoryC
 router.put('/:id',    authenticate, authorize('ADMIN', 'SUPER_ADMIN'), categoryController.updateCategory);
 router.delete('/:id', authenticate, authorize('ADMIN', 'SUPER_ADMIN'), categoryController.deleteCategory);
 
-module.exports = router;
+export default router;

@@ -6,70 +6,95 @@ PROJECT ARCHITECTURE & KNOWLEDGE BASE FOR AI MODELS
 1. PROJECT SUMMARY
 ------------------
 Photowala is a high-end e-commerce platform specializing in premium gifts, trophies, 
-momentos, and professional custom printing services. The platform is divided into 
-three main modules:
-- Backend: Express/Node.js API with Prisma/PostgreSQL.
-- Frontend Store: Customer-facing React application.
-- Frontend Admin: Administrative dashboard for business operations.
+momentos, and professional custom printing services. The platform is architected for 
+scalability, security, and a premium "luxury" user experience.
 
-2. TECH STACK
--------------
-- Backend: Node.js (v22.12.0), Express, Prisma ORM, PostgreSQL.
-- Frontend: React 18, Vite, Zustand (State), React Query (Data Fetching).
-- Security: PASETO (Token-based Auth), CSRF Protection, CORS (Strict Origin Filtering).
-- Payments: Razorpay (Dynamic SDK loading, Webhook integration).
-- Storage: Cloudinary (Image uploads).
-- Email: Resend SDK (Transactional emails).
+The ecosystem is divided into three core modules:
+- Backend: Express/Node.js REST API with Prisma ORM and PostgreSQL.
+- Frontend Store: Customer-facing React SPA (Vite-powered).
+- Frontend Admin: Administrative dashboard for order management and business analytics.
+
+2. TECH STACK & ECOSYSTEM
+-------------------------
+- Core: Node.js (v22.12.0), Express, React 18, Vite.
+- Styling: TailwindCSS with a "Mobile-First" philosophy and premium design tokens.
+- State Management: 
+    - Frontend: Zustand (Atomic stores for Auth, Cart, UI state).
+    - Data Fetching: TanStack Query (React Query) for robust caching and synchronization.
+- Security: 
+    - Authentication: PASETO (Token-based) with httpOnly cookie + localStorage fallback.
+    - Protection: Strict CSRF tokens, CORS origin filtering, and Helmet.js headers.
+- Payments: Razorpay (Dynamic SDK loading, Webhook handlers, live-mode ready).
+- Infrastructure: 
+    - Image Hosting: Cloudinary (Auto-optimization, transformations).
+    - Email: Resend SDK (Transactional emails for orders/auth).
+    - Database: PostgreSQL (Managed on Render/Supabase).
 
 3. DATABASE ARCHITECTURE (PRISMA)
 ---------------------------------
-- Polymorphic Payments: The 'Payment' model is linked to either 'Order' (Physical Products) 
-  or 'ServiceOrder' (Custom Printing) via the 'internalOrderId' and 'orderType' fields. 
-  There are NO strict DB-level foreign key constraints on these relations to prevent 
-  deployment errors on Render/PostgreSQL; the relationship is managed in the application layer.
-- User Roles: [CUSTOMER, ADMIN, SUPER_ADMIN].
-- Service Orders: Specialized for custom printing (e.g., Pen, Letterhead, Garment Tags).
+- Polymorphic Relationship Pattern:
+    The 'Payment' model supports multiple order types (Physical 'Order' vs. 'ServiceOrder') 
+    using 'internalOrderId' and 'orderType'. Note: No strict DB-level FK constraints are 
+    used on these polymorphic fields to ensure compatibility with high-concurrency 
+    cloud environments like Render.
+- Role-Based Access Control (RBAC):
+    Users are categorized into [CUSTOMER, ADMIN, SUPER_ADMIN]. Permissions are enforced 
+    at both the API middleware and Frontend routing layers.
+- Printing Service Schema:
+    ServiceOrder model handles complex customization metadata (URLs, text instructions) 
+    tailored for printing-specific workflows.
 
-4. AUTHENTICATION STRATEGY
---------------------------
-- Primary: httpOnly cookies (access_token, refresh_token).
-- Fallback: 'token' and 'refreshToken' are stored in localStorage to ensure 
-  persistence in browsers that block third-party cookies (Safari, In-App browsers).
-- Interceptors: Axios interceptors automatically attach the Bearer token from 
-  localStorage and handle 401 errors by attempting a transparent token refresh.
+4. DESIGN SYSTEM & UI STANDARDS
+-------------------------------
+- Aesthetic Identity: 
+    "Luxury Minimalist" — Using HSL-tailored colors (Brand Primary: #5a3f2f, Secondary: #b88a2f), 
+    custom glassmorphism, and premium typography (Inter/Outfit).
+- Mobile-First Responsiveness:
+    All critical Purchasing and Tracking pages (Cart, Checkout, Order Detail) are 
+    standardized to prevent text truncation and layout overflows on small viewports.
+- Standard Components:
+    - Custom Scrollbars: Consistent luxury grain scrollbars across all modules.
+    - Status Badges: Color-coded progress indicators (e.g., bg-brand-surface for Pending).
+    - Premium Modals: Backdrop blur and spring-based animations.
 
-5. CUSTOM PRINTING SERVICES (SERVICE SUITE)
--------------------------------------------
-- Logic: Orders are created as 'PENDING' when the user clicks 'Add Order'.
-- Checkout: The user is redirected to /checkout/service where payment is initiated.
-- Visibility: Service orders are filtered out of the "Service Ledger" and 
-  User History unless their 'paymentStatus' is 'PAID'.
-- Promotion: Upon successful payment, the ServiceOrder status is promoted to 'CONFIRMED'.
+5. AUTHENTICATION & SESSION HYDRATION
+-------------------------------------
+- Multi-Layered Persistence:
+    Ensures seamless sessions across standard browsers and restrictive environments 
+    (Safari/In-App) by synchronizing httpOnly cookies with localStorage.
+- Interceptor Strategy:
+    Axios interceptors manage token lifecycle, including:
+    - Transparent token refresh on 401 status.
+    - CSRF token bootstrapping for unsafe HTTP methods.
+    - Graceful logout on refresh-token expiration.
 
-6. PAYMENT FLOW (RAZORPAY)
---------------------------
-- Front-end: Razorpay script is lazy-loaded only when the 'Pay' button is clicked.
-- Creation: /api/payments/create-order generates a Razorpay Order and a 'CREATED' payment record.
-- Verification: /api/payments/verify checks the signature and updates the 
-  internalOrder (Order or ServiceOrder) to 'PAID'.
-- Webhook: The backend listens for 'payment.captured' to ensure order completion 
-  even if the user closes the browser before verification.
+6. CUSTOM PRINTING SERVICE SUITE
+--------------------------------
+- Promotion Workflow:
+    Service requests (Stickers, Letterheads, BillBooks) are created as 'PENDING' 
+    until payment is confirmed via Razorpay. Upon 'PAID' status, they are promoted 
+    to 'CONFIRMED' and appear in the user's Service History.
+- Lead Management:
+    Services are handled as "Lead-to-Order" conversions, where administrative 
+    review happens after initial payment confirmation.
 
-7. CRITICAL FILE PATHS
-----------------------
-- Backend Controllers: /backend/src/controllers/
-- Backend Schema: /backend/prisma/schema.prisma
-- API Client (Frontend): /frontend-store/src/api/client.js
-- Auth Store (Frontend): /frontend-store/src/store/index.js
-- Service Pages: /frontend-store/src/pages/services/
+7. RECENT ARCHITECTURAL EVOLUTIONS
+----------------------------------
+- Mobile UI Refinement (May 2026): Full audit and refactor of Cart and Checkout modules 
+  for mobile responsiveness, including full-width search overlays and stacked summary cards.
+- Performance: Implemented lazy-loading for heavy scripts (Razorpay) and 
+  image auto-transformation via Cloudinary.
+- Code Reliability: Transitioned to atomic Zustand stores and resolved 401 
+  interceptor loop bugs to improve hydration stability.
 
-8. RECENT ARCHITECTURAL FIXES
------------------------------
-- Removed strict FK constraints on Payments to support polymorphic IDs.
-- Fixed 401 interceptor loop that prevented token refresh on /auth/me.
-- Standardized Custom Printing UI to a mobile-responsive grid layout.
-- Added 'Admin Panel' access from the storefront navbar for admin users.
+8. DIRECTORY OVERVIEW
+---------------------
+- /backend/src/api: Core business logic and controllers.
+- /backend/prisma: Schema definitions and database migrations.
+- /frontend-store/src/api: Centralized API client (client.js) and endpoint definitions.
+- /frontend-store/src/store: State management (index.js).
+- /frontend-store/src/pages: Route-based page components.
 
 ================================================================================
-Generated on: 2026-05-11
+Document Updated: 2026-05-13
 ================================================================================

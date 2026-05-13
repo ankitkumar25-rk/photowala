@@ -1,7 +1,7 @@
 // Using PASETO v3.local — symmetric encryption (AES-256-CTR + HMAC-SHA384)
 // The installed 'paseto' package exposes V3.encrypt/decrypt for local tokens.
-const { V3 } = require('paseto');
-const { createSecretKey } = require('crypto');
+import { V3 } from 'paseto';
+import { createSecretKey } from 'crypto';
 
 // PASETO v3 local requires a 32-byte key
 function getSecretKey() {
@@ -15,7 +15,7 @@ function getSecretKey() {
 /**
  * Issue a PASETO access token (15 min by default)
  */
-async function signAccessToken(payload) {
+export async function signAccessToken(payload) {
   const key = getSecretKey();
   return V3.encrypt(
     { ...payload, purpose: 'access' },
@@ -27,7 +27,7 @@ async function signAccessToken(payload) {
 /**
  * Issue a PASETO refresh token (7 days by default)
  */
-async function signRefreshToken(payload) {
+export async function signRefreshToken(payload) {
   const key = getSecretKey();
   return V3.encrypt(
     { ...payload, purpose: 'refresh' },
@@ -40,9 +40,7 @@ async function signRefreshToken(payload) {
  * Verify and decrypt a PASETO token
  * Throws if invalid, expired, or tampered
  */
-async function verifyToken(token) {
+export async function verifyToken(token) {
   const key = getSecretKey();
   return V3.decrypt(token, key);
 }
-
-module.exports = { signAccessToken, signRefreshToken, verifyToken };

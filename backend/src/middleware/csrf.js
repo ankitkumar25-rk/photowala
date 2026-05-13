@@ -1,5 +1,5 @@
-const crypto = require('crypto');
-const { createError } = require('./errorHandler');
+import crypto from 'crypto';
+import { createError } from './errorHandler.js';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 const EXEMPT_PATHS = new Set([
@@ -21,13 +21,13 @@ const cookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
-function issueCsrfToken(res) {
+export function issueCsrfToken(res) {
   const token = crypto.randomBytes(32).toString('hex');
   res.cookie('csrf_token', token, cookieOptions);
   return token;
 }
 
-function ensureCsrfCookie(req, res, next) {
+export function ensureCsrfCookie(req, res, next) {
   if (!req.cookies?.csrf_token) {
     issueCsrfToken(res);
   }
@@ -42,7 +42,7 @@ function secureCompare(a, b) {
   return crypto.timingSafeEqual(left, right);
 }
 
-function requireCsrf(req, res, next) {
+export function requireCsrf(req, res, next) {
   if (SAFE_METHODS.has(req.method)) return next();
   const routePath = `${req.baseUrl || ''}${req.path || ''}`;
   if (EXEMPT_PATHS.has(routePath)) return next();
@@ -75,5 +75,3 @@ function requireCsrf(req, res, next) {
 
   next();
 }
-
-module.exports = { ensureCsrfCookie, requireCsrf };

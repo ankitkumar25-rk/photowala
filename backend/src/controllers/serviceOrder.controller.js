@@ -1,6 +1,7 @@
-const prisma = require('../config/database');
-const { createError } = require('../middleware/errorHandler');
-const { z } = require('zod');
+import prisma from '../lib/prisma.js';
+import { createError } from '../middleware/errorHandler.js';
+import { z } from 'zod';
+import asyncHandler from '../utils/asyncHandler.js';
 
 /**
  * Generate a unique order number based on category
@@ -13,199 +14,172 @@ function generateServiceOrderNumber(category) {
 }
 
 /**
- * Create a new Service Order (Machine or Printing)
+ * Create a new Service Order
  */
-exports.createServiceOrder = async (req, res, next) => {
-  try {
-    const { 
-      category, 
-      serviceName, 
-      productName, 
-      quantity, 
-      totalAmount, 
-      details, 
-      fileUrl, 
-      fileOption, 
-      specialRemark, 
-      customerName 
-    } = req.body;
+export const createServiceOrder = asyncHandler(async (req, res) => {
+  const { 
+    category, 
+    serviceName, 
+    productName, 
+    quantity, 
+    totalAmount, 
+    details, 
+    fileUrl, 
+    fileOption, 
+    specialRemark, 
+    customerName 
+  } = req.body;
 
-    // Basic validation
-    if (!category || !serviceName || !quantity) {
-      throw createError('Category, service name and quantity are required', 400);
-    }
-
-    const order = await prisma.serviceOrder.create({
-      data: {
-        orderNumber: generateServiceOrderNumber(category),
-        userId: req.user.id,
-        category,
-        serviceName,
-        productName,
-        quantity: Number(quantity),
-        totalAmount: Number(totalAmount || 0),
-        details: details || {},
-        fileUrl,
-        fileOption,
-        specialRemark,
-        customerName
-      }
-    });
-
-    res.status(201).json({ 
-      success: true, 
-      orderId: order.id,
-      orderNumber: order.orderNumber,
-      data: order 
-    });
-  } catch (err) {
-    next(err);
+  if (!category || !serviceName || !quantity) {
+    throw createError('Category, service name and quantity are required', 400);
   }
-};
+
+  const order = await prisma.serviceOrder.create({
+    data: {
+      orderNumber: generateServiceOrderNumber(category),
+      userId: req.user.id,
+      category,
+      serviceName,
+      productName,
+      quantity: Number(quantity),
+      totalAmount: Number(totalAmount || 0),
+      details: details || {},
+      fileUrl,
+      fileOption,
+      specialRemark,
+      customerName
+    }
+  });
+
+  res.status(201).json({ 
+    success: true, 
+    orderId: order.id,
+    orderNumber: order.orderNumber,
+    data: order 
+  });
+});
 
 /**
  * Get service orders for the logged-in user
  */
-exports.getMyServiceOrders = async (req, res, next) => {
-  try {
-    const pageNum = Math.max(1, parseInt(req.query.page) || 1);
-    const limitNum = Math.max(1, parseInt(req.query.limit) || 10);
-    const skip = (pageNum - 1) * limitNum;
+export const getMyServiceOrders = asyncHandler(async (req, res) => {
+  const pageNum = Math.max(1, parseInt(req.query.page) || 1);
+  const limitNum = Math.max(1, parseInt(req.query.limit) || 10);
+  const skip = (pageNum - 1) * limitNum;
 
-    const [orders, total] = await Promise.all([
-      prisma.serviceOrder.findMany({
-        where: { 
-          userId: req.user.id,
-          paymentStatus: 'PAID' // Only show paid orders
-        },
-        skip,
-        take: limitNum,
-        orderBy: { createdAt: 'desc' }
-      }),
-      prisma.serviceOrder.count({ 
-        where: { 
-          userId: req.user.id,
-          paymentStatus: 'PAID'
-        } 
-      })
-    ]);
+  const [orders, total] = await Promise.all([
+    prisma.serviceOrder.findMany({
+      where: { 
+        userId: req.user.id,
+        paymentStatus: 'PAID'
+      },
+      skip,
+      take: limitNum,
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.serviceOrder.count({ 
+      where: { 
+        userId: req.user.id,
+        paymentStatus: 'PAID'
+      } 
+    })
+  ]);
 
-    res.json({ success: true, data: orders, meta: { total, page: pageNum } });
-  } catch (err) {
-    next(err);
-  }
-};
+  res.json({ success: true, data: orders, meta: { total, page: pageNum } });
+});
 
 /**
  * Get a single service order detail
  */
-exports.getServiceOrderDetail = async (req, res, next) => {
-  try {
-    const order = await prisma.serviceOrder.findUnique({
-      where: { id: req.params.id },
-      include: { user: { select: { name: true, email: true, phone: true } } }
-    });
+export const getServiceOrderDetail = asyncHandler(async (req, res) => {
+  const order = await prisma.serviceOrder.findUnique({
+    where: { id: req.params.id },
+    include: { user: { select: { name: true, email: true, phone: true } } }
+  });
 
-    if (!order) throw createError('Service order not found', 404);
-    
-    // Authorization check
-    if (req.user.role === 'CUSTOMER' && order.userId !== req.user.id) {
-      throw createError('Forbidden', 403);
-    }
-
-    res.json({ success: true, data: order });
-  } catch (err) {
-    next(err);
+  if (!order) throw createError('Service order not found', 404);
+  
+  if (req.user.role === 'CUSTOMER' && order.userId !== req.user.id) {
+    throw createError('Forbidden', 403);
   }
-};
+
+  res.json({ success: true, data: order });
+});
 
 /**
- * Admin: Get all service orders (filtered by category, status, or search)
+ * Admin: Get all service orders
  */
-exports.getAllServiceOrders = async (req, res, next) => {
-  try {
-    const { category, status, page, limit, search } = req.query;
+export const getAllServiceOrders = asyncHandler(async (req, res) => {
+  const { category, status, page, limit, search } = req.query;
 
-    const pageNum = Math.max(1, parseInt(page) || 1);
-    const limitNum = Math.max(1, parseInt(limit) || 20);
-    const skip = (pageNum - 1) * limitNum;
+  const pageNum = Math.max(1, parseInt(page) || 1);
+  const limitNum = Math.max(1, parseInt(limit) || 20);
+  const skip = (pageNum - 1) * limitNum;
 
-    const whereClause = {
-      ...(category && { category }),
-      ...(status && { status }),
-      paymentStatus: 'PAID', // The "Ledger" should only contain paid orders
-      ...(search && {
-        OR: [
-          { customerName: { contains: search, mode: 'insensitive' } },
-          { orderNumber: { contains: search, mode: 'insensitive' } },
-          { id: { contains: search, mode: 'insensitive' } },
-        ],
-      }),
-    };
+  const whereClause = {
+    ...(category && { category }),
+    ...(status && { status }),
+    paymentStatus: 'PAID',
+    ...(search && {
+      OR: [
+        { customerName: { contains: search, mode: 'insensitive' } },
+        { orderNumber: { contains: search, mode: 'insensitive' } },
+        { id: { contains: search, mode: 'insensitive' } },
+      ],
+    }),
+  };
 
-    const [orders, total] = await Promise.all([
-      prisma.serviceOrder.findMany({
-        where: whereClause,
-        skip,
-        take: limitNum,
-        orderBy: { createdAt: 'desc' },
-        include: { user: { select: { id: true, name: true, email: true } } }
-      }),
-      prisma.serviceOrder.count({ where: whereClause })
-    ]);
+  const [orders, total] = await Promise.all([
+    prisma.serviceOrder.findMany({
+      where: whereClause,
+      skip,
+      take: limitNum,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { id: true, name: true, email: true } } }
+    }),
+    prisma.serviceOrder.count({ where: whereClause })
+  ]);
 
-    res.json({
-      success: true,
-      data: orders,
-      meta: {
-        total,
-        page: pageNum,
-        limit: limitNum
-      }
-    });
-  } catch (err) {
-    console.error('[admin] getAllServiceOrders error:', err);
-    next(err);
-  }
-};
+  res.json({
+    success: true,
+    data: orders,
+    meta: {
+      total,
+      page: pageNum,
+      limit: limitNum
+    }
+  });
+});
 
 /**
  * Admin: Update service order status
  */
-exports.updateServiceOrderStatus = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    const order = await prisma.serviceOrder.update({
-      where: { id },
-      data: { status }
-    });
-    res.json({ success: true, data: order });
-  } catch (err) { next(err); }
-};
+export const updateServiceOrderStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const order = await prisma.serviceOrder.update({
+    where: { id },
+    data: { status }
+  });
+  res.json({ success: true, data: order });
+});
 
-exports.updateTrackingNumber = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { trackingNumber } = req.body;
-    const order = await prisma.serviceOrder.update({
-      where: { id },
-      data: { trackingNumber }
-    });
-    res.json({ success: true, data: order });
-  } catch (err) { next(err); }
-};
+export const updateTrackingNumber = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { trackingNumber } = req.body;
+  const order = await prisma.serviceOrder.update({
+    where: { id },
+    data: { trackingNumber }
+  });
+  res.json({ success: true, data: order });
+});
 
 /**
  * Admin: Delete service order
  */
-exports.deleteServiceOrder = async (req, res, next) => {
-  try {
-    await prisma.serviceOrder.delete({
-      where: { id: req.params.id }
-    });
-    res.json({ success: true, message: 'Service order deleted' });
-  } catch (err) {
-    next(err);
-  }
-};
+export const deleteServiceOrder = asyncHandler(async (req, res) => {
+  await prisma.serviceOrder.delete({
+    where: { id: req.params.id }
+  });
+  res.json({ success: true, message: 'Service order deleted' });
+});

@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import * as returnsController from '../controllers/returns.controller.js';
+
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth');
-const returnsController = require('../controllers/returns.controller');
 
 // Customer routes
 router.post('/',      authenticate, returnsController.requestReturn);
@@ -12,4 +13,4 @@ router.get('/admin',           authenticate, authorize('ADMIN', 'SUPER_ADMIN'), 
 router.patch('/:id/approve',   authenticate, authorize('ADMIN', 'SUPER_ADMIN'), returnsController.approveReturn);
 router.patch('/:id/reject',    authenticate, authorize('ADMIN', 'SUPER_ADMIN'), returnsController.rejectReturn);
 
-module.exports = router;
+export default router;

@@ -1,4 +1,5 @@
-const { v2: cloudinary } = require('cloudinary');
+import { v2 as cloudinary } from 'cloudinary';
+import { Readable } from 'stream';
 
 cloudinary.config({
   cloud_name:  process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,7 +13,7 @@ cloudinary.config({
  * @param {Buffer} fileBuffer
  * @param {object} options - folder, public_id, etc.
  */
-function uploadToCloudinary(fileBuffer, options = {}) {
+export function uploadToCloudinary(fileBuffer, options = {}) {
   return new Promise((resolve, reject) => {
     const uploadOptions = {
       resource_type: 'image',
@@ -28,7 +29,6 @@ function uploadToCloudinary(fileBuffer, options = {}) {
       else resolve(result);
     });
 
-    const { Readable } = require('stream');
     const readable = new Readable();
     readable.push(fileBuffer);
     readable.push(null);
@@ -38,10 +38,8 @@ function uploadToCloudinary(fileBuffer, options = {}) {
 
 /**
  * Upload a raw file buffer to Cloudinary (e.g., Corel/zip files)
- * @param {Buffer} fileBuffer
- * @param {object} options - folder, public_id, etc.
  */
-function uploadRawToCloudinary(fileBuffer, options = {}) {
+export function uploadRawToCloudinary(fileBuffer, options = {}) {
   return new Promise((resolve, reject) => {
     const uploadOptions = {
       resource_type: 'raw',
@@ -54,7 +52,6 @@ function uploadRawToCloudinary(fileBuffer, options = {}) {
       else resolve(result);
     });
 
-    const { Readable } = require('stream');
     const readable = new Readable();
     readable.push(fileBuffer);
     readable.push(null);
@@ -65,7 +62,7 @@ function uploadRawToCloudinary(fileBuffer, options = {}) {
 /**
  * Upload a file buffer to Cloudinary with automatic type detection
  */
-function uploadAutoToCloudinary(fileBuffer, options = {}) {
+export function uploadAutoToCloudinary(fileBuffer, options = {}) {
   return new Promise((resolve, reject) => {
     const uploadOptions = {
       resource_type: 'auto',
@@ -78,7 +75,6 @@ function uploadAutoToCloudinary(fileBuffer, options = {}) {
       else resolve(result);
     });
 
-    const { Readable } = require('stream');
     const readable = new Readable();
     readable.push(fileBuffer);
     readable.push(null);
@@ -89,8 +85,8 @@ function uploadAutoToCloudinary(fileBuffer, options = {}) {
 /**
  * Delete an image from Cloudinary by public_id
  */
-async function deleteFromCloudinary(publicId) {
+export async function deleteFromCloudinary(publicId) {
   return cloudinary.uploader.destroy(publicId);
 }
 
-module.exports = { cloudinary, uploadToCloudinary, uploadRawToCloudinary, uploadAutoToCloudinary, deleteFromCloudinary };
+export { cloudinary };

@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import passport from 'passport';
+import { authRateLimiter } from '../middleware/rateLimit.js';
+import { authenticate } from '../middleware/auth.js';
+import * as authController from '../controllers/auth.controller.js';
+
 const router = express.Router();
-const { authRateLimiter } = require('../middleware/rateLimiter');
-const { authenticate } = require('../middleware/auth');
-const authController = require('../controllers/auth.controller');
-const passport = require('passport');
 
 const googleConfigured = Boolean(
   process.env.GOOGLE_CLIENT_ID &&
@@ -40,4 +41,4 @@ if (googleConfigured) {
 // Get current user
 router.get('/me', authenticate, authController.getMe);
 
-module.exports = router;
+export default router;

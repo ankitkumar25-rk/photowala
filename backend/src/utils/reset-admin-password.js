@@ -1,7 +1,6 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
-
-const bcrypt = require('bcryptjs');
-const prisma = require('../config/database');
+import 'dotenv/config';
+import bcrypt from 'bcryptjs';
+import prisma from '../lib/prisma.js';
 
 async function main() {
   const email = process.argv[2] || 'admin@manufact.in';

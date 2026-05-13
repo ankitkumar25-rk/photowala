@@ -1,4 +1,4 @@
-const { Resend } = require('resend');
+import { Resend } from 'resend';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = process.env.EMAIL_FROM || 'noreply@manufact.in';
@@ -6,7 +6,7 @@ const FROM = process.env.EMAIL_FROM || 'noreply@manufact.in';
 /**
  * Send a transactional email
  */
-async function sendEmail({ to, subject, html, text }) {
+export async function sendEmail({ to, subject, html, text }) {
   if (!resend) {
     console.warn('[email] Skipping sendEmail: RESEND_API_KEY is not configured');
     return { skipped: true };
@@ -29,7 +29,7 @@ async function sendEmail({ to, subject, html, text }) {
 }
 
 // Pre-built email templates
-const emailTemplates = {
+export const emailTemplates = {
   orderConfirmation: (order, user) => ({
     subject: `Order Confirmed #${order.orderNumber} 🎁`,
     html: `
@@ -169,5 +169,3 @@ const emailTemplates = {
     };
   },
 };
-
-module.exports = { sendEmail, emailTemplates };

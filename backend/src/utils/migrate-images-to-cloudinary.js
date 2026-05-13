@@ -1,9 +1,12 @@
-require('dotenv').config();
+import 'dotenv/config';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import prisma from '../lib/prisma.js';
+import { uploadToCloudinary } from '../config/cloudinary.js';
 
-const fs = require('fs');
-const path = require('path');
-const prisma = require('../config/database');
-const { uploadToCloudinary } = require('../config/cloudinary');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const UPLOAD_ROOT = path.join(__dirname, '..', '..', 'uploads');
 const DEFAULT_FOLDER = process.env.CLOUDINARY_MIGRATION_FOLDER || 'manufact/products/migrated';

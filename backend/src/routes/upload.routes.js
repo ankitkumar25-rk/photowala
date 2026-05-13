@@ -1,9 +1,15 @@
-const express = require('express');
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { authenticate, authorize } from '../middleware/auth.js';
+import * as uploadController from '../controllers/upload.controller.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const { authenticate, authorize } = require('../middleware/auth');
-const uploadController = require('../controllers/upload.controller');
 
 function sanitizeFolder(folder = 'products') {
   const cleaned = String(folder)
@@ -15,7 +21,7 @@ function sanitizeFolder(folder = 'products') {
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image/')) {
       return cb(new Error('Only image files are allowed'));
@@ -24,12 +30,11 @@ const upload = multer({
   },
 });
 
-// Disk storage for design files (PDF, CDR, PSD, etc.)
 const designStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, '..', '..', 'uploads', 'designs');
-    if (!require('fs').existsSync(dir)) {
-      require('fs').mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
     cb(null, dir);
   },
@@ -41,7 +46,7 @@ const designStorage = multer.diskStorage({
 
 const uploadDesign = multer({
   storage: designStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedExts = ['.pdf', '.cdr', '.psd', '.jpeg', '.jpg', '.png'];
     const ext = path.extname(file.originalname).toLowerCase();
@@ -52,13 +57,11 @@ const uploadDesign = multer({
   }
 });
 
-// Normalize folder query for downstream controller use.
 router.use((req, res, next) => {
   req.uploadFolder = sanitizeFolder(req.query.folder || 'manufact/products');
   next();
 });
 
-// Admin-only product image routes
 router.post('/image',
   authenticate,
   authorize('ADMIN', 'SUPER_ADMIN'),
@@ -79,7 +82,6 @@ router.delete('/image/:publicId',
   uploadController.deleteImage
 );
 
-// Customer route: upload a customization logo/image (authenticated users only)
 router.post('/customization',
   authenticate,
   (req, res, next) => { req.uploadFolder = 'photowala/customizations'; next(); },
@@ -87,11 +89,10 @@ router.post('/customization',
   uploadController.uploadImage
 );
 
-// Local design file upload (for Digital Printing)
 router.post('/design',
   authenticate,
   uploadDesign.single('design'),
   uploadController.uploadDesignLocal
 );
 
-module.exports = router;
+export default router;

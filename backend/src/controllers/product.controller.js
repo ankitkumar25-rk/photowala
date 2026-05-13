@@ -1,6 +1,7 @@
-const prisma = require('../config/database');
-const { createError } = require('../middleware/errorHandler');
-const { z } = require('zod');
+import prisma from '../lib/prisma.js';
+import { createError } from '../middleware/errorHandler.js';
+import { z } from 'zod';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const imageUrlSchema = z.string().refine((value) => {
   if (typeof value !== 'string' || !value.trim()) return false;
@@ -64,236 +65,199 @@ function normalizeOptionalSku(sku) {
   return trimmed.length ? trimmed : undefined;
 }
 
-exports.listProducts = async (req, res, next) => {
-  try {
-    const {
-      page = 1, limit = 20,
-      category, minPrice, maxPrice,
-      isFeatured,
-      sort = 'createdAt', order = 'desc',
-      tags,
-    } = req.query;
+export const listProducts = asyncHandler(async (req, res) => {
+  const {
+    page = 1, limit = 20,
+    category, minPrice, maxPrice,
+    isFeatured,
+    sort = 'createdAt', order = 'desc',
+    tags,
+  } = req.query;
 
-    const where = { isActive: true };
-    if (category)   where.category = { slug: category };
-    if (isFeatured !== undefined) where.isFeatured = isFeatured === 'true';
-    if (minPrice || maxPrice) {
-      where.price = {};
-      if (minPrice) where.price.gte = Number(minPrice);
-      if (maxPrice) where.price.lte = Number(maxPrice);
-    }
-    if (tags) {
-      where.tags = { hasSome: tags.split(',') };
-    }
-
-    const skip = (Number(page) - 1) * Number(limit);
-    const [products, total] = await Promise.all([
-      prisma.product.findMany({
-        where,
-        skip,
-        take: Number(limit),
-        orderBy: { [sort]: order },
-        include: {
-          category: { select: { name: true, slug: true } },
-          images: { where: { isPrimary: true }, take: 1 },
-          _count: { select: { reviews: true } },
-        },
-      }),
-      prisma.product.count({ where }),
-    ]);
-
-    res.json({
-      success: true,
-      data: products.map(normalizeProductMedia),
-      meta: {
-        total,
-        page: Number(page),
-        limit: Number(limit),
-        totalPages: Math.ceil(total / Number(limit)),
-      },
-    });
-  } catch (err) {
-    next(err);
+  const where = { isActive: true };
+  if (category)   where.category = { slug: category };
+  if (isFeatured !== undefined) where.isFeatured = isFeatured === 'true';
+  if (minPrice || maxPrice) {
+    where.price = {};
+    if (minPrice) where.price.gte = Number(minPrice);
+    if (maxPrice) where.price.lte = Number(maxPrice);
   }
-};
+  if (tags) {
+    where.tags = { hasSome: tags.split(',') };
+  }
 
-exports.getFeatured = async (req, res, next) => {
-  try {
-    const products = await prisma.product.findMany({
-      where: { isFeatured: true, isActive: true },
-      take: 8,
+  const skip = (Number(page) - 1) * Number(limit);
+  const [products, total] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      skip,
+      take: Number(limit),
+      orderBy: { [sort]: order },
       include: {
         category: { select: { name: true, slug: true } },
         images: { where: { isPrimary: true }, take: 1 },
-      },
-    });
-    res.json({ success: true, data: products.map(normalizeProductMedia) });
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.searchProducts = async (req, res, next) => {
-  try {
-    const { q, limit = 10 } = req.query;
-    if (!q || q.length < 2) return res.json({ success: true, data: [] });
-
-    const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
-        OR: [
-          { name: { contains: q, mode: 'insensitive' } },
-          { description: { contains: q, mode: 'insensitive' } },
-          { tags: { hasSome: [q.toLowerCase()] } },
-        ],
-      },
-      take: Number(limit),
-      include: { images: { where: { isPrimary: true }, take: 1 } },
-    });
-    res.json({ success: true, data: products.map(normalizeProductMedia) });
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.getProduct = async (req, res, next) => {
-  try {
-    const product = await prisma.product.findUnique({
-      where: { slug: req.params.slug },
-      include: {
-        category: true,
-        images: { orderBy: { sortOrder: 'asc' } },
-        reviews: {
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-          include: { user: { select: { name: true, avatarUrl: true } } },
-        },
         _count: { select: { reviews: true } },
       },
-    });
-    if (!product || !product.isActive) throw createError('Product not found', 404);
-    res.json({ success: true, data: normalizeProductMedia(product) });
-  } catch (err) {
-    next(err);
-  }
-};
+    }),
+    prisma.product.count({ where }),
+  ]);
 
-exports.getProductById = async (req, res, next) => {
-  try {
-    const product = await prisma.product.findUnique({
-      where: { id: req.params.id },
-      include: {
-        category: true,
-        images: { orderBy: { sortOrder: 'asc' } },
-        reviews: {
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-          include: { user: { select: { name: true, avatarUrl: true } } },
-        },
-        _count: { select: { reviews: true } },
+  res.json({
+    success: true,
+    data: products.map(normalizeProductMedia),
+    meta: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      totalPages: Math.ceil(total / Number(limit)),
+    },
+  });
+});
+
+export const getFeatured = asyncHandler(async (req, res) => {
+  const products = await prisma.product.findMany({
+    where: { isFeatured: true, isActive: true },
+    take: 8,
+    include: {
+      category: { select: { name: true, slug: true } },
+      images: { where: { isPrimary: true }, take: 1 },
+    },
+  });
+  res.json({ success: true, data: products.map(normalizeProductMedia) });
+});
+
+export const searchProducts = asyncHandler(async (req, res) => {
+  const { q, limit = 10 } = req.query;
+  if (!q || q.length < 2) return res.json({ success: true, data: [] });
+
+  const products = await prisma.product.findMany({
+    where: {
+      isActive: true,
+      OR: [
+        { name: { contains: q, mode: 'insensitive' } },
+        { description: { contains: q, mode: 'insensitive' } },
+        { tags: { hasSome: [q.toLowerCase()] } },
+      ],
+    },
+    take: Number(limit),
+    include: { images: { where: { isPrimary: true }, take: 1 } },
+  });
+  res.json({ success: true, data: products.map(normalizeProductMedia) });
+});
+
+export const getProduct = asyncHandler(async (req, res) => {
+  const product = await prisma.product.findUnique({
+    where: { slug: req.params.slug },
+    include: {
+      category: true,
+      images: { orderBy: { sortOrder: 'asc' } },
+      reviews: {
+        take: 10,
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { name: true, avatarUrl: true } } },
       },
-    });
-    if (!product || !product.isActive) throw createError('Product not found', 404);
-    res.json({ success: true, data: normalizeProductMedia(product) });
-  } catch (err) {
-    next(err);
-  }
-};
+      _count: { select: { reviews: true } },
+    },
+  });
+  if (!product || !product.isActive) throw createError('Product not found', 404);
+  res.json({ success: true, data: normalizeProductMedia(product) });
+});
 
-exports.createProduct = async (req, res, next) => {
-  try {
-    const data = productSchema.parse(req.body);
-    if (!data.slug) data.slug = generateSlug(data.name);
-    data.sku = normalizeOptionalSku(data.sku);
-
-    const images = Array.isArray(data.images) ? data.images : [];
-    delete data.images;
-
-    const normalizedImages = images.map((img, idx) => ({
-      url: img.url,
-      publicId: img.publicId,
-      altText: img.altText || data.name,
-      isPrimary: idx === 0 ? true : Boolean(img.isPrimary),
-      sortOrder: img.sortOrder ?? idx,
-    }));
-
-    const product = await prisma.product.create({
-      data: {
-        ...data,
-        images: normalizedImages.length ? { create: normalizedImages } : undefined,
+export const getProductById = asyncHandler(async (req, res) => {
+  const product = await prisma.product.findUnique({
+    where: { id: req.params.id },
+    include: {
+      category: true,
+      images: { orderBy: { sortOrder: 'asc' } },
+      reviews: {
+        take: 10,
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { name: true, avatarUrl: true } } },
       },
-      include: { images: true },
-    });
-    res.status(201).json({ success: true, data: normalizeProductMedia(product) });
-  } catch (err) {
-    next(err);
+      _count: { select: { reviews: true } },
+    },
+  });
+  if (!product || !product.isActive) throw createError('Product not found', 404);
+  res.json({ success: true, data: normalizeProductMedia(product) });
+});
+
+export const createProduct = asyncHandler(async (req, res) => {
+  const data = productSchema.parse(req.body);
+  if (!data.slug) data.slug = generateSlug(data.name);
+  data.sku = normalizeOptionalSku(data.sku);
+
+  const images = Array.isArray(data.images) ? data.images : [];
+  delete data.images;
+
+  const normalizedImages = images.map((img, idx) => ({
+    url: img.url,
+    publicId: img.publicId,
+    altText: img.altText || data.name,
+    isPrimary: idx === 0 ? true : Boolean(img.isPrimary),
+    sortOrder: img.sortOrder ?? idx,
+  }));
+
+  const product = await prisma.product.create({
+    data: {
+      ...data,
+      images: normalizedImages.length ? { create: normalizedImages } : undefined,
+    },
+    include: { images: true },
+  });
+  res.status(201).json({ success: true, data: normalizeProductMedia(product) });
+});
+
+export const updateProduct = asyncHandler(async (req, res) => {
+  const data = productSchema.partial().parse(req.body);
+
+  const normalizedSku = normalizeOptionalSku(data.sku);
+  if (normalizedSku === undefined) {
+    delete data.sku;
+  } else {
+    data.sku = normalizedSku;
   }
-};
 
-exports.updateProduct = async (req, res, next) => {
-  try {
-    const data = productSchema.partial().parse(req.body);
+  const hasImages = Array.isArray(data.images);
+  const images = hasImages ? data.images : [];
+  delete data.images;
 
-    const normalizedSku = normalizeOptionalSku(data.sku);
-    if (normalizedSku === undefined) {
-      delete data.sku;
-    } else {
-      data.sku = normalizedSku;
-    }
+  const normalizedImages = images.map((img, idx) => ({
+    url: img.url,
+    publicId: img.publicId,
+    altText: img.altText || data.name,
+    isPrimary: idx === 0 ? true : Boolean(img.isPrimary),
+    sortOrder: img.sortOrder ?? idx,
+  }));
 
-    const hasImages = Array.isArray(data.images);
-    const images = hasImages ? data.images : [];
-    delete data.images;
+  const product = await prisma.product.update({
+    where: { id: req.params.id },
+    data: {
+      ...data,
+      images: hasImages
+        ? {
+            deleteMany: {},
+            create: normalizedImages,
+          }
+        : undefined,
+    },
+    include: { images: true },
+  });
+  res.json({ success: true, data: normalizeProductMedia(product) });
+});
 
-    const normalizedImages = images.map((img, idx) => ({
-      url: img.url,
-      publicId: img.publicId,
-      altText: img.altText || data.name,
-      isPrimary: idx === 0 ? true : Boolean(img.isPrimary),
-      sortOrder: img.sortOrder ?? idx,
-    }));
+export const deleteProduct = asyncHandler(async (req, res) => {
+  await prisma.product.update({
+    where: { id: req.params.id },
+    data: { isActive: false },
+  });
+  res.json({ success: true, message: 'Product deactivated' });
+});
 
-    const product = await prisma.product.update({
-      where: { id: req.params.id },
-      data: {
-        ...data,
-        images: hasImages
-          ? {
-              deleteMany: {},
-              create: normalizedImages,
-            }
-          : undefined,
-      },
-      include: { images: true },
-    });
-    res.json({ success: true, data: normalizeProductMedia(product) });
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.deleteProduct = async (req, res, next) => {
-  try {
-    // Soft delete
-    await prisma.product.update({
-      where: { id: req.params.id },
-      data: { isActive: false },
-    });
-    res.json({ success: true, message: 'Product deactivated' });
-  } catch (err) {
-    next(err);
-  }
-};
-
-exports.updateStock = async (req, res, next) => {
-  try {
-    const { stock } = z.object({ stock: z.number().int().min(0) }).parse(req.body);
-    const product = await prisma.product.update({
-      where: { id: req.params.id },
-      data: { stock },
-    });
-    res.json({ success: true, data: product });
-  } catch (err) {
-    next(err);
-  }
-};
+export const updateStock = asyncHandler(async (req, res) => {
+  const { stock } = z.object({ stock: z.number().int().min(0) }).parse(req.body);
+  const product = await prisma.product.update({
+    where: { id: req.params.id },
+    data: { stock },
+  });
+  res.json({ success: true, data: product });
+});

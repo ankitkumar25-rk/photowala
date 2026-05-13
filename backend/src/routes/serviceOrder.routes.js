@@ -1,7 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import * as serviceOrderController from '../controllers/serviceOrder.controller.js';
+
 const router = express.Router();
-const { authenticate, isAdmin } = require('../middleware/auth');
-const serviceOrderController = require('../controllers/serviceOrder.controller');
+
+const isAdmin = authorize('ADMIN', 'SUPER_ADMIN');
 
 // Customer routes
 router.post('/',                authenticate, serviceOrderController.createServiceOrder);
@@ -14,4 +17,4 @@ router.patch('/admin/:id/status', authenticate, isAdmin, serviceOrderController.
 router.patch('/admin/:id/tracking', authenticate, isAdmin, serviceOrderController.updateTrackingNumber);
 router.delete('/admin/:id',      authenticate, isAdmin, serviceOrderController.deleteServiceOrder);
 
-module.exports = router;
+export default router;

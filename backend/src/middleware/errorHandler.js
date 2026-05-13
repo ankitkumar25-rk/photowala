@@ -2,7 +2,7 @@
  * Centralised error handler middleware
  * Must be the last middleware in the stack
  */
-function errorHandler(err, req, res, next) {
+export function errorHandler(err, req, res, next) {
   console.error(`[ERROR] ${err.message}`, err.stack);
 
   // Prisma errors
@@ -59,10 +59,8 @@ function errorHandler(err, req, res, next) {
 /**
  * Create an API error with a custom status code
  */
-function createError(message, statusCode = 500) {
+export function createError(message, statusCode = 500) {
   const error = new Error(message);
   error.statusCode = statusCode;
   return error;
 }
-
-module.exports = { errorHandler, createError };

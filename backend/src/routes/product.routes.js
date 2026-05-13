@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { authenticate, authorize } from '../middleware/auth.js';
+import * as productController from '../controllers/product.controller.js';
+
 const router = express.Router();
-const { authenticate, authorize, optionalAuth } = require('../middleware/auth');
-const productController = require('../controllers/product.controller');
 
 // Public routes
 router.get('/',          productController.listProducts);
@@ -16,4 +17,4 @@ router.put('/:id',          authenticate, authorize('ADMIN', 'SUPER_ADMIN'), pro
 router.delete('/:id',       authenticate, authorize('ADMIN', 'SUPER_ADMIN'), productController.deleteProduct);
 router.patch('/:id/stock',  authenticate, authorize('ADMIN', 'SUPER_ADMIN'), productController.updateStock);
 
-module.exports = router;
+export default router;
