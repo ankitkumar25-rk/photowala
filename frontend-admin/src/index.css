@@ -22,6 +22,7 @@
   --color-brand-accent: var(--brand-accent);
   --color-brand-surface: var(--brand-soft);
   --color-brand-text: var(--color-text-main);
+  --color-brand-muted: var(--color-text-muted);
 
   --color-cream-50: #fffdfb;
   --color-cream-100: #faf4ed;
@@ -35,6 +36,74 @@
   --radius-pill: 9999px;
   --shadow-card: 0 14px 30px rgba(91, 63, 47, 0.08);
   --shadow-hover: 0 18px 34px rgba(91, 63, 47, 0.12);
+}
+
+@utility card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(122, 50, 24, 0.1);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(122, 50, 24, 0.18);
+  }
+}
+
+@utility input-field {
+  width: 100%;
+  padding: 0.8rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(184, 138, 47, 0.25);
+  background: #ffffff;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.6;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--brand-secondary);
+    background: #fffdfb;
+    box-shadow: 0 0 0 4px rgba(184, 138, 47, 0.1);
+  }
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.75rem;
+  border: 0;
+  border-radius: 3rem;
+  background: linear-gradient(135deg, var(--brand-primary), var(--color-brand-deep));
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  box-shadow: 0 8px 16px rgba(91, 63, 47, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(91, 63, 47, 0.28);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 *, *::before, *::after {
@@ -135,50 +204,6 @@ table tbody tr:hover {
   background: rgba(255, 253, 251, 0.5);
 }
 
-.card {
-  background: var(--color-bg-card);
-  border-radius: var(--radius-card);
-  border: 1px solid rgba(122, 50, 24, 0.1);
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: var(--shadow-hover);
-  border-color: rgba(122, 50, 24, 0.18);
-}
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  padding: 0.75rem 1.75rem;
-  border: 0;
-  border-radius: 3rem;
-  background: linear-gradient(135deg, var(--brand-primary), var(--color-brand-deep));
-  color: #ffffff;
-  text-decoration: none;
-  cursor: pointer;
-  font-family: var(--font-body);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  box-shadow: 0 8px 16px rgba(91, 63, 47, 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.btn-primary:hover {
-  filter: brightness(1.1);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(91, 63, 47, 0.28);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -220,30 +245,6 @@ table tbody tr:hover {
 .btn-ghost:hover {
   background: rgba(184, 138, 47, 0.08);
   color: var(--brand-secondary);
-}
-
-.input-field {
-  width: 100%;
-  padding: 0.8rem 1.1rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(184, 138, 47, 0.25);
-  background: #ffffff;
-  color: var(--color-text-main);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.input-field::placeholder {
-  color: var(--color-text-muted);
-  opacity: 0.6;
-}
-
-.input-field:focus {
-  outline: none;
-  border-color: var(--brand-secondary);
-  background: #fffdfb;
-  box-shadow: 0 0 0 4px rgba(184, 138, 47, 0.1);
 }
 
 .badge-status {
@@ -334,5 +335,5 @@ table tbody tr:hover {
 }
 
 .stat-label {
-  @apply text-sm font-medium text-text-muted uppercase tracking-wider;
+  @apply text-sm font-medium text-brand-muted uppercase tracking-wider;
 }
