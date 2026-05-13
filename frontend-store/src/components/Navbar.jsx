@@ -113,45 +113,82 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setShowSearch(!showSearch)}
-                className="btn-ghost p-2"
+                className={`btn-ghost p-2 transition-colors ${showSearch ? 'bg-brand-surface text-brand-secondary' : ''}`}
                 aria-label="Search"
               >
                 <Search className="w-5 h-5" />
               </button>
+              
               {showSearch && (
-                <div className="absolute right-0 top-12 w-[min(92vw,20rem)] bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 p-3 z-50">
-                  <input
-                    autoFocus
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search premium products..."
-                    className="input-field text-sm"
+                <>
+                  {/* Backdrop for mobile */}
+                  <div 
+                    className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[90] md:hidden"
+                    onClick={() => setShowSearch(false)}
                   />
-                  {isSearching && (
-                    <p className="mt-2 text-xs text-brand-secondary font-semibold">Searching...</p>
-                  )}
-                  {searchResults.length > 0 && (
-                    <div className="mt-2 space-y-1 max-h-64 overflow-y-auto">
-                      {searchResults.map((p) => (
-                        <Link
-                          key={p.id}
-                          to={`/products/${p.slug}`}
-                          onClick={() => { setShowSearch(false); setSearchQuery(''); }}
-                          className="flex items-center gap-3 p-2 rounded-xl hover:bg-brand-surface transition-colors"
-                        >
-                          {p.images?.[0] && (
-                            <img src={p.images[0].url} alt={p.name} className="w-10 h-10 rounded-lg object-cover" loading="lazy" width={40} height={40} />
-                          )}
-                          <div>
-                            <p className="text-sm font-semibold text-brand-primary">{p.name}</p>
-                            <p className="text-xs text-brand-secondary font-bold">₹{p.price}</p>
-                          </div>
-                        </Link>
-                      ))}
+                  
+                  <div className="fixed md:absolute left-4 right-4 md:left-auto md:right-0 top-4 md:top-14 w-auto md:w-96 bg-cream-50 rounded-2xl shadow-[0_20px_50px_rgba(122,50,24,0.15)] border border-brand-primary/20 p-3 md:p-4 z-[100] animate-in fade-in zoom-in-95 slide-in-from-top-4 md:slide-in-from-top-2 duration-300 origin-top-right">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-primary/40" />
+                        <input
+                          autoFocus
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Search premium products..."
+                          className="input-field pl-10 text-sm bg-white"
+                        />
+                      </div>
+                      <button 
+                        onClick={() => setShowSearch(false)}
+                        className="md:hidden p-2 text-xs font-bold text-brand-secondary uppercase tracking-wider"
+                      >
+                        Close
+                      </button>
                     </div>
-                  )}
-                </div>
+
+                    {isSearching && (
+                      <div className="flex items-center gap-2 px-2 py-4">
+                        <div className="w-4 h-4 border-2 border-brand-secondary border-t-transparent rounded-full animate-spin" />
+                        <p className="text-xs text-brand-secondary font-semibold">Searching premium collection...</p>
+                      </div>
+                    )}
+
+                    {!isSearching && searchQuery.trim() && searchResults.length === 0 && (
+                      <div className="px-2 py-6 text-center">
+                        <p className="text-sm text-gray-500 font-medium italic">No products found for "{searchQuery}"</p>
+                      </div>
+                    )}
+
+                    {searchResults.length > 0 && (
+                      <div className="space-y-1 max-h-[60vh] md:max-h-80 overflow-y-auto custom-scrollbar pr-1">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-2">Products</p>
+                        {searchResults.map((p) => (
+                          <Link
+                            key={p.id}
+                            to={`/products/${p.slug}`}
+                            onClick={() => { setShowSearch(false); setSearchQuery(''); }}
+                            className="flex items-center gap-4 p-2 rounded-xl hover:bg-brand-surface transition-all duration-200 group border border-transparent hover:border-brand-primary/10"
+                          >
+                            <div className="relative shrink-0 overflow-hidden rounded-lg border border-cream-200">
+                              {p.images?.[0] ? (
+                                <img src={p.images[0].url} alt={p.name} className="w-12 h-12 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+                              ) : (
+                                <div className="w-12 h-12 bg-cream-100 flex items-center justify-center text-xl">📦</div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-brand-primary truncate group-hover:text-brand-secondary transition-colors">{p.name}</p>
+                              <p className="text-xs text-brand-secondary font-bold mt-0.5">₹{p.price}</p>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-secondary group-hover:translate-x-1 transition-all" />
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </div>
 

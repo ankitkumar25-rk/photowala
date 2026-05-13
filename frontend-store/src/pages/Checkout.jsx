@@ -153,7 +153,8 @@ export default function Checkout() {
   const user = useAuthStore((s) => s.user);
 
   const subtotal = items.reduce((s, i) => s + Number(i.price) * i.quantity, 0);
-  const shipping = subtotal >= 1000 ? 0 : 49;
+  // const shipping = subtotal >= 1000 ? 0 : 49;
+  const shipping = 0; // Temporarily disabled for live payment testing
   const total    = subtotal + shipping;
 
   const loadAddresses = useCallback(async () => {
