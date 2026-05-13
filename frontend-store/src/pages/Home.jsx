@@ -94,13 +94,13 @@ function HeroSection() {
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 const CATEGORY_ICONS = {
-  'trophies': <GiTrophyCup className="w-8 h-8 text-brand-primary" />,
-  '3d-models': <Md3dRotation className="w-8 h-8 text-brand-primary" />,
-  'corporate-gifts': <MdCardGiftcard className="w-8 h-8 text-brand-primary" />,
-  'momentos': <MdWorkspacePremium className="w-8 h-8 text-brand-primary" />,
-  'others': <MdStars className="w-8 h-8 text-brand-primary" />,
-  'pen-holders': <MdCreate className="w-8 h-8 text-brand-primary" />,
-  'temples': <MdHome className="w-8 h-8 text-brand-primary" />,
+  'trophies': <GiTrophyCup className="w-8 h-8" />,
+  '3d-models': <Md3dRotation className="w-8 h-8" />,
+  'corporate-gifts': <MdCardGiftcard className="w-8 h-8" />,
+  'momentos': <MdWorkspacePremium className="w-8 h-8" />,
+  'others': <MdStars className="w-8 h-8" />,
+  'pen-holders': <MdCreate className="w-8 h-8" />,
+  'temples': <MdHome className="w-8 h-8" />,
 };
 
 function CategoryGrid({ categories }) {
