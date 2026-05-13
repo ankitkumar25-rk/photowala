@@ -1,6 +1,6 @@
 import { verifyToken } from '../config/paseto.js';
 import { createError } from './errorHandler.js';
-import prisma from '../config/database.js';
+import prisma from '../lib/prisma.js';
 
 /**
  * Authenticate request — verifies PASETO token from Authorization header or cookie
