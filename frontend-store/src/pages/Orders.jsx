@@ -221,7 +221,7 @@ export default function Orders() {
         </div>
 
         {/* Status Filter Pills */}
-        <div className="flex items-center p-1.5 bg-white rounded-2xl md:rounded-pill border border-cream-200 mb-12 overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
+        <div className="flex items-center p-1.5 bg-cream-100 rounded-pill border border-cream-200 mb-12 overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
           {currentFilters.map(({ value, label }) => (
             <button
               key={value}
