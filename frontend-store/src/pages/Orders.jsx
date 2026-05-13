@@ -192,7 +192,7 @@ export default function Orders() {
   const currentFilters = ORDER_STATUS_FILTERS;
 
   return (
-    <div className="min-h-screen bg-cream-100 pt-32 pb-24 px-4 luxury-grain relative overflow-hidden">
+    <div className="min-h-screen bg-cream-100 pt-24 md:pt-32 pb-24 px-4 luxury-grain relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-125 h-125 bg-brand-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3" />
       <div className="absolute bottom-0 left-0 w-100 h-100 bg-brand-secondary/5 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
@@ -207,7 +207,7 @@ export default function Orders() {
           <span className="text-brand-primary">Order History</span>
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 mb-8 sm:mb-12">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
               Order <br />
@@ -221,12 +221,16 @@ export default function Orders() {
         </div>
 
         {/* Status Filter Pills */}
-        <div className="flex items-center p-1.5 bg-white rounded-pill border border-cream-200 mb-12 flex-wrap gap-2">
+        <div className="flex items-center p-1.5 bg-white rounded-2xl md:rounded-pill border border-cream-200 mb-12 overflow-x-auto no-scrollbar whitespace-nowrap gap-1">
           {currentFilters.map(({ value, label }) => (
             <button
               key={value}
               onClick={() => setStatusFilter(value)}
-              className={`px-6 py-2.5 rounded-pill text-xs font-bold uppercase tracking-wider transition-all duration-300 ${statusFilter === value ? 'bg-brand-primary text-white shadow-lg' : 'text-gray-500 hover:text-brand-primary'}`}
+              className={`px-5 md:px-6 py-2.5 rounded-xl md:rounded-pill text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all duration-300 shrink-0 ${
+                statusFilter === value 
+                  ? 'bg-brand-primary text-white shadow-md shadow-brand-primary/20' 
+                  : 'text-gray-500 hover:text-brand-primary hover:bg-brand-surface'
+              }`}
             >
               {label}
             </button>
