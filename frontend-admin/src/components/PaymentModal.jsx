@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, CreditCard, Banknote, ShieldCheck, Loader2, CheckCircle2, Lock, Activity } from 'lucide-react';
+import { X, CreditCard, Banknote, ShieldCheck, Loader2, CheckCircle2 } from 'lucide-react';
 import api from '../api/client';
 import toast from 'react-hot-toast';
 
@@ -17,12 +17,12 @@ export default function PaymentModal({ isOpen, onClose, orderData, onSuccess }) 
         internalOrderId: orderData.orderId,
         orderType: orderData.orderType,
       });
-      toast.success('Transaction confirmed via COD Protocol. 🚚');
+      toast.success('Order confirmed! Pay on delivery. 🚚');
       onSuccess('cod');
       onClose();
     } catch (err) {
       console.error('COD error:', err);
-      setError('Neural link failure: Could not confirm COD protocol.');
+      setError('Could not confirm COD. Please try again.');
     } finally {
       setLoading(null);
     }
@@ -44,8 +44,8 @@ export default function PaymentModal({ isOpen, onClose, orderData, onSuccess }) 
         amount: data.amount,
         currency: data.currency,
         name: 'Photowala Admin',
-        description: orderData.orderType === 'ORDER' ? 'Product Deployment' : 'Service Manifest',
-        image: 'https://photowala.in/logo.png',
+        description: orderData.orderType === 'ORDER' ? 'Product Order' : 'Service Order',
+        image: 'https://photowala.in/logo.png', // Replace with actual logo URL
         order_id: data.razorpayOrderId,
         handler: async (paymentResponse) => {
           try {
@@ -56,12 +56,12 @@ export default function PaymentModal({ isOpen, onClose, orderData, onSuccess }) 
               internalOrderId: orderData.orderId,
               orderType: orderData.orderType,
             });
-            toast.success('Settlement verified! 🎉');
+            toast.success('Payment successful! 🎉');
             onSuccess('razorpay');
             onClose();
           } catch (verifyErr) {
             console.error('Verification error:', verifyErr);
-            toast.error('Cryptographic verification failed.');
+            toast.error('Verification failed. Please contact support.');
           }
         },
         prefill: {
@@ -69,76 +69,69 @@ export default function PaymentModal({ isOpen, onClose, orderData, onSuccess }) 
           email: orderData.userEmail,
           contact: orderData.userPhone || '',
         },
-        theme: { color: '#3b291f' },
+        theme: { color: '#b88a2f' },
         modal: {
           ondismiss: () => {
             setLoading(null);
-            toast('Payment protocol aborted', { icon: 'ℹ️' });
+            toast('Payment cancelled', { icon: 'ℹ️' });
           },
         },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', (res) => {
-        setError(`Secure link failure: ${res.error.description}`);
+        setError(`Payment failed: ${res.error.description}`);
         setLoading(null);
       });
       rzp.open();
     } catch (err) {
       console.error('Razorpay init error:', err);
-      setError('Could not initiate secure payment gateway.');
+      setError('Could not initiate payment. Please try again.');
       setLoading(null);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-deep/80 backdrop-blur-md animate-in fade-in duration-500">
-      <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(59,41,31,0.3)] overflow-hidden relative animate-in zoom-in-95 duration-500 border border-brand-primary/5">
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-secondary/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-primary/5 rounded-full -ml-32 -mb-32 blur-3xl pointer-events-none" />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="bg-[#fdfaf7] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+        {/* Decorative Background Element */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-soft/20 rounded-full -mr-16 -mt-16 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-brand-secondary/5 rounded-full -ml-16 -mb-16 blur-3xl" />
 
-        <div className="p-12 relative z-10">
+        <div className="p-8 relative">
           {/* Header */}
-          <div className="flex items-start justify-between mb-12">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                 <Lock className="w-3.5 h-3.5 text-brand-secondary" />
-                 <span className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.4em]">Secure Settlement Portal</span>
-              </div>
-              <h2 className="text-3xl font-bold text-brand-primary font-display tracking-tight leading-none">Choose Protocol</h2>
-              <p className="text-brand-text/40 text-[11px] font-black uppercase tracking-widest mt-4">Authorized Action for Manifest #{orderData.orderId.slice(-8)}</p>
+              <h2 className="text-2xl font-bold text-[#5b3f2f] font-serif tracking-tight">Choose Payment Method</h2>
+              <p className="text-[#5b3f2f]/60 text-sm mt-1">Select how the customer will pay</p>
             </div>
             <button 
               onClick={onClose}
               disabled={!!loading}
-              className="p-3 rounded-2xl bg-brand-surface border border-brand-primary/5 text-brand-primary/40 hover:text-brand-primary hover:rotate-90 transition-all duration-500 active:scale-90"
+              className="p-2 hover:bg-[#5b3f2f]/5 rounded-full transition-colors text-[#5b3f2f]/40 hover:text-[#5b3f2f]"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
           {/* Options */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Razorpay Option */}
             <button
               onClick={handleRazorpay}
               disabled={!!loading}
-              className={`flex flex-col items-center gap-6 p-8 rounded-[2rem] border-2 transition-all duration-700 text-center group relative overflow-hidden
-                ${loading === 'razorpay' ? 'border-brand-secondary bg-brand-secondary/5' : 'border-brand-primary/5 hover:border-brand-secondary hover:bg-brand-surface/50'}
+              className={`flex flex-col items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-center group
+                ${loading === 'razorpay' ? 'border-[#b88a2f] bg-[#b88a2f]/5 shadow-inner' : 'border-[#b88a2f]/20 hover:border-[#b88a2f] hover:bg-[#b88a2f]/5'}
                 ${loading && loading !== 'razorpay' ? 'opacity-50 grayscale' : ''}`}
             >
-               <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                  <CreditCard className="w-16 h-16" />
-               </div>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${loading === 'razorpay' ? 'bg-brand-secondary text-white shadow-xl shadow-brand-secondary/30' : 'bg-brand-surface text-brand-primary border border-brand-primary/5 group-hover:bg-brand-secondary group-hover:text-white group-hover:shadow-xl group-hover:shadow-brand-secondary/30'}`}>
+              <div className={`p-4 rounded-2xl transition-colors duration-300 ${loading === 'razorpay' ? 'bg-[#b88a2f] text-white' : 'bg-[#b88a2f]/10 text-[#b88a2f] group-hover:bg-[#b88a2f] group-hover:text-white'}`}>
                 {loading === 'razorpay' ? <Loader2 className="w-8 h-8 animate-spin" /> : <CreditCard className="w-8 h-8" />}
               </div>
-              <div className="flex-1 relative z-10">
-                <h3 className="font-bold text-brand-primary text-xl font-display tracking-tight">Gateway</h3>
-                <p className="text-[9px] font-black text-brand-text/30 uppercase tracking-widest mt-2">Digital Settlement</p>
-                <div className="mt-6">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-brand-secondary/10 text-brand-secondary px-4 py-1.5 rounded-full border border-brand-secondary/10 group-hover:bg-brand-secondary group-hover:text-white transition-colors">Instant Sync</span>
+              <div className="flex-1">
+                <h3 className="font-bold text-[#b88a2f] text-lg">Razorpay</h3>
+                <p className="text-[10px] font-black text-[#b88a2f]/60 uppercase tracking-[0.1em] mt-1">UPI · Cards · Net Banking</p>
+                <div className="mt-4">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">Secure & Instant</span>
                 </div>
               </div>
             </button>
@@ -147,42 +140,38 @@ export default function PaymentModal({ isOpen, onClose, orderData, onSuccess }) 
             <button
               onClick={handleCOD}
               disabled={!!loading}
-              className={`flex flex-col items-center gap-6 p-8 rounded-[2rem] border-2 transition-all duration-700 text-center group relative overflow-hidden
-                ${loading === 'cod' ? 'border-brand-primary bg-brand-primary/5' : 'border-brand-primary/5 hover:border-brand-primary hover:bg-brand-surface/50'}
+              className={`flex flex-col items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-center group
+                ${loading === 'cod' ? 'border-green-500 bg-green-50/50 shadow-inner' : 'border-[#5b3f2f]/10 hover:border-[#5b3f2f] hover:bg-[#5b3f2f]/5'}
                 ${loading && loading !== 'cod' ? 'opacity-50 grayscale' : ''}`}
             >
-               <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                  <Banknote className="w-16 h-16" />
-               </div>
-              <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${loading === 'cod' ? 'bg-brand-primary text-white shadow-xl shadow-brand-primary/30' : 'bg-brand-surface text-brand-primary border border-brand-primary/5 group-hover:bg-brand-primary group-hover:text-white group-hover:shadow-xl group-hover:shadow-brand-primary/30'}`}>
-                {loading === 'cod' ? <Loader2 className="w-8 h-8 animate-spin" /> : <Banknote className="w-8 h-8" />}
+              <div className={`p-4 rounded-2xl transition-colors duration-300 ${loading === 'cod' ? 'bg-green-500 text-white' : 'bg-[#5b3f2f]/5 text-[#5b3f2f] group-hover:bg-[#5b3f2f] group-hover:text-white'}`}>
+                {loading === 'cod' ? <Loader2 className="w-7 h-7 animate-spin" /> : <Banknote className="w-7 h-7" />}
               </div>
-              <div className="flex-1 relative z-10">
-                <h3 className="font-bold text-brand-primary text-xl font-display tracking-tight">On-Arrival</h3>
-                <p className="text-[9px] font-black text-brand-text/30 uppercase tracking-widest mt-2">Offline Protocol</p>
-                <div className="mt-6">
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] bg-brand-primary/5 text-brand-primary/40 px-4 py-1.5 rounded-full border border-brand-primary/10 group-hover:bg-brand-primary group-hover:text-white transition-colors">Zero Latency</span>
+              <div className="flex-1">
+                <h3 className="font-bold text-[#5b3f2f] text-lg">Cash on Delivery</h3>
+                <p className="text-[10px] font-black text-[#5b3f2f]/60 uppercase tracking-[0.1em] mt-1">Customer will pay when order arrives</p>
+                <div className="mt-4">
+                  <span className="text-[10px] font-black uppercase tracking-wider bg-green-100 text-green-700 px-3 py-1 rounded-full">No Extra Charges</span>
                 </div>
               </div>
             </button>
           </div>
 
           {/* Footer Info */}
-          <div className="mt-12 pt-8 border-t border-brand-primary/5 flex flex-col sm:flex-row items-center justify-center gap-8 text-brand-text/30">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="w-4 h-4 text-brand-secondary" />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em]">SSL Encrypted Manifest</span>
+          <div className="mt-8 pt-6 border-t border-[#5b3f2f]/5 flex items-center justify-center gap-4 text-[#5b3f2f]/40">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">SSL Encrypted</span>
             </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-4 h-4 text-brand-secondary" />
-              <span className="text-[9px] font-black uppercase tracking-[0.2em]">Verified Registry Node</span>
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4" />
+              <span className="text-[10px] font-bold uppercase tracking-widest">Verified Merchant</span>
             </div>
           </div>
 
           {error && (
-            <div className="mt-8 p-4 bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest rounded-2xl border border-red-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
-               <Activity className="w-4 h-4" />
-               {error}
+            <div className="mt-4 p-3 bg-red-50 text-red-600 text-xs font-medium rounded-xl border border-red-100 animate-in fade-in slide-in-from-top-2">
+              {error}
             </div>
           )}
         </div>

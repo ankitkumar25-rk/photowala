@@ -1,15 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Search, Filter, Download, Eye, Trash2, 
   ChevronRight, MoreVertical, CheckCircle2, 
-  Clock, XCircle, FileText, Printer, Package,
-  Mail, Calendar, CreditCard, ExternalLink,
-  RefreshCw, Activity
+  Clock, XCircle, FileText, Printer, Package
 } from 'lucide-react';
 import api from '../../api/client';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+
+const STATUS_COLORS = {
+  PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
+  CONFIRMED: 'bg-blue-100 text-blue-700 border-blue-200',
+  PROCESSING: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+  SHIPPED: 'bg-purple-100 text-purple-700 border-purple-200',
+  DELIVERED: 'bg-green-100 text-green-700 border-green-200',
+  CANCELLED: 'bg-red-100 text-red-700 border-red-200',
+};
 
 export default function PrintOrders() {
   const [search, setSearch] = useState('');
@@ -27,7 +34,7 @@ export default function PrintOrders() {
       });
       return data.data;
     },
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60, // 1 minute
   });
 
   const updateStatusMutation = useMutation({
@@ -36,229 +43,166 @@ export default function PrintOrders() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['service-orders']);
-      toast.success('Workflow status synchronized');
+      toast.success('Order status updated');
     }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      if (!window.confirm('Confirm permanent archival of this logistics manifest?')) return;
+      if (!window.confirm('Are you sure you want to delete this order?')) return;
       await api.delete(`/service-orders/admin/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['service-orders']);
-      toast.success('Manifest successfully archived');
+      toast.success('Order deleted');
     }
   });
 
   const filteredOrders = orders?.filter(o => 
-    o.orderNumber?.toLowerCase().includes(search.toLowerCase()) ||
+    o.orderNumber.toLowerCase().includes(search.toLowerCase()) ||
     o.customerName?.toLowerCase().includes(search.toLowerCase()) ||
-    o.serviceName?.toLowerCase().includes(search.toLowerCase())
+    o.serviceName.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-           <div className="flex items-center gap-2 mb-2">
-              <span className="p-1.5 rounded-lg bg-brand-primary/5 text-brand-primary border border-brand-primary/10">
-                 <Printer className="w-4 h-4" />
-              </span>
-              <span className="text-[10px] font-bold text-brand-secondary uppercase tracking-[0.3em]">Design Logistics</span>
-           </div>
-           <h1 className="text-4xl font-bold text-brand-primary font-display tracking-tight">Print Manifests</h1>
-           <p className="text-brand-text/50 text-sm font-medium mt-1">Manage bespoke design and high-fidelity printing requests</p>
-        </div>
-        <div className="flex items-center gap-3">
-           <div className="bg-white px-5 py-3 rounded-2xl border border-brand-primary/10 shadow-sm flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                 <div className="w-2 h-2 rounded-full bg-brand-secondary animate-pulse" />
-                 <span className="text-[10px] font-bold text-brand-primary uppercase tracking-widest">Workflow Live</span>
-              </div>
-              <div className="w-px h-4 bg-brand-primary/10" />
-              <button onClick={() => queryClient.invalidateQueries(['service-orders'])} className="p-1 text-brand-text/40 hover:text-brand-secondary transition-colors">
-                 <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-           </div>
+          <h1 className="text-2xl font-bold text-gray-900">Print Orders</h1>
+          <p className="text-sm text-gray-500">Manage all custom printing service requests</p>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row lg:items-center gap-4 bg-white/50 p-2 rounded-2xl border border-brand-primary/5 backdrop-blur-sm">
+      {/* Filters */}
+      <div className="flex flex-col gap-4 rounded-2xl bg-white p-4 shadow-sm border border-gray-100 sm:flex-row sm:items-center">
         <div className="relative flex-1">
-           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-primary/30" />
-           <input
-             type="text"
-             placeholder="Search manifests, principals or service profiles..."
-             value={search}
-             onChange={(e) => setSearch(e.target.value)}
-             className="input-field pl-11 py-3 text-xs bg-white shadow-sm"
-           />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by Order #, Customer or Service..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-xl border-gray-200 pl-10 text-sm focus:border-brand-primary focus:ring-brand-primary/20"
+          />
         </div>
-        <div className="flex items-center gap-3 pr-2">
-           <div className="relative flex-1 lg:w-48">
-              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-brand-primary/30 pointer-events-none" />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="input-field pl-9 py-3 text-[10px] font-black uppercase tracking-widest bg-white shadow-sm appearance-none cursor-pointer"
-              >
-                <option value="ALL">All Manifests</option>
-                <option value="PENDING">Pending</option>
-                <option value="CONFIRMED">Confirmed</option>
-                <option value="PROCESSING">Processing</option>
-                <option value="DELIVERED">Delivered</option>
-                <option value="CANCELLED">Cancelled</option>
-              </select>
-           </div>
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-gray-400" />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="rounded-xl border-gray-200 text-sm focus:border-brand-primary focus:ring-brand-primary/20"
+          >
+            <option value="ALL">All Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="CONFIRMED">Confirmed</option>
+            <option value="PROCESSING">Processing</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
         </div>
       </div>
 
-      <div className="card overflow-hidden">
-        {/* Mobile View */}
-        <div className="lg:hidden divide-y divide-brand-primary/5">
-          {isLoading ? (
-            Array(5).fill(0).map((_, i) => (
-              <div key={i} className="p-8 space-y-4 animate-pulse">
-                <div className="h-4 bg-brand-primary/5 rounded w-1/3" />
-                <div className="h-10 bg-brand-primary/5 rounded w-full" />
-              </div>
-            ))
-          ) : filteredOrders?.map((order) => (
-            <div key={order.id} className="p-8 space-y-6 group hover:bg-brand-surface/30 transition-colors">
-              <div className="flex items-start justify-between">
-                <div>
-                   <p className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em] mb-1.5">#{order.orderNumber}</p>
-                   <p className="text-base font-bold text-brand-primary leading-tight">{order.customerName || order.user?.name}</p>
-                   <p className="text-[10px] text-brand-text/30 font-bold uppercase mt-1 tracking-tighter">{order.user?.email}</p>
-                </div>
-                <span className={`badge-status ${order.status.toLowerCase()}`}>{order.status}</span>
-              </div>
-
-              <div className="flex items-center gap-4 p-5 bg-white rounded-2xl border border-brand-primary/5 shadow-sm">
-                 <div className="p-2.5 rounded-xl bg-brand-primary/5 text-brand-primary border border-brand-primary/10 shadow-sm group-hover:scale-110 transition-transform">
-                    <Printer className="w-5 h-5" />
-                 </div>
-                 <div>
-                    <p className="text-xs font-black text-brand-primary uppercase tracking-widest leading-none">{order.serviceName}</p>
-                    <p className="text-[10px] text-brand-text/40 font-medium mt-1.5">{order.productName || 'Bespoke Production'}</p>
-                 </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-2">
-                 <div className="flex flex-col">
-                    <span className="text-[9px] text-brand-text/30 font-black uppercase tracking-widest">Valuation</span>
-                    <span className="text-lg font-bold text-brand-primary">₹{Number(order.totalAmount).toLocaleString('en-IN')}</span>
-                 </div>
-                 <div className="flex items-center gap-2">
-                    <Link to={`/services/orders/${order.id}`} className="p-3.5 rounded-xl bg-brand-primary/5 text-brand-primary hover:bg-brand-primary hover:text-white transition-all shadow-sm active:scale-95">
-                       <Eye className="w-5 h-5" />
-                    </Link>
-                    <button onClick={() => deleteMutation.mutate(order.id)} className="p-3.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm active:scale-95 border border-red-100">
-                       <Trash2 className="w-5 h-5" />
-                    </button>
-                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Desktop View */}
-        <div className="hidden lg:block overflow-x-auto">
-          <table className="w-full">
-            <thead>
+      {/* Orders Table */}
+      <div className="overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-[#fdfaf7] text-[10px] font-bold uppercase tracking-widest text-brand-primary/60 border-b border-gray-100">
               <tr>
-                {['Logistics ID', 'Principal', 'Service Profile', 'Production State', 'Valuation', 'Action'].map(h => (
-                  <th key={h} className="text-left text-[10px] font-black uppercase tracking-widest px-8 py-4 text-brand-text/40">{h}</th>
-                ))}
+                <th className="px-6 py-4">Order Details</th>
+                <th className="px-6 py-4">Customer</th>
+                <th className="px-6 py-4">Service / Product</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Amount</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-brand-primary/5">
+            <tbody className="divide-y divide-gray-100">
               {isLoading ? (
-                Array(8).fill(0).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    {Array(6).fill(0).map((_, j) => (
-                      <td key={j} className="px-8 py-6"><div className="h-4 bg-brand-primary/5 rounded w-full" /></td>
-                    ))}
-                  </tr>
-                ))
-              ) : filteredOrders?.map((order) => (
-                <tr key={order.id} className="group hover:bg-brand-surface/30 transition-all duration-300">
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col">
-                       <span className="text-sm font-black text-brand-primary group-hover:text-brand-secondary transition-colors tracking-tight">#{order.orderNumber}</span>
-                       <div className="flex items-center gap-1.5 text-[9px] font-bold text-brand-text/30 uppercase tracking-widest mt-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(order.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
-                       </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-2xl bg-white border border-brand-primary/10 text-brand-primary flex items-center justify-center text-[10px] font-black shadow-sm group-hover:rotate-6 transition-transform">
-                          {(order.customerName || order.user?.name)?.[0]}
-                       </div>
-                       <div className="flex flex-col">
-                          <p className="text-sm font-bold text-brand-primary leading-tight">{order.customerName || order.user?.name}</p>
-                          <p className="text-[10px] text-brand-text/40 font-bold uppercase tracking-tighter mt-1">{order.user?.email}</p>
-                       </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2.5 rounded-xl bg-brand-primary/5 text-brand-primary border border-brand-primary/10 shadow-sm">
-                        <Printer className="w-4 h-4" />
+                <tr><td colSpan="6" className="py-20 text-center text-gray-400">Loading orders...</td></tr>
+              ) : filteredOrders?.length === 0 ? (
+                <tr><td colSpan="6" className="py-20 text-center text-gray-400">No orders found</td></tr>
+              ) : (
+                filteredOrders?.map((order) => (
+                  <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-brand-primary group-hover:underline">
+                        <Link to={`/services/orders/${order.id}`}>{order.orderNumber}</Link>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-black text-brand-primary uppercase tracking-widest">{order.serviceName}</span>
-                        <span className="text-[9px] text-brand-text/40 font-bold uppercase tracking-widest mt-1">{order.productName || 'Bespoke Item'}</span>
+                      <div className="text-[10px] text-gray-400 mt-1">
+                        {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <span className={`badge-status ${order.status.toLowerCase()}`}>{order.status}</span>
-                  </td>
-                  <td className="px-8 py-6">
-                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-brand-primary">₹{Number(order.totalAmount).toLocaleString('en-IN')}</span>
-                        <span className="text-[9px] font-bold text-brand-text/30 uppercase tracking-widest mt-1">Total Valuation</span>
-                     </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-2">
-                       {order.fileUrl && (
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-gray-900">{order.customerName || order.user?.name}</div>
+                      <div className="text-xs text-gray-500">{order.user?.email}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
+                          <Printer className="w-3.5 h-3.5" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900">{order.serviceName}</div>
+                          <div className="text-xs text-gray-500">{order.productName || 'Custom'}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${STATUS_COLORS[order.status] || 'bg-gray-100'}`}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-gray-900">₹{order.totalAmount}</div>
+                      <div className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Qty: {order.quantity}</div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        {order.fileUrl && (
                           <button 
                             onClick={() => {
                               if (order.fileUrl === 'SEND_VIA_EMAIL') {
-                                toast.info('Client opted for neural delivery (email).');
+                                toast.info('Customer opted to send file via email.');
                                 return;
                               }
-                              window.open(order.fileUrl, '_blank');
+                              // Robust download helper
+                              const link = document.createElement('a');
+                              link.href = order.fileUrl;
+                              link.target = '_blank';
+                              link.download = `artwork-${order.orderNumber}`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
                             }}
-                            className="p-2.5 rounded-xl bg-white border border-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white shadow-sm transition-all active:scale-90"
-                            title="Download Asset"
+                            className={`p-2 rounded-lg transition-colors ${
+                              order.fileUrl === 'SEND_VIA_EMAIL' 
+                                ? 'text-gray-400 hover:bg-gray-100' 
+                                : 'text-blue-600 hover:bg-blue-50'
+                            }`}
+                            title={order.fileUrl === 'SEND_VIA_EMAIL' ? 'Sent via Email' : 'Download Artwork'}
                           >
                             {order.fileUrl === 'SEND_VIA_EMAIL' ? <Mail className="w-4 h-4" /> : <Download className="w-4 h-4" />}
                           </button>
-                       )}
-                       <Link 
+                        )}
+                        <Link 
                           to={`/services/orders/${order.id}`}
-                          className="p-2.5 rounded-xl bg-white border border-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-white shadow-sm transition-all active:scale-90"
-                          title="Intelligence Insight"
-                       >
+                          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                          title="View Details"
+                        >
                           <Eye className="w-4 h-4" />
-                       </Link>
-                       <button 
+                        </Link>
+                        <button 
                           onClick={() => deleteMutation.mutate(order.id)}
-                          className="p-2.5 rounded-xl bg-white border border-red-50 text-red-400 hover:bg-red-500 hover:text-white shadow-sm transition-all active:scale-90"
-                          title="Archival"
-                       >
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Order"
+                        >
                           <Trash2 className="w-4 h-4" />
-                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
