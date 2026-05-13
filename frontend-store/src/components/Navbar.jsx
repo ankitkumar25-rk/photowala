@@ -183,36 +183,38 @@ export default function Navbar() {
             </Link>
 
             {/* User */}
-            {isHydrating ? (
-              <div className="w-8 h-8 bg-brand-primary/10 rounded-full" />
-            ) : user ? (
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-surface transition-colors">
-                  {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-7 h-7 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xs font-bold">
-                      {user.name?.[0]?.toUpperCase() || 'U'}
-                    </div>
-                  )}
-                  <span className="text-sm font-semibold text-brand-primary hidden sm:block">{user.name?.split(' ')[0] || 'User'}</span>
-                </button>
-                <div className="absolute right-0 top-12 w-48 bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                  <Link to="/account" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Account</Link>
-                  {['ADMIN', 'SUPER_ADMIN'].includes(user.role) && (
-                    <a href="https://photowala-three.vercel.app/admin" target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm text-brand-secondary hover:bg-brand-surface font-bold">Admin Panel</a>
-                  )}
-                  <Link to="/orders" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Orders</Link>
-                  <Link to="/account/services" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Services</Link>
-                  <hr className="my-1 border-brand-primary/20" />
-                  <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Logout</button>
+            <div className="hidden md:flex items-center">
+              {isHydrating ? (
+                <div className="w-8 h-8 bg-brand-primary/10 rounded-full" />
+              ) : user ? (
+                <div className="relative group">
+                  <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-surface transition-colors">
+                    {user.avatarUrl ? (
+                      <img src={user.avatarUrl} alt={user.name} className="w-7 h-7 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-7 h-7 bg-brand-primary/10 text-brand-primary rounded-full flex items-center justify-center text-xs font-bold">
+                        {user.name?.[0]?.toUpperCase() || 'U'}
+                      </div>
+                    )}
+                    <span className="text-sm font-semibold text-brand-primary hidden sm:block">{user.name?.split(' ')[0] || 'User'}</span>
+                  </button>
+                  <div className="absolute right-0 top-12 w-48 bg-cream-50 rounded-2xl shadow-lg border border-brand-primary/20 py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    <Link to="/account" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Account</Link>
+                    {['ADMIN', 'SUPER_ADMIN'].includes(user.role) && (
+                      <a href="https://photowala-three.vercel.app/admin" target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm text-brand-secondary hover:bg-brand-surface font-bold">Admin Panel</a>
+                    )}
+                    <Link to="/orders" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Orders</Link>
+                    <Link to="/account/services" className="block px-4 py-2 text-sm text-brand-primary hover:bg-brand-surface font-medium">My Services</Link>
+                    <hr className="my-1 border-brand-primary/20" />
+                    <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium">Logout</button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Link to="/login" className="btn-primary py-2 rounded-3xl px-4 text-xs hidden lg:inline-flex">
-                <User className="w-4 h-4" /> Login
-              </Link>
-            )}
+              ) : (
+                <Link to="/login" className="btn-primary py-2 rounded-3xl px-4 text-xs">
+                  <User className="w-4 h-4" /> Login
+                </Link>
+              )}
+            </div>
 
             {/* Mobile menu toggle */}
             <div className="md:hidden">
@@ -270,6 +272,13 @@ export default function Navbar() {
                     className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
                   >
                     My Account
+                  </Link>
+                  <Link
+                    to="/orders"
+                    onClick={() => setMenuOpen(false)}
+                    className="block px-4 py-2 text-sm font-semibold text-brand-primary rounded-lg hover:bg-brand-surface hover:text-brand-secondary transition-colors"
+                  >
+                    My Orders
                   </Link>
                   <Link
                     to="/account/services"
