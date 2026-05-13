@@ -233,80 +233,84 @@ export default function OrderDetail() {
               </div>
               <h2 className="text-xl font-bold text-gray-900">Order Items <span className="text-brand-secondary text-lg">({order.items.length})</span></h2>
             </div>
-            <div className="divide-y divide-cream-200">
+            <div className="divide-y divide-cream-100">
               {order.items.map((item) => (
-                <div key={item.id} className="flex gap-4 py-4 first:pt-0 last:pb-0">
-                  {item.product?.images?.[0] ? (
-                    <img
-                      src={item.product.images[0].url}
-                      alt={item.productName}
-                      className="w-16 h-16 rounded-xl object-cover bg-cream-100 shrink-0"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-xl bg-brand-surface flex items-center justify-center shrink-0 text-xl">
-                      📦
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 leading-tight">{item.productName}</p>
-                    {item.productUnit && (
-                      <p className="text-xs text-gray-600 mt-0.5">{item.productUnit}</p>
-                    )}
-                    <p className="text-sm text-gray-600 mt-1">Qty: {item.quantity}</p>
-
-                    {/* Customization details */}
-                    {item.customizationText && (
-                      <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-                        <Pencil className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Your Custom Text</p>
-                          <p className="text-sm font-semibold text-amber-900">{item.customizationText}</p>
-                        </div>
-                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0 ml-auto mt-0.5" />
-                      </div>
-                    )}
-                    {item.customizationImageUrl && (
-                        <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
-                          <img src={item.customizationImageUrl} alt="Custom" className="w-12 h-12 object-cover rounded-lg border border-blue-200 shrink-0" loading="lazy" width={48} height={48} />
-                          <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">Your Custom Logo/Image</p>
-                          <a
-                            href={item.customizationImageUrl}
-                            download
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs text-blue-600 font-semibold underline mt-0.5"
-                          >
-                            <Download className="w-3 h-3" /> View / Download
-                          </a>
-                        </div>
-                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                <div key={item.id} className="flex gap-4 py-6 first:pt-0 last:pb-0">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-cream-100 border border-cream-200 shrink-0">
+                    {item.product?.images?.[0] ? (
+                      <img
+                        src={item.product.images[0].url}
+                        alt={item.productName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                         <Package className="w-8 h-8 text-cream-300" />
                       </div>
                     )}
                   </div>
-                  <div className="text-right shrink-0">
-                    <p className="font-bold text-gray-900">₹{Number(item.total).toFixed(2)}</p>
-                    <p className="text-xs text-gray-600">₹{Number(item.price).toFixed(2)} each</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-900 leading-tight text-sm sm:text-base mb-1">{item.productName}</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      {item.productUnit && (
+                        <span className="text-[10px] font-bold text-gray-400 uppercase bg-cream-100 px-1.5 py-0.5 rounded-md">{item.productUnit}</span>
+                      )}
+                      <span className="text-xs font-medium text-gray-500">Qty: <span className="font-bold text-gray-900">{item.quantity}</span></span>
+                    </div>
+
+                    {/* Customization details */}
+                    {item.customizationText && (
+                      <div className="mt-2.5 flex items-start gap-2 bg-amber-50/50 border border-amber-100 rounded-xl px-3 py-2">
+                        <Pencil className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-[9px] font-bold text-amber-600 uppercase tracking-widest opacity-60">Custom Text</p>
+                          <p className="text-xs sm:text-sm font-semibold text-amber-900">{item.customizationText}</p>
+                        </div>
+                      </div>
+                    )}
+                    {item.customizationImageUrl && (
+                        <div className="mt-2.5 flex items-center gap-3 bg-blue-50/50 border border-blue-100 rounded-xl px-3 py-2">
+                          <img src={item.customizationImageUrl} alt="Custom" className="w-10 h-10 object-cover rounded-lg border border-blue-100 shrink-0" loading="lazy" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest opacity-60">Custom Design</p>
+                            <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-blue-600 underline">View Design</a>
+                          </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-right shrink-0 flex flex-col justify-start">
+                    <p className="font-bold text-gray-900 text-sm sm:text-base">₹{Number(item.total).toFixed(0)}</p>
+                    <p className="text-[10px] text-gray-400 font-medium italic mt-0.5">₹{Number(item.price).toFixed(0)} ea</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Price summary */}
-            <div className="mt-4 pt-4 border-t border-cream-200 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium text-gray-900">₹{Number(order.subtotal).toFixed(2)}</span>
+            {/* Price summary card */}
+            <div className="card p-6 sm:p-8 space-y-4 bg-linear-to-br from-white to-brand-surface/20 border-2 border-brand-primary/10">
+              <div className="flex items-center gap-3 pb-4 border-b border-cream-200">
+                <div className="w-8 h-8 rounded-xl bg-brand-surface flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-brand-primary" />
+                </div>
+                <h3 className="font-bold text-gray-900">Payment Summary</h3>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span className={`font-medium ${order.shippingCost === 0 ? 'text-green-600' : 'text-gray-900'}`}>
-                  {order.shippingCost === 0 ? 'FREE' : `₹${Number(order.shippingCost).toFixed(2)}`}
-                </span>
-              </div>
-              <div className="flex justify-between text-base font-bold pt-2 border-t border-cream-200">
-                <span className="text-gray-900">Total</span>
-                <span className="text-brand-primary text-lg">₹{Number(order.total).toFixed(2)}</span>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500 font-medium">Subtotal</span>
+                  <span className="font-bold text-gray-900">₹{Number(order.subtotal).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500 font-medium flex items-center gap-1.5">
+                    <Truck className="w-3.5 h-3.5" /> Shipping
+                  </span>
+                  <span className={`font-bold ${order.shippingCost === 0 ? 'text-green-600' : 'text-gray-900'}`}>
+                    {order.shippingCost === 0 ? 'FREE' : `₹${Number(order.shippingCost).toFixed(2)}`}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xl font-bold pt-4 border-t-2 border-cream-100">
+                  <span className="text-gray-900">Total</span>
+                  <span className="text-brand-primary">₹{Number(order.total).toFixed(2)}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -371,14 +375,14 @@ export default function OrderDetail() {
         </div>
 
         {/* Help section */}
-        <div className="card p-8 flex items-center justify-between hover:shadow-lg transition-shadow">
-          <div className="space-y-2">
-            <p className="font-bold text-gray-900">Need help with this order?</p>
-            <p className="text-sm text-gray-600">Our support team is ready to assist you</p>
+        <div className="card p-6 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 hover:shadow-lg transition-shadow bg-linear-to-br from-white to-cream-50">
+          <div className="text-center sm:text-left space-y-2">
+            <h3 className="text-lg font-bold text-gray-900">Need help with this order?</h3>
+            <p className="text-sm text-gray-600 max-w-xs font-medium">Our premium support team is ready to assist you with any questions.</p>
           </div>
           <a
-            href="mailto:support@premiumstore.com"
-            className="btn-primary py-3 px-8 text-sm"
+            href="mailto:support@photowala.com"
+            className="w-full sm:w-auto px-10 py-4 bg-brand-primary text-white rounded-pill font-bold text-xs uppercase tracking-widest hover:bg-brand-secondary transition-all text-center shadow-lg shadow-brand-primary/20"
           >
             Contact Support
           </a>

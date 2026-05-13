@@ -17,7 +17,6 @@ export const useAuthStore = create(
         try {
           const response = await authApi.login(credentials);
           const { data } = response;
-          console.log('[Auth] Login response structure:', JSON.stringify(data, null, 2));
           
           // Extract user and token from nested response structure
           const userData = data?.data?.user || data?.user || data?.data;
@@ -25,7 +24,6 @@ export const useAuthStore = create(
           const refreshToken = data?.data?.refreshToken || data?.refreshToken;
           
           if (!userData || !accessToken) {
-            console.error('[Auth] Extraction failed from:', data);
             throw new Error('Invalid response format: missing user or token');
           }
           
@@ -44,7 +42,6 @@ export const useAuthStore = create(
           await useCartStore.getState().fetchCart();
           return response.data;
         } catch (err) {
-          console.error('[Auth] Login error:', err.message);
           set({ isLoading: false, isHydrating: false });
           throw err;
         }
@@ -55,7 +52,6 @@ export const useAuthStore = create(
         try {
           const response = await authApi.register(userData);
           const { data } = response;
-          console.log('[Auth] Register response structure:', JSON.stringify(data, null, 2));
           
           // Extract user and token from nested response structure
           const userObj = data?.data?.user || data?.user || data?.data;
@@ -63,7 +59,6 @@ export const useAuthStore = create(
           const refreshToken = data?.data?.refreshToken || data?.refreshToken;
           
           if (!userObj || !accessToken) {
-            console.error('[Auth] Extraction failed from:', data);
             throw new Error('Invalid response format: missing user or token');
           }
           
@@ -82,7 +77,6 @@ export const useAuthStore = create(
           await useCartStore.getState().fetchCart();
           return response.data;
         } catch (err) {
-          console.error('[Auth] Register error:', err.message);
           set({ isLoading: false, isHydrating: false });
           throw err;
         }
@@ -113,16 +107,8 @@ export const useAuthStore = create(
             
             if (accessToken) localStorage.setItem('token', accessToken);
             
-            console.log('[Auth] fetchMe detailed check:', { 
-              responseKeys: Object.keys(data || {}),
-              userFound: !!userData,
-              role: userData?.role,
-              id: userData?.id
-            });
-            
             const allowedRoles = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'];
             if (!userData || !userData.role || !allowedRoles.includes(userData.role)) {
-              console.warn('[Auth] Invalid user or role, clearing session. User:', userData);
               localStorage.removeItem('token');
               localStorage.removeItem('refreshToken');
               set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
