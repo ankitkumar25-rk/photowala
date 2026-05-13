@@ -344,7 +344,7 @@ export default function Account() {
             </div>
             <div className="min-w-0">
               <h1 className="text-xl md:text-3xl font-bold text-brand-primary truncate">
-                Welcome, {user.name?.split(' ')[0]?.toUpperCase()} 👋
+                Welcome, {user.name?.split(' ')[0]?.toUpperCase()} 
               </h1>
               <p className="text-gray-500 flex items-center gap-1.5 mt-1 md:mt-2 text-xs md:text-sm font-medium truncate">
                 <Mail className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-400" /> {user.email}

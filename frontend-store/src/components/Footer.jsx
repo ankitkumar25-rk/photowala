@@ -7,9 +7,9 @@ export default function Footer() {
   return (
     <footer className="bg-[linear-gradient(180deg,#5a3f2f,#3b291f)] text-white border-t border-[#d8a45f]/25">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
-          <div className="space-y-4">
+          <div className="col-span-2 lg:col-span-1 space-y-4">
             {/* Logo in white card — matches brand badge style */}
             <div className="inline-flex items-center justify-center bg-white rounded-2xl px-2 py-2 shadow-lg">
               <img
@@ -72,7 +72,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
+          <div className="col-span-2 lg:col-span-1">
             <h4 className="font-bold text-sm uppercase tracking-widest text-[#d4b49e] mb-4">Contact</h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-[#d7c4b0] text-sm">
