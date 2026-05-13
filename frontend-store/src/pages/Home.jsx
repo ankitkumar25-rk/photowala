@@ -187,12 +187,59 @@ export default function Home() {
     staleTime: 1000 * 60 * 30, // 30 minutes - categories change rarely
   });
 
+  const { data: newArrivalsData, isLoading: loadingNewArrivals } = useQuery({
+    queryKey: ['new-arrivals'],
+    queryFn: () => productsApi.list({ limit: 4, sort: 'createdAt', order: 'desc' }).then((r) => r.data.data),
+    staleTime: 1000 * 60 * 5,
+  });
+
   return (
     <div className="bg-cream-100 luxury-grain">
       <HeroSection />
       <TrustBadges />
 
       {categoriesData && <CategoryGrid categories={categoriesData} />}
+
+      {/* New Arrivals Section */}
+      <section className="py-24 px-4 bg-white/50 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-brand-primary leading-tight">
+                New <br />
+                <span className="text-brand-secondary">Arrivals</span>
+              </h2>
+              <div className="flex items-center gap-4">
+                <div className="h-0.5 w-12 bg-brand-secondary" />
+                <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Freshly added premium photogifts and keepsakes</p>
+              </div>
+            </div>
+            <Link to="/products?sort=createdAt&order=desc" className="inline-flex items-center gap-2 text-brand-primary font-bold hover:text-brand-secondary transition-colors group">
+              Browse All New <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {loadingNewArrivals ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {Array(4).fill(0).map((_, i) => (
+                <div key={i} className="card animate-pulse">
+                  <div className="bg-cream-200 aspect-square rounded-t-card" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-3 bg-cream-300 rounded w-3/4" />
+                    <div className="h-4 bg-cream-300 rounded w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {newArrivalsData?.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Featured Products */}
       <section className="py-24 px-4 relative overflow-hidden">
