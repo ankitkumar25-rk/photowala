@@ -57,3 +57,19 @@ coverage/
 .cache/
 info.txt
 prompt.txt
+project_overview.txt
+AUTHENTICATION_BUG_FIX.md
+BUG_AUDIT_REPORT.md
+DEBUG_AUTH.js
+DEPLOYMENT_VERIFICATION.md
+FIXES_APPLIED.md
+TEST_TOKEN_STORAGE.md
+TROUBLESHOOTING_401_ERRORS.md
+VERIFICATION_CHECKLIST.md
+
+# Project Specific
+backend/uploads/*
+!backend/uploads/.gitkeep
+.kilo/
+.gemini/
+.antigravity/
