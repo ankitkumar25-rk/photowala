@@ -104,9 +104,11 @@ const { Pool } = pkg;
 const PgStore = PgSession(session);
 
 let sessionStore;
-// Only use RedisStore if valkey is initialized and not in a permanently closed state
-if (redisUrl && valkey && valkey.status !== 'end' && valkey.status !== 'closed') {
-  console.log('✔ Redis/Valkey session storage enabled (Status:', valkey.status, ')');
+const isLocalRedis = redisUrl?.includes('localhost') || redisUrl?.includes('127.0.0.1');
+const shouldPreferRedis = redisUrl && valkey && (!isLocalRedis || process.env.NODE_ENV !== 'production');
+
+if (shouldPreferRedis) {
+  console.log('✔ Redis/Valkey session storage candidate identified (Status:', valkey.status, ')');
   sessionStore = new RedisStore({ client: valkey, prefix: 'sess:' });
 } else if (process.env.DATABASE_URL) {
   console.log('✔ Redis/Valkey not available, using PostgreSQL for session storage');

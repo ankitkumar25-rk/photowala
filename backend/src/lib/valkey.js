@@ -26,9 +26,16 @@ const valkey = valkeyUrl ? new Redis(valkeyUrl, {
   lazyConnect: false,
 }) : null;
 
-if (valkey && process.env.NODE_ENV !== 'production') {
+if (valkey) {
   valkey.on('connect', () => console.log('✔ Valkey connected'));
-  valkey.on('error', (err) => console.error('✖ Valkey error:', err.message));
+  valkey.on('error', (err) => {
+    // Silently log ECONNRESET to avoid spam, but log other errors as critical
+    if (err.message.includes('ECONNRESET')) {
+      console.warn('⚠ Valkey: Connection reset by peer');
+    } else {
+      console.error('✖ Valkey error:', err.message);
+    }
+  });
 }
 
 // Graceful shutdown
