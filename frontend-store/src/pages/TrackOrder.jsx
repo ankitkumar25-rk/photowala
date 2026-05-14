@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PackageSearch, ArrowRight, Truck, ClipboardList, ChevronRight } from 'lucide-react';
 
@@ -8,8 +8,10 @@ export default function TrackOrder() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!orderId.trim()) return;
-    navigate(`/orders/${orderId.trim()}`);
+    const cleanId = orderId.trim();
+    if (!cleanId) return;
+    // Normalize to uppercase for consistent lookup if it's an orderNumber
+    navigate(`/orders/${cleanId.toUpperCase()}`);
   };
 
   return (

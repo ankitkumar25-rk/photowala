@@ -14,6 +14,16 @@ export default function Register() {
   const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
   const googleAuthUrl = `${apiBaseUrl}/auth/google`;
 
+  const getPasswordStrength = (pw) => {
+    let score = 0;
+    if (!pw) return 0;
+    if (pw.length >= 8) score++;
+    if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+    if (/\d/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
@@ -71,7 +81,19 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Phone (optional)</label>
-              <input id="reg-phone" type="number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="input-field" placeholder="9876543210" />
+              <input 
+                id="reg-phone" 
+                type="tel" 
+                value={form.phone} 
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  if (val.length <= 10) setForm({ ...form, phone: val });
+                }} 
+                pattern="[0-9]{10}"
+                className="input-field" 
+                placeholder="10-digit mobile number" 
+              />
+              <p className="text-[10px] text-gray-400 mt-1">If provided, must be exactly 10 digits.</p>
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
@@ -90,6 +112,41 @@ export default function Register() {
                   {showPw ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              
+              {/* Password strength meter */}
+              {form.password && (
+                <div className="mt-2 space-y-1.5">
+                  <div className="flex justify-between items-center px-0.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Security Strength</span>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${
+                      getPasswordStrength(form.password) <= 1 ? 'text-red-500' : 
+                      getPasswordStrength(form.password) <= 2 ? 'text-amber-500' : 
+                      'text-green-600'
+                    }`}>
+                      {getPasswordStrength(form.password) <= 1 ? 'Weak' : 
+                       getPasswordStrength(form.password) <= 2 ? 'Good' : 
+                       'Strong'}
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden flex gap-1">
+                    {[1, 2, 3, 4].map((level) => (
+                      <div 
+                        key={level}
+                        className={`h-full flex-1 transition-all duration-500 ${
+                          level <= getPasswordStrength(form.password) 
+                            ? (getPasswordStrength(form.password) <= 1 ? 'bg-red-500' : 
+                               getPasswordStrength(form.password) <= 2 ? 'bg-amber-500' : 
+                               'bg-green-600')
+                            : 'bg-gray-100'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-gray-400 leading-tight">
+                    Use 8+ characters with mixed case, numbers & symbols.
+                  </p>
+                </div>
+              )}
             </div>
 
             <button type="submit" disabled={isLoading} className="btn-primary w-full justify-center text-base py-3.5 mt-2" id="register-submit-btn">

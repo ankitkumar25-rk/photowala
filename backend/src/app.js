@@ -34,7 +34,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-session-secret' : '');
-const redisUrl = process.env.REDIS_URL;
+const redisUrl = process.env.VALKEY_URL || process.env.REDIS_URL;
 
 if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set in production');
@@ -103,9 +103,10 @@ const PgStore = PgSession(session);
 
 let sessionStore;
 if (redisUrl) {
+  console.log('✔ Redis/Valkey session storage enabled');
   sessionStore = new RedisStore({ client: valkey, prefix: 'sess:' });
 } else {
-  console.log('✔ No REDIS_URL found, using PostgreSQL for session storage');
+  console.log('✔ No Redis/Valkey URL found, using PostgreSQL for session storage');
   sessionStore = new PgStore({
     pool: new Pool({
       connectionString: process.env.DATABASE_URL,

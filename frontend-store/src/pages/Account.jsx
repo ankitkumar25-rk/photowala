@@ -144,7 +144,19 @@ function AddressModal({ addr, onClose, onSave }) {
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Phone *</label>
-              <input type="number" name="phone" value={form.phone} onChange={handle} required className="input-field" placeholder="9876543210" />
+              <input 
+                type="tel" 
+                name="phone" 
+                value={form.phone} 
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  if (val.length <= 10) setForm(f => ({ ...f, phone: val }));
+                }} 
+                required 
+                pattern="[0-9]{10}"
+                className="input-field" 
+                placeholder="10-digit mobile number" 
+              />
             </div>
           </div>
           <div>
@@ -176,7 +188,19 @@ function AddressModal({ addr, onClose, onSave }) {
             </div>
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">Pincode *</label>
-              <input type="number" name="pincode" value={form.pincode} onChange={handle} required maxLength={6} className="input-field" placeholder="400001" />
+              <input 
+                type="text" 
+                name="pincode" 
+                value={form.pincode} 
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  if (val.length <= 6) setForm(f => ({ ...f, pincode: val }));
+                }} 
+                required 
+                pattern="[0-9]{6}"
+                className="input-field" 
+                placeholder="6 digits" 
+              />
             </div>
           </div>
           <label className="flex items-center gap-2 cursor-pointer">
@@ -402,10 +426,15 @@ export default function Account() {
                     <div>
                       <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5 block ml-1">Phone</label>
                       <input
+                        type="tel"
                         value={profile.phone}
-                        onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          if (val.length <= 10) setProfile((p) => ({ ...p, phone: val }));
+                        }}
+                        pattern="[0-9]{10}"
                         className="input-field bg-cream-50/50 focus:bg-white transition-all"
-                        placeholder="Your phone number"
+                        placeholder="10-digit mobile number"
                       />
                     </div>
                   </div>

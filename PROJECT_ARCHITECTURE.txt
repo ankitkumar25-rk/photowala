@@ -48,14 +48,17 @@ The ecosystem is divided into three core modules:
 -------------------------------
 - Aesthetic Identity: 
     "Luxury Minimalist" — Using HSL-tailored colors (Brand Primary: #5a3f2f, Secondary: #b88a2f), 
-    custom glassmorphism, and premium typography (Inter/Outfit).
+    custom glassmorphism, and premium typography (Inter/Outfit). This theme is 
+    systematically applied across both the Storefront and the Admin Dashboard.
 - Mobile-First Responsiveness:
-    All critical Purchasing and Tracking pages (Cart, Checkout, Order Detail) are 
-    standardized to prevent text truncation and layout overflows on small viewports.
+    - Storefront: All Purchasing and Tracking pages (Cart, Checkout, Order Detail) 
+      are standardized for small viewports to prevent layout overflows.
+    - Admin Panel: Features a fully responsive sidebar and stacked dashboard layout 
+      ensuring administrative tasks can be performed seamlessly on mobile devices.
 - Standard Components:
     - Custom Scrollbars: Consistent luxury grain scrollbars across all modules.
     - Status Badges: Color-coded progress indicators (e.g., bg-brand-surface for Pending).
-    - Premium Modals: Backdrop blur and spring-based animations.
+    - Premium Modals: Backdrop blur and spring-based animations for a high-end feel.
 
 5. AUTHENTICATION & SESSION HYDRATION
 -------------------------------------
@@ -82,6 +85,9 @@ The ecosystem is divided into three core modules:
 ----------------------------------
 - Mobile UI Refinement (May 2026): Full audit and refactor of Cart and Checkout modules 
   for mobile responsiveness, including full-width search overlays and stacked summary cards.
+- Admin Panel Standardization (May 2026): Replicated the storefront's luxury theme 
+  in the Admin Panel, including shared CSS tokens, typography, and a 
+  mobile-first responsive sidebar layout.
 - Performance: Implemented lazy-loading for heavy scripts (Razorpay) and 
   image auto-transformation via Cloudinary.
 - Code Reliability: Transitioned to atomic Zustand stores and resolved 401 
@@ -94,6 +100,8 @@ The ecosystem is divided into three core modules:
 - /frontend-store/src/api: Centralized API client (client.js) and endpoint definitions.
 - /frontend-store/src/store: State management (index.js).
 - /frontend-store/src/pages: Route-based page components.
+- /frontend-admin/src/components: Layout components (AdminLayout) and shared UI.
+- /frontend-admin/src/pages: Administrative modules (Inventory, Orders, analytics).
 
 ================================================================================
 Document Updated: 2026-05-13

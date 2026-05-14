@@ -1,0 +1,73 @@
+# Photowala Admin Panel - UI/UX Documentation
+
+## Design Philosophy: "Luxury Minimalist"
+The admin panel follows a premium, sophisticated aesthetic that aligns with the high-end nature of the Photowala gift shop. It emphasizes clarity, elegant spacing, and a warm, inviting color palette.
+
+---
+
+## 1. Visual Identity & Brand Assets
+- **Logo Style**: Centered within a white card with shadow, consistently used in the sidebar.
+- **Background**: Multi-layered radial gradients with a subtle grain texture (`luxury-grain`) to prevent flat-looking pages.
+- **Glassmorphism**: Headers and sidebars use a semi-transparent `glass-surface` with backdrop blur (10px).
+
+---
+
+## 2. Core Color Palette
+- **Deep Brown (#3b1d16)**: Primary brand identity.
+- **Brand Primary (#5b3f2f)**: Text, buttons, and active states.
+- **Brand Secondary (#b88a2f)**: Accents, icons, and highlights.
+- **Brand Accent (#d96a22)**: Alerts, call-to-actions, and processing states.
+- **Cream/Nude Palette**:
+  - Main Background: #f7f0e7
+  - Card Background: #fffdfb
+  - Soft Surfaces: #f5e7d8
+
+---
+
+## 3. Typography
+- **Heading Font**: "Cause" or "Inter/Outfit" - Bold, elegant, tracking-tight.
+- **Body Font**: "DM Sans" - Clean, readable, professional.
+- **Letter Spacing**: Wider tracking for uppercase labels and navigation items for a high-fashion look.
+
+---
+
+## 4. Key UI Components
+- **Sidebar**:
+  - Fully responsive, mobile-first design.
+  - Interactive "Glassmorphic" navigation links with hover lift effects.
+  - Section dividers for logical grouping.
+- **Data Tables**:
+  - Minimalist design with thick, bold headers.
+  - Status badges with harmonious, low-saturation backgrounds (e.g., Confirmed is Nude-Brown, Shipped is Sage-Green).
+  - Row hover highlighting for better focus.
+- **Action Buttons**:
+  - Primary: Rounded pill-shaped, deep brown with high-impact shadow.
+  - Secondary: Outlined with gold/brown borders.
+  - Ghost: Minimalist, icon-driven actions for list items.
+- **Form Fields**:
+  - Soft-rounded corners (12px).
+  - Elegant cream-to-white transitions on focus.
+  - Descriptive, uppercase labels.
+
+---
+
+## 5. Dashboard Features
+- **Stat Cards**: Dynamic summaries (Total Orders, Revenue, Customers) with distinctive icon containers.
+- **Activity Feed**: Chronological list of recent orders or actions.
+- **Responsive Layout**: Adaptive grid system (1 to 4 columns depending on screen size).
+
+---
+
+## 6. Functional Modules
+- **Orders Management**: Detailed list view + Deep-dive order detail pages with tracking update functionality.
+- **Product Management**: Multi-step forms for creating/editing products with secondary image support.
+- **Inventory Control**: Stock monitoring with low-stock alerts.
+- **Customer Directory**: Centralized user database with detailed order history.
+- **Returns & Support**: Dedicated interfaces for handling RMA requests and support tickets.
+
+---
+
+## 7. Animations & Micro-interactions
+- **Fade-Up Transitions**: Pages and modals use a subtle `fade-in` animation (0.3s) for a smooth feel.
+- **Hover Transitions**: 200ms ease-in-out on all buttons and navigation elements.
+- **Scale Effects**: Slight scale-down (0.98) on active button states for tactile feedback.

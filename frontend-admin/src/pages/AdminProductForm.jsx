@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Upload, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../api/client';
-import FileInput from '../components/FileInput';
 
 const EMPTY_FORM = {
   name: '',
@@ -36,15 +36,17 @@ export default function AdminProductForm() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [form, setForm] = useState(EMPTY_FORM);
-  const [images, setImages] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  
+  // imageSlots will store either a File object (new upload) or a URL (existing)
+  const [imageSlots, setImageSlots] = useState([null, null, null]);
+  const [previews, setPreviews] = useState(['', '', '']);
 
   const looksLikeUuid = (value) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value || '');
 
   const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: () => api.get('/categories').then((r) => r.data.data || []),
-    staleTime: 1000 * 60 * 30, // 30 minutes - categories rarely change
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: productData, isLoading: loadingProduct } = useQuery({
@@ -55,23 +57,20 @@ export default function AdminProductForm() {
         const byId = await api.get('/products/id/' + id);
         return byId.data?.data;
       }
-
       if (looksLikeUuid(slug)) {
         const byIdFallback = await api.get('/products/id/' + slug);
         return byIdFallback.data?.data;
       }
-
       const bySlug = await api.get('/products/' + slug);
       return bySlug.data?.data;
     },
     retry: false,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60,
   });
 
   useEffect(() => {
     if (!productData) return;
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm({
       name: productData.name || '',
       description: productData.description || '',
@@ -88,69 +87,51 @@ export default function AdminProductForm() {
       certifications: Array.isArray(productData.certifications) ? productData.certifications.join(', ') : '',
     });
 
-    setImages(
-      (productData.images || []).map((img, idx) => ({
-        url: img.url,
-        publicId: img.publicId,
-        altText: img.altText || productData.name || '',
-        sortOrder: typeof img.sortOrder === 'number' ? img.sortOrder : idx,
-        isPrimary: Boolean(img.isPrimary),
-      }))
-    );
+    const existingImages = productData.images || [];
+    const newSlots = [null, null, null];
+    const newPreviews = ['', '', ''];
+
+    existingImages.slice(0, 3).forEach((img, idx) => {
+      newSlots[idx] = img; // store the image object to retain metadata
+      newPreviews[idx] = img.url;
+    });
+
+    setImageSlots(newSlots);
+    setPreviews(newPreviews);
   }, [productData]);
 
-  useEffect(() => {
-    if (!isEdit) return;
-    if (loadingProduct) return;
-    if (productData) return;
-    if (!(id || slug)) return;
+  const handleFileChange = (idx, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    toast.error('Unable to load product details for editing');
-  }, [isEdit, loadingProduct, productData, id, slug]);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newPreviews = [...previews];
+      newPreviews[idx] = reader.result;
+      setPreviews(newPreviews);
 
-  const uploadMut = useMutation({
-    mutationFn: async (files) => {
-      if (!files?.length) return [];
+      const newSlots = [...imageSlots];
+      newSlots[idx] = file;
+      setImageSlots(newSlots);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
-      const fd = new FormData();
-      files.forEach((file) => fd.append('images', file));
+  const removeImage = (idx) => {
+    const newPreviews = [...previews];
+    newPreviews[idx] = '';
+    setPreviews(newPreviews);
 
-      const { data } = await api.post('/uploads/images?folder=products', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      return data?.data || [];
-    },
-    onError: (err) => toast.error(err?.response?.data?.message || 'Image upload failed'),
-  });
-
-  const payload = useMemo(() => ({
-    name: form.name.trim(),
-    description: form.description.trim(),
-    shortDesc: form.shortDesc.trim(),
-    categoryId: form.categoryId,
-    price: Number(form.price),
-    mrp: Number(form.mrp),
-    unit: form.unit.trim() || 'kg',
-    stock: Number(form.stock),
-    lowStockAlert: Number(form.lowStockAlert),
-    sku: form.sku.trim(),
-    isFeatured: Boolean(form.isFeatured),
-    tags: toArray(form.tags),
-    certifications: toArray(form.certifications),
-    images: images.map((img, idx) => ({
-      url: img.url,
-      publicId: img.publicId,
-      altText: img.altText || form.name,
-      isPrimary: idx === 0,
-      sortOrder: idx,
-    })),
-  }), [form, images]);
+    const newSlots = [...imageSlots];
+    newSlots[idx] = null;
+    setImageSlots(newSlots);
+  };
 
   const saveMut = useMutation({
-    mutationFn: () => {
-      if (isEdit) return api.put('/products/' + productData.id, payload);
-      return api.post('/products', payload);
+    mutationFn: async (formData) => {
+      if (isEdit) return api.put('/products/' + productData.id, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return api.post('/products', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-products'] });
@@ -163,47 +144,45 @@ export default function AdminProductForm() {
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (!payload.name) return toast.error('Name is required');
-    if (!payload.categoryId) return toast.error('Category is required');
-    if (Number.isNaN(payload.price) || payload.price <= 0) return toast.error('Price must be greater than 0');
-    if (Number.isNaN(payload.mrp) || payload.mrp <= 0) return toast.error('MRP must be greater than 0');
-    if (Number.isNaN(payload.stock) || payload.stock < 0) return toast.error('Stock cannot be negative');
-    if (Number.isNaN(payload.lowStockAlert) || payload.lowStockAlert < 0) return toast.error('Low stock alert cannot be negative');
+    if (!form.name.trim()) return toast.error('Name is required');
+    if (!form.categoryId) return toast.error('Category is required');
+    if (Number.isNaN(Number(form.price)) || Number(form.price) <= 0) return toast.error('Price must be greater than 0');
+    if (Number.isNaN(Number(form.mrp)) || Number(form.mrp) <= 0) return toast.error('MRP must be greater than 0');
+    
+    // Primary image check
+    if (!imageSlots[0]) return toast.error('Primary image is required');
 
-    if (isEdit && !productData?.id) {
-      toast.error('Product data is still loading');
-      return;
+    const fd = new FormData();
+    Object.entries(form).forEach(([key, val]) => {
+      if (key === 'tags' || key === 'certifications') {
+        fd.append(key, toArray(val).join(','));
+      } else {
+        fd.append(key, val);
+      }
+    });
+
+    // Handle images
+    const existingImagesData = [];
+    imageSlots.forEach((slot, idx) => {
+      if (slot instanceof File) {
+        fd.append('images', slot);
+      } else if (slot && typeof slot === 'object' && slot.url) {
+        existingImagesData.push({
+          url: slot.url,
+          publicId: slot.publicId,
+          altText: slot.altText || form.name,
+          isPrimary: idx === 0,
+          sortOrder: idx
+        });
+      }
+    });
+
+    if (existingImagesData.length > 0) {
+      // Send existing images as JSON string if any
+      fd.append('imagesData', JSON.stringify(existingImagesData));
     }
 
-    saveMut.mutate();
-  };
-
-  const handleUploadSelection = async (e) => {
-    const files = Array.from(e.target.files || []);
-    setSelectedFiles(files);
-    if (!files.length) return;
-
-    const uploaded = await uploadMut.mutateAsync(files);
-    if (!uploaded.length) return;
-
-    setImages((prev) => [
-      ...prev,
-      ...uploaded.map((img, idx) => ({
-        url: img.url,
-        publicId: img.publicId,
-        altText: form.name || '',
-        isPrimary: prev.length === 0 && idx === 0,
-        sortOrder: prev.length + idx,
-      })),
-    ]);
-
-    toast.success('Image uploaded');
-    setSelectedFiles([]);
-    e.target.value = '';
-  };
-
-  const removeImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    saveMut.mutate(fd);
   };
 
   return (
@@ -335,43 +314,42 @@ export default function AdminProductForm() {
           />
         </div>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-semibold text-gray-700">Product Images</label>
-            <span className="text-xs text-gray-400">First image is used as primary</span>
-          </div>
-          <FileInput
-            accept="image/*"
-            multiple
-            onChange={handleUploadSelection}
-            disabled={uploadMut.isPending}
-            selectedFileCount={selectedFiles.length}
-          />
-          {uploadMut.isPending && (
-            <p className="text-xs text-gray-500">Uploading {selectedFiles.length || 'selected'} image(s)...</p>
-          )}
-
-          {images.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {images.map((img, idx) => (
-                <div key={img.publicId + idx} className="border border-gray-200 rounded-lg p-2 bg-white">
-                  <div className="aspect-square rounded-md overflow-hidden bg-gray-100">
-                    <img src={img.url} alt={img.altText || ''} className="w-full h-full object-cover" />
-                  </div>
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <span className="text-[11px] text-gray-500 truncate">{idx === 0 ? 'Primary' : 'Secondary'}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeImage(idx)}
-                      className="text-[11px] font-semibold text-red-500 hover:underline"
-                    >
-                      Remove
-                    </button>
-                  </div>
+        <div className="space-y-4">
+          <label className="block text-sm font-semibold text-gray-700">Product Images (Up to 3)</label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[0, 1, 2].map((idx) => (
+              <div key={idx} className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                  {idx === 0 ? 'Primary Image (Required)' : `Image ${idx + 1} (Optional)`}
+                </p>
+                <div className={`relative aspect-square rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden bg-gray-50/50 ${previews[idx] ? 'border-brand-primary/20' : 'border-gray-200 hover:border-gray-300'}`}>
+                  {previews[idx] ? (
+                    <>
+                      <img src={previews[idx]} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(idx)}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </>
+                  ) : (
+                    <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-4 text-center">
+                      <Upload className="w-6 h-6 text-gray-300 mb-2" />
+                      <span className="text-xs font-medium text-gray-500">Click to upload</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileChange(idx, e)}
+                      />
+                    </label>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

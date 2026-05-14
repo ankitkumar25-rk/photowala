@@ -1,6 +1,7 @@
 import express from 'express';
 import passport from 'passport';
-import { authRateLimiter } from '../middleware/rateLimit.js';
+import { body, validationResult } from 'express-validator';
+import { authRateLimiter, registrationRateLimiter } from '../middleware/rateLimit.js';
 import { authenticate } from '../middleware/auth.js';
 import * as authController from '../controllers/auth.controller.js';
 
@@ -12,8 +13,22 @@ const googleConfigured = Boolean(
   process.env.GOOGLE_CALLBACK_URL
 );
 
+const validateRegistration = [
+  body('name').notEmpty().withMessage('Name is required').trim(),
+  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
+  body('phone').optional().isLength({ min: 10, max: 10 }).withMessage('Phone must be 10 digits'),
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, message: errors.array()[0].msg, errors: errors.array() });
+    }
+    next();
+  }
+];
+
 // Local auth
-router.post('/register',      authRateLimiter, authController.register);
+router.post('/register',      registrationRateLimiter, validateRegistration, authController.register);
 router.post('/login',         authRateLimiter, authController.login);
 router.post('/logout',        authenticate,    authController.logout);
 router.post('/refresh',                        authController.refresh);

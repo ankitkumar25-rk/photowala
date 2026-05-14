@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createElement } from 'react';
 import { RotateCcw, ShieldCheck, Clock3, PackageCheck } from 'lucide-react';
 
@@ -32,14 +32,34 @@ export default function Returns() {
           ))}
         </div>
 
-        <div className="card p-6 space-y-4">
-          <h2 className="font-bold text-xl text-gray-900">How to request a return</h2>
-          <ol className="space-y-3 text-gray-600 text-sm">
-            <li>1. Open <Link to="/orders" className="text-brand-primary font-semibold hover:underline">My Orders</Link> and select the order.</li>
-            <li>2. Use the support/contact option or reach out with your order ID.</li>
-            <li>3. Our team will confirm eligibility and guide you through the return steps.</li>
-          </ol>
-          <p className="text-xs text-gray-500">Some personalized or custom-made items may not be eligible for return unless they arrive damaged or defective.</p>
+        <div className="card p-6 space-y-6">
+          <div>
+            <h2 className="font-bold text-xl text-gray-900 mb-4">How to request a return</h2>
+            <ol className="space-y-3 text-gray-600 text-sm">
+              <li>1. Open <Link to="/orders" className="text-brand-primary font-semibold hover:underline">My Orders</Link> and select the order.</li>
+              <li>2. Use the support/contact option or reach out with your order ID.</li>
+              <li>3. Our team will confirm eligibility and guide you through the return steps.</li>
+            </ol>
+          </div>
+
+          <div className="pt-6 border-t border-cream-200">
+            <h2 className="font-bold text-lg text-gray-900 mb-3">Service-Based Items</h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Please note that <span className="font-bold text-brand-primary">Service-based items (Laser Cutting, Machine Work) are non-refundable once production has started</span>. We recommend double-checking all specifications and files before confirming your service request.
+            </p>
+          </div>
+
+          <div className="pt-6 border-t border-cream-200">
+            <h2 className="font-bold text-lg text-gray-900 mb-3">Return Address</h2>
+            <p className="text-sm text-gray-600">
+              Eligible returns should be shipped to:<br />
+              <span className="font-bold text-gray-900">Photowala Gift</span><br />
+              Goyal Market, Gudha Gorji, Jhunjhunu,<br />
+              Rajasthan - 333022
+            </p>
+          </div>
+
+          <p className="text-xs text-gray-500 italic pt-4">Some personalized or custom-made items may not be eligible for return unless they arrive damaged or defective.</p>
         </div>
       </div>
     </div>

@@ -21,13 +21,6 @@ export default function Footer() {
             <p className="text-[#d7c4b0] text-sm leading-relaxed">
               Personalized photogifts, premium mementos, and celebration-ready keepsakes for every milestone.
             </p>
-            <div className="flex gap-3">
-              {[Instagram, Facebook, Twitter].map((Icon, i) => (
-                <a key={i} href="#" className="w-9 h-9 bg-white/8 rounded-lg flex items-center justify-center hover:bg-[#b88a2f] transition-colors border border-[#d8a45f]/40">
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Shop */}
@@ -89,7 +82,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2 text-[#d7c4b0] text-sm">
                 <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Bengaluru, Karnataka, India</span>
+                <span>Goyal Market, Gudha Gorji, Jhunjhunu, Rajasthan - 333022</span>
               </li>
             </ul>
             {/* Certifications */}

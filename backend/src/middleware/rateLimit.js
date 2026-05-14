@@ -38,3 +38,9 @@ export const authRateLimiter = rateLimit({
   windowSec: 15 * 60, 
   keyPrefix: 'rl:auth' 
 });
+
+export const registrationRateLimiter = rateLimit({
+  max: 5,
+  windowSec: 60 * 60, // 1 hour
+  keyPrefix: 'rl:register'
+});

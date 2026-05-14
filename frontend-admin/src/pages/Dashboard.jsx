@@ -19,22 +19,22 @@ function KPICard({ title, value, subtitle, icon: Icon, color = 'forest', trend }
   }[color] || {};
 
   return (
-    <div className="card p-5">
+    <div className="card p-4 sm:p-6">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-gray-500 text-sm font-medium">{title}</p>
-          <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
-          {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+        <div className="min-w-0">
+          <p className="text-gray-500 text-xs sm:text-sm font-medium truncate">{title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-800 mt-1">{value}</p>
+          {subtitle && <p className="text-[10px] sm:text-xs text-gray-400 mt-1 truncate">{subtitle}</p>}
           {trend !== undefined && (
-            <div className={`flex items-center gap-1 mt-2 text-xs font-semibold ${trend >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+            <div className={`flex items-center gap-1 mt-2 text-[10px] sm:text-xs font-semibold ${trend >= 0 ? 'text-green-600' : 'text-red-500'}`}>
               {trend >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
               {Math.abs(trend)}% vs last month
             </div>
           )}
         </div>
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{ backgroundColor: colors.bg }}>
-          {createElement(Icon, { className: 'w-5 h-5', style: { color: colors.icon } })}
+          {createElement(Icon, { className: 'w-5 h-5 sm:w-6 sm:h-6', style: { color: colors.icon } })}
         </div>
       </div>
     </div>
@@ -152,12 +152,12 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-        <p className="text-gray-400 text-sm mt-0.5">Welcome back! Here's what's happening.</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Dashboard</h1>
+        <p className="text-gray-400 text-xs sm:text-sm mt-0.5">Welcome back! Here's what's happening.</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <KPICard
           title="Total Revenue"
           value={`₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`}

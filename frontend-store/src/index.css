@@ -207,7 +207,7 @@ hr {
 .input-field:focus {
   outline: none;
   border-color: var(--brand-secondary);
-  box-shadow: 0 0 0 3px rgba(200, 82, 18, 0.18);
+  box-shadow: 0 0 0 3px rgba(184, 138, 47, 0.15);
 }
 
 .badge-featured {

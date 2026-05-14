@@ -7,21 +7,22 @@ if (!valkeyUrl) {
 }
 
 const valkey = new Redis(valkeyUrl, {
-  tls: {}, // Required for Upstash
+  // tls: {}, // Removed Upstash-specific TLS requirement
+  maxRetriesPerRequest: null,
   retryStrategy: (times) => {
-    const delay = Math.min(times * 100, 2000);
-    return times <= 5 ? delay : null; // Max 5 retries
+    const delay = Math.min(times * 50, 2000);
+    return times <= 10 ? delay : null; // Increased retries for local stability
   },
   reconnectOnError: (err) => {
     const targetError = 'READONLY';
     if (err.message.includes(targetError)) {
-      return true; // Reconnect on READONLY errors
+      return true;
     }
     return false;
   },
   enableOfflineQueue: true,
-  connectTimeout: 10000,
-  commandTimeout: 5000,
+  connectTimeout: 5000,
+  commandTimeout: 3000,
   lazyConnect: false,
 });
 

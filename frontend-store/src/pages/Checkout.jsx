@@ -66,7 +66,19 @@ function QuickAddressModal({ onClose, onSave }) {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Phone *</label>
-              <input type="number" name="phone" value={form.phone} onChange={handle} required className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="9876543210" />
+              <input 
+                type="tel" 
+                name="phone" 
+                value={form.phone} 
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  if (val.length <= 10) setForm(f => ({ ...f, phone: val }));
+                }} 
+                required 
+                pattern="[0-9]{10}"
+                className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" 
+                placeholder="10-digit mobile number" 
+              />
             </div>
           </div>
 
@@ -101,7 +113,19 @@ function QuickAddressModal({ onClose, onSave }) {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Pincode *</label>
-              <input type="number" name="pincode" value={form.pincode} onChange={handle} required maxLength={6} className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" placeholder="400001" />
+              <input 
+                type="text" 
+                name="pincode" 
+                value={form.pincode} 
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  if (val.length <= 6) setForm(f => ({ ...f, pincode: val }));
+                }} 
+                required 
+                pattern="[0-9]{6}"
+                className="w-full px-4 py-3 rounded-2xl border-2 border-cream-200 focus:border-brand-secondary focus:outline-none transition-colors" 
+                placeholder="6 digits" 
+              />
             </div>
           </div>
 

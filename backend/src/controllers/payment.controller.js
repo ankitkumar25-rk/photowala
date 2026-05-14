@@ -141,7 +141,14 @@ export const verifyPayment = asyncHandler(async (req, res) => {
             paymentMethod: 'RAZORPAY',
             status: 'CONFIRMED'
           },
-        })
+        }),
+    // Clear cart after successful product order
+    ...(orderType === 'ORDER' ? [
+      prisma.cart.update({
+        where: { userId: req.user.id },
+        data: { items: { deleteMany: {} } }
+      })
+    ] : [])
   ]);
 
   // Send confirmation email
@@ -216,7 +223,14 @@ export const confirmCOD = asyncHandler(async (req, res) => {
         status: 'COD_PENDING',
         paymentMethod: 'COD'
       }
-    })
+    }),
+    // Clear cart after successful COD product order
+    ...(orderType === 'ORDER' ? [
+      prisma.cart.update({
+        where: { userId: req.user.id },
+        data: { items: { deleteMany: {} } }
+      })
+    ] : [])
   ]);
 
   res.json({
@@ -287,6 +301,15 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
             }
           });
         }
+        
+        // Clear cart after successful product order via webhook
+        if (p.orderType === 'ORDER') {
+          await tx.cart.update({
+            where: { userId: p.userId },
+            data: { items: { deleteMany: {} } }
+          });
+        }
+
         return p;
       });
 

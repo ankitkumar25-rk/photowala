@@ -15,10 +15,10 @@ A comprehensive and secure e-commerce platform specifically designed for selling
 
 ### Frontend (Store & Admin)
 - **Framework**: React (Vite-based SPA)
-- **Styling**: Tailwind CSS (Premium brand theme: Deep browns, gold accents)
-- **State Management**: Zustand & Context API
-- **Data Fetching**: TanStack React Query
-- **Charts**: Recharts (Admin analytics)
+- **Styling**: Tailwind CSS (Luxury brand theme: Mobile-first responsive layouts, glassmorphism, HSL-tailored colors)
+- **State Management**: Zustand (Atomic stores) & Context API
+- **Data Fetching**: TanStack React Query (Caching & Synchronization)
+- **Charts**: Recharts (Administrative analytics)
 
 ---
 

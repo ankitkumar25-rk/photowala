@@ -2,6 +2,7 @@ import prisma from '../lib/prisma.js';
 import { createError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
 import asyncHandler from '../utils/asyncHandler.js';
+import { uploadToCloudinary } from '../config/cloudinary.js';
 
 const imageUrlSchema = z.string().refine((value) => {
   if (typeof value !== 'string' || !value.trim()) return false;
@@ -15,23 +16,23 @@ const productSchema = z.object({
   description:   z.string().optional(),
   shortDesc:     z.string().optional(),
   categoryId:    z.string().uuid(),
-  price:         z.number().positive(),
-  mrp:           z.number().positive(),
+  price:         z.coerce.number().positive(),
+  mrp:           z.coerce.number().positive(),
   unit:          z.string().default('kg'),
-  stock:         z.number().int().min(0).default(0),
-  lowStockAlert: z.number().int().min(0).default(10),
+  stock:         z.coerce.number().int().min(0).default(0),
+  lowStockAlert: z.coerce.number().int().min(0).default(10),
   sku:           z.string().optional(),
-  isFeatured:    z.boolean().default(false),
-  isActive:      z.boolean().default(true),
-  tags:          z.array(z.string()).default([]),
-  certifications: z.array(z.string()).default([]),
+  isFeatured:    z.coerce.boolean().default(false),
+  isActive:      z.coerce.boolean().default(true),
+  tags:          z.preprocess((val) => (typeof val === 'string' ? val.split(',').map(s => s.trim()).filter(Boolean) : val), z.array(z.string())).default([]),
+  certifications: z.preprocess((val) => (typeof val === 'string' ? val.split(',').map(s => s.trim()).filter(Boolean) : val), z.array(z.string())).default([]),
   nutritionInfo: z.any().optional(),
   images: z.array(z.object({
     url: imageUrlSchema,
     publicId: z.string().min(1),
     altText: z.string().optional(),
-    isPrimary: z.boolean().optional(),
-    sortOrder: z.number().int().min(0).optional(),
+    isPrimary: z.coerce.boolean().optional(),
+    sortOrder: z.coerce.number().int().min(0).optional(),
   })).optional(),
 });
 
@@ -95,7 +96,7 @@ export const listProducts = asyncHandler(async (req, res) => {
       orderBy: { [sort]: order },
       include: {
         category: { select: { name: true, slug: true } },
-        images: { where: { isPrimary: true }, take: 1 },
+        images: { orderBy: { sortOrder: 'asc' } },
         _count: { select: { reviews: true } },
       },
     }),
@@ -120,7 +121,7 @@ export const getFeatured = asyncHandler(async (req, res) => {
     take: 8,
     include: {
       category: { select: { name: true, slug: true } },
-      images: { where: { isPrimary: true }, take: 1 },
+      images: { orderBy: { sortOrder: 'asc' } },
     },
   });
   res.json({ success: true, data: products.map(normalizeProductMedia) });
@@ -140,7 +141,7 @@ export const searchProducts = asyncHandler(async (req, res) => {
       ],
     },
     take: Number(limit),
-    include: { images: { where: { isPrimary: true }, take: 1 } },
+    include: { images: { orderBy: { sortOrder: 'asc' } } },
   });
   res.json({ success: true, data: products.map(normalizeProductMedia) });
 });
@@ -186,8 +187,30 @@ export const createProduct = asyncHandler(async (req, res) => {
   if (!data.slug) data.slug = generateSlug(data.name);
   data.sku = normalizeOptionalSku(data.sku);
 
-  const images = Array.isArray(data.images) ? data.images : [];
-  delete data.images;
+  let images = [];
+  if (req.body.imagesData) {
+    try {
+      images = JSON.parse(req.body.imagesData);
+    } catch (e) {
+      console.error('Failed to parse imagesData:', e);
+    }
+  }
+
+  // Handle file uploads if present
+  if (req.files && req.files.length > 0) {
+    const uploaded = await Promise.all(
+      req.files.slice(0, 3).map((file) => uploadToCloudinary(file.buffer, { folder: 'manufact/products' }))
+    );
+    uploaded.forEach((item, idx) => {
+      images.push({
+        url: item.secure_url,
+        publicId: item.public_id,
+        altText: data.name,
+        isPrimary: images.length === 0 && idx === 0,
+        sortOrder: images.length + idx,
+      });
+    });
+  }
 
   const normalizedImages = images.map((img, idx) => ({
     url: img.url,
@@ -200,7 +223,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   const product = await prisma.product.create({
     data: {
       ...data,
-      images: normalizedImages.length ? { create: normalizedImages } : undefined,
+      images: normalizedImages.length ? { create: normalizedImages.slice(0, 3) } : undefined,
     },
     include: { images: true },
   });
@@ -217,14 +240,35 @@ export const updateProduct = asyncHandler(async (req, res) => {
     data.sku = normalizedSku;
   }
 
-  const hasImages = Array.isArray(data.images);
-  const images = hasImages ? data.images : [];
-  delete data.images;
+  let images = [];
+  if (req.body.imagesData) {
+    try {
+      images = JSON.parse(req.body.imagesData);
+    } catch (e) {
+      console.error('Failed to parse imagesData:', e);
+    }
+  }
+
+  // Handle file uploads if present
+  if (req.files && req.files.length > 0) {
+    const uploaded = await Promise.all(
+      req.files.slice(0, 3).map((file) => uploadToCloudinary(file.buffer, { folder: 'manufact/products' }))
+    );
+    uploaded.forEach((item, idx) => {
+      images.push({
+        url: item.secure_url,
+        publicId: item.public_id,
+        altText: data.name || 'Product Image',
+        isPrimary: images.length === 0 && idx === 0,
+        sortOrder: images.length + idx,
+      });
+    });
+  }
 
   const normalizedImages = images.map((img, idx) => ({
     url: img.url,
     publicId: img.publicId,
-    altText: img.altText || data.name,
+    altText: img.altText || data.name || 'Product Image',
     isPrimary: idx === 0 ? true : Boolean(img.isPrimary),
     sortOrder: img.sortOrder ?? idx,
   }));
@@ -233,10 +277,10 @@ export const updateProduct = asyncHandler(async (req, res) => {
     where: { id: req.params.id },
     data: {
       ...data,
-      images: hasImages
+      images: normalizedImages.length > 0
         ? {
             deleteMany: {},
-            create: normalizedImages,
+            create: normalizedImages.slice(0, 3),
           }
         : undefined,
     },

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import ZoomableImage from '../components/ZoomableImage';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingCart, Heart, Share2, Star,
@@ -46,35 +47,6 @@ function avgRating(reviews) {
 /* ------ Image Gallery ------ */
 function ImageGallery({ images, name }) {
   const [active, setActive] = useState(0);
-  const [zoomed, setZoomed] = useState(false);
-  const imagesRef = useRef(images);
-
-  // Keep ref updated with latest images
-  useEffect(() => {
-    imagesRef.current = images;
-  }, [images]);
-
-  useEffect(() => {
-    if (!images?.length) return;
-    const handler = (e) => {
-      if (e.key === 'ArrowLeft') {
-        setActive((a) => (a - 1 + imagesRef.current.length) % imagesRef.current.length);
-      }
-      if (e.key === 'ArrowRight') {
-        setActive((a) => (a + 1) % imagesRef.current.length);
-      }
-      if (e.key === 'Escape') setZoomed(false);
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [images.length]);
-  const prev = useCallback(() => {
-    setActive((a) => (a - 1 + imagesRef.current.length) % imagesRef.current.length);
-  }, []);
-
-  const next = useCallback(() => {
-    setActive((a) => (a + 1) % imagesRef.current.length);
-  }, []);
 
   if (!images?.length) {
     return (
@@ -85,92 +57,35 @@ function ImageGallery({ images, name }) {
   }
 
   return (
-    <div className="space-y-3">
-      {/* Main image */}
-      <div className="relative aspect-square rounded-3xl overflow-hidden bg-cream-100 border border-cream-200 group">
-         <img
-           src={images[active]?.url}
-           alt={images[active]?.altText || name}
-           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-zoom-in"
-           onClick={() => setZoomed(true)}
-           loading="lazy"
-         />
-        {/* Nav arrows */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={prev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
-            >
-              <ChevronLeft className="w-5 h-5 text-gray-700" />
-            </button>
-            <button
-              onClick={next}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
-            >
-              <ChevronRight className="w-5 h-5 text-gray-700" />
-            </button>
-          </>
-        )}
-        {/* Zoom hint */}
-        <button
-          onClick={() => setZoomed(true)}
-          className="absolute bottom-3 right-3 w-8 h-8 rounded-lg bg-white/80 backdrop-blur-sm shadow flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
-        >
-          <ZoomIn className="w-4 h-4 text-gray-600" />
-        </button>
-        {/* Dot indicators */}
-        {images.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setActive(i)}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === active ? 'w-5 bg-brand-secondary' : 'w-1.5 bg-white/60'
-                }`}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+    <div className="space-y-4">
+      {/* Main image with zoom */}
+      <ZoomableImage 
+        src={images[active]?.url} 
+        alt={images[active]?.altText || name} 
+        className="aspect-square rounded-3xl overflow-hidden bg-cream-100 border border-cream-200 group shadow-lg"
+      />
 
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {images.map((img, i) => (
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          {images.slice(0, 3).map((img, i) => (
             <button
-              key={img.id}
+              key={img.id || i}
               onClick={() => setActive(i)}
-              className={`shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                i === active ? 'border-brand-secondary shadow-md' : 'border-cream-200 hover:border-brand-secondary'
+              className={`shrink-0 w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
+                i === active 
+                  ? 'border-brand-primary shadow-lg scale-105' 
+                  : 'border-cream-200 hover:border-brand-primary hover:scale-105'
               }`}
             >
-               <img src={img.url} alt={img.altText || name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
+               <img 
+                 src={img.url} 
+                 alt={img.altText || name} 
+                 className="w-full h-full object-cover" 
+                 loading="lazy" 
+               />
             </button>
           ))}
-        </div>
-      )}
-
-      {/* Zoom modal */}
-      {zoomed && (
-        <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setZoomed(false)}
-        >
-           <img
-             src={images[active]?.url}
-             alt={name}
-             className="max-w-full max-h-full object-contain rounded-2xl"
-             onClick={(e) => e.stopPropagation()}
-             loading="lazy"
-           />
-          <button
-            onClick={() => setZoomed(false)}
-            className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors text-xl"
-          >
-            <X className="w-6 h-6" />
-          </button>
         </div>
       )}
     </div>

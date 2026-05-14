@@ -130,14 +130,14 @@ export default function Navbar() {
                   <div className="fixed md:absolute left-4 right-4 md:left-auto md:right-0 top-4 md:top-14 w-auto md:w-96 bg-cream-50 rounded-2xl shadow-[0_20px_50px_rgba(122,50,24,0.15)] border border-brand-primary/20 p-3 md:p-4 z-[100] animate-in fade-in zoom-in-95 slide-in-from-top-4 md:slide-in-from-top-2 duration-300 origin-top-right">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-primary/40" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-secondary" />
                         <input
                           autoFocus
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Search premium products..."
-                          className="input-field pl-10 text-sm bg-white"
+                          className="input-field pl-11 text-sm bg-white"
                         />
                       </div>
                       <button 

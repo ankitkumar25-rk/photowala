@@ -6,6 +6,7 @@ import {
   Pencil, Download, ChevronRight
 } from 'lucide-react';
 import { ordersApi } from '../api';
+import ZoomableImage from '../components/ZoomableImage';
 import toast from 'react-hot-toast';
 
 const STATUSES = [
@@ -238,10 +239,10 @@ export default function OrderDetail() {
                 <div key={item.id} className="flex gap-4 py-6 first:pt-0 last:pb-0">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-cream-100 border border-cream-200 shrink-0">
                     {item.product?.images?.[0] ? (
-                      <img
+                      <ZoomableImage
                         src={item.product.images[0].url}
                         alt={item.productName}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -391,4 +392,3 @@ export default function OrderDetail() {
     </div>
   );
 }
-

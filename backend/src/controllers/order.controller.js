@@ -115,11 +115,6 @@ export const createOrder = asyncHandler(async (req, res) => {
       include: { items: true },
     });
 
-    await tx.cart.update({
-      where: { id: cart.id },
-      data: { items: { deleteMany: {} } },
-    });
-
     return newOrder;
   });
 
@@ -154,13 +149,27 @@ export const getUserOrders = asyncHandler(async (req, res) => {
 });
 
 export const getOrder = asyncHandler(async (req, res) => {
-  const order = await prisma.order.findUnique({
-    where: { id: req.params.id },
+  const { id } = req.params;
+  
+  // Try finding by ID (UUID) first
+  let order = await prisma.order.findUnique({
+    where: { id },
     include: {
       items: { include: { product: { include: { images: { take: 1 } } } } },
       address: true,
     },
   });
+
+  // If not found by ID, try finding by orderNumber
+  if (!order) {
+    order = await prisma.order.findUnique({
+      where: { orderNumber: id },
+      include: {
+        items: { include: { product: { include: { images: { take: 1 } } } } },
+        address: true,
+      },
+    });
+  }
   if (!order) throw createError('Order not found', 404);
   if (order.userId !== req.user.id && req.user.role === 'CUSTOMER') throw createError('Forbidden', 403);
   res.json({ success: true, data: order });
