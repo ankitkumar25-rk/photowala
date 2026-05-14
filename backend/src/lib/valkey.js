@@ -10,8 +10,8 @@ const valkey = valkeyUrl ? new Redis(valkeyUrl, {
   // tls: {}, // Removed Upstash-specific TLS requirement
   maxRetriesPerRequest: 20,
   retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000);
-    return times <= 10 ? delay : null; // Increased retries for local stability
+    // Keep retrying forever with a maximum delay of 5 seconds
+    return Math.min(times * 100, 5000);
   },
   reconnectOnError: (err) => {
     const targetError = 'READONLY';

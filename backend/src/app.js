@@ -73,7 +73,9 @@ app.use(cors({
       callback(null, true);
     } else {
       console.warn(`✖ CORS blocked request from origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      const corsError = new Error('CORS blocked: This origin is not allowed to access the API');
+      corsError.statusCode = 403;
+      callback(corsError);
     }
   },
   credentials: true,
@@ -102,10 +104,11 @@ const { Pool } = pkg;
 const PgStore = PgSession(session);
 
 let sessionStore;
-if (redisUrl && valkey) {
-  console.log('✔ Redis/Valkey session storage enabled');
+// Only use RedisStore if valkey is initialized and not in a permanently closed state
+if (redisUrl && valkey && valkey.status !== 'end' && valkey.status !== 'closed') {
+  console.log('✔ Redis/Valkey session storage enabled (Status:', valkey.status, ')');
   sessionStore = new RedisStore({ client: valkey, prefix: 'sess:' });
-} else {
+} else if (process.env.DATABASE_URL) {
   console.log('✔ Redis/Valkey not available, using PostgreSQL for session storage');
   sessionStore = new PgStore({
     pool: new Pool({
@@ -113,7 +116,13 @@ if (redisUrl && valkey) {
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     }),
     tableName: 'session',
-    createTableIfMissing: false
+    createTableIfMissing: true
+  });
+}
+
+if (sessionStore) {
+  sessionStore.on('error', (err) => {
+    console.error('✖ Session store error:', err.message);
   });
 }
 
