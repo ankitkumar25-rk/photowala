@@ -105,55 +105,40 @@ export default function AdminLayout() {
       {/* Main Content Area */}
       <div className="flex min-w-0 flex-col lg:min-h-screen">
         {/* Top Navigation Bar */}
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-[#5b3f2f]/5 px-6 sm:px-8 bg-white/80 backdrop-blur-xl transition-all duration-300">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2.5 rounded-2xl bg-white border border-[#5b3f2f]/10 shadow-sm text-[#5b3f2f] hover:bg-[#f5e7d8] transition-all active:scale-95"
-              aria-label="Toggle sidebar"
-            >
-              {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+        <header className="glass-surface sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[#5b3f2f]/10 px-4 sm:px-6">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 rounded-xl bg-white border border-[#5b3f2f]/10 shadow-sm text-[#5b3f2f] hover:bg-[#f5e7d8] transition-all"
+            aria-label="Toggle sidebar"
+          >
+            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
 
-            <div className="hidden sm:flex flex-col">
-              <h2 className="text-[10px] font-black tracking-[0.25em] text-brand-secondary uppercase leading-none mb-1 opacity-60">
-                Current Workspace
-              </h2>
-              <span className="text-sm font-bold text-brand-primary">
-                {NAV.find(n => n.to === location.pathname)?.label || 'Photowala Admin'}
-              </span>
-            </div>
+          <div className="hidden sm:block">
+            <h2 className="text-sm font-black tracking-widest text-[#5b3f2f] uppercase opacity-40">
+              {NAV.find(n => n.to === location.pathname)?.label || 'Photowala Admin'}
+            </h2>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="ml-auto flex items-center gap-4">
             <a 
               href={storeUrl} 
               target="_blank" 
               rel="noreferrer" 
-              className="group flex items-center gap-2.5 rounded-full border border-brand-primary/10 bg-white px-5 py-2 text-[10px] font-black tracking-widest text-brand-primary uppercase transition-all hover:bg-brand-primary hover:text-white hover:border-brand-primary hover:shadow-lg hover:shadow-brand-primary/20 active:scale-95"
+              className="flex items-center gap-2 rounded-full border border-[#5b3f2f]/20 bg-white/70 px-4 py-1.5 text-[10px] font-black tracking-wider text-[#5b3f2f] uppercase transition-all hover:bg-[#5b3f2f] hover:text-white"
             >
-              <ExternalLink size={14} className="transition-transform group-hover:rotate-12" />
-              <span className="hidden md:inline">Visit Storefront</span>
+              <ExternalLink size={12} />
+              <span className="hidden xs:inline">Storefront</span>
             </a>
             
-            <div className="flex items-center gap-3 pl-6 border-l border-brand-primary/5">
-              <div className="hidden sm:flex flex-col items-end text-right">
-                <span className="text-[10px] font-black tracking-wider text-brand-primary uppercase leading-none mb-1">
-                  {user?.name || 'Admin'}
-                </span>
-                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                  {user?.role || 'Super Admin'}
-                </span>
-              </div>
-              <div className="h-11 w-11 rounded-2xl border-2 border-white shadow-xl ring-1 ring-brand-primary/5 overflow-hidden transition-transform hover:scale-105 cursor-pointer">
-                {user?.avatarUrl ? (
-                  <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center bg-brand-surface text-brand-primary font-black text-xs uppercase">
-                    {user?.name?.[0]?.toUpperCase()}
-                  </div>
-                )}
-              </div>
+            <div className="h-9 w-9 rounded-full border-2 border-white shadow-sm ring-1 ring-[#5b3f2f]/10 overflow-hidden">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center bg-[#f5e7d8] text-[#5b3f2f] font-bold text-xs">
+                  {user?.name?.[0]?.toUpperCase()}
+                </div>
+              )}
             </div>
           </div>
         </header>
