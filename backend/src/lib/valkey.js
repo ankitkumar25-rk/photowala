@@ -1,14 +1,14 @@
 import Redis from 'ioredis';
 
-const valkeyUrl = process.env.VALKEY_URL;
+const valkeyUrl = process.env.VALKEY_URL || process.env.REDIS_URL;
 
 if (!valkeyUrl) {
-  throw new Error('VALKEY_URL is not defined in environment variables');
+  console.warn('⚠ VALKEY_URL is not defined. Redis-based features will be disabled.');
 }
 
-const valkey = new Redis(valkeyUrl, {
+const valkey = valkeyUrl ? new Redis(valkeyUrl, {
   // tls: {}, // Removed Upstash-specific TLS requirement
-  maxRetriesPerRequest: null,
+  maxRetriesPerRequest: 20,
   retryStrategy: (times) => {
     const delay = Math.min(times * 50, 2000);
     return times <= 10 ? delay : null; // Increased retries for local stability
@@ -24,17 +24,19 @@ const valkey = new Redis(valkeyUrl, {
   connectTimeout: 5000,
   commandTimeout: 3000,
   lazyConnect: false,
-});
+}) : null;
 
-if (process.env.NODE_ENV !== 'production') {
+if (valkey && process.env.NODE_ENV !== 'production') {
   valkey.on('connect', () => console.log('✔ Valkey connected'));
   valkey.on('error', (err) => console.error('✖ Valkey error:', err.message));
 }
 
 // Graceful shutdown
 const shutdown = async () => {
-  console.log('Shutting down Valkey...');
-  await valkey.quit();
+  if (valkey) {
+    console.log('Shutting down Valkey...');
+    await valkey.quit();
+  }
 };
 
 process.on('SIGTERM', shutdown);

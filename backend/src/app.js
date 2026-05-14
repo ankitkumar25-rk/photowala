@@ -102,11 +102,11 @@ const { Pool } = pkg;
 const PgStore = PgSession(session);
 
 let sessionStore;
-if (redisUrl) {
+if (redisUrl && valkey) {
   console.log('✔ Redis/Valkey session storage enabled');
   sessionStore = new RedisStore({ client: valkey, prefix: 'sess:' });
 } else {
-  console.log('✔ No Redis/Valkey URL found, using PostgreSQL for session storage');
+  console.log('✔ Redis/Valkey not available, using PostgreSQL for session storage');
   sessionStore = new PgStore({
     pool: new Pool({
       connectionString: process.env.DATABASE_URL,
