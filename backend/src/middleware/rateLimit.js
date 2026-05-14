@@ -2,8 +2,8 @@ import valkey from '../lib/valkey.js';
 
 export const rateLimit = ({ max, windowSec, keyPrefix = 'rl' }) => {
   return async (req, res, next) => {
-    // Skip if no valkey connection or it is not ready (fallback to allow request)
-    if (!valkey || valkey.status !== 'ready') return next();
+    // Skip if no valkey connection (fallback to allow request)
+    if (!valkey) return next();
 
     const ip = req.headers['x-forwarded-for'] || req.ip;
     const key = `${keyPrefix}:${ip}`;

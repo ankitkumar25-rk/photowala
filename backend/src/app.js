@@ -34,7 +34,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const sessionSecret = process.env.SESSION_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-session-secret' : '');
-const redisUrl = process.env.VALKEY_URL || process.env.REDIS_URL;
+const redisUrl = process.env.REDIS_URL;
 
 if (!sessionSecret) {
   throw new Error('SESSION_SECRET must be set in production');
@@ -73,9 +73,7 @@ app.use(cors({
       callback(null, true);
     } else {
       console.warn(`✖ CORS blocked request from origin: ${origin}`);
-      const corsError = new Error('CORS blocked: This origin is not allowed to access the API');
-      corsError.statusCode = 403;
-      callback(corsError);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -104,27 +102,17 @@ const { Pool } = pkg;
 const PgStore = PgSession(session);
 
 let sessionStore;
-const isLocalRedis = redisUrl?.includes('localhost') || redisUrl?.includes('127.0.0.1');
-const shouldPreferRedis = redisUrl && valkey && (!isLocalRedis || process.env.NODE_ENV !== 'production');
-
-if (shouldPreferRedis) {
-  console.log('✔ Redis/Valkey session storage candidate identified (Status:', valkey.status, ')');
+if (redisUrl) {
   sessionStore = new RedisStore({ client: valkey, prefix: 'sess:' });
-} else if (process.env.DATABASE_URL) {
-  console.log('✔ Redis/Valkey not available, using PostgreSQL for session storage');
+} else {
+  console.log('✔ No REDIS_URL found, using PostgreSQL for session storage');
   sessionStore = new PgStore({
     pool: new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     }),
     tableName: 'session',
-    createTableIfMissing: true
-  });
-}
-
-if (sessionStore) {
-  sessionStore.on('error', (err) => {
-    console.error('✖ Session store error:', err.message);
+    createTableIfMissing: false
   });
 }
 

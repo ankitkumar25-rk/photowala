@@ -49,50 +49,42 @@ export default function AdminOrders() {
       </div>
 
       <div className="card">
-        {/* Mobile View - Card Based */}
-        <div className="sm:hidden divide-y divide-[#f5e7d8]/50">
-          {isLoading ? Array(5).fill(0).map((_, i) => (
-            <div key={i} className="p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <div className="h-4 bg-cream-200 rounded animate-pulse w-32" />
-                <div className="h-6 bg-cream-200 rounded-full animate-pulse w-20" />
-              </div>
-              <div className="h-3 bg-cream-200 rounded animate-pulse w-full" />
-              <div className="h-10 bg-cream-200 rounded-xl animate-pulse w-full" />
+        <div className="md:hidden divide-y divide-gray-100">
+          {isLoading ? Array(6).fill(0).map((_, i) => (
+            <div key={i} className="p-4 space-y-2">
+              <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+              <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+              <div className="h-8 bg-gray-100 rounded animate-pulse w-full" />
             </div>
           )) : data?.data?.map((order) => (
-            <div key={order.id} className="p-4 space-y-4 luxury-grain relative">
+            <div key={order.id} className="p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-widest text-brand-secondary font-bold mb-0.5">Order Number</p>
-                  <p className="text-sm font-mono font-bold text-brand-primary break-all">{order.orderNumber}</p>
+                  <p className="text-xs font-mono font-semibold text-gray-700 break-all">{order.orderNumber}</p>
+                  <p className="text-sm font-semibold text-gray-800 mt-1 truncate">{order.user?.name || 'Guest'}</p>
+                  <p className="text-xs text-gray-400 truncate">{order.user?.email || 'No email'}</p>
                 </div>
                 <span className={'badge-status ' + order.status.toLowerCase()}>{order.status}</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-brand-secondary font-bold">Customer</p>
-                  <p className="text-xs font-bold text-brand-primary truncate">{order.user?.name || 'Guest'}</p>
-                  <p className="text-[9px] text-gray-400 truncate">{order.user?.email || 'No email'}</p>
+                  <p className="text-gray-400 uppercase tracking-wider">Total</p>
+                  <p className="text-sm font-bold text-gray-800">₹{Number(order.total).toLocaleString('en-IN')}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-brand-secondary font-bold">Amount</p>
-                  <p className="text-sm font-bold text-brand-primary">₹{Number(order.total).toLocaleString('en-IN')}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-widest text-brand-secondary font-bold">Payment</p>
-                  <span className={'badge-status mt-1 ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
+                  <p className="text-gray-400 uppercase tracking-wider">Payment</p>
+                  <span className={'badge-status ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
                     {order.payment?.status || 'Pending'}
                   </span>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest text-brand-secondary font-bold">Date</p>
-                  <p className="text-xs font-bold text-brand-primary">{new Date(order.createdAt).toLocaleDateString('en-IN')}</p>
+                  <p className="text-gray-400 uppercase tracking-wider">Date</p>
+                  <p className="text-gray-700">{new Date(order.createdAt).toLocaleDateString('en-IN')}</p>
                 </div>
               </div>
 
-              <div className="space-y-3 pt-3 border-t border-[#f5e7d8]/50">
+              <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <select
                     className="input-field py-2 text-xs flex-1"
@@ -101,13 +93,13 @@ export default function AdminOrders() {
                   >
                     {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
-                  <Link to={'/orders/' + order.id} className="btn-secondary py-2 px-4 text-[10px]">
+                  <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline whitespace-nowrap">
                     View
                   </Link>
                 </div>
                 <input
                   type="text"
-                  className="input-field py-2 text-xs w-full"
+                  className="input-field py-1 text-xs w-full"
                   placeholder="Tracking #"
                   defaultValue={order.trackingNumber || ''}
                   onBlur={(e) => {
@@ -121,58 +113,55 @@ export default function AdminOrders() {
           ))}
 
           {!isLoading && (!data?.data || data.data.length === 0) && (
-            <div className="p-8 text-center">
-              <p className="text-sm text-gray-500 italic">No orders match the selected criteria.</p>
-            </div>
+            <p className="p-4 text-sm text-gray-500">No orders found.</p>
           )}
         </div>
 
-        {/* Desktop View - Horizontal Scroll Table */}
-        <div className="hidden sm:block overflow-x-auto rounded-xl no-scrollbar">
-          <table className="w-full min-w-[1000px]">
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full min-w-200">
             <thead>
-              <tr className="border-b border-[#f5e7d8]/50">
-                {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Tracking #', 'Actions'].map(h => (
-                  <th key={h} className="text-left text-[10px] font-black text-brand-primary/40 uppercase tracking-widest px-4 py-5">{h}</th>
+              <tr className="border-b border-gray-100">
+                {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Tracking #', 'Details'].map(h => (
+                  <th key={h} className="text-left text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest px-3 sm:px-4 py-4">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#f5e7d8]/30">
+            <tbody className="divide-y divide-gray-50">
               {isLoading ? Array(8).fill(0).map((_, i) => (
-                <tr key={i}>{Array(9).fill(0).map((_, j) => (
-                  <td key={j} className="px-4 py-4"><div className="h-4 bg-cream-100 rounded animate-pulse" /></td>
+                <tr key={i}>{Array(8).fill(0).map((_, j) => (
+                  <td key={j} className="px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>
                 ))}</tr>
               )) : data?.data?.map(order => (
-                <tr key={order.id} className="hover:bg-brand-surface/30 transition-colors group">
-                  <td className="px-4 py-4 text-xs font-mono font-bold text-brand-primary">{order.orderNumber}</td>
-                  <td className="px-4 py-4 text-xs">
-                    <p className="font-bold text-brand-primary">{order.user?.name}</p>
-                    <p className="text-[10px] text-gray-400">{order.user?.email}</p>
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-3 sm:px-4 py-3 text-sm font-mono font-semibold text-gray-700">{order.orderNumber}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm">
+                    <p className="font-medium text-gray-800">{order.user?.name}</p>
+                    <p className="text-xs text-gray-400">{order.user?.email}</p>
                   </td>
-                  <td className="px-4 py-4 text-sm font-bold text-brand-primary">₹{Number(order.total).toLocaleString('en-IN')}</td>
-                  <td className="px-4 py-4 text-[10px]">
+                  <td className="px-3 sm:px-4 py-3 text-sm font-bold text-gray-800">₹{Number(order.total).toLocaleString('en-IN')}</td>
+                  <td className="px-3 sm:px-4 py-3 text-xs">
                     <span className={'badge-status ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
                       {order.payment?.status || 'Pending'}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-[10px]">
+                  <td className="px-3 sm:px-4 py-3 text-xs">
                     <span className={'badge-status ' + order.status.toLowerCase()}>{order.status}</span>
                   </td>
-                  <td className="px-4 py-4 text-[10px] text-gray-500 font-medium">
+                  <td className="px-3 sm:px-4 py-3 text-xs text-gray-400">
                     {new Date(order.createdAt).toLocaleDateString('en-IN')}
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-3 sm:px-4 py-3">
                     <select
-                      className="input-field py-1.5 text-[10px] w-32 border-[#f5e7d8] focus:border-brand-secondary bg-transparent"
+                      className="input-field py-1 text-xs w-32 sm:w-36"
                       value={order.status}
                       onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber ?? undefined })}>
                       {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-3 sm:px-4 py-3">
                     <input
                       type="text"
-                      className="input-field py-1.5 text-[10px] w-32 border-[#f5e7d8] focus:border-brand-secondary bg-transparent"
+                      className="input-field py-1 text-xs w-32"
                       placeholder="Tracking #"
                       defaultValue={order.trackingNumber || ''}
                       onBlur={(e) => {
@@ -182,9 +171,9 @@ export default function AdminOrders() {
                       }}
                     />
                   </td>
-                  <td className="px-4 py-4">
-                    <Link to={'/orders/' + order.id} className="btn-secondary py-1.5 px-3 text-[10px] whitespace-nowrap">
-                      Details
+                  <td className="px-3 sm:px-4 py-3">
+                    <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline">
+                      View
                     </Link>
                   </td>
                 </tr>

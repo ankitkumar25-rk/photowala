@@ -68,13 +68,6 @@ export const useAdminStore = create(
   )
 );
 
-// ── UI Store ──────────────────────────────────────────────────
-export const useUIStore = create((set) => ({
-  sidebarOpen: false,
-  setSidebarOpen: (open) => set({ sidebarOpen: open }),
-  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-}));
-
 // ── Pages ────────────────────────────────────────────────────
 const AdminLogin      = lazy(() => import('./pages/AdminLogin'));
 const Dashboard       = lazy(() => import('./pages/Dashboard'));

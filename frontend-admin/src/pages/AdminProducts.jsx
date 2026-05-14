@@ -46,69 +46,141 @@ export default function AdminProducts() {
       </div>
 
       <div className="card">
-        <div className="p-4 border-b border-[#f5e7d8]/50">
+        <div className="p-4 border-b border-gray-100">
           <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-secondary/60" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input type="text" placeholder="Search products..." value={search}
               onChange={e => setSearch(e.target.value)} className="input-field pl-9 py-2 text-sm w-full" />
           </div>
         </div>
 
-        <div className="w-full overflow-x-auto rounded-xl no-scrollbar">
-          <table className="w-full min-w-[800px]">
+        <div className="md:hidden divide-y divide-gray-100">
+          {isLoading ? (
+            Array(6).fill(0).map((_, i) => (
+              <div key={i} className="p-4 space-y-2">
+                <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+                <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+                <div className="h-8 bg-gray-100 rounded animate-pulse w-full" />
+              </div>
+            ))
+          ) : filtered.map((product) => (
+            <div key={product.id} className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                    {product.images?.[0] ? (
+                      <img src={product.images[0].url} alt="" className="w-full h-full object-cover" />
+                    ) : <Package className="w-4 h-4 text-gray-400" />}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 truncate">{product.name}</p>
+                    <p className="text-xs text-gray-400">{product.sku || product.unit || 'No SKU'}</p>
+                  </div>
+                </div>
+                <StatusBadge stock={product.stock} lowAlert={product.lowStockAlert} />
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">Price</p>
+                  <p className="text-sm font-semibold text-gray-800">₹{product.price}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">MRP</p>
+                  <p className="text-sm text-gray-400 line-through">₹{product.mrp}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 uppercase tracking-wider">Stock</p>
+                  <p className="text-sm text-gray-700">{product.stock}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-gray-500 truncate">{product.category?.name || 'Uncategorized'}</p>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!product.id) {
+                        toast.error('This product cannot be edited because its id is missing');
+                        return;
+                      }
+                      navigate('/products/id/' + product.id + '/edit');
+                    }}
+                    className="btn-ghost p-2 text-blue-500 hover:bg-blue-50"
+                    aria-label="Edit product"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => { if(confirm('Deactivate this product?')) deleteMut.mutate(product.id); }}
+                    className="btn-ghost p-2 text-red-400 hover:bg-red-50"
+                    aria-label="Deactivate product"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+          {!isLoading && filtered.length === 0 && (
+            <p className="p-4 text-sm text-gray-500">No products found.</p>
+          )}
+        </div>
+
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full min-w-[600px]">
             <thead>
-              <tr className="border-b border-[#f5e7d8]/50">
+              <tr className="border-b border-gray-100">
                 {['Product', 'Category', 'Price', 'MRP', 'Stock', 'Status', 'Actions'].map(h => (
-                  <th key={h} className="text-left text-[10px] font-black text-brand-primary/40 uppercase tracking-widest px-4 py-5">{h}</th>
+                  <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#f5e7d8]/30">
+            <tbody className="divide-y divide-gray-50">
               {isLoading ? (
                 Array(8).fill(0).map((_, i) => (
                   <tr key={i}>
                     {Array(7).fill(0).map((_, j) => (
-                      <td key={j} className="px-4 py-4"><div className="h-4 bg-cream-100 rounded animate-pulse" /></td>
+                      <td key={j} className="px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>
                     ))}
                   </tr>
                 ))
               ) : filtered.map(product => (
-                <tr key={product.id} className="hover:bg-brand-surface/30 transition-colors group">
-                  <td className="px-4 py-4">
+                <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-3 sm:px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-white border border-[#f5e7d8] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
+                      <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
                         {product.images?.[0] ? (
                           <img src={product.images[0].url} alt="" className="w-full h-full object-cover" />
-                        ) : <Package className="w-5 h-5 text-brand-secondary/40" />}
+                        ) : <Package className="w-4 h-4 text-gray-400" />}
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-brand-primary line-clamp-1">{product.name}</p>
-                        <p className="text-[10px] font-mono font-bold text-brand-secondary uppercase tracking-wider">{product.sku || product.unit}</p>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-800 line-clamp-1">{product.name}</p>
+                        <p className="text-xs text-gray-400">{product.sku || product.unit}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-xs font-bold text-brand-primary/80">{product.category?.name || 'Uncategorized'}</td>
-                  <td className="px-4 py-4 text-sm font-bold text-brand-primary">₹{Number(product.price).toLocaleString('en-IN')}</td>
-                  <td className="px-4 py-4 text-xs text-gray-400 line-through">₹{Number(product.mrp).toLocaleString('en-IN')}</td>
-                  <td className="px-4 py-4 text-sm font-bold text-brand-primary">{product.stock}</td>
-                  <td className="px-4 py-4"><StatusBadge stock={product.stock} lowAlert={product.lowStockAlert} /></td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-1.5">
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{product.category?.name}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">₹{product.price}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-400 line-through">₹{product.mrp}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{product.stock}</td>
+                  <td className="px-3 sm:px-4 py-3"><StatusBadge stock={product.stock} lowAlert={product.lowStockAlert} /></td>
+                  <td className="px-3 sm:px-4 py-3">
+                    <div className="flex items-center gap-1 flex-wrap">
                       <button
                         type="button"
-                        onClick={() => navigate('/products/id/' + product.id + '/edit')}
-                        className="btn-ghost p-2 text-brand-primary hover:bg-brand-surface border border-transparent hover:border-[#f5e7d8]"
-                        title="Edit Product"
+                        onClick={() => {
+                          if (!product.id) {
+                            toast.error('This product cannot be edited because its id is missing');
+                            return;
+                          }
+                          navigate('/products/id/' + product.id + '/edit');
+                        }}
+                        className="btn-ghost p-1.5 text-blue-500 hover:bg-blue-50"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button 
-                        onClick={() => { if(confirm('Deactivate this product?')) deleteMut.mutate(product.id); }}
-                        className="btn-ghost p-2 text-red-500 hover:bg-red-50 border border-transparent hover:border-red-100"
-                        title="Delete Product"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <button onClick={() => { if(confirm('Deactivate this product?')) deleteMut.mutate(product.id); }}
+                        className="btn-ghost p-1.5 text-red-400 hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </td>
                 </tr>
