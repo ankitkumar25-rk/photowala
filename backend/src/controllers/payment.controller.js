@@ -218,10 +218,13 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
 
     res.json({
       success: true,
-      data: {
-        paymentId: razorpay_payment_id,
-        message: 'Payment verified successfully',
-      },
+      message: 'Payment verified successfully',
+      order: {
+        id: orderData.id,
+        status: orderData.status,
+        totalAmount: orderData.totalAmount || orderData.total,
+        razorpayPaymentId: razorpay_payment_id,
+      }
     });
   } catch (err) {
     next(err);

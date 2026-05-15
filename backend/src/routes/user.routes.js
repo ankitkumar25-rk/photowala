@@ -1,6 +1,7 @@
 import express from 'express';
 import { authenticate } from '../middleware/auth.js';
 import * as userController from '../controllers/user.controller.js';
+import { validateAddress as validateAddressWithGoogle } from '../controllers/addressValidation.controller.js';
 
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.post('/addresses',          authenticate, validateAddress, userController
 router.put('/addresses/:id',       authenticate, validateAddress, userController.updateAddress);
 router.delete('/addresses/:id',    authenticate, userController.deleteAddress);
 router.patch('/addresses/:id/default', authenticate, userController.setDefaultAddress);
+router.post('/addresses/validate', authenticate, validateAddressWithGoogle);
 
 // Wishlist
 router.get('/wishlist',            authenticate, userController.getWishlist);

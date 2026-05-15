@@ -70,19 +70,28 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-[#d7c4b0] text-sm">
                 <Mail className="w-4 h-4 shrink-0" />
-                <a href="mailto:support@photowala.in" className="hover:text-white transition-colors">
-                  support@photowala.in
-                </a>
-              </li>
-              <li className="flex items-center gap-2 text-[#d7c4b0] text-sm">
-                <Phone className="w-4 h-4 shrink-0" />
-                <a href="tel:+919876543210" className="hover:text-white transition-colors">
-                  +91 98765 43210
+                <a href="mailto:photowalagiftphotowalagift@gmail.com" className="hover:text-white transition-colors">
+                  photowalagiftphotowalagift@gmail.com
                 </a>
               </li>
               <li className="flex items-start gap-2 text-[#d7c4b0] text-sm">
+                <Phone className="w-4 h-4 shrink-0 mt-0.5" />
+                <div className="flex flex-col gap-1">
+                  <a href="tel:+918104937078" className="hover:text-white transition-colors">
+                    +91 81049 37078 (Call)
+                  </a>
+                  <a href="https://wa.me/919602560933" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                    +91 96025 60933 (WhatsApp)
+                  </a>
+                </div>
+              </li>
+              <li className="flex items-start gap-2 text-[#d7c4b0] text-sm">
                 <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Goyal Market, Gudha Gorji, Jhunjhunu, Rajasthan - 333022</span>
+                <span>
+                  WARD NO. 04, KUMAWAT COLONY,<br />
+                  SITHAL ROAD, TEHSIL - GUDHA GORJI,<br />
+                  Chhaosari, Jhunjhunu, Rajasthan - 333012
+                </span>
               </li>
             </ul>
             {/* Certifications */}

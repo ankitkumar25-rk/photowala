@@ -54,8 +54,9 @@ export default function Returns() {
             <p className="text-sm text-gray-600">
               Eligible returns should be shipped to:<br />
               <span className="font-bold text-gray-900">Photowala Gift</span><br />
-              Goyal Market, Gudha Gorji, Jhunjhunu,<br />
-              Rajasthan - 333022
+              WARD NO. 04, KUMAWAT COLONY,<br />
+              SITHAL ROAD, TEHSIL - GUDHA GORJI,<br />
+              Chhaosari, Jhunjhunu, Rajasthan - 333012
             </p>
           </div>
 

@@ -19,6 +19,7 @@ const Cart          = lazy(() => import('./pages/Cart'));
 const Checkout      = lazy(() => import('./pages/Checkout'));
 const Orders        = lazy(() => import('./pages/Orders'));
 const OrderDetail   = lazy(() => import('./pages/OrderDetail'));
+const OrderSuccess  = lazy(() => import('./pages/OrderSuccess'));
 const Account       = lazy(() => import('./pages/Account'));
 const Wishlist      = lazy(() => import('./pages/Wishlist'));
 const Login         = lazy(() => import('./pages/Login'));
@@ -125,6 +126,7 @@ export default function App() {
                 <Route path="checkout/service" element={<ProtectedRoute><ServiceCheckout /></ProtectedRoute>} />
                 <Route path="orders"    element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                 <Route path="orders/:id" element={<ProtectedRoute><OrderDetail /></ProtectedRoute>} />
+                <Route path="orders/:orderId/success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
                 <Route path="account"   element={<ProtectedRoute><Account /></ProtectedRoute>} />
                 <Route path="account/services" element={<ProtectedRoute><MyServiceOrders /></ProtectedRoute>} />
                 <Route path="wishlist"  element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
