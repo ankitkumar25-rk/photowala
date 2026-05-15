@@ -30,65 +30,56 @@ export default function AdminLayout() {
   const location = useLocation();
   const storeUrl = import.meta.env.VITE_STORE_URL || 'http://localhost:5173';
 
-  // Initialize SSE connection for admin notifications
   useAdminSSE();
 
-  // Close sidebar on navigation (mobile)
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname, setSidebarOpen]);
 
-  const handleLogout = () => { logout(); navigate('/'); };
+  const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <div className="min-h-screen bg-cream-100 text-gray-900">
-      {/* Sidebar - Mobile Drawer / Tablet Icon-only / Desktop Fixed */}
+    <div className="min-h-screen bg-color-bg-main font-sans selection:bg-brand-secondary selection:text-white">
+      {/* Sidebar */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-50 bg-[#5b3f2f] text-[#f5e7d8] transition-all duration-300 ease-in-out luxury-grain border-r border-[#5b3f2f]/10
-          ${sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full lg:translate-x-0 w-64 sm:w-16 lg:w-64'}
+        className={`fixed inset-y-0 left-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] glass-sidebar overflow-hidden
+          ${sidebarOpen ? 'translate-x-0 w-72' : '-translate-x-full sm:translate-x-0 w-0 sm:w-20'}
         `}
       >
-        <div className="flex h-full flex-col">
-          {/* Logo Section */}
-          <div className="flex h-16 sm:h-20 items-center gap-3 px-4 sm:px-6 border-b border-white/5 bg-[#4a3427] overflow-hidden">
-             <img src={logo} alt="Logo" className="h-8 sm:h-9 w-auto object-contain brightness-0 invert opacity-95 shrink-0" />
-             <div className={`flex flex-col transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 sm:hidden lg:opacity-100 lg:block'}`}>
-                <span className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase leading-none mb-1 whitespace-nowrap">Photowala</span>
-                <span className="text-xs font-black tracking-widest text-white leading-none whitespace-nowrap">ADMIN PANEL</span>
+        <div className="flex h-full flex-col luxury-grain">
+          {/* Brand Header */}
+          <div className="flex h-24 items-center gap-4 px-6 border-b border-white/5 overflow-hidden">
+             <div className="p-2 rounded-xl bg-white/10 border border-white/10 shrink-0 shadow-inner">
+               <img src={logo} alt="Logo" className="h-8 w-8 object-contain brightness-0 invert opacity-90" />
              </div>
-             {/* Mobile Close Button */}
-             <button 
-               onClick={() => setSidebarOpen(false)}
-               className="ml-auto p-1 text-white/50 hover:text-white sm:hidden"
-             >
-               <X className="w-6 h-6" />
+             <div className={`flex flex-col transition-all duration-500 ${sidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 invisible sm:hidden'}`}>
+                <span className="text-[10px] font-black tracking-[0.3em] text-white/40 uppercase leading-none mb-1.5">Photowala</span>
+                <span className="text-sm font-display font-black tracking-widest text-white leading-none">CONSOLE</span>
+             </div>
+             {/* Mobile Close */}
+             <button onClick={() => setSidebarOpen(false)} className="ml-auto p-2 text-white/40 hover:text-white sm:hidden transition-colors">
+               <X className="w-5 h-5" />
              </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="flex-1 space-y-1 px-2 sm:px-3 py-6 overflow-y-auto no-scrollbar">
+          {/* Navigation */}
+          <nav className="flex-1 space-y-1.5 px-3 py-8 overflow-y-auto no-scrollbar">
             {NAV.map(({ to, icon: Icon, label }) => {
               const isActive = location.pathname === to;
               return (
                 <Link
                   key={to}
                   to={to}
-                  className={`group relative flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-all duration-200 ${
-                    isActive 
-                      ? 'bg-[#b88a2f] text-white shadow-lg shadow-[#b88a2f]/20' 
-                      : 'text-[#f5e7d8]/70 hover:bg-white/10 hover:text-white'
-                  }`}
+                  className={`sidebar-link ${isActive ? 'active' : ''} group relative`}
                 >
-                  <div className="flex items-center justify-center shrink-0 w-6">
-                    {createElement(Icon, { className: `h-5 w-5 ${isActive ? 'text-white' : 'text-[#b88a2f]'}` })}
-                  </div>
-                  <span className={`transition-all duration-300 ${sidebarOpen ? 'opacity-100 visible' : 'opacity-0 invisible sm:hidden lg:opacity-100 lg:visible'}`}>
+                  <Icon className={`h-5 w-5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-brand-secondary' : 'text-white/40 group-hover:text-white/80'}`} />
+                  <span className={`transition-all duration-500 ${sidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 invisible sm:hidden'}`}>
                     {label}
                   </span>
                   
-                  {/* Tablet Tooltip */}
+                  {/* Tablet/Collapsed Tooltip */}
                   {!sidebarOpen && (
-                    <div className="absolute left-full ml-4 px-2 py-1 bg-[#4a3427] text-white text-[10px] font-bold rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 hidden sm:block lg:hidden shadow-xl border border-white/5 uppercase tracking-widest">
+                    <div className="absolute left-full ml-4 px-3 py-2 bg-brand-deep text-white text-[10px] font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 hidden sm:block lg:hidden shadow-2xl border border-white/5 uppercase tracking-widest">
                       {label}
                     </div>
                   )}
@@ -97,85 +88,92 @@ export default function AdminLayout() {
             })}
           </nav>
 
-          {/* User Profile & Logout */}
-          <div className="mt-auto p-2 sm:p-3 border-t border-white/5 bg-[#4a3427]/30">
-            <div className={`flex items-center gap-3 rounded-2xl bg-white/5 p-2 sm:p-3 mb-3 border border-white/5 overflow-hidden`}>
-              <div className="h-8 sm:h-10 w-8 sm:w-10 shrink-0 rounded-full bg-[#b88a2f] flex items-center justify-center text-white font-bold text-sm shadow-inner">
+          {/* User Footer */}
+          <div className="mt-auto p-4 border-t border-white/5 bg-black/20">
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 mb-4 group transition-colors hover:bg-white/10">
+              <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-brand-secondary to-brand-primary flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-white/10">
                 {user?.name?.[0]?.toUpperCase() || <User size={18} />}
               </div>
-              <div className={`flex-1 min-w-0 transition-opacity duration-300 ${sidebarOpen ? 'opacity-100' : 'opacity-0 sm:hidden lg:opacity-100 lg:block'}`}>
-                <p className="text-sm font-bold text-white truncate">{user?.name || 'Admin User'}</p>
-                <p className="text-[10px] font-bold text-[#b88a2f] uppercase tracking-wider">{user?.role || 'Super Admin'}</p>
+              <div className={`flex-1 min-w-0 transition-all duration-500 ${sidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 invisible sm:hidden'}`}>
+                <p className="text-sm font-bold text-white truncate group-hover:text-brand-secondary transition-colors">{user?.name || 'Super Admin'}</p>
+                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{user?.role || 'Administrator'}</p>
               </div>
             </div>
             
             <button 
               onClick={handleLogout} 
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3 py-2.5 text-xs font-black tracking-widest text-[#f5e7d8] uppercase transition-all hover:bg-[#d96a22] hover:text-white hover:border-[#d96a22] shadow-sm"
+              className="flex w-full items-center justify-center gap-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-[10px] font-black tracking-[0.2em] text-white/60 uppercase transition-all duration-300 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 shadow-sm group"
             >
-              <LogOut className="h-4 w-4 shrink-0" />
-              <span className={`${sidebarOpen ? 'block' : 'hidden lg:block'}`}>Sign Out</span>
+              <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              <span className={`${sidebarOpen ? 'block' : 'hidden'}`}>Sign Out</span>
             </button>
           </div>
         </div>
       </aside>
 
-      {/* Backdrop (Mobile only) */}
+      {/* Backdrop */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm sm:hidden transition-opacity"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 z-40 bg-brand-deep/60 backdrop-blur-md sm:hidden transition-all duration-500" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Main Content Area */}
-      <div className={`flex min-w-0 flex-col transition-all duration-300 ${sidebarOpen ? 'ml-0 sm:ml-64' : 'ml-0 sm:ml-16 lg:ml-64'}`}>
-        {/* Top Header Bar */}
-        <header className="glass-surface sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[#5b3f2f]/10 px-4 sm:px-6">
+      {/* Main Content */}
+      <div className={`flex min-w-0 flex-col transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${sidebarOpen ? 'ml-0 sm:ml-72' : 'ml-0 sm:ml-20'}`}>
+        {/* Header */}
+        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-6 sm:px-10">
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-xl bg-white border border-[#5b3f2f]/10 shadow-sm text-[#5b3f2f] hover:bg-[#f5e7d8] transition-all"
-            aria-label="Toggle sidebar"
+            className="p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-brand-primary hover:bg-brand-soft hover:border-brand-primary/20 transition-all duration-200 shadow-sm"
           >
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xs sm:text-sm font-black tracking-widest text-[#5b3f2f] uppercase opacity-60 truncate">
-              {NAV.find(n => n.to === location.pathname)?.label || 'Photowala Admin'}
+          <div className="flex-1 min-w-0 ml-2">
+            <h2 className="text-[10px] font-black tracking-[0.3em] text-brand-primary/40 uppercase">
+              Management Console
             </h2>
+            <h1 className="text-base font-bold text-brand-primary truncate">
+              {NAV.find(n => n.to === location.pathname)?.label || 'Photowala Admin'}
+            </h1>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-4">
             <a 
               href={storeUrl} 
               target="_blank" 
               rel="noreferrer" 
-              className="hidden xs:flex items-center gap-2 rounded-full border border-[#5b3f2f]/20 bg-white/70 px-3 sm:px-4 py-1.5 text-[10px] font-black tracking-wider text-[#5b3f2f] uppercase transition-all hover:bg-[#5b3f2f] hover:text-white"
+              className="hidden md:flex items-center gap-2 rounded-xl bg-brand-primary/5 hover:bg-brand-primary px-4 py-2 text-[10px] font-black tracking-widest text-brand-primary hover:text-white transition-all duration-300 border border-brand-primary/10 shadow-sm group"
             >
-              <ExternalLink size={12} />
-              <span className="hidden sm:inline">Store</span>
+              <ExternalLink size={14} className="transition-transform group-hover:scale-110" />
+              <span>LIVE STORE</span>
             </a>
+
+            <div className="w-px h-6 bg-gray-200 hidden sm:block" />
 
             <NotificationBell />
             
-            <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full border-2 border-white shadow-sm ring-1 ring-[#5b3f2f]/10 overflow-hidden shrink-0">
+            <button className="h-10 w-10 rounded-xl border-2 border-white shadow-md ring-1 ring-gray-100 overflow-hidden shrink-0 hover:ring-brand-secondary/50 transition-all duration-300">
               {user?.avatarUrl ? (
                 <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
               ) : (
-                <div className="h-full w-full flex items-center justify-center bg-[#f5e7d8] text-[#5b3f2f] font-bold text-xs">
-                  {user?.name?.[0]?.toUpperCase()}
+                <div className="h-full w-full flex items-center justify-center bg-brand-soft text-brand-primary font-bold text-sm">
+                  {user?.name?.[0]?.toUpperCase() || 'S'}
                 </div>
               )}
-            </div>
+            </button>
           </div>
         </header>
 
-        {/* Dynamic Page Content */}
-        <main className="fade-in flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
+        {/* Viewport */}
+        <main className="animate-fade-in flex-1 p-6 sm:p-10 lg:p-12 overflow-y-auto no-scrollbar">
+          <div className="max-w-7xl mx-auto space-y-10 animate-slide-up">
             <Outlet />
           </div>
+          
+          <footer className="mt-20 py-8 border-t border-gray-100 text-center">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.4em]">
+              Photowala Gift © 2026 • Crafted for Excellence
+            </p>
+          </footer>
         </main>
       </div>
     </div>
