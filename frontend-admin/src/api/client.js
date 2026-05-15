@@ -25,12 +25,6 @@ async function ensureCsrfCookie() {
 }
 
 api.interceptors.request.use((config) => {
-  // Attach token from localStorage if present
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
   const method = String(config.method || 'get').toUpperCase();
   const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   if (unsafe && !readCookie('csrf_token')) {
@@ -70,7 +64,6 @@ api.interceptors.response.use(
 
       // Skip refresh for auth-related calls to avoid loops
       if (original.url.includes('/auth/me') || original.url.includes('/auth/refresh')) {
-        localStorage.removeItem('token');
         localStorage.removeItem('admin-auth');
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
@@ -79,21 +72,13 @@ api.interceptors.response.use(
       }
 
       try {
-        const refreshRes = await api.post('/auth/refresh');
-        const accessToken = refreshRes.data?.data?.accessToken;
-        const refreshToken = refreshRes.data?.data?.refreshToken;
+        await api.post('/auth/refresh');
         
-        if (accessToken) {
-          localStorage.setItem('token', accessToken);
-          if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
-          original.headers.Authorization = `Bearer ${accessToken}`;
-          return api(original);
-        } else {
-          throw new Error('No access token in refresh response');
-        }
+        // Refresh CSRF as well
+        await api.get('/csrf');
+        
+        return api(original);
       } catch (refreshErr) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
         localStorage.removeItem('admin-auth');
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';

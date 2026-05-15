@@ -28,12 +28,6 @@ async function ensureCsrfCookie() {
 }
 
 api.interceptors.request.use((config) => {
-  // Attach token from localStorage if present
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
   const method = String(config.method || 'get').toUpperCase();
   const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   if (unsafe && !readCookie('csrf_token')) {
@@ -72,68 +66,31 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !original?._retry) {
       original._retry = true;
       
-      // If the request was for /auth/refresh, don't retry refresh to avoid loops
-      if (original.url.includes('/auth/refresh')) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
+      // If the request was for /auth/refresh or /auth/me, don't retry refresh to avoid loops
+      if (original.url.includes('/auth/refresh') || original.url.includes('/auth/me')) {
         localStorage.removeItem('auth-storage');
-        // Do not force redirect here, let the calling code handle it
         return Promise.reject(error);
       }
 
       try {
-        // Use a module-level lock to prevent multiple simultaneous refresh requests
-        // If a refresh is already in flight, wait for it instead of starting a new one
         if (!refreshPromise) {
-          const refreshToken = localStorage.getItem('refreshToken');
-          
-          if (!refreshToken) {
-            throw new Error('No refresh token available');
-          }
-          
-          refreshPromise = api.post('/auth/refresh', {}, {
-            headers: { Authorization: `Bearer ${refreshToken}` },
-            withCredentials: true
-          })
-            .then(res => {
-              return res;
-            })
-            .catch(err => {
-              throw err;
-            })
+          refreshPromise = api.post('/auth/refresh', {}, { withCredentials: true })
             .finally(() => { refreshPromise = null; });
         }
         
-        const res = await refreshPromise;
-        const accessToken = res.data?.accessToken || res.data?.data?.accessToken;
-        const newRefreshToken = res.data?.refreshToken || res.data?.data?.refreshToken;
+        await refreshPromise;
         
-        if (accessToken) {
-          localStorage.setItem('token', accessToken);
-          if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-          
-          // Step 2: Fetch fresh CSRF token after auth refresh
-          const { data: csrfData } = await api.get('/csrf');
-          const freshCsrf = csrfData.token;
+        // Fetch fresh CSRF token after auth refresh
+        const { data: csrfData } = await api.get('/csrf');
+        const freshCsrf = csrfData.token;
 
-          if (freshCsrf) {
-            console.log('[Interceptor] Retrying with fresh CSRF:', freshCsrf);
-            // Step 3: Update global axios defaults
-            api.defaults.headers.common['X-CSRF-Token'] = freshCsrf;
-
-            // Step 4: Patch the original failed request headers
-            original.headers['X-CSRF-Token'] = freshCsrf;
-          }
-
-          original.headers.Authorization = `Bearer ${accessToken}`;
-          return api(original); // Retry original request
-        } else {
-          throw new Error('No access token in refresh response');
+        if (freshCsrf) {
+          api.defaults.headers.common['X-CSRF-Token'] = freshCsrf;
+          original.headers['X-CSRF-Token'] = freshCsrf;
         }
+
+        return api(original); // Retry original request
       } catch (refreshError) {
-        // Refresh failed (e.g. refresh token expired)
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
         localStorage.removeItem('auth-storage');
         window.location.href = '/login';
         return Promise.reject(refreshError);

@@ -7,12 +7,6 @@ const EXEMPT_PATHS = new Set([
   '/api/auth/google',          // Initial OAuth redirect to Google
   '/api/auth/google/callback', // OAuth callback from Google redirect
 ]);
-const TRUSTED_ORIGINS = [
-  process.env.CLIENT_URL,
-  process.env.ADMIN_URL,
-  'http://localhost:5173',
-  'http://localhost:5174',
-].filter(Boolean).map((origin) => String(origin).replace(/\/$/, ''));
 
 const cookieOptions = {
   httpOnly: false,
@@ -43,34 +37,20 @@ function secureCompare(a, b) {
 }
 
 export function requireCsrf(req, res, next) {
+  // 1. Skip safe methods
   if (SAFE_METHODS.has(req.method)) return next();
+  
+  // 2. Skip exempt paths
   const routePath = `${req.baseUrl || ''}${req.path || ''}`;
   if (EXEMPT_PATHS.has(routePath)) return next();
 
+  // 3. Validate double-submit cookie
   const cookieToken = req.cookies?.csrf_token;
   const headerToken = req.get('x-csrf-token');
-  if (secureCompare(cookieToken, headerToken)) {
-    return next();
-  }
 
-  // Fallback for cross-site deployments where browsers may block third-party
-  // CSRF cookies. Only allow unsafe requests from explicitly trusted origins.
-  const origin = String(req.get('origin') || '').replace(/\/$/, '');
-  const referer = req.get('referer');
-  const refererOrigin = (() => {
-    if (!referer) return '';
-    try {
-      return new URL(referer).origin.replace(/\/$/, '');
-    } catch {
-      return '';
-    }
-  })();
-
-  const trusted = (origin && TRUSTED_ORIGINS.includes(origin))
-    || (refererOrigin && TRUSTED_ORIGINS.includes(refererOrigin));
-
-  if (!trusted) {
-    return next(createError('Invalid CSRF token', 403));
+  if (!cookieToken || !headerToken || !secureCompare(cookieToken, headerToken)) {
+    console.error(`[CSRF] Denial: Method: ${req.method}, Path: ${routePath}. Cookie: ${!!cookieToken}, Header: ${!!headerToken}`);
+    return next(createError('CSRF validation failed. Please refresh the page.', 403));
   }
 
   next();

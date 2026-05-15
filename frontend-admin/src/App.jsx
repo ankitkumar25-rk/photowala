@@ -20,8 +20,6 @@ export const useAdminStore = create(
       logout: () => { 
         set({ user: null, isInitialized: true }); 
         adminFetchMePromise = null; 
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
         localStorage.removeItem('admin-auth');
       },
       
@@ -37,9 +35,6 @@ export const useAdminStore = create(
             
             // Extract user from correct response structure
             const userData = data?.data?.user || data?.data;
-            const accessToken = data?.data?.accessToken;
-            
-            if (accessToken) localStorage.setItem('token', accessToken);
             
             if (!['ADMIN', 'SUPER_ADMIN'].includes(userData?.role)) {
               throw new Error('Admin role required');

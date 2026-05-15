@@ -51,9 +51,12 @@ export function errorHandler(err, req, res, next) {
     return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
   }
 
+  const isProd = process.env.NODE_ENV === 'production';
+  const displayMessage = (statusCode >= 500 && isProd) ? 'Internal server error' : message;
+
   res.status(statusCode).json({
     success: false,
-    message: message,
+    message: displayMessage,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 }

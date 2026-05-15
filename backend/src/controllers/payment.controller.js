@@ -18,24 +18,34 @@ export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const { amount, currency = 'INR', orderId, orderType } = req.body;
+    const { currency = 'INR', orderId, orderType } = req.body;
 
-    if (!orderId) {
-      return res.status(400).json({ message: 'orderId is required' });
-    }
-
-    if (!amount || !orderType) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
-
-    const amountInPaise = Math.round(Number(amount) * 100);
-    if (!amountInPaise || amountInPaise < 100) {
-      return res.status(400).json({ message: 'Invalid amount. Minimum ₹1.' });
+    if (!orderId || !orderType) {
+      return res.status(400).json({ message: 'orderId and orderType are required' });
     }
 
     const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
     if (!validOrderTypes.includes(orderType)) {
       return res.status(400).json({ message: `Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}` });
+    }
+
+    // Fetch order from DB to get the REAL amount (prevent client manipulation)
+    let order;
+    if (orderType === 'ORDER') {
+      order = await prisma.order.findUnique({ where: { id: orderId } });
+    } else {
+      order = await prisma.serviceOrder.findUnique({ where: { id: orderId } });
+    }
+
+    if (!order) {
+      return res.status(404).json({ message: `${orderType === 'ORDER' ? 'Order' : 'Service Order'} not found` });
+    }
+
+    const dbTotal = orderType === 'ORDER' ? order.total : order.totalAmount;
+    const amountInPaise = Math.round(Number(dbTotal) * 100);
+
+    if (!amountInPaise || amountInPaise < 100) {
+      return res.status(400).json({ message: 'Invalid amount. Minimum ₹1.' });
     }
 
     const options = {
@@ -97,11 +107,6 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       orderType 
     } = req.body;
 
-    // Log incoming params for debugging
-    console.log('[Verify] razorpay_order_id:', razorpay_order_id);
-    console.log('[Verify] razorpay_payment_id:', razorpay_payment_id);
-    console.log('[Verify] razorpay_signature:', razorpay_signature);
-
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !orderId || !orderType) {
       throw createError('Missing required payment verification fields', 400);
     }
@@ -118,9 +123,6 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       .update(body)
       .digest('hex');
 
-    console.log('[Verify] expected:', expectedSignature);
-    console.log('[Verify] received:', razorpay_signature);
-
     // Constant-time comparison
     const expectedBuffer = Buffer.from(expectedSignature);
     const receivedBuffer = Buffer.from(razorpay_signature);
@@ -131,15 +133,19 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
     }
 
     if (!isValid) {
-      try {
-        await prisma.payment.update({
-          where: { razorpayOrderId: razorpay_order_id },
-          data: { status: 'FAILED' },
-        });
-      } catch (e) {
-        console.error('[payment] Failed to mark payment as FAILED:', e.message);
-      }
+      await prisma.payment.update({
+        where: { razorpayOrderId: razorpay_order_id },
+        data: { status: 'FAILED' },
+      }).catch(e => console.error('[payment] Mismatch marking FAILED:', e.message));
       throw createError('Payment verification failed', 400);
+    }
+
+    const existingPayment = await prisma.payment.findUnique({
+      where: { razorpayOrderId: razorpay_order_id },
+    });
+
+    if (!existingPayment) {
+      throw createError('Payment record not found', 404);
     }
 
     const orderData = orderType === 'ORDER'
@@ -150,15 +156,20 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       throw createError(`${orderType === 'ORDER' ? 'Order' : 'Service Order'} not found`, 404);
     }
 
+    // Verify amount parity (existingPayment.amount is in paise)
+    const dbTotal = orderType === 'ORDER' ? orderData.total : orderData.totalAmount;
+    const expectedPaise = Math.round(Number(dbTotal) * 100);
+    
+    if (existingPayment.amount !== expectedPaise) {
+      console.error(`[Verify] Amount mismatch! DB Order: ${expectedPaise}, Razorpay Record: ${existingPayment.amount}`);
+      throw createError('Payment amount mismatch. Potential fraud detected.', 400);
+    }
+
     if (orderData.userId !== req.user.id) {
       throw createError('Unauthorized: Payment does not belong to this user', 403);
     }
 
-    const existingPayment = await prisma.payment.findUnique({
-      where: { razorpayOrderId: razorpay_order_id },
-    });
-
-    if (existingPayment && existingPayment.status === 'PAID') {
+    if (existingPayment.status === 'PAID') {
       return res.json({
         success: true,
         data: {
@@ -304,13 +315,26 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
   const signature = req.headers['x-razorpay-signature'];
 
+  if (!signature || !webhookSecret) {
+    return res.status(400).json({ success: false, error: 'Configuration error' });
+  }
+
   const expected = crypto
     .createHmac('sha256', webhookSecret)
     .update(req.body)
     .digest('hex');
 
-  if (signature !== expected) {
-    console.error('[webhook] CSRF attack suspected: invalid signature');
+  // Constant-time comparison for webhook signature
+  const expectedBuffer = Buffer.from(expected);
+  const receivedBuffer = Buffer.from(signature);
+  
+  let isValid = false;
+  if (expectedBuffer.length === receivedBuffer.length) {
+    isValid = crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
+  }
+
+  if (!isValid) {
+    console.error('[webhook] Signature mismatch suspected attack');
     return res.status(400).json({ success: false, error: 'Invalid signature' });
   }
 
@@ -322,14 +346,11 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, error: 'Invalid payload' });
   }
 
-  console.log(`[webhook] Processing event type: ${eventType}, timestamp: ${new Date().toISOString()}`);
-
   if (eventType === 'payment.captured') {
     const razorpayOrderId = payload.payment?.entity?.order_id;
     const razorpayPaymentId = payload.payment?.entity?.id;
 
     if (!razorpayOrderId || !razorpayPaymentId) {
-      console.error('[webhook] Missing payment details in payload');
       return res.status(200).json({ received: true });
     }
 
@@ -360,7 +381,6 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
           });
         }
         
-        // Clear cart after successful product order via webhook
         if (p.orderType === 'ORDER') {
           await tx.cart.update({
             where: { userId: p.userId },
@@ -371,7 +391,6 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
         return p;
       });
 
-      // Send confirmation email in background
       try {
         const orderData = updatedPayment.orderType === 'ORDER'
           ? await prisma.order.findUnique({ where: { id: updatedPayment.internalOrderId }, include: { user: true } })
@@ -384,7 +403,7 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
           sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
         }
       } catch (err) {
-        console.error('[webhook] Failed to send background email:', err.message);
+        console.error('[webhook] Background email failed:', err.message);
       }
     }
   } else if (eventType === 'payment.failed') {
@@ -393,7 +412,7 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
       await prisma.payment.update({
         where: { razorpayOrderId },
         data: { status: 'FAILED' }
-      }).catch(e => console.error('[webhook] Error marking payment as failed:', e.message));
+      }).catch(() => {});
     }
   }
 
@@ -422,7 +441,7 @@ export const processRefund = asyncHandler(async (req, res) => {
     throw createError('Only PAID payments can be refunded', 400);
   }
 
-  if (refundAmount > payment.amount) {
+  if (refundAmount > (payment.amount / 100)) {
     throw createError('Refund amount cannot exceed payment amount', 400);
   }
 
@@ -438,7 +457,7 @@ export const processRefund = asyncHandler(async (req, res) => {
     data: { 
       status: 'REFUNDED',
       refundedAt: new Date(),
-      refundAmount: refundAmount
+      refundAmount: Math.round(refundAmount * 100)
     }
   });
 
@@ -451,3 +470,4 @@ export const processRefund = asyncHandler(async (req, res) => {
     }
   });
 });
+

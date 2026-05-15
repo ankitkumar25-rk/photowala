@@ -13,9 +13,11 @@ import { productsApi, categoriesApi } from '../api';
 import ProductCard from '../components/ProductCard';
 
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2040&auto=format&fit=crop', // Replace with your image
-  'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=1932&auto=format&fit=crop', // Replace with your image
-  'https://images.unsplash.com/photo-1607344645866-009c320b63e0?q=80&w=2080&auto=format&fit=crop', // Replace with your image
+  { id: 1, alt: 'Custom premium gifts and laser-engraved trophies in Rajasthan' },
+  { id: 2, alt: 'Personalized corporate awards and excellence plaques' },
+  { id: 3, alt: 'Precision photo printing and custom gift boxes' },
+  { id: 4, alt: 'Handcrafted luxury mementos and personalized keepsakes' },
+  { id: 5, alt: 'Industrial laser marking and custom machine services' },
 ];
 
 // ── Hero Section ─────────────────────────────────────────────
@@ -34,11 +36,32 @@ function HeroSection() {
       {/* Slider Images */}
       {HERO_IMAGES.map((src, index) => (
         <div
-          key={src}
+          key={src.id}
           className={`absolute inset-0 transition-opacity duration-1000 ${index === currentImage ? 'opacity-100' : 'opacity-0'
             }`}
         >
-          <img src={src} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
+          <picture className="w-full h-full">
+            <source 
+              media="(max-width: 767px)" 
+              srcSet={`/images/hero/hero-${src.id}-mobile.webp`} 
+            />
+            <source 
+              media="(max-width: 1023px)" 
+              srcSet={`/images/hero/hero-${src.id}-tablet.webp`} 
+            />
+            <source 
+              type="image/webp"
+              srcSet={`/images/hero/hero-${src.id}-desktop.webp`}
+            />
+            <img 
+              src={`/images/hero/hero-${src.id}-desktop.jpg`}
+              alt={src.alt}
+              className="w-full h-full object-cover"
+              loading={index === 0 ? "eager" : "lazy"}
+              {...(index === 0 ? { fetchPriority: "high" } : {})}
+              style={{ aspectRatio: '12/5', backgroundColor: '#f7f0e7' }}
+            />
+          </picture>
         </div>
       ))}
 

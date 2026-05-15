@@ -19,22 +19,11 @@ export const useAuthStore = create(
           const response = await authApi.login(credentials);
           const { data } = response;
           
-          // Extract user and token from nested response structure
           const userData = data?.data?.user || data?.user || data?.data;
-          const accessToken = data?.data?.accessToken || data?.accessToken;
-          const refreshToken = data?.data?.refreshToken || data?.refreshToken;
           
-          if (!userData || !accessToken) {
-            throw new Error('Invalid response format: missing user or token');
+          if (!userData) {
+            throw new Error('Invalid response format: missing user data');
           }
-          
-          if (!refreshToken) {
-            throw new Error('No refresh token in response. Cannot establish session.');
-          }
-          
-          // Store tokens
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
           
           set({ user: userData, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
@@ -52,23 +41,12 @@ export const useAuthStore = create(
           const response = await authApi.register(userData);
           const { data } = response;
           
-          // Extract user and token from nested response structure
           const userObj = data?.data?.user || data?.user || data?.data;
-          const accessToken = data?.data?.accessToken || data?.accessToken;
-          const refreshToken = data?.data?.refreshToken || data?.refreshToken;
           
-          if (!userObj || !accessToken) {
-            throw new Error('Invalid response format: missing user or token');
+          if (!userObj) {
+            throw new Error('Invalid response format: missing user data');
           }
           
-          if (!refreshToken) {
-            throw new Error('No refresh token in response. Cannot establish session.');
-          }
-          
-          // Store tokens
-          localStorage.setItem('token', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
-
           set({ user: userObj, isLoading: false, isInitialized: true, isHydrating: false });
           await cartApi.merge().catch(() => {});
           await useCartStore.getState().fetchCart();
@@ -83,8 +61,6 @@ export const useAuthStore = create(
         try {
           await authApi.logout().catch(() => {});
         } finally {
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
           localStorage.removeItem('auth-storage');
           set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
           useCartStore.getState().resetCart();
@@ -100,14 +76,9 @@ export const useAuthStore = create(
             const response = await authApi.getMe();
             const { data } = response;
             const userData = data?.data?.user || data?.user || data?.data;
-            const accessToken = data?.data?.accessToken || data?.accessToken;
-            
-            if (accessToken) localStorage.setItem('token', accessToken);
             
             const allowedRoles = ['CUSTOMER', 'ADMIN', 'SUPER_ADMIN'];
             if (!userData || !userData.role || !allowedRoles.includes(userData.role)) {
-              localStorage.removeItem('token');
-              localStorage.removeItem('refreshToken');
               set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
               useCartStore.getState().resetCart();
               return null;
@@ -116,8 +87,6 @@ export const useAuthStore = create(
             await useCartStore.getState().fetchCart();
             return userData;
           } catch (err) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('refreshToken');
             if (hadUserBefore) {
               set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
               useCartStore.getState().resetCart();

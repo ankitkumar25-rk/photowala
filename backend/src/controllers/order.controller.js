@@ -273,6 +273,22 @@ export const createLaserPenOrder = asyncHandler(async (req, res) => {
     throw createError('Do not provide email for attach file option', 422);
   }
 
-  const orderId = generatePenOrderId();
-  res.status(201).json({ success: true, orderId });
+  const order = await prisma.serviceOrder.create({
+    data: {
+      orderNumber: generatePenOrderId(),
+      userId: req.user.id,
+      category: 'PRINTING',
+      serviceName: 'Laser Printed Pen',
+      productName: payload.penType,
+      quantity: payload.qty,
+      totalAmount: payload.pricing.totalPayable,
+      status: 'PENDING',
+      details: payload,
+      fileOption: payload.fileOption,
+      specialRemark: payload.specialRemark,
+      customerName: payload.orderName,
+    }
+  });
+
+  res.status(201).json({ success: true, orderId: order.id });
 });
