@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { PenTool, Printer, Scissors, Settings, CheckCircle2, ChevronRight } from 'lucide-react';
 import { serviceAssets } from '../data/assets';
 
@@ -29,6 +29,8 @@ const SERVICES = [
     icon: PenTool,
     link: '/services/machine-services/cnc-router'
   },
+
+
   {
     id: 'custom-printing',
     title: 'Custom Printing',
@@ -88,6 +90,8 @@ export default function Services() {
                         {service.badge}
                       </span>
                     )}
+
+
                   </div>
                   
                   <div className="p-6 flex flex-col grow">
@@ -106,6 +110,7 @@ export default function Services() {
                     >
                       Learn More <ChevronRight className="w-4 h-4 inline ml-2" />
                     </Link>
+
                   </div>
                 </div>
               );

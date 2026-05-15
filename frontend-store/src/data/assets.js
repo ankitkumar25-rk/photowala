@@ -30,6 +30,9 @@ import letterhead1 from "../assets/images/services/letterhead_1.png";
 import letterhead2 from "../assets/images/services/letterhead_2.png";
 import threadPremium from "../assets/images/services/thread_premium.png";
 import threadStandard from "../assets/images/services/thread_standard.png";
+import penSample1 from "../assets/images/services/pen_sample_1.jpg";
+import penSample2 from "../assets/images/services/pen_sample_2.jpg";
+
 
 // Brand exports
 export const brandAssets = {
@@ -87,4 +90,7 @@ export const serviceAssets = {
   letterhead2,
   threadPremium,
   threadStandard,
+  penSample1,
+  penSample2,
 };
+

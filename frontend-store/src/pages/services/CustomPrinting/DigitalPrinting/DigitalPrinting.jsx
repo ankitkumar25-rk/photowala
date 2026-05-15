@@ -14,13 +14,14 @@ import {
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: FaPenNib, label: 'Pen', to: '/services/custom-printing/pen' },
-  { id: 'sticker', icon: FaNoteSticky, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels' },
+  { id: 'sticker', icon: FaNoteSticky, label: 'Sticker Labels', to: '/services/custom-printing/sticker-labels', comingSoon: true },
   { id: 'digital', icon: FaPrint, label: 'Digital Paper Printing', to: '/services/custom-printing/digital-printing', active: true },
-  { id: 'letterhead', icon: FaFileSignature, label: 'Letterhead', to: '/services/custom-printing/letterhead' },
-  { id: 'garment', icon: FaTag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag' },
-  { id: 'billbook', icon: FaFileInvoiceDollar, label: 'Bill Book', to: '/services/custom-printing/bill-book' },
-  { id: 'envelope', icon: FaEnvelope, label: 'Envelope', to: '/services/custom-printing/envelope' },
+  { id: 'letterhead', icon: FaFileSignature, label: 'Letterhead', to: '/services/custom-printing/letterhead', comingSoon: true },
+  { id: 'garment', icon: FaTag, label: 'Garment Tag', to: '/services/custom-printing/garment-tag', comingSoon: true },
+  { id: 'billbook', icon: FaFileInvoiceDollar, label: 'Bill Book', to: '/services/custom-printing/bill-book', comingSoon: true },
+  { id: 'envelope', icon: FaEnvelope, label: 'Envelope', to: '/services/custom-printing/envelope', comingSoon: true },
 ];
+
 
 const PAPER_PRODUCTS = [
   { id: 'letterhead', name: 'LETTER HEAD', detail: 'Production Time: 1 days', imageBg: '#2d4a3e', emoji: '📄' },
@@ -230,16 +231,28 @@ export default function DigitalPrinting() {
         </div>
         <nav className="flex md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 no-scrollbar">
           {SIDEBAR_LINKS.map((link) => (
-            <Link key={link.id} to={link.to}
-              className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${link.active
-                ? 'bg-[#b65e2e] text-white shadow-lg'
-                : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
-                }`}>
-              {createElement(link.icon, { className: `w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'text-gray-400'}` })}
-              <span className="uppercase tracking-wider">{link.label}</span>
-            </Link>
+            <div key={link.id} className="relative">
+              <Link
+                to={link.comingSoon ? '#' : link.to}
+                onClick={(e) => link.comingSoon && e.preventDefault()}
+                className={`flex items-center gap-3 px-4 py-2.5 md:py-3.5 rounded-xl text-[10px] md:text-xs font-bold transition-all whitespace-nowrap ${link.active
+                  ? 'bg-[#b65e2e] text-white shadow-lg'
+                  : link.comingSoon
+                    ? 'text-gray-400 cursor-not-allowed opacity-60'
+                    : 'text-gray-500 hover:bg-[#e8dfd5] hover:text-gray-900'
+                  }`}>
+                {createElement(link.icon, { className: `w-3.5 h-3.5 md:w-4 h-4 shrink-0 ${link.active ? '' : 'text-gray-400'}` })}
+                <span className="uppercase tracking-wider">{link.label}</span>
+                {link.comingSoon && (
+                  <span className="ml-auto bg-[#d96a22] text-white text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter shadow-sm">
+                    Soon
+                  </span>
+                )}
+              </Link>
+            </div>
           ))}
         </nav>
+
       </aside>
 
       <main className="flex-1 overflow-y-auto">

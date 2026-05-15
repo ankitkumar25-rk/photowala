@@ -46,7 +46,9 @@ const LaserMarkingService = lazy(() => import('./pages/services/MachineServices/
 const CNCRouterService = lazy(() => import('./pages/services/MachineServices/CNCRouterService'));
 const MyServiceOrders = lazy(() => import('./pages/MyServiceOrders'));
 const ServiceCheckout = lazy(() => import('./pages/ServiceCheckout'));
+const ComingSoon      = lazy(() => import('./pages/ComingSoon'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -87,12 +89,16 @@ export default function App() {
       console.warn('[Auth] OAuth token bootstrap failed:', e);
     }
 
-    // Initial auth check on app mount
-    useAuthStore.getState().fetchMe().catch((err) => {
-      // Errors are already handled inside fetchMe (user cleared if previously authenticated)
-      // This catch just logs unexpected errors
-      console.error('Initial auth check failed:', err);
-    });
+    // Initial auth check on app mount - only if we have a token to verify
+    const token = localStorage.getItem('token');
+    if (token) {
+      useAuthStore.getState().fetchMe().catch((err) => {
+        console.error('Initial auth check failed:', err);
+      });
+    } else {
+      // If no token, mark as initialized so UI can show
+      useAuthStore.getState().finishInitialization();
+    }
   }, []); // Empty array: run only once on mount
 
 
@@ -139,20 +145,21 @@ export default function App() {
                 <Route path="services"         element={<ProtectedRoute><Services /></ProtectedRoute>} />
                 <Route path="services/custom-printing" element={<ProtectedRoute><CustomPrintingIndex /></ProtectedRoute>} />
                 <Route path="services/custom-printing/pen" element={<ProtectedRoute><LaserPrintedPen /></ProtectedRoute>} />
-                <Route path="services/custom-printing/letterhead" element={<ProtectedRoute><Letterhead /></ProtectedRoute>} />
-                <Route path="services/custom-printing/envelope" element={<ProtectedRoute><Envelope /></ProtectedRoute>} />
-                <Route path="services/custom-printing/sticker-labels" element={<ProtectedRoute><StickerLabels /></ProtectedRoute>} />
-                <Route path="services/custom-printing/sticker-labels/:type" element={<ProtectedRoute><StickerLabels /></ProtectedRoute>} />
-                <Route path="services/custom-printing/garment-tag" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
-                <Route path="services/custom-printing/garment-thread" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
-                <Route path="services/custom-printing/garment-gloss" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
-                <Route path="services/custom-printing/garment-matt" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
-                <Route path="services/custom-printing/garment-uv" element={<ProtectedRoute><GarmentTag /></ProtectedRoute>} />
-                <Route path="services/custom-printing/bill-book" element={<ProtectedRoute><BillBook /></ProtectedRoute>} />
-                <Route path="services/custom-printing/digital-printing" element={<ProtectedRoute><DigitalPrinting /></ProtectedRoute>} />
+                <Route path="services/custom-printing/letterhead" element={<ProtectedRoute><ComingSoon service="Letterhead" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/envelope" element={<ProtectedRoute><ComingSoon service="Envelope" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/sticker-labels" element={<ProtectedRoute><ComingSoon service="Sticker Labels" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/sticker-labels/:type" element={<ProtectedRoute><ComingSoon service="Sticker Labels" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-tag" element={<ProtectedRoute><ComingSoon service="Garment Tag" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-thread" element={<ProtectedRoute><ComingSoon service="Garment Thread" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-gloss" element={<ProtectedRoute><ComingSoon service="Garment Gloss" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-matt" element={<ProtectedRoute><ComingSoon service="Garment Matt" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/garment-uv" element={<ProtectedRoute><ComingSoon service="Garment UV" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/bill-book" element={<ProtectedRoute><ComingSoon service="Bill Book" /></ProtectedRoute>} />
+                <Route path="services/custom-printing/digital-printing" element={<ProtectedRoute><ComingSoon service="Digital Printing" /></ProtectedRoute>} />
                 <Route path="services/machine-services/co2-laser" element={<ProtectedRoute><CO2LaserService /></ProtectedRoute>} />
                 <Route path="services/machine-services/laser-marking" element={<ProtectedRoute><LaserMarkingService /></ProtectedRoute>} />
                 <Route path="services/machine-services/cnc-router" element={<ProtectedRoute><CNCRouterService /></ProtectedRoute>} />
+
                 <Route path="privacy"          element={<Privacy />} />
                 <Route path="forgot-password"  element={<ForgotPassword />} />
                 <Route path="reset-password"   element={<ResetPassword />} />

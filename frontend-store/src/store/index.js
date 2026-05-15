@@ -12,6 +12,7 @@ export const useAuthStore = create(
       _fetchMePromise: null, 
 
       setUser: (user) => set({ user }),
+      finishInitialization: () => set({ isInitialized: true, isHydrating: false }),
       login: async (credentials) => {
         set({ isLoading: true, isHydrating: false });
         try {
@@ -115,6 +116,8 @@ export const useAuthStore = create(
             await useCartStore.getState().fetchCart();
             return userData;
           } catch (err) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
             if (hadUserBefore) {
               set({ user: null, _fetchMePromise: null, isInitialized: true, isHydrating: false });
               useCartStore.getState().resetCart();
