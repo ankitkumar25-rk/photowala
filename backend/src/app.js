@@ -9,7 +9,7 @@ import { fileURLToPath } from 'url';
 import passport from './config/passport.js';
 
 import { errorHandler } from './middleware/errorHandler.js';
-import { ensureCsrfCookie, requireCsrf } from './middleware/csrf.js';
+import { ensureCsrfCookie, requireCsrf, issueCsrfToken } from './middleware/csrf.js';
 import { rateLimit } from './middleware/rateLimit.js';
 import valkey from './lib/valkey.js';
 
