@@ -87,120 +87,145 @@ export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
 /**
  * B) Verify Razorpay Payment
  */
-export const verifyPayment = asyncHandler(async (req, res) => {
-  const { 
-    razorpay_order_id, 
-    razorpay_payment_id, 
-    razorpay_signature, 
-    internalOrderId, 
-    orderType 
-  } = req.body;
+export const verifyPayment = asyncHandler(async (req, res, next) => {
+  try {
+    const { 
+      razorpay_order_id, 
+      razorpay_payment_id, 
+      razorpay_signature, 
+      orderId, 
+      orderType 
+    } = req.body;
 
-  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !internalOrderId || !orderType) {
-    throw createError('Missing required payment verification fields', 400);
-  }
+    // Log incoming params for debugging
+    console.log('[Verify] razorpay_order_id:', razorpay_order_id);
+    console.log('[Verify] razorpay_payment_id:', razorpay_payment_id);
+    console.log('[Verify] razorpay_signature:', razorpay_signature);
 
-  const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
-  if (!validOrderTypes.includes(orderType)) {
-    throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
-  }
-
-  const body = razorpay_order_id + '|' + razorpay_payment_id;
-  const expected = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-    .update(body)
-    .toString('hex');
-
-  const isValid = expected === razorpay_signature;
-
-  if (!isValid) {
-    try {
-      await prisma.payment.update({
-        where: { razorpayOrderId: razorpay_order_id },
-        data: { status: 'FAILED' },
-      });
-    } catch (e) {
-      console.error('[payment] Failed to mark payment as FAILED:', e.message);
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !orderId || !orderType) {
+      throw createError('Missing required payment verification fields', 400);
     }
-    throw createError('Payment verification failed', 400);
-  }
 
-  const orderData = orderType === 'ORDER'
-    ? await prisma.order.findUnique({ where: { id: internalOrderId }, include: { user: true } })
-    : await prisma.serviceOrder.findUnique({ where: { id: internalOrderId }, include: { user: true } });
+    const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
+    if (!validOrderTypes.includes(orderType)) {
+      throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
+    }
 
-  if (!orderData) {
-    throw createError(`${orderType === 'ORDER' ? 'Order' : 'Service Order'} not found`, 404);
-  }
+    // Razorpay signature = HMAC SHA256 of "razorpay_order_id|razorpay_payment_id"
+    const body = razorpay_order_id + '|' + razorpay_payment_id;
+    const expectedSignature = crypto
+      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+      .update(body)
+      .digest('hex');
 
-  if (orderData.userId !== req.user.id) {
-    throw createError('Unauthorized: Payment does not belong to this user', 403);
-  }
+    console.log('[Verify] expected:', expectedSignature);
+    console.log('[Verify] received:', razorpay_signature);
 
-  const existingPayment = await prisma.payment.findUnique({
-    where: { razorpayOrderId: razorpay_order_id },
-  });
+    // Constant-time comparison
+    const expectedBuffer = Buffer.from(expectedSignature);
+    const receivedBuffer = Buffer.from(razorpay_signature);
+    
+    let isValid = false;
+    if (expectedBuffer.length === receivedBuffer.length) {
+      isValid = crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
+    }
 
-  if (existingPayment && existingPayment.status === 'PAID') {
-    return res.json({
+    if (!isValid) {
+      try {
+        await prisma.payment.update({
+          where: { razorpayOrderId: razorpay_order_id },
+          data: { status: 'FAILED' },
+        });
+      } catch (e) {
+        console.error('[payment] Failed to mark payment as FAILED:', e.message);
+      }
+      throw createError('Payment verification failed', 400);
+    }
+
+    const orderData = orderType === 'ORDER'
+      ? await prisma.order.findUnique({ where: { id: orderId }, include: { user: true } })
+      : await prisma.serviceOrder.findUnique({ where: { id: orderId }, include: { user: true } });
+
+    if (!orderData) {
+      throw createError(`${orderType === 'ORDER' ? 'Order' : 'Service Order'} not found`, 404);
+    }
+
+    if (orderData.userId !== req.user.id) {
+      throw createError('Unauthorized: Payment does not belong to this user', 403);
+    }
+
+    const existingPayment = await prisma.payment.findUnique({
+      where: { razorpayOrderId: razorpay_order_id },
+    });
+
+    if (existingPayment && existingPayment.status === 'PAID') {
+      return res.json({
+        success: true,
+        data: {
+          paymentId: razorpay_payment_id,
+          message: 'Payment already verified successfully',
+        },
+      });
+    }
+
+    await prisma.$transaction([
+      prisma.payment.update({
+        where: { razorpayOrderId: razorpay_order_id },
+        data: { 
+          status: 'PAID', 
+          razorpayPaymentId: razorpay_payment_id, 
+          paidAt: new Date() 
+        },
+      }),
+      orderType === 'ORDER' 
+        ? prisma.order.update({
+            where: { id: orderId },
+            data: { 
+              status: 'CONFIRMED',
+              paymentStatus: 'PAID', 
+              paymentMethod: 'RAZORPAY' 
+            },
+          })
+        : prisma.serviceOrder.update({
+            where: { id: orderId },
+            data: { 
+              status: 'CONFIRMED',
+              paymentStatus: 'PAID', 
+              paymentMethod: 'RAZORPAY',
+            },
+          }),
+      // Clear cart after successful product order
+      ...(orderType === 'ORDER' ? [
+        prisma.cart.update({
+          where: { userId: req.user.id },
+          data: { items: { deleteMany: {} } }
+        })
+      ] : [])
+    ]);
+
+    // Send confirmation email
+    try {
+      if (orderType === 'ORDER') {
+        const tpl = emailTemplates.orderConfirmation(orderData, orderData.user);
+        sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
+      } else {
+        const tpl = emailTemplates.serviceRequestStatusUpdate(orderData, orderData.user, 'NEW');
+        sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
+      }
+    } catch (err) {
+      console.error('[payment] Failed to send confirmation email:', err.message);
+    }
+
+    res.json({
       success: true,
       data: {
         paymentId: razorpay_payment_id,
-        message: 'Payment already verified successfully',
+        message: 'Payment verified successfully',
       },
     });
-  }
-  await prisma.$transaction([
-    prisma.payment.update({
-      where: { razorpayOrderId: razorpay_order_id },
-      data: { 
-        status: 'PAID', 
-        razorpayPaymentId: razorpay_payment_id, 
-        paidAt: new Date() 
-      },
-    }),
-    orderType === 'ORDER' 
-      ? prisma.order.update({
-          where: { id: internalOrderId },
-          data: { paymentStatus: 'PAID', paymentMethod: 'RAZORPAY' },
-        })
-      : prisma.serviceOrder.update({
-          where: { id: internalOrderId },
-          data: { 
-            paymentStatus: 'PAID', 
-            paymentMethod: 'RAZORPAY',
-            status: 'CONFIRMED'
-          },
-        }),
-    // Clear cart after successful product order
-    ...(orderType === 'ORDER' ? [
-      prisma.cart.update({
-        where: { userId: req.user.id },
-        data: { items: { deleteMany: {} } }
-      })
-    ] : [])
-  ]);
-
-  // Send confirmation email
-  try {
-    if (orderType === 'ORDER') {
-      const tpl = emailTemplates.orderConfirmation(orderData, orderData.user);
-      sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
-    } else {
-      const tpl = emailTemplates.serviceRequestStatusUpdate(orderData, orderData.user, 'NEW');
-      sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
-    }
   } catch (err) {
-    console.error('[payment] Failed to send confirmation email:', err.message);
+    next(err);
   }
-
-  res.json({
-    success: true,
-    data: {
-      paymentId: razorpay_payment_id,
-      message: 'Payment verified successfully',
-    },
-  });
 });
 
 /**

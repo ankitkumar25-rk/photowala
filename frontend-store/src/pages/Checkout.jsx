@@ -248,7 +248,7 @@ export default function Checkout() {
                 razorpay_order_id: resp.razorpay_order_id,
                 razorpay_payment_id: resp.razorpay_payment_id,
                 razorpay_signature: resp.razorpay_signature,
-                internalOrderId: order.id,
+                orderId: order.id,
                 orderType: 'ORDER',
               });
               toast.success('Payment successful!');
