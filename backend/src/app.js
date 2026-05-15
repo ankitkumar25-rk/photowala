@@ -173,9 +173,26 @@ app.get('/api', (req, res) => {
   });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+app.get('/api/health', async (req, res) => {
+  let valkeyStatus = 'disconnected';
+  try {
+    if (valkey.status === 'ready') {
+      const ping = await valkey.ping();
+      valkeyStatus = ping === 'PONG' ? 'connected' : 'error';
+    } else {
+      valkeyStatus = valkey.status;
+    }
+  } catch (err) {
+    valkeyStatus = 'error';
+  }
+
+  res.json({ 
+    status: 'ok', 
+    valkey: valkeyStatus,
+    timestamp: new Date().toISOString() 
+  });
 });
+
 
 app.get('/api/csrf', (req, res) => {
   res.json({ success: true, token: req.cookies?.csrf_token || null });

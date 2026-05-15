@@ -10,27 +10,32 @@ const isTls = valkeyUrl.startsWith('rediss://');
 
 const valkey = new Redis(valkeyUrl, {
   ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
+  maxRetriesPerRequest: null, // Critical for connect-redis to wait for reconnect
   retryStrategy: (times) => {
-    const delay = Math.min(times * 100, 2000);
-    return times <= 5 ? delay : null; // Max 5 retries
+    // Exponential backoff with jitter
+    const delay = Math.min(times * 200, 5000);
+    console.log(`[ioredis] Reconnecting... Attempt ${times}. Next retry in ${delay}ms`);
+    return delay; // Keep retrying indefinitely in production
   },
   reconnectOnError: (err) => {
-    const targetError = 'READONLY';
-    if (err.message.includes(targetError)) {
-      return true; // Reconnect on READONLY errors
+    const targetErrors = ['READONLY', 'ECONNRESET', 'EPIPE', 'ETIMEDOUT'];
+    if (targetErrors.some(te => err.message.includes(te))) {
+      return true; 
     }
     return false;
   },
   enableOfflineQueue: true,
-  connectTimeout: 10000,
-  commandTimeout: 5000,
+  connectTimeout: 15000,
+  commandTimeout: 10000,
   lazyConnect: false,
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  valkey.on('connect', () => console.log('✔ Valkey connected'));
-  valkey.on('error', (err) => console.error('✖ Valkey error:', err.message));
-}
+valkey.on('connect', () => console.log('✔ Valkey connected'));
+valkey.on('ready', () => console.log('✔ Valkey ready to receive commands'));
+valkey.on('error', (err) => console.error('✖ Valkey error:', err.message));
+valkey.on('reconnecting', () => console.warn('⚠ Valkey reconnecting...'));
+valkey.on('end', () => console.warn('✖ Valkey connection ended'));
+
 
 // Graceful shutdown
 const shutdown = async () => {
