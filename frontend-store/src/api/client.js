@@ -111,6 +111,19 @@ api.interceptors.response.use(
         if (accessToken) {
           localStorage.setItem('token', accessToken);
           if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+          
+          // Step 2: Fetch fresh CSRF token after auth refresh
+          const { data: csrfData } = await api.get('/csrf');
+          const freshCsrf = csrfData.token;
+
+          if (freshCsrf) {
+            // Step 3: Update global axios defaults
+            api.defaults.headers.common['X-CSRF-Token'] = freshCsrf;
+
+            // Step 4: Patch the original failed request headers
+            original.headers['X-CSRF-Token'] = freshCsrf;
+          }
+
           original.headers.Authorization = `Bearer ${accessToken}`;
           return api(original); // Retry original request
         } else {
@@ -121,9 +134,7 @@ api.interceptors.response.use(
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('auth-storage');
-        if (window.location.pathname !== '/') {
-          window.location.href = '/';
-        }
+        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }

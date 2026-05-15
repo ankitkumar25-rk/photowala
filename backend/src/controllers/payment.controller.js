@@ -8,50 +8,58 @@ import asyncHandler from '../utils/asyncHandler.js';
 /**
  * A) Create Razorpay Order
  */
-export const createRazorpayOrder = asyncHandler(async (req, res) => {
-  const { amount, currency = 'INR', orderId, orderType } = req.body;
+export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Unauthorized - user context missing' });
+    }
 
-  if (!amount || !orderId || !orderType) {
-    throw createError('Missing required fields', 400);
-  }
+    const { amount, currency = 'INR', orderId, orderType } = req.body;
 
-  const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
-  if (!validOrderTypes.includes(orderType)) {
-    throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
-  }
+    if (!amount || !orderId || !orderType) {
+      throw createError('Missing required fields', 400);
+    }
 
-  const amountInPaise = Math.round(Number(amount) * 100);
+    const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
+    if (!validOrderTypes.includes(orderType)) {
+      throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
+    }
 
-  const options = {
-    amount: amountInPaise,
-    currency,
-    receipt: orderId,
-  };
+    const amountInPaise = Math.round(Number(amount) * 100);
 
-  const rzpOrder = await razorpay.orders.create(options);
-
-  await prisma.payment.create({
-    data: {
-      userId: req.user.id,
-      internalOrderId: orderId,
-      orderType,
-      razorpayOrderId: rzpOrder.id,
+    const options = {
       amount: amountInPaise,
       currency,
-      status: 'CREATED',
-      paymentMethod: 'RAZORPAY',
-    },
-  });
+      receipt: orderId,
+    };
 
-  res.json({
-    success: true,
-    data: {
-      razorpayOrderId: rzpOrder.id,
-      amount: rzpOrder.amount,
-      currency: rzpOrder.currency,
-      keyId: process.env.RAZORPAY_KEY_ID,
-    },
-  });
+    const rzpOrder = await razorpay.orders.create(options);
+
+    await prisma.payment.create({
+      data: {
+        userId: req.user.id,
+        internalOrderId: orderId,
+        orderType,
+        razorpayOrderId: rzpOrder.id,
+        amount: amountInPaise,
+        currency,
+        status: 'CREATED',
+        paymentMethod: 'RAZORPAY',
+      },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        razorpayOrderId: rzpOrder.id,
+        amount: rzpOrder.amount,
+        currency: rzpOrder.currency,
+        keyId: process.env.RAZORPAY_KEY_ID,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 /**
