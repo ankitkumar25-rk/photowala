@@ -46,7 +46,6 @@ export default function AdminOrderDetail() {
   if (!order) return <div className="card p-5">Order not found.</div>;
 
   return (
-  return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">

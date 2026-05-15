@@ -90,8 +90,8 @@ export default function PaymentModal({ isOpen, onClose, orderData, onSuccess }) 
       setLoading(null);
     }
   };
-
-     <div className="fixed inset-0 z-[100] flex items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="bg-[#fdfaf7] w-full h-full sm:h-auto sm:max-w-lg sm:rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 sm:duration-300 luxury-grain">
         {/* Decorative Background Element */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-[#b88a2f]/10 rounded-full -mr-24 -mt-24 blur-3xl" />
