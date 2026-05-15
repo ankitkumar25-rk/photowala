@@ -71,35 +71,25 @@ if (process.env.NODE_ENV === 'production') {
 app.options(/\/.*/, cors());
 
 app.use(cors({
-  origin: (origin, callback) => {
-    const allowedOrigins = [
+  origin: function(origin, callback) {
+    const allowed = [
       'https://photowalagift.online',
       'https://www.photowalagift.online',
       'https://admin.photowalagift.online',
-      'https://api.photowalagift.online',
       'https://photowala-user.vercel.app',
       'https://photowala-three.vercel.app',
       'http://localhost:5173',
       'http://localhost:5174',
     ];
-    // Allow requests with no origin (mobile apps, curl, Razorpay webhooks)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+    if (!origin || allowed.includes(origin)) {
+      callback(null, origin || '*');
     } else {
-      console.warn(`✖ CORS blocked request from origin: ${origin}`);
-      callback(new Error(`CORS blocked: ${origin}`));
+      callback(null, false);
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-CSRF-Token',
-    'x-csrf-token',
-    'x-xsrf-token',
-  ],
-  exposedHeaders: ['set-cookie'],
+  methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-CSRF-Token','x-csrf-token'],
 }));
 
 // ================================
