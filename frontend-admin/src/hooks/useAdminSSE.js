@@ -13,8 +13,8 @@ export const useAdminSSE = () => {
     if (!user || !['ADMIN', 'SUPER_ADMIN'].includes(user.role)) return;
     if (eventSourceRef.current) return; // already connected
 
-    const apiBase = import.meta.env.VITE_API_URL || 
-                    'https://photowala-5pa7.onrender.com';
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 
+                    'https://api.photowalagift.online';
 
     // SSE requires credentials (cookies for session)
     // Note: EventSource doesn't support custom headers (like X-CSRF-Token)
