@@ -5,15 +5,14 @@ import { createError } from '../middleware/errorHandler.js';
 import { sendEmail, emailTemplates } from '../config/email.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
+// Startup validation logs
+console.log('[Razorpay] key_id loaded:', !!process.env.RAZORPAY_KEY_ID);
+console.log('[Razorpay] key_secret loaded:', !!process.env.RAZORPAY_KEY_SECRET);
+
 /**
  * A) Create Razorpay Order
  */
 export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
-  // Temporary debug logs
-  console.log('[Payment] req.user:', req.user);
-  console.log('[Payment] req.body:', req.body);
-  console.log('[Payment] cookies:', req.cookies);
-
   try {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -29,12 +28,15 @@ export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    const amountInPaise = Math.round(Number(amount) * 100);
+    if (!amountInPaise || amountInPaise < 100) {
+      return res.status(400).json({ message: 'Invalid amount. Minimum ₹1.' });
+    }
+
     const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
     if (!validOrderTypes.includes(orderType)) {
       return res.status(400).json({ message: `Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}` });
     }
-
-    const amountInPaise = Math.round(Number(amount) * 100);
 
     const options = {
       amount: amountInPaise,
@@ -42,8 +44,17 @@ export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
       receipt: orderId,
     };
 
-    // Note: razorpay instance is imported from config/razorpay.js
-    const rzpOrder = await razorpay.orders.create(options);
+    let rzpOrder;
+    try {
+      rzpOrder = await razorpay.orders.create(options);
+    } catch (razorpayError) {
+      console.error('[Razorpay Order Error]', JSON.stringify(razorpayError));
+      return res.status(502).json({
+        success: false,
+        message: 'Payment gateway error',
+        detail: razorpayError?.error?.description || razorpayError?.message || 'Unknown Razorpay error'
+      });
+    }
 
     await prisma.payment.create({
       data: {
@@ -68,7 +79,7 @@ export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
       },
     });
   } catch (err) {
-    console.error('[Payment Error]', err);
+    console.error('[General Payment Error]', err);
     next(err);
   }
 });

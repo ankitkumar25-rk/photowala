@@ -3,7 +3,10 @@
  * Must be the last middleware in the stack
  */
 export function errorHandler(err, req, res, next) {
-  console.error(`[ERROR] ${err.message}`, err.stack);
+  const statusCode = err.status || err.statusCode || 500;
+  const message = err.message || err.error?.description || 'Internal server error';
+
+  console.error(`[ERROR] ${statusCode} - ${message}`, err.stack);
 
   // Prisma errors
   if (err.code === 'P2002') {
@@ -48,10 +51,9 @@ export function errorHandler(err, req, res, next) {
     return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
   }
 
-  const statusCode = err.statusCode || 500;
   res.status(statusCode).json({
     success: false,
-    message: err.message || 'Internal server error',
+    message: message,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 }
