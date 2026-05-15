@@ -1,108 +1,91 @@
 ================================================================================
-PHOTOWALA - PREMIUM PHOTO & CUSTOM PRINTING PLATFORM
+PHOTOWALA GIFT - PREMIUM PHOTO & CUSTOM PRINTING PLATFORM
 PROJECT ARCHITECTURE & KNOWLEDGE BASE FOR AI MODELS
 ================================================================================
 
 1. PROJECT SUMMARY
 ------------------
-Photowala is a high-end e-commerce platform specializing in premium gifts, trophies, 
-momentos, and professional custom printing services. The platform is architected for 
-scalability, security, and a premium "luxury" user experience.
+Photowala Gift is a high-end e-commerce platform specializing in premium gifts, 
+trophies, mementos, and professional custom printing/industrial services. 
+The platform is architected for scalability, security, and a premium "luxury" 
+user experience.
 
 The ecosystem is divided into three core modules:
 - Backend: Express/Node.js REST API with Prisma ORM and PostgreSQL.
 - Frontend Store: Customer-facing React SPA (Vite-powered).
-- Frontend Admin: Administrative dashboard for order management and business analytics.
+- Frontend Admin: Administrative dashboard for business analytics and order management.
 
 2. TECH STACK & ECOSYSTEM
 -------------------------
 - Core: Node.js (v22.12.0), Express, React 18, Vite.
-- Styling: TailwindCSS with a "Mobile-First" philosophy and premium design tokens.
+- Styling: TailwindCSS + Vanilla CSS with "Luxury Minimalist" design tokens.
 - State Management: 
     - Frontend: Zustand (Atomic stores for Auth, Cart, UI state).
-    - Data Fetching: TanStack Query (React Query) for robust caching and synchronization.
+    - Data Fetching: TanStack Query (React Query v5) for caching.
 - Security: 
-    - Authentication: PASETO (Token-based) with httpOnly cookie + localStorage fallback.
-    - Protection: Strict CSRF tokens, CORS origin filtering, and Helmet.js headers.
-- Payments: Razorpay (Dynamic SDK loading, Webhook handlers, live-mode ready).
+    - Authentication: PASETO (Token-based) with httpOnly cookie rotation.
+    - Protection: Double-submit CSRF tokens, CORS origin filtering.
+- Geospatial & Address:
+    - Frontend: Google Maps Places API (Autocomplete).
+    - Backend: Google Address Validation API (Verification & Correction).
+    - Utilities: Postal Pincode API for automated City/State resolution.
 - Infrastructure: 
-    - Image Hosting: Cloudinary (Auto-optimization, transformations).
-    - Email: Resend SDK (Transactional emails for orders/auth).
-    - Database: PostgreSQL (Managed on Render/Supabase).
+    - Image Hosting: Cloudinary (Auto-optimization).
+    - Email: Resend SDK (Custom branded templates).
+    - Database: PostgreSQL (Prisma ORM).
 
 3. DATABASE ARCHITECTURE (PRISMA)
 ---------------------------------
 - Polymorphic Relationship Pattern:
     The 'Payment' model supports multiple order types (Physical 'Order' vs. 'ServiceOrder') 
-    using 'internalOrderId' and 'orderType'. Note: No strict DB-level FK constraints are 
-    used on these polymorphic fields to ensure compatibility with high-concurrency 
-    cloud environments like Render.
+    using 'internalOrderId' and 'orderType'.
 - Role-Based Access Control (RBAC):
-    Users are categorized into [CUSTOMER, ADMIN, SUPER_ADMIN]. Permissions are enforced 
-    at both the API middleware and Frontend routing layers.
+    Users are categorized into [CUSTOMER, ADMIN, SUPER_ADMIN].
 - Printing Service Schema:
-    ServiceOrder model handles complex customization metadata (URLs, text instructions) 
-    tailored for printing-specific workflows.
+    ServiceOrder model handles complex customization metadata for printing-specific workflows.
 
 4. DESIGN SYSTEM & UI STANDARDS
 -------------------------------
 - Aesthetic Identity: 
-    "Luxury Minimalist" — Using HSL-tailored colors (Brand Primary: #5a3f2f, Secondary: #b88a2f), 
-    custom glassmorphism, and premium typography (Inter/Outfit). This theme is 
-    systematically applied across both the Storefront and the Admin Dashboard.
-- Mobile-First Responsiveness:
-    - Storefront: All Purchasing and Tracking pages (Cart, Checkout, Order Detail) 
-      are standardized for small viewports to prevent layout overflows.
-    - Admin Panel: Features a fully responsive sidebar and stacked dashboard layout 
-      ensuring administrative tasks can be performed seamlessly on mobile devices.
-- Standard Components:
-    - Custom Scrollbars: Consistent luxury grain scrollbars across all modules.
-    - Status Badges: Color-coded progress indicators (e.g., bg-brand-surface for Pending).
-    - Premium Modals: Backdrop blur and spring-based animations for a high-end feel.
+    "Luxury Minimalist" — Using Brand Primary (#5a3f2f) and Secondary (#b88a2f).
+    Features custom glassmorphism, backdrop blurs, and spring-based animations.
+- Responsive Design:
+    - Storefront: Standardized for small viewports; full-width search overlays.
+    - Admin Panel: Mobile-first sidebar and stacked dashboard layout.
 
-5. AUTHENTICATION & SESSION HYDRATION
+5. LOGISTICS & CHECKOUT INTELLIGENCE
 -------------------------------------
-- Multi-Layered Persistence:
-    Ensures seamless sessions across standard browsers and restrictive environments 
-    (Safari/In-App) by synchronizing httpOnly cookies with localStorage.
-- Interceptor Strategy:
-    Axios interceptors manage token lifecycle, including:
-    - Transparent token refresh on 401 status.
-    - CSRF token bootstrapping for unsafe HTTP methods.
-    - Graceful logout on refresh-token expiration.
+- Google Autocomplete:
+    Integrated into Checkout and Profile address modals to reduce input friction.
+- Address Validation Flow:
+    Non-blocking server-side validation that provides correction suggestions to users 
+    to prevent shipping errors.
 
-6. CUSTOM PRINTING SERVICE SUITE
---------------------------------
-- Promotion Workflow:
-    Service requests (Stickers, Letterheads, BillBooks) are created as 'PENDING' 
-    until payment is confirmed via Razorpay. Upon 'PAID' status, they are promoted 
-    to 'CONFIRMED' and appear in the user's Service History.
-- Lead Management:
-    Services are handled as "Lead-to-Order" conversions, where administrative 
-    review happens after initial payment confirmation.
+6. RECENT ARCHITECTURAL EVOLUTIONS (May 2026)
+---------------------------------------------
+- Brand Rebrand: Transitioned from "Manufact" to "Photowala Gift" across all modules.
+- Address Intelligence: Implemented Google Maps Autocomplete and Address Validation.
+- Logistics Update: Integrated smart pincode lookup and updated official company 
+  address to Chhaosari, Jhunjhunu.
+- Email Modernization: Refactored Resend templates with a unified luxury footer 
+  and updated contact information.
+- Reliability: Fixed 401 interceptor loop bugs and standardized the Admin UI 
+  to match the storefront's luxury theme.
 
-7. RECENT ARCHITECTURAL EVOLUTIONS
-----------------------------------
-- Mobile UI Refinement (May 2026): Full audit and refactor of Cart and Checkout modules 
-  for mobile responsiveness, including full-width search overlays and stacked summary cards.
-- Admin Panel Standardization (May 2026): Replicated the storefront's luxury theme 
-  in the Admin Panel, including shared CSS tokens, typography, and a 
-  mobile-first responsive sidebar layout.
-- Performance: Implemented lazy-loading for heavy scripts (Razorpay) and 
-  image auto-transformation via Cloudinary.
-- Code Reliability: Transitioned to atomic Zustand stores and resolved 401 
-  interceptor loop bugs to improve hydration stability.
-
-8. DIRECTORY OVERVIEW
+7. DIRECTORY OVERVIEW
 ---------------------
 - /backend/src/api: Core business logic and controllers.
 - /backend/prisma: Schema definitions and database migrations.
-- /frontend-store/src/api: Centralized API client (client.js) and endpoint definitions.
-- /frontend-store/src/store: State management (index.js).
+- /frontend-store/src/api: Centralized API client (client.js).
+- /frontend-store/src/hooks: Custom hooks (e.g., useGoogleMaps).
 - /frontend-store/src/pages: Route-based page components.
-- /frontend-admin/src/components: Layout components (AdminLayout) and shared UI.
-- /frontend-admin/src/pages: Administrative modules (Inventory, Orders, analytics).
+
+8. BUSINESS CONTACT INFO
+------------------------
+- Email: photowalagiftphotowalagift@gmail.com
+- Phone: +91 81049 37078 | +91 96025 60933 (WhatsApp)
+- Address: WARD NO. 04, KUMAWAT COLONY, SITHAL ROAD, TEHSIL - GUDHA GORJI, Chhaosari, Jhunjhunu, Rajasthan - 333012
 
 ================================================================================
-Document Updated: 2026-05-13
+Document Updated: 2026-05-15
 ================================================================================
