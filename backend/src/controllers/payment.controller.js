@@ -9,20 +9,29 @@ import asyncHandler from '../utils/asyncHandler.js';
  * A) Create Razorpay Order
  */
 export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
+  // Temporary debug logs
+  console.log('[Payment] req.user:', req.user);
+  console.log('[Payment] req.body:', req.body);
+  console.log('[Payment] cookies:', req.cookies);
+
   try {
     if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: 'Unauthorized - user context missing' });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const { amount, currency = 'INR', orderId, orderType } = req.body;
 
-    if (!amount || !orderId || !orderType) {
-      throw createError('Missing required fields', 400);
+    if (!orderId) {
+      return res.status(400).json({ message: 'orderId is required' });
+    }
+
+    if (!amount || !orderType) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const validOrderTypes = ['ORDER', 'SERVICE_ORDER'];
     if (!validOrderTypes.includes(orderType)) {
-      throw createError(`Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}`, 400);
+      return res.status(400).json({ message: `Invalid orderType. Must be one of: ${validOrderTypes.join(', ')}` });
     }
 
     const amountInPaise = Math.round(Number(amount) * 100);
@@ -33,6 +42,7 @@ export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
       receipt: orderId,
     };
 
+    // Note: razorpay instance is imported from config/razorpay.js
     const rzpOrder = await razorpay.orders.create(options);
 
     await prisma.payment.create({
@@ -58,6 +68,7 @@ export const createRazorpayOrder = asyncHandler(async (req, res, next) => {
       },
     });
   } catch (err) {
+    console.error('[Payment Error]', err);
     next(err);
   }
 });

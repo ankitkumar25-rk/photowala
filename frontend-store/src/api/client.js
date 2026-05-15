@@ -117,6 +117,7 @@ api.interceptors.response.use(
           const freshCsrf = csrfData.token;
 
           if (freshCsrf) {
+            console.log('[Interceptor] Retrying with fresh CSRF:', freshCsrf);
             // Step 3: Update global axios defaults
             api.defaults.headers.common['X-CSRF-Token'] = freshCsrf;
 
