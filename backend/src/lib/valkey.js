@@ -10,12 +10,16 @@ const isTls = valkeyUrl.startsWith('rediss://');
 
 const valkey = new Redis(valkeyUrl, {
   ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
-  maxRetriesPerRequest: null, // Critical for connect-redis to wait for reconnect
+  maxRetriesPerRequest: null,
+  keepAlive: 10000, // Keep connection alive
+  noDelay: true,    // Disable Nagle's algorithm
+  family: 0,        // Support both IPv4 and IPv6
   retryStrategy: (times) => {
-    // Exponential backoff with jitter
-    const delay = Math.min(times * 200, 5000);
-    console.log(`[ioredis] Reconnecting... Attempt ${times}. Next retry in ${delay}ms`);
-    return delay; // Keep retrying indefinitely in production
+    const delay = Math.min(times * 500, 10000);
+    if (times % 5 === 0) {
+      console.log(`[ioredis] Reconnecting... Attempt ${times}. Next retry in ${delay}ms`);
+    }
+    return delay;
   },
   reconnectOnError: (err) => {
     const targetErrors = ['READONLY', 'ECONNRESET', 'EPIPE', 'ETIMEDOUT'];
@@ -25,10 +29,13 @@ const valkey = new Redis(valkeyUrl, {
     return false;
   },
   enableOfflineQueue: true,
-  connectTimeout: 15000,
-  commandTimeout: 10000,
+  connectTimeout: 20000,
+  commandTimeout: 15000,
+  pingInterval: 5000, // Regularly ping to keep connection active
   lazyConnect: false,
 });
+
+
 
 valkey.on('connect', () => console.log('✔ Valkey connected'));
 valkey.on('ready', () => console.log('✔ Valkey ready to receive commands'));
