@@ -68,29 +68,33 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.options(/\/.*/, cors());
-
-app.use(cors({
+const corsOptions = {
   origin: function(origin, callback) {
     const allowed = [
       'https://photowalagift.online',
       'https://www.photowalagift.online',
       'https://admin.photowalagift.online',
+      'https://api.photowalagift.online',
       'https://photowala-user.vercel.app',
       'https://photowala-three.vercel.app',
       'http://localhost:5173',
       'http://localhost:5174',
     ];
     if (!origin || allowed.includes(origin)) {
-      callback(null, origin || '*');
+      callback(null, true);
     } else {
-      callback(null, false);
+      console.warn(`✖ CORS blocked request from origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
-  allowedHeaders: ['Content-Type','Authorization','X-CSRF-Token','x-csrf-token'],
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-csrf-token', 'x-xsrf-token'],
+  exposedHeaders: ['set-cookie'],
+};
+
+app.options(/\/.*/, cors(corsOptions));
+app.use(cors(corsOptions));
 
 // ================================
 // PAYMENTS WEBHOOK (MUST BE BEFORE express.json)
