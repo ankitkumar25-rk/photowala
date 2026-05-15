@@ -14,33 +14,42 @@ const api = axios.create({
 });
 
 let csrfBootstrapPromise = null;
+let csrfTokenBuffer = null;
 async function ensureCsrfCookie() {
-  if (readCookie('csrf_token')) return;
+  if (readCookie('csrf_token')) {
+    csrfTokenBuffer = readCookie('csrf_token');
+    return csrfTokenBuffer;
+  }
   if (!csrfBootstrapPromise) {
     const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
     csrfBootstrapPromise = axios.get(`${baseURL}/csrf`, { withCredentials: true })
+      .then(res => {
+        csrfTokenBuffer = res.data.token;
+        return csrfTokenBuffer;
+      })
       .finally(() => { csrfBootstrapPromise = null; });
   }
-  await csrfBootstrapPromise;
+  return csrfBootstrapPromise;
 }
 
 api.interceptors.request.use((config) => {
   const method = String(config.method || 'get').toUpperCase();
   const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
-  if (unsafe && !readCookie('csrf_token')) {
-    return ensureCsrfCookie().then(() => {
-      const csrfToken = readCookie('csrf_token');
-      if (csrfToken) {
+  
+  if (unsafe && !readCookie('csrf_token') && !csrfTokenBuffer) {
+    return ensureCsrfCookie().then((token) => {
+      if (token) {
         config.headers = config.headers || {};
-        config.headers['X-CSRF-Token'] = csrfToken;
+        config.headers['X-CSRF-Token'] = token;
       }
       return config;
     });
   }
-  const csrfToken = readCookie('csrf_token');
-  if (csrfToken) {
+  
+  const token = readCookie('csrf_token') || csrfTokenBuffer;
+  if (token) {
     config.headers = config.headers || {};
-    config.headers['X-CSRF-Token'] = csrfToken;
+    config.headers['X-CSRF-Token'] = token;
   }
   return config;
 });

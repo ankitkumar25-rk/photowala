@@ -195,8 +195,11 @@ app.get('/api/health', async (req, res) => {
 });
 
 
+console.log('✔ Cookie Domain configured as:', process.env.COOKIE_DOMAIN || 'none (host-only)');
+
 app.get('/api/csrf', (req, res) => {
-  res.json({ success: true, token: req.cookies?.csrf_token || null });
+  const token = issueCsrfToken(res);
+  res.json({ success: true, token });
 });
 
 app.use('/api/auth', authRoutes);
