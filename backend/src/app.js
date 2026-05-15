@@ -69,19 +69,26 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      console.warn(`✖ CORS blocked request from origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: [
+    'https://photowala-user.vercel.app',
+    'https://photowala-three.vercel.app',
+    'https://photowalagift.online',
+    'https://www.photowalagift.online',
+    'https://admin.photowalagift.online',
+    'http://localhost:5173',
+    'http://localhost:5174',
+  ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'X-CSRF-Token'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization',
+    'X-CSRF-Token',
+    'x-csrf-token',
+  ],
 }));
+
+app.options('*', cors());
 
 // ================================
 // PAYMENTS WEBHOOK (MUST BE BEFORE express.json)
@@ -123,11 +130,11 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
+    domain: undefined,
   },
   ...(sessionStore ? { store: sessionStore } : {}),
 };
@@ -199,7 +206,7 @@ console.log('✔ Cookie Domain configured as:', process.env.COOKIE_DOMAIN || 'no
 
 app.get('/api/csrf', (req, res) => {
   const token = req.cookies?.csrf_token || issueCsrfToken(res);
-  res.json({ success: true, token });
+  res.json({ success: true, token, csrfToken: token });
 });
 
 app.use('/api/auth', authRoutes);

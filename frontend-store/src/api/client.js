@@ -15,35 +15,43 @@ const api = axios.create({
 
 // Module-level lock to prevent multiple simultaneous refresh requests
 let refreshPromise = null;
+let csrfTokenBuffer = null;
 
-let csrfBootstrapPromise = null;
-async function ensureCsrfCookie() {
-  if (readCookie('csrf_token')) return;
-  if (!csrfBootstrapPromise) {
-    const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
-    csrfBootstrapPromise = axios.get(`${baseURL}/csrf`, { withCredentials: true })
-      .finally(() => { csrfBootstrapPromise = null; });
+export const initializeCsrf = async () => {
+  try {
+    const { data } = await api.get('/csrf');
+    // Store token from response body
+    const token = data.csrfToken || data.token || data.csrf_token;
+    if (token) {
+      csrfTokenBuffer = token;
+      api.defaults.headers.common['X-CSRF-Token'] = token;
+    }
+    return token;
+  } catch (err) {
+    console.error('[CSRF] Failed to initialize:', err);
   }
-  await csrfBootstrapPromise;
+};
+
+async function ensureCsrfCookie() {
+  if (readCookie('csrf_token')) return readCookie('csrf_token');
+  if (csrfTokenBuffer) return csrfTokenBuffer;
+  return initializeCsrf();
 }
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
   const method = String(config.method || 'get').toUpperCase();
   const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
-  if (unsafe && !readCookie('csrf_token')) {
-    return ensureCsrfCookie().then(() => {
-      const csrfToken = readCookie('csrf_token');
-      if (csrfToken) {
-        config.headers = config.headers || {};
-        config.headers['X-CSRF-Token'] = csrfToken;
-      }
-      return config;
-    });
-  }
-  const csrfToken = readCookie('csrf_token');
-  if (csrfToken) {
-    config.headers = config.headers || {};
-    config.headers['X-CSRF-Token'] = csrfToken;
+  
+  if (unsafe && !readCookie('csrf_token') && !csrfTokenBuffer) {
+    const token = await ensureCsrfCookie();
+    if (token) {
+      config.headers['X-CSRF-Token'] = token;
+    }
+  } else {
+    const token = readCookie('csrf_token') || csrfTokenBuffer;
+    if (token) {
+      config.headers['X-CSRF-Token'] = token;
+    }
   }
   return config;
 });

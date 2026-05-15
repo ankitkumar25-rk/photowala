@@ -9,11 +9,11 @@ import asyncHandler from '../utils/asyncHandler.js';
 
 const COOKIE_OPTS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  secure: true,         // MUST be true for sameSite: 'none'
+  sameSite: 'none',     // MUST be 'none' for cross-origin (Vercel → VPS)
   maxAge: 15 * 60 * 1000,
   path: '/',
-  domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
+  domain: undefined,    // REMOVE domain restriction
 };
 
 const REFRESH_COOKIE_OPTS = {

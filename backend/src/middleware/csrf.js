@@ -9,11 +9,12 @@ const EXEMPT_PATHS = new Set([
 ]);
 
 const cookieOptions = {
-  httpOnly: false,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
+  httpOnly: false,      // MUST be false — frontend JS needs to read it
+  secure: true,         // true in production (HTTPS)
+  sameSite: 'none',     // MUST be 'none' for cross-origin (Vercel → VPS)
+  domain: undefined,    // REMOVE domain restriction entirely
+  path: '/',
+  maxAge: 60 * 60 * 1000, // 1 hour
 };
 
 export function issueCsrfToken(res) {
@@ -47,10 +48,27 @@ export function requireCsrf(req, res, next) {
 
   // 3. Validate double-submit cookie
   const cookieToken = req.cookies?.csrf_token;
-  const headerToken = req.get('x-csrf-token');
+  const headerToken = 
+    req.headers['x-csrf-token'] || 
+    req.headers['X-CSRF-Token'] ||
+    req.headers['x-xsrf-token'];
 
-  if (!cookieToken || !headerToken || !secureCompare(cookieToken, headerToken)) {
-    console.error(`[CSRF] Denial: Method: ${req.method}, Path: ${routePath}. Cookie: ${!!cookieToken}, Header: ${!!headerToken}`);
+  // Add detailed debug log temporarily
+  console.log('[CSRF Debug]', {
+    method: req.method,
+    path: routePath,
+    cookieToken: cookieToken?.slice(0, 10),
+    headerToken: headerToken?.slice(0, 10),
+    match: cookieToken === headerToken,
+  });
+
+  if (!cookieToken || !headerToken) {
+    console.error(`[CSRF] Denial: Missing tokens. Cookie: ${!!cookieToken}, Header: ${!!headerToken}`);
+    return next(createError('CSRF token missing', 403));
+  }
+
+  if (!secureCompare(cookieToken, headerToken)) {
+    console.error(`[CSRF] Denial: Token mismatch. Path: ${routePath}`);
     return next(createError('CSRF validation failed. Please refresh the page.', 403));
   }
 
