@@ -68,27 +68,39 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+app.options(/\/.*/, cors());
+
 app.use(cors({
-  origin: [
-    'https://photowalagift.online',
-    'https://www.photowalagift.online',
-    'https://admin.photowalagift.online',
-    'https://photowala-user.vercel.app',
-    'https://photowala-three.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:5174',
-  ],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://photowalagift.online',
+      'https://www.photowalagift.online',
+      'https://admin.photowalagift.online',
+      'https://api.photowalagift.online',
+      'https://photowala-user.vercel.app',
+      'https://photowala-three.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:5174',
+    ];
+    // Allow requests with no origin (mobile apps, curl, Razorpay webhooks)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`✖ CORS blocked request from origin: ${origin}`);
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: [
-    'Content-Type', 
+    'Content-Type',
     'Authorization',
     'X-CSRF-Token',
     'x-csrf-token',
+    'x-xsrf-token',
   ],
+  exposedHeaders: ['set-cookie'],
 }));
-
-app.options('(.*)', cors());
 
 // ================================
 // PAYMENTS WEBHOOK (MUST BE BEFORE express.json)
@@ -134,7 +146,6 @@ const sessionOptions = {
     httpOnly: true,
     sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    domain: undefined,
   },
   ...(sessionStore ? { store: sessionStore } : {}),
 };
@@ -205,8 +216,25 @@ app.get('/api/health', async (req, res) => {
 console.log('✔ Cookie Domain configured as:', process.env.COOKIE_DOMAIN || 'none (host-only)');
 
 app.get('/api/csrf', (req, res) => {
-  const token = req.cookies?.csrf_token || issueCsrfToken(res);
-  res.json({ success: true, token, csrfToken: token });
+  try {
+    const existingToken = req.cookies?.csrf_token;
+    const token = (existingToken && existingToken.length === 64)
+      ? existingToken
+      : crypto.randomBytes(32).toString('hex');
+
+    res.cookie('csrf_token', token, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ success: true, token, csrfToken: token });
+  } catch (err) {
+    console.error('[CSRF] getCsrfToken error:', err.message);
+    res.status(500).json({ success: false, message: 'Failed to generate CSRF token' });
+  }
 });
 
 app.use('/api/auth', authRoutes);

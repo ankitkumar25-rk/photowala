@@ -13,7 +13,6 @@ const COOKIE_OPTS = {
   sameSite: 'none',     // MUST be 'none' for cross-origin (Vercel → VPS)
   maxAge: 15 * 60 * 1000,
   path: '/',
-  domain: undefined,    // REMOVE domain restriction
 };
 
 const REFRESH_COOKIE_OPTS = {

@@ -12,9 +12,8 @@ const cookieOptions = {
   httpOnly: false,      // MUST be false — frontend JS needs to read it
   secure: true,         // true in production (HTTPS)
   sameSite: 'none',     // MUST be 'none' for cross-origin (Vercel → VPS)
-  domain: undefined,    // REMOVE domain restriction entirely
   path: '/',
-  maxAge: 60 * 60 * 1000, // 1 hour
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
 };
 
 export function issueCsrfToken(res) {
@@ -24,16 +23,18 @@ export function issueCsrfToken(res) {
 }
 
 export function ensureCsrfCookie(req, res, next) {
-  const existingToken = req.cookies?.csrf_token;
-  
-  if (existingToken) {
-    // Token already exists — do NOT overwrite it
-    return next();
+  try {
+    const existingToken = req.cookies?.csrf_token;
+    if (existingToken && existingToken.length === 64) {
+      return next(); // valid token exists, do not overwrite
+    }
+    const token = crypto.randomBytes(32).toString('hex');
+    res.cookie('csrf_token', token, cookieOptions);
+    next();
+  } catch (err) {
+    console.error('[CSRF] ensureCsrfCookie error:', err.message);
+    next(); // never block the request due to CSRF cookie error
   }
-
-  // No token yet — generate and set
-  issueCsrfToken(res);
-  next();
 }
 
 function secureCompare(a, b) {
@@ -45,38 +46,45 @@ function secureCompare(a, b) {
 }
 
 export function requireCsrf(req, res, next) {
-  // 1. Skip safe methods
-  if (SAFE_METHODS.has(req.method)) return next();
-  
-  // 2. Skip exempt paths
-  const routePath = `${req.baseUrl || ''}${req.path || ''}`;
-  if (EXEMPT_PATHS.has(routePath)) return next();
+  try {
+    // 1. Skip safe methods
+    if (SAFE_METHODS.has(req.method)) return next();
+    
+    // 2. Skip exempt paths
+    const routePath = `${req.baseUrl || ''}${req.path || ''}`;
+    if (EXEMPT_PATHS.has(routePath)) return next();
 
-  // 3. Validate double-submit cookie
-  const cookieToken = req.cookies?.csrf_token;
-  const headerToken = 
-    req.headers['x-csrf-token'] || 
-    req.headers['X-CSRF-Token'] ||
-    req.headers['x-xsrf-token'];
+    // 3. Validate double-submit cookie
+    const cookieToken = req.cookies?.csrf_token;
+    const headerToken =
+      req.headers['x-csrf-token'] ||
+      req.headers['x-xsrf-token'] ||
+      req.headers['X-CSRF-Token'];
 
-  // Add detailed debug log temporarily
-  console.log('[CSRF Debug]', {
-    method: req.method,
-    path: routePath,
-    cookieFirst10: cookieToken?.slice(0, 10),
-    headerFirst10: headerToken?.slice(0, 10),
-    match: cookieToken === headerToken,
-  });
+    // Temporary debug — remove after confirming fix
+    console.log('[CSRF Check]', {
+      method: req.method,
+      path: routePath,
+      hasCookie: !!cookieToken,
+      hasHeader: !!headerToken,
+      match: cookieToken === headerToken,
+      cookieSnippet: cookieToken?.slice(0, 8),
+      headerSnippet: headerToken?.slice(0, 8),
+    });
 
-  if (!cookieToken || !headerToken) {
-    console.error(`[CSRF] Denial: Missing tokens. Cookie: ${!!cookieToken}, Header: ${!!headerToken}`);
-    return next(createError('CSRF token missing', 403));
+    if (!cookieToken || !headerToken) {
+      console.error(`[CSRF] Denial: Missing tokens. Cookie: ${!!cookieToken}, Header: ${!!headerToken}`);
+      return next(createError('CSRF token missing', 403));
+    }
+
+    if (!secureCompare(cookieToken, headerToken)) {
+      console.error(`[CSRF] Denial: Token mismatch. Path: ${routePath}`);
+      return next(createError('CSRF validation failed. Please refresh the page.', 403));
+    }
+
+    next();
+  } catch (err) {
+    console.error('[CSRF] requireCsrf error:', err.message);
+    next(createError('CSRF check failed', 500));
   }
-
-  if (!secureCompare(cookieToken, headerToken)) {
-    console.error(`[CSRF] Denial: Token mismatch. Path: ${routePath}`);
-    return next(createError('CSRF validation failed. Please refresh the page.', 403));
-  }
-
-  next();
 }
