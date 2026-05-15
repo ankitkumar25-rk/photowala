@@ -6,8 +6,10 @@ if (!valkeyUrl) {
   throw new Error('VALKEY_URL is not defined in environment variables');
 }
 
+const isTls = valkeyUrl.startsWith('rediss://');
+
 const valkey = new Redis(valkeyUrl, {
-  tls: {}, // Required for Upstash
+  ...(isTls ? { tls: { rejectUnauthorized: false } } : {}),
   retryStrategy: (times) => {
     const delay = Math.min(times * 100, 2000);
     return times <= 5 ? delay : null; // Max 5 retries

@@ -35,6 +35,19 @@
   --radius-pill: 9999px;
   --shadow-card: 0 14px 30px rgba(91, 63, 47, 0.1);
   --shadow-hover: 0 18px 34px rgba(91, 63, 47, 0.16);
+
+  --animate-wiggle: wiggle 0.5s ease-in-out;
+  --animate-fade-slide-down: fadeSlideDown 0.2s ease-out;
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-15deg); }
+    75% { transform: rotate(15deg); }
+  }
+  @keyframes fadeSlideDown {
+    0% { opacity: 0; transform: translateY(-8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
 }
 
 *, *::before, *::after {
@@ -263,4 +276,13 @@ table thead th {
   background: rgba(255, 248, 243, 0.84);
   border: 1px solid rgba(122, 50, 24, 0.14);
   backdrop-filter: blur(10px);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

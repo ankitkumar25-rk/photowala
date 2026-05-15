@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 // Generate a 32-byte hex key for PASETO (symmetric v4.local)
 const pasetoKey = crypto.randomBytes(32).toString('hex');

@@ -1,4 +1,6 @@
 import prisma from '../lib/prisma.js';
+import { broadcastToAdmins } from '../services/notificationService.js';
+
 import { createError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
 import asyncHandler from '../utils/asyncHandler.js';
@@ -50,6 +52,18 @@ export const createServiceOrder = asyncHandler(async (req, res) => {
       customerName
     }
   });
+
+  // Broadcast to admins
+  broadcastToAdmins('new_order', {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    customerName: req.user?.name || 'Customer',
+    amount: order.totalAmount,
+    itemCount: 1,
+    createdAt: order.createdAt,
+    type: 'SERVICE',
+  });
+
 
   res.status(201).json({ 
     success: true, 

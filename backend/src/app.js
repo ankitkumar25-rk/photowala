@@ -26,6 +26,8 @@ import uploadRoutes from './routes/upload.routes.js';
 import returnsRoutes from './routes/returns.routes.js';
 import supportRoutes from './routes/support.routes.js';
 import serviceOrderRoutes from './routes/serviceOrder.routes.js';
+import notificationRoutes from './api/notifications/routes.js';
+
 
 import * as paymentController from './controllers/payment.controller.js';
 
@@ -102,7 +104,7 @@ const { Pool } = pkg;
 const PgStore = PgSession(session);
 
 let sessionStore;
-if (redisUrl) {
+if (process.env.REDIS_URL || process.env.VALKEY_URL) {
   sessionStore = new RedisStore({ client: valkey, prefix: 'sess:' });
 } else {
   console.log('✔ No REDIS_URL found, using PostgreSQL for session storage');
@@ -191,6 +193,8 @@ app.use('/api/uploads', uploadRoutes);
 app.use('/api/returns', returnsRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/service-orders', serviceOrderRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });

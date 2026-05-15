@@ -46,101 +46,129 @@ export default function AdminOrderDetail() {
   if (!order) return <div className="card p-5">Order not found.</div>;
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Order Detail</h1>
-          <p className="text-gray-400 text-sm mt-0.5">{order.orderNumber}</p>
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <p className="text-[10px] font-black text-[#b88a2f] uppercase tracking-[0.2em] mb-1">Detailed View</p>
+          <h1 className="text-2xl font-bold text-[#5b3f2f] truncate">Order {order.orderNumber}</h1>
+          <div className="flex items-center gap-3 mt-1">
+             <span className={'badge-status ' + order.status.toLowerCase()}>{order.status}</span>
+             <span className="text-xs font-semibold text-[#7a655c]/60">{new Date(order.createdAt).toLocaleString('en-IN')}</span>
+          </div>
         </div>
-        <Link to="/orders" className="btn-primary w-full justify-center sm:w-auto">Back to Orders</Link>
+        <Link to="/orders" className="btn-ghost justify-center sm:w-auto border-[#5b3f2f]/10 text-[#5b3f2f]">Back to Orders</Link>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-        <div className="xl:col-span-2 space-y-5">
-          <div className="card">
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-800">Items</h2>
-              <span className="text-xs text-gray-400">{order.items?.length || 0} items</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Items Section */}
+          <div className="card luxury-grain overflow-hidden">
+            <div className="p-5 border-b border-[#5b3f2f]/5 flex items-center justify-between bg-[#fcf9f6]/50">
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f]">Purchased Items</h3>
+              <span className="px-2 py-1 bg-[#5b3f2f] text-white text-[10px] font-black rounded-full leading-none">{order.items?.length || 0}</span>
             </div>
-            <div className="divide-y divide-gray-50">
+            <div className="divide-y divide-[#5b3f2f]/5">
               {order.items?.map((item) => (
-                <div key={item.id} className="p-4 flex items-start justify-between gap-4">
+                <div key={item.id} className="p-5 sm:p-6 flex flex-col sm:flex-row items-start gap-5">
+                  {/* Product Image Placeholder or actual if available */}
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[#f5e7d8] border border-[#5b3f2f]/5 shrink-0 overflow-hidden shadow-inner flex items-center justify-center">
+                     {item.product?.images?.[0] ? (
+                        <img src={item.product.images[0].url} alt="" className="w-full h-full object-cover" />
+                     ) : <span className="text-2xl">📦</span>}
+                  </div>
+                  
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800">{item.productName || item.product?.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity} · Unit: {item.productUnit || item.product?.unit || 'N/A'}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                       <div>
+                         <p className="text-sm font-bold text-[#5b3f2f]">{item.productName || item.product?.name}</p>
+                         <p className="text-[10px] font-black text-[#b88a2f] uppercase tracking-widest mt-1">Qty: {item.quantity} · Unit: {item.productUnit || item.product?.unit || 'N/A'}</p>
+                       </div>
+                       <p className="text-sm font-bold text-[#5b3f2f]">₹{Number(item.total || 0).toLocaleString('en-IN')}</p>
+                    </div>
 
-                    {/* Customization info */}
-                    {item.customizationText && (
-                      <div className="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                        <span className="text-amber-600 text-xs">✍️</span>
-                        <div>
-                          <p className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Custom Text</p>
-                          <p className="text-sm font-medium text-amber-900 break-words">{item.customizationText}</p>
-                        </div>
-                      </div>
-                    )}
-                    {item.customizationImageUrl && (
-                      <div className="mt-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-                        <span className="text-blue-600 text-xs">🖼️</span>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wide mb-1">Custom Image / Logo</p>
-                          <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer">
-                            <img src={item.customizationImageUrl} alt="Customer customization" className="w-20 h-20 object-cover rounded-lg border border-blue-200 hover:scale-105 transition-transform" />
-                          </a>
-                          <div className="flex gap-2 mt-2 flex-wrap">
-                            <a
-                              href={item.customizationImageUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                            >
-                              ↗ Open Full Size
-                            </a>
-                            <a
-                              href={item.customizationImageUrl}
-                              download={`customization-${item.id}.jpg`}
-                              className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                            >
-                              ⬇ Download & Print
-                            </a>
+                    {/* Customization Details */}
+                    {(item.customizationText || item.customizationImageUrl) && (
+                      <div className="mt-4 space-y-3">
+                        {item.customizationText && (
+                          <div className="bg-[#fcf9f6] border border-[#5b3f2f]/5 rounded-xl p-4 shadow-sm">
+                            <p className="text-[9px] font-black text-[#7a655c] uppercase tracking-widest mb-2 flex items-center gap-2">
+                               <span className="w-1.5 h-1.5 rounded-full bg-[#b88a2f]"></span> Custom Text
+                            </p>
+                            <p className="text-sm font-medium text-[#5b3f2f] italic">"{item.customizationText}"</p>
                           </div>
-                        </div>
+                        )}
+                        
+                        {item.customizationImageUrl && (
+                          <div className="bg-[#fcf9f6] border border-[#5b3f2f]/5 rounded-xl p-4 shadow-sm">
+                            <p className="text-[9px] font-black text-[#7a655c] uppercase tracking-widest mb-3 flex items-center gap-2">
+                               <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Customer Asset
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                               <div className="relative group shrink-0">
+                                  <img src={item.customizationImageUrl} alt="Custom" className="w-24 h-24 object-cover rounded-xl border border-[#5b3f2f]/10 shadow-md transition-transform group-hover:scale-105" />
+                                  <a href={item.customizationImageUrl} target="_blank" className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl text-white text-[10px] font-black uppercase">Open</a>
+                               </div>
+                               <div className="flex flex-col gap-2 justify-center">
+                                  <a href={item.customizationImageUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] font-black uppercase tracking-widest text-[#b88a2f] hover:text-[#5b3f2f] transition-colors">↗ Full Resolution</a>
+                                  <a href={item.customizationImageUrl} download={`custom-${item.id}.jpg`} className="text-[10px] font-black uppercase tracking-widest text-green-600 hover:text-green-700 transition-colors">⬇ Download for Print</a>
+                               </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                  <p className="text-sm font-semibold text-gray-800 shrink-0">₹{Number(item.total || 0).toLocaleString('en-IN')}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="card p-4 space-y-3">
-            <h2 className="font-semibold text-gray-800">Shipping Address</h2>
-            {order.address ? (
-              <div className="text-sm text-gray-700 leading-6">
-                <p>{order.address.fullName}</p>
-                <p>{[order.address.line1, order.address.line2].filter(Boolean).join(', ')}</p>
-                <p>{[order.address.city, order.address.state, order.address.postalCode].filter(Boolean).join(', ')}</p>
-                <p>{order.address.country || 'India'}</p>
-              </div>
-            ) : <p className="text-sm text-gray-500">Address not available.</p>}
+          {/* Shipping Address */}
+          <div className="card p-6 luxury-grain space-y-4">
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">Shipping Destination</h3>
+             {order.address ? (
+               <div className="text-sm text-[#5b3f2f] leading-7 bg-[#fcf9f6] p-5 rounded-2xl border border-[#5b3f2f]/5">
+                 <p className="font-bold text-base mb-1">{order.address.fullName}</p>
+                 <p className="opacity-80 font-medium">{[order.address.line1, order.address.line2].filter(Boolean).join(', ')}</p>
+                 <p className="opacity-80 font-medium">{[order.address.city, order.address.state, order.address.postalCode].filter(Boolean).join(', ')}</p>
+                 <p className="text-[10px] font-black uppercase tracking-widest mt-2 text-[#b88a2f]">{order.address.country || 'India'}</p>
+               </div>
+             ) : <p className="text-sm text-gray-500 italic">No destination set.</p>}
           </div>
         </div>
 
-        <div className="space-y-5">
-          <div className="card p-4 space-y-3">
-            <h2 className="font-semibold text-gray-800">Order Summary</h2>
-            <div className="text-sm text-gray-700 space-y-2">
-              <p className="flex justify-between"><span>Subtotal</span><span>₹{Number(order.subtotal || 0).toLocaleString('en-IN')}</span></p>
-              <p className="flex justify-between"><span>Shipping</span><span>₹{Number(order.shippingCost || 0).toLocaleString('en-IN')}</span></p>
-              <p className="flex justify-between font-bold text-gray-900"><span>Total</span><span>₹{Number(order.total || 0).toLocaleString('en-IN')}</span></p>
-              <p className="flex justify-between"><span>Payment</span><span>{order.payment?.status || 'Pending'}</span></p>
+        {/* Sidebar Actions */}
+        <div className="space-y-6">
+          <div className="card p-6 space-y-6 luxury-grain">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">Financial Summary</h3>
+            <div className="space-y-3 text-sm text-[#5b3f2f]">
+              <p className="flex justify-between">
+                 <span className="opacity-60">Subtotal</span>
+                 <span className="font-bold">₹{Number(order.subtotal || 0).toLocaleString('en-IN')}</span>
+              </p>
+              <p className="flex justify-between">
+                 <span className="opacity-60">Shipping</span>
+                 <span className="font-bold">₹{Number(order.shippingCost || 0).toLocaleString('en-IN')}</span>
+              </p>
+              <div className="pt-3 border-t border-[#5b3f2f]/5">
+                 <p className="flex justify-between text-base">
+                    <span className="font-black uppercase tracking-widest text-[10px]">Grand Total</span>
+                    <span className="font-black text-[#5b3f2f]">₹{Number(order.total || 0).toLocaleString('en-IN')}</span>
+                 </p>
+              </div>
+              <div className="flex items-center justify-between mt-4 p-3 bg-[#fcf9f6] rounded-xl border border-[#5b3f2f]/5">
+                 <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Payment Status</span>
+                 <span className={'px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ' + (order.payment?.status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700')}>
+                    {order.payment?.status || 'Pending'}
+                 </span>
+              </div>
             </div>
           </div>
 
-          <div className="card p-4 space-y-3">
-            <h2 className="font-semibold text-gray-800">Update Status</h2>
-            <div className="flex flex-wrap gap-2">
+          <div className="card p-6 space-y-6 luxury-grain">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">Lifecycle Management</h3>
+            <div className="grid grid-cols-2 gap-2">
               {STATUSES.map((s) => (
                 <button
                   key={s}
@@ -148,10 +176,10 @@ export default function AdminOrderDetail() {
                   disabled={statusMut.isPending}
                   onClick={() => statusMut.mutate(s)}
                   className={
-                    'px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ' +
+                    'px-2 py-2 rounded-xl text-[10px] font-black uppercase tracking-tighter border transition-all ' +
                     (order.status === s
-                      ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'border-gray-200 text-gray-600 hover:border-brand-secondary')
+                      ? 'bg-[#5b3f2f] text-white border-[#5b3f2f] shadow-lg shadow-[#5b3f2f]/20'
+                      : 'border-[#5b3f2f]/10 text-[#7a655c] hover:bg-[#f5e7d8] hover:border-[#5b3f2f]/30')
                   }
                 >
                   {s}
@@ -160,31 +188,35 @@ export default function AdminOrderDetail() {
             </div>
           </div>
 
-          <div className="card p-4 space-y-3">
-            <h2 className="font-semibold text-gray-800">Tracking</h2>
-            <p className="text-xs text-gray-500">Current: {order.trackingNumber || 'Not set'}</p>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="text"
-                className="input-field py-2 text-sm w-full"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                placeholder="Enter tracking number"
-              />
-              <button
-                type="button"
-                className="btn-primary py-2 px-4 text-sm w-full sm:w-auto"
-                disabled={trackingMut.isPending}
-                onClick={() => {
-                  if (!trackingNumber.trim()) {
-                    toast.error('Tracking number is required');
-                    return;
-                  }
-                  trackingMut.mutate();
-                }}
-              >
-                {trackingMut.isPending ? 'Saving...' : 'Save'}
-              </button>
+          <div className="card p-6 space-y-6 luxury-grain">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">Logistics Tracking</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] font-black text-[#7a655c] uppercase tracking-widest mb-1.5">Tracking ID</p>
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="text"
+                    className="input-field bg-[#fcf9f6] text-xs"
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    placeholder={order.trackingNumber || "Enter new tracking..."}
+                  />
+                  <button
+                    type="button"
+                    className="w-full py-3 rounded-xl bg-[#b88a2f] text-white text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#a07a2a] transition-all disabled:opacity-50 active:scale-[0.98]"
+                    disabled={trackingMut.isPending}
+                    onClick={() => {
+                      if (!trackingNumber.trim()) {
+                        toast.error('Tracking number required');
+                        return;
+                      }
+                      trackingMut.mutate();
+                    }}
+                  >
+                    {trackingMut.isPending ? 'Syncing...' : 'Update Tracking'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

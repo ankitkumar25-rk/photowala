@@ -186,214 +186,248 @@ export default function AdminProductForm() {
   };
 
   return (
-    <div className="space-y-5 max-w-4xl">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">{isEdit ? 'Edit Product' : 'Add Product'}</h1>
-          <p className="text-gray-400 text-sm mt-0.5">{isEdit ? 'Update product details and stock settings' : 'Create a new catalog item'}</p>
+          <h1 className="text-2xl font-bold text-[#5b3f2f]">{isEdit ? 'Edit Product' : 'Add Product'}</h1>
+          <p className="text-[#7a655c] text-sm mt-0.5">{isEdit ? 'Refine your product details and inventory settings.' : 'Create a new masterpiece in your catalog.'}</p>
         </div>
-        <Link to="/products" className="btn-ghost w-full justify-center sm:w-auto">Back to Products</Link>
+        <Link to="/products" className="btn-ghost justify-center sm:w-auto border-[#5b3f2f]/10 text-[#5b3f2f]">Back to Catalog</Link>
       </div>
 
-      <form onSubmit={onSubmit} className="card p-5 space-y-5">
-        {loadingProduct && isEdit && <p className="text-sm text-gray-500">Loading product...</p>}
+      <form onSubmit={onSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {loadingProduct && isEdit && <p className="text-sm text-gray-500 col-span-full">Loading product essence...</p>}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Name</label>
-            <input
-              type="text"
-              className="input-field"
-              value={form.name}
-              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              required
-            />
-          </div>
+        {/* Main Details */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="card p-6 space-y-6 luxury-grain">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">General Information</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Product Name</label>
+                <input
+                  type="text"
+                  className="input-field bg-[#fcf9f6]"
+                  value={form.name}
+                  onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+                  required
+                />
+              </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Category</label>
-            <select
-              className="input-field"
-              value={form.categoryId}
-              onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
-              required
-            >
-              <option value="">Select category</option>
-              {categories?.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Category</label>
+                <select
+                  className="input-field bg-[#fcf9f6]"
+                  value={form.categoryId}
+                  onChange={(e) => setForm((prev) => ({ ...prev, categoryId: e.target.value }))}
+                  required
+                >
+                  <option value="">Select category</option>
+                  {categories?.map((c) => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Price</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              className="input-field"
-              value={form.price}
-              onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">MRP</label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              className="input-field"
-              value={form.mrp}
-              onChange={(e) => setForm((prev) => ({ ...prev, mrp: e.target.value }))}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Stock</label>
-            <input
-              type="number"
-              min="0"
-              className="input-field"
-              value={form.stock}
-              onChange={(e) => setForm((prev) => ({ ...prev, stock: e.target.value }))}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Low Stock Alert</label>
-            <input
-              type="number"
-              min="0"
-              className="input-field"
-              value={form.lowStockAlert}
-              onChange={(e) => setForm((prev) => ({ ...prev, lowStockAlert: e.target.value }))}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">SKU</label>
-            <input
-              type="text"
-              className="input-field"
-              value={form.sku}
-              onChange={(e) => setForm((prev) => ({ ...prev, sku: e.target.value }))}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Unit</label>
-            <input
-              type="text"
-              className="input-field"
-              value={form.unit}
-              onChange={(e) => setForm((prev) => ({ ...prev, unit: e.target.value }))}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Short Description</label>
-          <input
-            type="text"
-            className="input-field"
-            value={form.shortDesc}
-            onChange={(e) => setForm((prev) => ({ ...prev, shortDesc: e.target.value }))}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
-          <textarea
-            rows={4}
-            className="input-field"
-            value={form.description}
-            onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-          />
-        </div>
-
-        <div className="space-y-4">
-          <label className="block text-sm font-semibold text-gray-700">Product Images (Up to 3)</label>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[0, 1, 2].map((idx) => (
-              <div key={idx} className="space-y-2">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
-                  {idx === 0 ? 'Primary Image (Required)' : `Image ${idx + 1} (Optional)`}
-                </p>
-                <div className={`relative aspect-square rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden bg-gray-50/50 ${previews[idx] ? 'border-brand-primary/20' : 'border-gray-200 hover:border-gray-300'}`}>
-                  {previews[idx] ? (
-                    <>
-                      <img src={previews[idx]} alt="Preview" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(idx)}
-                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </>
-                  ) : (
-                    <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-4 text-center">
-                      <Upload className="w-6 h-6 text-gray-300 mb-2" />
-                      <span className="text-xs font-medium text-gray-500">Click to upload</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFileChange(idx, e)}
-                      />
-                    </label>
-                  )}
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">SKU / Unit</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="SKU"
+                    className="input-field bg-[#fcf9f6] flex-1"
+                    value={form.sku}
+                    onChange={(e) => setForm((prev) => ({ ...prev, sku: e.target.value }))}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Unit (kg/pc)"
+                    className="input-field bg-[#fcf9f6] w-24"
+                    value={form.unit}
+                    onChange={(e) => setForm((prev) => ({ ...prev, unit: e.target.value }))}
+                  />
                 </div>
               </div>
-            ))}
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Short Description</label>
+              <input
+                type="text"
+                className="input-field bg-[#fcf9f6]"
+                value={form.shortDesc}
+                onChange={(e) => setForm((prev) => ({ ...prev, shortDesc: e.target.value }))}
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Detailed Description</label>
+              <textarea
+                rows={6}
+                className="input-field bg-[#fcf9f6] resize-none"
+                value={form.description}
+                onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          {/* Image Gallery */}
+          <div className="card p-6 space-y-6 luxury-grain">
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">Product Imagery</h3>
+             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {[0, 1, 2].map((idx) => (
+                  <div key={idx} className="space-y-3">
+                    <p className="text-[9px] font-black uppercase tracking-[0.1em] text-[#7a655c]/60">
+                      {idx === 0 ? 'Primary Visual' : `Angle ${idx + 1}`}
+                    </p>
+                    <div className={`relative aspect-[4/5] rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden bg-[#fcf9f6] ${previews[idx] ? 'border-[#b88a2f]/20 shadow-inner' : 'border-[#5b3f2f]/10 hover:border-[#b88a2f]/30'}`}>
+                      {previews[idx] ? (
+                        <>
+                          <img src={previews[idx]} alt="Preview" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/20 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => removeImage(idx)}
+                              className="p-2 bg-white/90 text-red-500 rounded-full shadow-xl hover:scale-110 transition-transform"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-6 text-center group">
+                          <Upload className="w-6 h-6 text-[#b88a2f]/40 mb-3 group-hover:scale-110 transition-transform" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-[#7a655c]/60">Upload</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleFileChange(idx, e)}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                ))}
+             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Tags (comma-separated)</label>
-            <input
-              type="text"
-              className="input-field"
-              value={form.tags}
-              onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
-              placeholder="premium, custom, handcrafted"
-            />
+        {/* Sidebar Settings */}
+        <div className="space-y-6">
+          <div className="card p-6 space-y-6 luxury-grain">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">Pricing & Inventory</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Sale Price (₹)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="input-field bg-[#fcf9f6] text-lg font-bold text-[#5b3f2f]"
+                  value={form.price}
+                  onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">MRP (₹)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="input-field bg-[#fcf9f6] text-[#7a655c]/50 line-through"
+                  value={form.mrp}
+                  onChange={(e) => setForm((prev) => ({ ...prev, mrp: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="pt-4 border-t border-[#5b3f2f]/5">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Current Stock</label>
+                <input
+                  type="number"
+                  min="0"
+                  className="input-field bg-[#fcf9f6]"
+                  value={form.stock}
+                  onChange={(e) => setForm((prev) => ({ ...prev, stock: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Low Stock Alert</label>
+                <input
+                  type="number"
+                  min="0"
+                  className="input-field bg-[#fcf9f6]"
+                  value={form.lowStockAlert}
+                  onChange={(e) => setForm((prev) => ({ ...prev, lowStockAlert: e.target.value }))}
+                />
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Certifications (comma-separated)</label>
-            <input
-              type="text"
-              className="input-field"
-              value={form.certifications}
-              onChange={(e) => setForm((prev) => ({ ...prev, certifications: e.target.value }))}
-              placeholder="ISO, FSSAI"
-            />
+          <div className="card p-6 space-y-6 luxury-grain">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f] border-b border-[#5b3f2f]/5 pb-4">Attributes & Tags</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Search Tags</label>
+                <input
+                  type="text"
+                  className="input-field bg-[#fcf9f6]"
+                  value={form.tags}
+                  onChange={(e) => setForm((prev) => ({ ...prev, tags: e.target.value }))}
+                  placeholder="e.g. gift, customized"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-[#7a655c] mb-2">Certifications</label>
+                <input
+                  type="text"
+                  className="input-field bg-[#fcf9f6]"
+                  value={form.certifications}
+                  onChange={(e) => setForm((prev) => ({ ...prev, certifications: e.target.value }))}
+                  placeholder="e.g. ISO, Premium"
+                />
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <input
+                  type="checkbox"
+                  id="isFeatured"
+                  className="w-4 h-4 rounded border-[#5b3f2f]/20 text-[#b88a2f] focus:ring-[#b88a2f]"
+                  checked={form.isFeatured}
+                  onChange={(e) => setForm((prev) => ({ ...prev, isFeatured: e.target.checked }))}
+                />
+                <label htmlFor="isFeatured" className="text-[10px] font-black uppercase tracking-widest text-[#5b3f2f]">
+                  Show in Featured Section
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-6">
-          <label className="inline-flex items-center gap-2 text-sm text-gray-700">
-            <input
-              type="checkbox"
-              checked={form.isFeatured}
-              onChange={(e) => setForm((prev) => ({ ...prev, isFeatured: e.target.checked }))}
-            />
-            Featured Product
-          </label>
-        </div>
-
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-          <Link to="/products" className="btn-ghost">Cancel</Link>
-          <button type="submit" className="btn-primary" disabled={saveMut.isPending}>
-            {saveMut.isPending ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
-          </button>
+          {/* Form Actions */}
+          <div className="flex flex-col gap-3 pt-4">
+            <button 
+              type="submit" 
+              className="w-full py-4 rounded-2xl bg-[#5b3f2f] text-white text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-[#5b3f2f]/20 hover:bg-[#4a3427] transition-all disabled:opacity-50 active:scale-[0.98]"
+              disabled={saveMut.isPending}
+            >
+              {saveMut.isPending ? 'Processing...' : isEdit ? 'Update Masterpiece' : 'Unveil Product'}
+            </button>
+            <Link to="/products" className="w-full py-4 rounded-2xl border border-[#5b3f2f]/10 text-[#5b3f2f] text-xs font-black uppercase tracking-[0.2em] text-center hover:bg-[#f5e7d8] transition-all">
+              Cancel
+            </Link>
+          </div>
         </div>
       </form>
     </div>
+  );
   );
 }

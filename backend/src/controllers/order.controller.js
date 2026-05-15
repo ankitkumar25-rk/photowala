@@ -1,4 +1,6 @@
 import prisma from '../lib/prisma.js';
+import { broadcastToAdmins } from '../services/notificationService.js';
+
 import { createError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
 import { sendEmail, emailTemplates } from '../config/email.js';
@@ -116,6 +118,18 @@ export const createOrder = asyncHandler(async (req, res) => {
     });
 
     return newOrder;
+  });
+
+  // Broadcast to admins
+  broadcastToAdmins('new_order', {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    customerName: req.user?.name || 'Customer',
+    customerEmail: req.user?.email,
+    amount: order.total,
+    itemCount: order.items?.length || 0,
+    createdAt: order.createdAt,
+    type: 'ORDER',
   });
 
   const user = { name: req.user.name || 'Customer', email: req.user.email };

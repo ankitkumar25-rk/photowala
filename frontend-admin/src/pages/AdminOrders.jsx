@@ -49,7 +49,7 @@ export default function AdminOrders() {
       </div>
 
       <div className="card">
-        <div className="md:hidden divide-y divide-gray-100">
+        <div className="sm:hidden divide-y divide-[#5b3f2f]/5">
           {isLoading ? Array(6).fill(0).map((_, i) => (
             <div key={i} className="p-4 space-y-2">
               <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
@@ -57,34 +57,34 @@ export default function AdminOrders() {
               <div className="h-8 bg-gray-100 rounded animate-pulse w-full" />
             </div>
           )) : data?.data?.map((order) => (
-            <div key={order.id} className="p-4 space-y-3">
+            <div key={order.id} className="p-4 space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-mono font-semibold text-gray-700 break-all">{order.orderNumber}</p>
-                  <p className="text-sm font-semibold text-gray-800 mt-1 truncate">{order.user?.name || 'Guest'}</p>
-                  <p className="text-xs text-gray-400 truncate">{order.user?.email || 'No email'}</p>
+                  <p className="text-[10px] font-black text-[#b88a2f] uppercase tracking-[0.2em]">{order.orderNumber}</p>
+                  <p className="text-sm font-bold text-[#5b3f2f] mt-1 truncate">{order.user?.name || 'Guest'}</p>
+                  <p className="text-[10px] font-semibold text-[#7a655c]/60 truncate">{order.user?.email || 'No email'}</p>
                 </div>
                 <span className={'badge-status ' + order.status.toLowerCase()}>{order.status}</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-gray-400 uppercase tracking-wider">Total</p>
-                  <p className="text-sm font-bold text-gray-800">₹{Number(order.total).toLocaleString('en-IN')}</p>
+                  <p className="text-[10px] font-black text-[#7a655c] uppercase tracking-widest">Total</p>
+                  <p className="text-sm font-bold text-[#5b3f2f]">₹{Number(order.total).toLocaleString('en-IN')}</p>
                 </div>
                 <div>
-                  <p className="text-gray-400 uppercase tracking-wider">Payment</p>
-                  <span className={'badge-status ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
+                  <p className="text-[10px] font-black text-[#7a655c] uppercase tracking-widest">Payment</p>
+                  <span className={'text-[10px] font-black uppercase tracking-widest ' + (order.payment?.status === 'PAID' ? 'text-green-600' : 'text-amber-600')}>
                     {order.payment?.status || 'Pending'}
                   </span>
                 </div>
                 <div>
-                  <p className="text-gray-400 uppercase tracking-wider">Date</p>
-                  <p className="text-gray-700">{new Date(order.createdAt).toLocaleDateString('en-IN')}</p>
+                  <p className="text-[10px] font-black text-[#7a655c] uppercase tracking-widest">Date</p>
+                  <p className="text-xs font-semibold text-[#5b3f2f]/70">{new Date(order.createdAt).toLocaleDateString('en-IN')}</p>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3 pt-2">
                 <div className="flex items-center gap-2">
                   <select
                     className="input-field py-2 text-xs flex-1"
@@ -93,13 +93,13 @@ export default function AdminOrders() {
                   >
                     {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
-                  <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline whitespace-nowrap">
+                  <Link to={'/orders/' + order.id} className="px-4 py-2 rounded-lg bg-[#f5e7d8] text-[#5b3f2f] text-[10px] font-black uppercase tracking-widest hover:bg-[#5b3f2f] hover:text-white transition-all">
                     View
                   </Link>
                 </div>
                 <input
                   type="text"
-                  className="input-field py-1 text-xs w-full"
+                  className="input-field py-2 text-xs w-full"
                   placeholder="Tracking #"
                   defaultValue={order.trackingNumber || ''}
                   onBlur={(e) => {
@@ -113,52 +113,52 @@ export default function AdminOrders() {
           ))}
 
           {!isLoading && (!data?.data || data.data.length === 0) && (
-            <p className="p-4 text-sm text-gray-500">No orders found.</p>
+            <p className="p-4 text-sm text-gray-500 italic">No orders found.</p>
           )}
         </div>
 
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full min-w-200">
+        <div className="hidden sm:block overflow-x-auto luxury-grain">
+          <table className="w-full min-w-[900px]">
             <thead>
-              <tr className="border-b border-gray-100">
+              <tr className="border-b border-[#5b3f2f]/5">
                 {['Order #', 'Customer', 'Total', 'Payment', 'Status', 'Date', 'Update Status', 'Tracking #', 'Details'].map(h => (
-                  <th key={h} className="text-left text-[10px] font-bold text-brand-primary/60 uppercase tracking-widest px-3 sm:px-4 py-4">{h}</th>
+                  <th key={h} className="text-left text-[10px] font-black text-brand-primary/60 uppercase tracking-[0.2em] px-6 py-5 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[#5b3f2f]/5">
               {isLoading ? Array(8).fill(0).map((_, i) => (
-                <tr key={i}>{Array(8).fill(0).map((_, j) => (
-                  <td key={j} className="px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>
+                <tr key={i}>{Array(9).fill(0).map((_, j) => (
+                  <td key={j} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>
                 ))}</tr>
               )) : data?.data?.map(order => (
-                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-3 sm:px-4 py-3 text-sm font-mono font-semibold text-gray-700">{order.orderNumber}</td>
-                  <td className="px-3 sm:px-4 py-3 text-sm">
-                    <p className="font-medium text-gray-800">{order.user?.name}</p>
-                    <p className="text-xs text-gray-400">{order.user?.email}</p>
+                <tr key={order.id} className="hover:bg-[#f7f0e7]/50 transition-colors group">
+                  <td className="px-6 py-4 text-sm font-mono font-bold text-[#5b3f2f]">{order.orderNumber}</td>
+                  <td className="px-6 py-4">
+                    <p className="text-sm font-bold text-[#5b3f2f]">{order.user?.name}</p>
+                    <p className="text-[10px] font-semibold text-[#7a655c]/60 truncate max-w-[150px]">{order.user?.email}</p>
                   </td>
-                  <td className="px-3 sm:px-4 py-3 text-sm font-bold text-gray-800">₹{Number(order.total).toLocaleString('en-IN')}</td>
-                  <td className="px-3 sm:px-4 py-3 text-xs">
+                  <td className="px-6 py-4 text-sm font-bold text-[#5b3f2f]">₹{Number(order.total).toLocaleString('en-IN')}</td>
+                  <td className="px-6 py-4">
                     <span className={'badge-status ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
                       {order.payment?.status || 'Pending'}
                     </span>
                   </td>
-                  <td className="px-3 sm:px-4 py-3 text-xs">
+                  <td className="px-6 py-4">
                     <span className={'badge-status ' + order.status.toLowerCase()}>{order.status}</span>
                   </td>
-                  <td className="px-3 sm:px-4 py-3 text-xs text-gray-400">
+                  <td className="px-6 py-4 text-[10px] font-semibold text-[#7a655c]/60">
                     {new Date(order.createdAt).toLocaleDateString('en-IN')}
                   </td>
-                  <td className="px-3 sm:px-4 py-3">
+                  <td className="px-6 py-4">
                     <select
-                      className="input-field py-1 text-xs w-32 sm:w-36"
+                      className="input-field py-1 text-xs w-36"
                       value={order.status}
                       onChange={e => statusMut.mutate({ id: order.id, status: e.target.value, trackingNumber: order.trackingNumber ?? undefined })}>
                       {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </td>
-                  <td className="px-3 sm:px-4 py-3">
+                  <td className="px-6 py-4">
                     <input
                       type="text"
                       className="input-field py-1 text-xs w-32"
@@ -171,9 +171,9 @@ export default function AdminOrders() {
                       }}
                     />
                   </td>
-                  <td className="px-3 sm:px-4 py-3">
-                    <Link to={'/orders/' + order.id} className="text-xs font-semibold text-brand-primary hover:underline">
-                      View
+                  <td className="px-6 py-4 text-center">
+                    <Link to={'/orders/' + order.id} className="p-2 rounded-lg text-[#b88a2f] hover:bg-[#b88a2f]/10 transition-colors inline-block">
+                      <ExternalLink size={14} />
                     </Link>
                   </td>
                 </tr>

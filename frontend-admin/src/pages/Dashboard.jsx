@@ -19,22 +19,22 @@ function KPICard({ title, value, subtitle, icon: Icon, color = 'forest', trend }
   }[color] || {};
 
   return (
-    <div className="card p-5">
+    <div className="card p-4 sm:p-5 lg:p-6">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-gray-500 text-sm font-medium">{title}</p>
-          <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
-          {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+        <div className="min-w-0">
+          <p className="text-gray-500 text-[10px] sm:text-xs lg:text-sm font-medium uppercase tracking-widest">{title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-800 mt-1 truncate">{value}</p>
+          {subtitle && <p className="text-[10px] sm:text-xs text-gray-400 mt-1 truncate">{subtitle}</p>}
           {trend !== undefined && (
-            <div className={`flex items-center gap-1 mt-2 text-xs font-semibold ${trend >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+            <div className={`flex items-center gap-1 mt-2 text-[10px] sm:text-xs font-semibold ${trend >= 0 ? 'text-green-600' : 'text-red-500'}`}>
               {trend >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
               {Math.abs(trend)}% vs last month
             </div>
           )}
         </div>
-        <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+        <div className="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{ backgroundColor: colors.bg }}>
-          {createElement(Icon, { className: 'w-5 h-5', style: { color: colors.icon } })}
+          {createElement(Icon, { className: 'w-4 h-4 sm:w-5 sm:h-5', style: { color: colors.icon } })}
         </div>
       </div>
     </div>
@@ -128,7 +128,7 @@ export default function Dashboard() {
           <SkeletonLine width="280px" height="h-3" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array(4).fill(0).map((_, i) => (
             <SkeletonKPICard key={i} />
           ))}
@@ -157,7 +157,7 @@ export default function Dashboard() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
           title="Total Revenue"
           value={`₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`}
@@ -235,6 +235,45 @@ export default function Dashboard() {
           ) : (
             <div className="h-48 flex items-center justify-center text-gray-400 text-sm">No orders yet</div>
           )}
+        </div>
+      {/* Recent Orders Widget */}
+      <div className="card luxury-grain overflow-hidden">
+        <div className="p-5 border-b border-[#5b3f2f]/5 flex items-center justify-between bg-[#fcf9f6]/50">
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#b88a2f]">Recent Transactions</h3>
+          <Link to="/orders" className="text-[10px] font-black uppercase tracking-widest text-[#5b3f2f] hover:text-[#b88a2f] transition-colors">View All Orders →</Link>
+        </div>
+        <div className="w-full overflow-x-auto no-scrollbar">
+          <table className="w-full min-w-[800px]">
+            <thead>
+              <tr className="border-b border-[#5b3f2f]/5 bg-[#fdfaf7]/50">
+                {['Order #', 'Customer', 'Amount', 'Status', 'Date'].map(h => (
+                  <th key={h} className="text-left text-[9px] font-black text-[#7a655c] uppercase tracking-[0.2em] px-6 py-4">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#5b3f2f]/5">
+              {stats?.recentOrders?.length > 0 ? stats.recentOrders.map(o => (
+                <tr key={o.id} className="hover:bg-[#f7f0e7]/30 transition-colors">
+                  <td className="px-6 py-4 text-xs font-mono font-bold text-[#5b3f2f]">{o.orderNumber}</td>
+                  <td className="px-6 py-4">
+                    <p className="text-xs font-bold text-[#5b3f2f]">{o.user?.name || 'Guest'}</p>
+                    <p className="text-[10px] text-[#7a655c]/60 font-medium">{o.user?.email}</p>
+                  </td>
+                  <td className="px-6 py-4 text-xs font-bold text-[#5b3f2f]">₹{Number(o.total).toLocaleString('en-IN')}</td>
+                  <td className="px-6 py-4">
+                    <span className={'badge-status ' + o.status.toLowerCase()}>{o.status}</span>
+                  </td>
+                  <td className="px-6 py-4 text-[10px] font-semibold text-[#7a655c]/60">
+                    {new Date(o.createdAt).toLocaleDateString('en-IN')}
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan={5} className="px-6 py-10 text-center text-xs text-[#7a655c]/60 italic">No recent activity detected.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

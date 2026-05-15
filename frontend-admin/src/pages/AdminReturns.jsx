@@ -37,81 +37,114 @@ export default function AdminReturns() {
         ))}
       </div>
       <div className="card">
-        <div className="md:hidden divide-y divide-gray-100">
+        <div className="sm:hidden divide-y divide-[#5b3f2f]/5">
           {isLoading ? Array(5).fill(0).map((_, i) => (
             <div key={i} className="p-4 space-y-2">
               <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
               <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
             </div>
           ))
-          : data?.data?.map((r) => (
-            <div key={r.id} className="p-4 space-y-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 truncate">{r.user?.name || 'Unknown customer'}</p>
-                  <p className="text-xs text-gray-400 font-mono truncate">{r.order?.orderNumber || 'No order id'}</p>
-                </div>
-                <span className={'badge-status ' + r.status.toLowerCase()}>{r.status}</span>
-              </div>
-
-              <div>
-                <p className="text-[11px] text-gray-400 uppercase tracking-wider">Reason</p>
-                <p className="text-sm text-gray-600 mt-1 break-words">{r.reason}</p>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString('en-IN')}</p>
-                {r.status === 'PENDING' && (
-                  <div className="flex gap-1.5">
-                    <button
-                      onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}
-                      className="btn-primary py-1 px-3 text-[10px] sm:text-xs"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => rejectMut.mutate({ id: r.id })}
-                      className="btn-ghost py-1 px-3 text-[10px] sm:text-xs text-red-500 hover:bg-red-50"
-                    >
-                      Reject
-                    </button>
+          : data?.data?.map((r) => {
+            const isService = r.orderType === 'SERVICE_ORDER';
+            return (
+              <div key={r.id} className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-[#5b3f2f] truncate">{r.user?.name || 'Unknown'}</p>
+                    <p className="text-[10px] font-black text-[#b88a2f] uppercase tracking-widest truncate">{r.order?.orderNumber || 'No ID'}</p>
                   </div>
-                )}
-              </div>
-            </div>
-          ))}
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={'badge-status ' + r.status.toLowerCase()}>{r.status}</span>
+                    {isService && (
+                      <span className="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200">
+                        Service — No Refund
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-          {!isLoading && (!data?.data || data.data.length === 0) && (
-            <p className="p-4 text-sm text-gray-500">No return requests found.</p>
-          )}
+                <div>
+                  <p className="text-[10px] text-[#7a655c] uppercase tracking-widest font-black">Reason</p>
+                  <p className="text-xs text-[#5b3f2f] mt-1 line-clamp-3">{r.reason}</p>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <p className="text-[10px] font-semibold text-[#7a655c]/60">{new Date(r.createdAt).toLocaleDateString('en-IN')}</p>
+                  {r.status === 'PENDING' && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}
+                        disabled={isService}
+                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${isService ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#5b3f2f] text-white shadow-sm hover:bg-[#4a3427]'}`}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => rejectMut.mutate({ id: r.id })}
+                        className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border border-red-200 text-red-500 hover:bg-red-50"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
-        <div className="hidden md:block overflow-x-auto">
+        <div className="hidden sm:block overflow-x-auto luxury-grain">
           <table className="w-full min-w-[700px]">
-            <thead><tr className="border-b border-gray-100">{['Customer', 'Order', 'Reason', 'Status', 'Date', 'Actions'].map(h =>
-              <th key={h} className="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 sm:px-4 py-3">{h}</th>)}</tr></thead>
-            <tbody className="divide-y divide-gray-50">
-              {isLoading ? Array(5).fill(0).map((_, i) => <tr key={i}>{Array(6).fill(0).map((_,j) =>
-                <td key={j} className="px-3 sm:px-4 py-3"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>)}</tr>)
-              : data?.data?.map(r => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-3 sm:px-4 py-3 text-sm font-semibold text-gray-800">{r.user?.name}</td>
-                  <td className="px-3 sm:px-4 py-3 text-sm font-mono text-gray-600">{r.order?.orderNumber}</td>
-                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{r.reason}</td>
-                  <td className="px-3 sm:px-4 py-3 text-xs"><span className={'badge-status ' + r.status.toLowerCase()}>{r.status}</span></td>
-                  <td className="px-3 sm:px-4 py-3 text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString('en-IN')}</td>
-                  <td className="px-3 sm:px-4 py-3">
-                    {r.status === 'PENDING' && (
-                      <div className="flex gap-1">
-                        <button onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}
-                          className="btn-primary py-1 px-3 text-[10px] sm:text-xs">Approve</button>
-                        <button onClick={() => rejectMut.mutate({ id: r.id })}
-                          className="btn-ghost py-1 px-3 text-[10px] sm:text-xs text-red-500 hover:bg-red-50">Reject</button>
+            <thead>
+              <tr className="border-b border-[#5b3f2f]/5">
+                {['Customer', 'Order', 'Reason', 'Status', 'Date', 'Actions'].map(h => (
+                  <th key={h} className="text-left text-[10px] font-black text-brand-primary/60 uppercase tracking-[0.2em] px-6 py-5 whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#5b3f2f]/5">
+              {isLoading ? Array(5).fill(0).map((_, i) => (
+                <tr key={i}>{Array(6).fill(0).map((_,j) => (
+                  <td key={j} className="px-6 py-4"><div className="h-4 bg-gray-100 rounded animate-pulse" /></td>
+                ))}</tr>
+              )) : data?.data?.map(r => {
+                const isService = r.orderType === 'SERVICE_ORDER';
+                return (
+                  <tr key={r.id} className="hover:bg-[#f7f0e7]/50 transition-colors">
+                    <td className="px-6 py-4 text-sm font-bold text-[#5b3f2f]">{r.user?.name}</td>
+                    <td className="px-6 py-4 text-[11px] font-black text-[#b88a2f] uppercase tracking-widest">{r.order?.orderNumber}</td>
+                    <td className="px-6 py-4 text-sm text-[#7a655c] max-w-xs truncate">{r.reason}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col gap-1">
+                        <span className={'badge-status ' + r.status.toLowerCase()}>{r.status}</span>
+                        {isService && (
+                          <span className="text-[9px] font-black uppercase tracking-tighter text-amber-600">Service — No Refund</span>
+                        )}
                       </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 text-xs font-semibold text-[#7a655c]/60">{new Date(r.createdAt).toLocaleDateString('en-IN')}</td>
+                    <td className="px-6 py-4">
+                      {r.status === 'PENDING' && (
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => approveMut.mutate({ id: r.id, refundAmount: r.order?.total })}
+                            disabled={isService}
+                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${isService ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#5b3f2f] text-white hover:bg-[#4a3427]'}`}
+                          >
+                            Approve
+                          </button>
+                          <button 
+                            onClick={() => rejectMut.mutate({ id: r.id })}
+                            className="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest border border-red-200 text-red-500 hover:bg-red-50 transition-colors"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
