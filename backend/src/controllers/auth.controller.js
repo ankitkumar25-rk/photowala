@@ -13,6 +13,7 @@ const COOKIE_OPTS = {
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   maxAge: 15 * 60 * 1000,
   path: '/',
+  domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
 };
 
 const REFRESH_COOKIE_OPTS = {
