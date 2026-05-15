@@ -15,18 +15,27 @@ const api = axios.create({
 
 let csrfBootstrapPromise = null;
 let csrfTokenBuffer = null;
-async function ensureCsrfCookie() {
-  if (readCookie('csrf_token')) {
-    csrfTokenBuffer = readCookie('csrf_token');
-    return csrfTokenBuffer;
+
+async function refreshCsrf() {
+  const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+  const res = await axios.get(`${baseURL}/csrf`, { withCredentials: true });
+  const token = res.data.token || res.data.csrfToken;
+  if (token) {
+    csrfTokenBuffer = token;
   }
+  return token;
+}
+
+async function ensureCsrfCookie() {
+  const cookie = readCookie('csrf_token');
+  if (cookie) {
+    csrfTokenBuffer = cookie;
+    return cookie;
+  }
+  if (csrfTokenBuffer) return csrfTokenBuffer;
+  
   if (!csrfBootstrapPromise) {
-    const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
-    csrfBootstrapPromise = axios.get(`${baseURL}/csrf`, { withCredentials: true })
-      .then(res => {
-        csrfTokenBuffer = res.data.token;
-        return csrfTokenBuffer;
-      })
+    csrfBootstrapPromise = refreshCsrf()
       .finally(() => { csrfBootstrapPromise = null; });
   }
   return csrfBootstrapPromise;
@@ -63,7 +72,7 @@ api.interceptors.response.use(
     // Handle CSRF retry
     if (err.response?.status === 403 && msg.includes('csrf') && !original?._csrfRetry) {
       original._csrfRetry = true;
-      await api.get('/csrf');
+      await refreshCsrf();
       return api(original);
     }
 
@@ -81,10 +90,10 @@ api.interceptors.response.use(
       }
 
       try {
-        await api.post('/auth/refresh');
+        await refreshPromise;
         
         // Refresh CSRF as well
-        await api.get('/csrf');
+        const freshCsrf = await refreshCsrf();
         
         return api(original);
       } catch (refreshErr) {
