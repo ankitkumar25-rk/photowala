@@ -211,6 +211,11 @@ console.log('✔ Cookie Domain configured as:', process.env.COOKIE_DOMAIN || 'no
 
 app.get('/api/csrf', (req, res) => {
   try {
+    // Force no-cache for CSRF to prevent 304 responses
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     const existingToken = req.cookies?.csrf_token;
     const token = (existingToken && existingToken.length === 64)
       ? existingToken

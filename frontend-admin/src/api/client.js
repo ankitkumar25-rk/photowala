@@ -19,7 +19,8 @@ let csrfTokenBuffer = null;
 async function refreshCsrf() {
   const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
   const res = await axios.get(`${baseURL}/csrf`, { withCredentials: true });
-  const token = res.data.token || res.data.csrfToken;
+  // Prioritize body, fallback to cookie
+  const token = res.data?.token || res.data?.csrfToken || readCookie('csrf_token');
   if (token) {
     csrfTokenBuffer = token;
   }
