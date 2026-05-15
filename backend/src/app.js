@@ -70,11 +70,11 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(cors({
   origin: [
-    'https://photowala-user.vercel.app',
-    'https://photowala-three.vercel.app',
     'https://photowalagift.online',
     'https://www.photowalagift.online',
     'https://admin.photowalagift.online',
+    'https://photowala-user.vercel.app',
+    'https://photowala-three.vercel.app',
     'http://localhost:5173',
     'http://localhost:5174',
   ],
@@ -88,7 +88,7 @@ app.use(cors({
   ],
 }));
 
-app.options('*', cors());
+app.options('(.*)', cors());
 
 // ================================
 // PAYMENTS WEBHOOK (MUST BE BEFORE express.json)

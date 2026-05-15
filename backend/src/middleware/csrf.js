@@ -24,9 +24,15 @@ export function issueCsrfToken(res) {
 }
 
 export function ensureCsrfCookie(req, res, next) {
-  if (!req.cookies?.csrf_token) {
-    issueCsrfToken(res);
+  const existingToken = req.cookies?.csrf_token;
+  
+  if (existingToken) {
+    // Token already exists — do NOT overwrite it
+    return next();
   }
+
+  // No token yet — generate and set
+  issueCsrfToken(res);
   next();
 }
 
@@ -57,8 +63,8 @@ export function requireCsrf(req, res, next) {
   console.log('[CSRF Debug]', {
     method: req.method,
     path: routePath,
-    cookieToken: cookieToken?.slice(0, 10),
-    headerToken: headerToken?.slice(0, 10),
+    cookieFirst10: cookieToken?.slice(0, 10),
+    headerFirst10: headerToken?.slice(0, 10),
     match: cookieToken === headerToken,
   });
 
