@@ -308,6 +308,14 @@ export default function Checkout() {
   const [showItems, setShowItems]     = useState(false);
   const [currentOrderData, setCurrentOrderData] = useState(null);
   const [paymentLoading, setPaymentLoading] = useState(null); // 'verifying' | null
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
+  const [razorpayOrderId, setRazorpayOrderId] = useState(null);
+  const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState(null); // 'RAZORPAY' | 'COD' | null
+
+  useEffect(() => {
+    setIdempotencyKey(crypto.randomUUID());
+  }, []);
 
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
@@ -347,27 +355,40 @@ export default function Checkout() {
   };
 
   const handleCreateOrder = async (method) => {
-    if (!selectedAddr) { toast.error('Please select a delivery address'); return; }
+    if (!selectedAddr || placing) return;
     setPlacing(true);
+    setPaymentInitiated(false);
+    setRazorpayOrderId(null);
 
     try {
-      const { data: orderRes } = await ordersApi.create({ addressId: selectedAddr, notes });
-      const order = orderRes.data;
-
       if (method === 'COD') {
-        await paymentsApi.confirmCOD({ internalOrderId: order.id, orderType: 'ORDER' });
-        handlePaymentSuccess('COD', order.id);
+        const { data: orderRes } = await ordersApi.create({ 
+          addressId: selectedAddr, 
+          notes,
+          paymentMethod: 'COD',
+          idempotencyKey
+        });
+        await handlePaymentSuccess('COD', orderRes.data.id);
       } else {
-        const isLoaded = await loadRazorpayScript();
-        if (!isLoaded) {
+        // Razorpay flow: Create Razorpay order first (Split flow fix)
+        const isScriptLoaded = await loadRazorpayScript();
+        if (!isScriptLoaded) {
           toast.error('Failed to load payment gateway. Please check your connection.');
+          setPlacing(false);
           return;
         }
 
         const { data: responseBody } = await paymentsApi.createOrder({
-          amount: total, currency: 'INR', orderId: order.id, orderType: 'ORDER',
+          amount: total, 
+          currency: 'INR', 
+          addressId: selectedAddr,
+          notes,
+          idempotencyKey
         });
         const rzpData = responseBody.data;
+        
+        setPaymentInitiated(true);
+        setRazorpayOrderId(rzpData.razorpayOrderId);
 
         const options = {
           key: rzpData.keyId,
@@ -383,16 +404,18 @@ export default function Checkout() {
                 razorpay_order_id: resp.razorpay_order_id,
                 razorpay_payment_id: resp.razorpay_payment_id,
                 razorpay_signature: resp.razorpay_signature,
-                orderId: order.id,
-                orderType: 'ORDER',
+                addressId: selectedAddr,
+                notes,
+                idempotencyKey
               });
 
               if (verifyData.success) {
-                await handlePaymentSuccess('RAZORPAY', order.id);
+                await handlePaymentSuccess('RAZORPAY', verifyData.order.id);
               }
             } catch (vErr) {
               setPaymentLoading(null);
-              toast.error('Payment verification failed. Contact support.');
+              toast.error(vErr.response?.data?.message || 'Payment verification failed. Contact support.');
+              setPlacing(false);
             }
           },
           prefill: {
@@ -405,6 +428,8 @@ export default function Checkout() {
             ondismiss: () => {
               setPlacing(false);
               setPaymentLoading(null);
+              setPaymentInitiated(false);
+              setRazorpayOrderId(null);
             }
           },
         };
@@ -414,36 +439,30 @@ export default function Checkout() {
         rzp.on('payment.failed', (response) => {
           setPaymentLoading(null);
           toast.error(response.error?.description || 'Payment failed. Please try again.');
+          setPlacing(false);
         });
 
         rzp.open();
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to place order');
-    } finally {
       setPlacing(false);
     }
   };
 
   const handlePaymentSuccess = async (method, orderId) => {
-    // 1. Clear the cart in Zustand store immediately
+    // 1. Clear the cart immediately
     await clearCart();
 
-    // 2. Invalidate all relevant React Query caches
+    // 2. Invalidate caches
     await queryClient.invalidateQueries({ queryKey: ['cart'] });
     await queryClient.invalidateQueries({ queryKey: ['orders'] });
     await queryClient.invalidateQueries({ queryKey: ['order', orderId] });
     await queryClient.invalidateQueries({ queryKey: ['user'] });
 
-    // 3. Show success toast
-    toast.success('Payment successful! Order confirmed.', {
-      duration: 4000,
-    });
-
-    // 4. Redirect to order success page after short delay
-    setTimeout(() => {
-      navigate(`/orders/${orderId}/success`);
-    }, 1500);
+    // 3. Redirect to success page
+    navigate(`/orders/${orderId}/success`, { replace: true });
+    toast.success('Order placed successfully!');
   };
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddr);
@@ -725,47 +744,126 @@ export default function Checkout() {
                   <h2 className="text-xl font-bold text-gray-900">Select Payment Method</h2>
                 </div>
 
-                <div className="space-y-6">
-                  <p className="text-sm text-gray-600 text-center max-w-sm mx-auto">
-                    Choose your preferred payment method to complete your purchase securely.
-                  </p>
-
-                  <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-8">
+                  <div className="grid gap-4 sm:grid-cols-2 relative">
                     {/* Pay Online */}
                     <button
-                      onClick={() => handleCreateOrder('RAZORPAY')}
-                      disabled={placing}
-                      className="group flex flex-col items-center gap-3 p-6 rounded-3xl border-2 border-[#b88a2f]/20 hover:border-[#b88a2f] hover:bg-[#b88a2f]/5 transition-all duration-300 text-center"
+                      type="button"
+                      onClick={() => !placing && setSelectedMethod('RAZORPAY')}
+                      className={`group relative flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all duration-300 text-center overflow-hidden
+                        ${selectedMethod === 'RAZORPAY' 
+                          ? 'border-[#5a3f2f] bg-[#5a3f2f]/5 ring-1 ring-[#5a3f2f]' 
+                          : 'border-cream-200 hover:border-[#b88a2f]/40 bg-white'}
+                        ${placing ? 'pointer-events-none' : 'cursor-pointer'}
+                        ${selectedMethod && selectedMethod !== 'RAZORPAY' ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}
+                      `}
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-[#b88a2f]/10 text-[#b88a2f] flex items-center justify-center group-hover:bg-[#b88a2f] group-hover:text-white transition-all duration-300">
+                      {selectedMethod === 'RAZORPAY' && (
+                        <div className="absolute top-3 right-3 bg-[#5a3f2f] text-white rounded-full p-1 shadow-lg z-10 animate-in zoom-in duration-200">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </div>
+                      )}
+                      
+                      {placing && selectedMethod === 'RAZORPAY' && (
+                        <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] flex flex-col items-center justify-center z-20 animate-in fade-in duration-200">
+                          <div className="w-8 h-8 border-3 border-[#5a3f2f] border-t-transparent rounded-full animate-spin mb-2" />
+                          <span className="text-[10px] font-bold text-[#5a3f2f] uppercase tracking-widest">Opening Razorpay...</span>
+                        </div>
+                      )}
+
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300
+                        ${selectedMethod === 'RAZORPAY' ? 'bg-[#5a3f2f] text-white shadow-lg' : 'bg-[#b88a2f]/10 text-[#b88a2f]'}
+                      `}>
                         <CreditCard className="w-7 h-7" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-[#5b3f2f]">Pay Online</h4>
-                        <p className="text-[10px] text-[#5b3f2f]/60 uppercase tracking-widest font-black mt-1">UPI · Cards · Wallets</p>
+                        <h4 className={`font-bold transition-colors ${selectedMethod === 'RAZORPAY' ? 'text-[#5a3f2f]' : 'text-gray-900'}`}>Pay Online</h4>
+                        <p className="text-[10px] text-[#5a3f2f]/60 uppercase tracking-widest font-black mt-1">UPI · Cards · Wallets</p>
                       </div>
                       <div className="mt-auto pt-4">
-                        <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold uppercase">Secure Checkout</span>
+                        <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Instant Activation</span>
                       </div>
                     </button>
 
-                    {/* COD */}
+                    {/* Cash on Delivery */}
                     <button
-                      onClick={() => handleCreateOrder('COD')}
-                      disabled={placing}
-                      className="group flex flex-col items-center gap-3 p-6 rounded-3xl border-2 border-green-200 hover:border-green-500 hover:bg-green-50 transition-all duration-300 text-center"
+                      type="button"
+                      onClick={() => !placing && setSelectedMethod('COD')}
+                      className={`group relative flex flex-col items-center gap-3 p-6 rounded-3xl border-2 transition-all duration-300 text-center overflow-hidden
+                        ${selectedMethod === 'COD' 
+                          ? 'border-[#5a3f2f] bg-[#5a3f2f]/5 ring-1 ring-[#5a3f2f]' 
+                          : 'border-cream-200 hover:border-green-200 bg-white'}
+                        ${placing ? 'pointer-events-none' : 'cursor-pointer'}
+                        ${selectedMethod && selectedMethod !== 'COD' ? 'opacity-50 scale-95' : 'opacity-100 scale-100'}
+                      `}
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                      {selectedMethod === 'COD' && (
+                        <div className="absolute top-3 right-3 bg-[#5a3f2f] text-white rounded-full p-1 shadow-lg z-10 animate-in zoom-in duration-200">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </div>
+                      )}
+
+                      {placing && selectedMethod === 'COD' && (
+                        <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] flex flex-col items-center justify-center z-20 animate-pulse">
+                          <div className="w-8 h-8 border-3 border-[#5a3f2f] border-t-transparent rounded-full animate-spin mb-2" />
+                          <span className="text-[10px] font-bold text-[#5a3f2f] uppercase tracking-widest">Placing Order...</span>
+                        </div>
+                      )}
+
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300
+                        ${selectedMethod === 'COD' ? 'bg-[#5a3f2f] text-white shadow-lg' : 'bg-green-100 text-green-600'}
+                      `}>
                         <Banknote className="w-7 h-7" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-gray-900">Cash on Delivery</h4>
+                        <h4 className={`font-bold transition-colors ${selectedMethod === 'COD' ? 'text-[#5a3f2f]' : 'text-gray-900'}`}>Cash on Delivery</h4>
                         <p className="text-[10px] text-gray-500 uppercase tracking-widest font-black mt-1">Pay at your doorstep</p>
                       </div>
                       <div className="mt-auto pt-4">
-                        <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold uppercase">No extra charges</span>
+                        <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">No extra charges</span>
                       </div>
                     </button>
+                  </div>
+
+                  {/* Unified Action Button */}
+                  <div className="pt-4 border-t border-cream-100">
+                    <button
+                      onClick={() => handleCreateOrder(selectedMethod)}
+                      disabled={!selectedMethod || placing}
+                      className={`group relative w-full py-5 rounded-2xl font-bold text-sm uppercase tracking-[0.2em] shadow-xl transition-all duration-300 flex items-center justify-center gap-3 overflow-hidden
+                        ${!selectedMethod 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed shadow-none' 
+                          : 'bg-[#5a3f2f] text-white hover:bg-[#3b2a1f] shadow-[#5a3f2f]/20'}
+                        ${placing ? 'opacity-90 cursor-not-allowed' : ''}
+                      `}
+                    >
+                      {placing ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <span>{selectedMethod === 'RAZORPAY' ? 'Opening Razorpay...' : 'Placing Order...'}</span>
+                        </>
+                      ) : (
+                        <>
+                          {!selectedMethod && <span>Select Payment Method</span>}
+                          {selectedMethod === 'RAZORPAY' && (
+                            <>
+                              <span>Proceed to Pay ₹{total.toLocaleString('en-IN')}</span>
+                              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </>
+                          )}
+                          {selectedMethod === 'COD' && (
+                            <>
+                              <span>Place Order • Pay on Delivery</span>
+                              <CheckCircle className="w-5 h-5" />
+                            </>
+                          )}
+                        </>
+                      )}
+                    </button>
+                    
+                    <p className="text-[10px] text-gray-400 text-center mt-4 uppercase tracking-[0.15em] font-medium">
+                      By placing this order, you agree to our <Link to="/terms" className="underline hover:text-gray-600">Terms & Conditions</Link>
+                    </p>
                   </div>
 
                   <div className="flex items-center justify-center gap-4 text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">

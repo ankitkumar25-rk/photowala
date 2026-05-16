@@ -18,13 +18,14 @@ export default function OrderSuccess() {
       } catch (err) {
         console.error('Failed to fetch order:', err);
         toast.error('Could not load order details');
+        navigate('/'); // Guard: redirect to home if order not found or unauthorized
       } finally {
         setLoading(false);
       }
     };
 
     if (orderId) fetchOrder();
-  }, [orderId]);
+  }, [orderId, navigate]);
 
   if (loading) {
     return (
@@ -33,6 +34,47 @@ export default function OrderSuccess() {
       </div>
     );
   }
+
+  // Determine display content based on payment status
+  const getStatusDisplay = () => {
+    const status = order?.paymentStatus || 'PENDING';
+    const amount = Number(order?.total || 0).toLocaleString('en-IN');
+
+    switch (status) {
+      case 'PAID':
+        return {
+          title: "Order Confirmed!",
+          message: "Payment Received Successfully",
+          badge: {
+            text: "PAID",
+            className: "bg-green-100 text-green-700",
+            dotColor: "bg-green-500"
+          }
+        };
+      case 'COD_PENDING':
+        return {
+          title: "Order Placed!",
+          message: "Pay on Delivery",
+          badge: {
+            text: "Cash on Delivery",
+            className: "bg-amber-100 text-amber-700",
+            dotColor: "bg-amber-500"
+          }
+        };
+      default: // PENDING
+        return {
+          title: "Order Placed!",
+          message: "Payment Processing...",
+          badge: {
+            text: "Processing",
+            className: "bg-orange-100 text-orange-700",
+            dotColor: "bg-orange-500"
+          }
+        };
+    }
+  };
+
+  const display = getStatusDisplay();
 
   return (
     <div className="min-h-screen bg-[#f7f0e7] flex items-center justify-center px-4 py-12">
@@ -47,10 +89,10 @@ export default function OrderSuccess() {
         </div>
 
         <h1 className="font-outfit text-3xl font-bold text-[#5b3f2f] mb-3 tracking-tight">
-          Order Confirmed!
+          {display.title}
         </h1>
-        <p className="text-[#b88a2f] text-sm font-medium uppercase tracking-[0.2em] mb-8">
-          Payment received successfully
+        <p className="text-[#b88a2f] text-sm font-medium uppercase tracking-[0.2em] mb-8 px-4">
+          {display.message}
         </p>
 
         {/* Order details card */}
@@ -63,7 +105,7 @@ export default function OrderSuccess() {
               {order?.orderNumber || order?.id?.slice(0, 8).toUpperCase()}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center border-b border-cream-100 pb-3">
             <span className="text-[10px] font-black uppercase tracking-widest text-[#5b3f2f]/40 flex items-center gap-2">
               <Calendar className="w-3 h-3" /> Date
@@ -75,7 +117,7 @@ export default function OrderSuccess() {
 
           <div className="flex justify-between items-center border-b border-cream-100 pb-3">
             <span className="text-[10px] font-black uppercase tracking-widest text-[#5b3f2f]/40 flex items-center gap-2">
-              <CreditCard className="w-3 h-3" /> Amount Paid
+              <CreditCard className="w-3 h-3" /> Total Amount
             </span>
             <span className="font-bold text-lg text-[#5b3f2f]">
               ₹{Number(order?.total).toLocaleString('en-IN')}
@@ -84,10 +126,10 @@ export default function OrderSuccess() {
 
           <div className="flex justify-between items-center">
             <span className="text-[10px] font-black uppercase tracking-widest text-[#5b3f2f]/40 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Status
+              <div className={`w-2 h-2 rounded-full ${display.badge.dotColor} animate-pulse`} /> Status
             </span>
-            <span className="bg-green-100 text-green-700 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full">
-              ✓ Paid
+            <span className={`${display.badge.className} font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full`}>
+              {display.badge.text}
             </span>
           </div>
         </div>
@@ -105,7 +147,7 @@ export default function OrderSuccess() {
             <span>View Order Details</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
-          
+
           <Link
             to="/products"
             className="w-full border-2 border-[#b88a2f] text-[#b88a2f] rounded-2xl py-4 font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#b88a2f]/5 transition-all duration-300 flex items-center justify-center gap-2"

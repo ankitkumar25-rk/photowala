@@ -5,6 +5,9 @@ import { createError } from '../middleware/errorHandler.js';
 import { z } from 'zod';
 import { sendEmail, emailTemplates } from '../config/email.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import valkey from '../lib/valkey.js';
+import crypto from 'crypto';
+import { saveOrderToDB } from '../services/orderService.js';
 
 function generateOrderNumber() {
   const ts = Date.now().toString(36).toUpperCase();
@@ -37,126 +40,59 @@ const laserPenOrderSchema = z.object({
 });
 
 export const createOrder = asyncHandler(async (req, res) => {
-  const { addressId, notes } = z.object({
+  const { addressId, notes, paymentMethod, idempotencyKey } = z.object({
     addressId: z.string().uuid(),
     notes: z.string().optional(),
+    paymentMethod: z.enum(['COD', 'RAZORPAY']).optional().default('RAZORPAY'),
+    idempotencyKey: z.string().min(1),
   }).parse(req.body);
 
-  const address = await prisma.address.findFirst({
-    where: { id: addressId, userId: req.user.id },
-    select: { id: true },
-  });
-  if (!address) throw createError('Invalid delivery address', 400);
+  // 1. Idempotency Check
+  const idemKey = `idem:order:${idempotencyKey}`;
+  const existingOrderId = await valkey.get(idemKey);
+  if (existingOrderId) {
+    const order = await prisma.order.findUnique({ where: { id: existingOrderId }, include: { items: true } });
+    if (order) return res.status(200).json({ success: true, data: order, message: 'Returned existing order' });
+  }
 
+  // 2. Fetch Cart for duplicate check and processing
   const cart = await prisma.cart.findUnique({
     where: { userId: req.user.id },
-    include: {
-      items: {
-        include: {
-          product: { select: { id: true, name: true, price: true, stock: true, unit: true, isActive: true } },
-        },
-      },
-    },
+    include: { items: true },
   });
-
   if (!cart || cart.items.length === 0) throw createError('Cart is empty', 400);
 
-  let subtotal = 0;
-  const orderItems = [];
-
-  for (const item of cart.items) {
-    const { product } = item;
-    if (!product.isActive) throw createError(`${product.name} is no longer available`, 400);
-
-    const itemTotal = Number(product.price) * item.quantity;
-    subtotal += itemTotal;
-    orderItems.push({
-      productId: product.id,
-      quantity: item.quantity,
-      price: product.price,
-      total: itemTotal,
-      productName: product.name,
-      productUnit: product.unit,
-      customizationText: item.customizationText || null,
-      customizationImageUrl: item.customizationImageUrl || null,
-    });
+  // 3. Duplicate Check (Hash of userId + items)
+  const itemsString = cart.items
+    .sort((a, b) => a.productId.localeCompare(b.productId))
+    .map(i => `${i.productId}:${i.quantity}`)
+    .join('|');
+  const cartHash = crypto.createHash('md5').update(`${req.user.id}:${itemsString}`).digest('hex');
+  const dupKey = `order:dup:${req.user.id}:${cartHash}`;
+  
+  const isDuplicate = await valkey.get(dupKey);
+  if (isDuplicate) {
+    throw createError('This order has already been placed recently. Please check your order history.', 409);
   }
-  const shippingCost = subtotal >= 1000 ? 0 : 49;
-  const total = subtotal + shippingCost;
 
-  const order = await prisma.$transaction(async (tx) => {
-    for (const item of cart.items) {
-      const currentProduct = await tx.product.findUnique({
-        where: { id: item.productId },
-        select: { stock: true, name: true },
-      });
-      if (currentProduct.stock < item.quantity) {
-        throw createError(`Insufficient stock for ${currentProduct.name}`, 400);
-      }
-    }
+  // 4. Save Order (For COD flow)
+  // If paymentMethod is RAZORPAY, we don't create the order in DB yet (Split flow fix)
+  if (paymentMethod === 'RAZORPAY') {
+    return res.status(400).json({ message: 'For Razorpay, use the payment initialization flow' });
+  }
 
-    for (const item of cart.items) {
-      await tx.product.update({
-        where: { id: item.productId },
-        data: { stock: { decrement: item.quantity } },
-      });
-    }
-
-    const newOrder = await tx.order.create({
-      data: {
-        orderNumber: generateOrderNumber(),
-        userId: req.user.id,
-        addressId: address.id,
-        subtotal,
-        shippingCost,
-        total,
-        notes,
-        items: { create: orderItems },
-      },
-      include: { items: true },
-    });
-
-    return newOrder;
+  const order = await saveOrderToDB({
+    userId: req.user.id,
+    addressId,
+    notes,
+    paymentMethod: 'COD',
+    paymentStatus: 'COD_PENDING',
+    user: req.user,
   });
 
-  // Broadcast to admins
-  broadcastToAdmins('new_order', {
-    id: order.id,
-    orderNumber: order.orderNumber,
-    customerName: req.user?.name || 'Customer',
-    customerEmail: req.user?.email,
-    amount: order.total,
-    itemCount: order.items?.length || 0,
-    createdAt: order.createdAt,
-    type: 'ORDER',
-  });
-
-  // Send confirmation emails safely
-  try {
-    const user = { name: req.user.name || 'Customer', email: req.user.email };
-    const tpl = emailTemplates.orderConfirmation(order, user);
-    const adminTpl = emailTemplates.adminNewOrder(order, user);
-
-    // User confirmation
-    sendEmail({
-      to: user.email,
-      subject: tpl.subject,
-      html: tpl.html
-    }).catch(err => console.error('[Email] Failed to send confirmation to user:', err.message));
-
-    // Admin alert
-    const adminEmail = process.env.COMPANY_EMAIL || process.env.EMAIL_FROM;
-    sendEmail({
-      to: adminEmail,
-      subject: adminTpl.subject,
-      html: adminTpl.html
-    }).catch(err => console.error('[Email] Failed to send admin alert:', err.message));
-
-    console.log('[Email] Order notifications triggered for:', user.email);
-  } catch (emailErr) {
-    console.error('[Email] Failed to process email templates:', emailErr.message);
-    // Do NOT re-throw — order creation must still return 201
-  }
+  // 5. Store Idempotency and Duplicate keys
+  await valkey.set(idemKey, order.id, 'EX', 600); // 10 min
+  await valkey.set(dupKey, '1', 'EX', 60);       // 60 sec
 
   res.status(201).json({ success: true, data: order });
 });
@@ -283,6 +219,25 @@ export const updateTracking = asyncHandler(async (req, res) => {
     data: { trackingNumber, status: 'SHIPPED' },
   });
   res.json({ success: true, data: order });
+});
+
+export const adminCancelOrder = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (!order) throw createError('Order not found', 404);
+
+  const updatedOrder = await prisma.order.update({
+    where: { id },
+    data: { 
+      status: 'CANCELLED',
+      paymentStatus: (order.paymentMethod === 'COD' || order.paymentStatus === 'PENDING') 
+        ? 'REFUND_NOT_REQUIRED' 
+        : order.paymentStatus 
+    },
+  });
+
+  res.json({ success: true, message: 'Order cancelled by admin', data: updatedOrder });
 });
 
 export const createLaserPenOrder = asyncHandler(async (req, res) => {

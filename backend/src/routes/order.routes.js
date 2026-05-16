@@ -15,6 +15,7 @@ router.post('/pen/laser',   authenticate, orderController.createLaserPenOrder);
 router.get('/admin/all',        authenticate, isAdmin, orderController.getAllOrders);
 router.patch('/:id/status',     authenticate, isAdmin, orderController.updateOrderStatus);
 router.patch('/:id/tracking',   authenticate, isAdmin, orderController.updateTracking);
+router.patch('/admin/:id/cancel', authenticate, isAdmin, orderController.adminCancelOrder);
 
 router.get('/:id',          authenticate, orderController.getOrder);
 router.post('/:id/cancel',  authenticate, orderController.cancelOrder);

@@ -1,6 +1,7 @@
 import express from 'express';
 import { authenticate, authorize } from '../middleware/auth.js';
 import * as adminController from '../controllers/admin.controller.js';
+import * as orderController from '../controllers/order.controller.js';
 
 const router = express.Router();
 
@@ -21,5 +22,8 @@ router.patch('/customers/:id/ban', adminController.banCustomer);
 // Inventory
 router.get('/inventory',          adminController.getInventory);
 router.get('/inventory/low-stock', adminController.getLowStockProducts);
+
+// Orders
+router.patch('/orders/:id/cancel', orderController.adminCancelOrder);
 
 export default router;
