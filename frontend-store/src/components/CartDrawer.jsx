@@ -13,8 +13,7 @@ export default function CartDrawer() {
     return () => window.removeEventListener('keydown', handler);
   }, [closeCart]);
 
-  // const shipping = subtotal() >= 1000 ? 0 : 49;
-  const shipping = 0; // TEMPORARY: Free shipping for live mode testing
+  const shipping = subtotal() >= 1000 ? 0 : 49;
   const total = subtotal() + shipping;
 
   return (
@@ -130,9 +129,7 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            <p className="text-xs text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-100 flex items-center gap-2">
-              <Tag className="w-3 h-3" /> Live Testing: Free Shipping Applied!
-            </p>
+
 
             <Link
               to="/checkout"

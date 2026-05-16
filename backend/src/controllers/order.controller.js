@@ -81,8 +81,7 @@ export const createOrder = asyncHandler(async (req, res) => {
       customizationImageUrl: item.customizationImageUrl || null,
     });
   }
-  //  const shippingCost = subtotal >= 1000 ? 0 : 49;
-  const shippingCost = 0; // TEMPORARY: Free shipping for live mode testing
+  const shippingCost = subtotal >= 1000 ? 0 : 49;
   const total = subtotal + shippingCost;
 
   const order = await prisma.$transaction(async (tx) => {
