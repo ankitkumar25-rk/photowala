@@ -13,14 +13,16 @@ export const useAdminSSE = () => {
     if (!user || !['ADMIN', 'SUPER_ADMIN'].includes(user.role)) return;
     if (eventSourceRef.current) return; // already connected
 
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 
-                    'https://api.photowalagift.online';
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'https://api.photowalagift.online';
 
-    // SSE requires credentials (cookies for session)
-    // Note: EventSource doesn't support custom headers (like X-CSRF-Token)
-    // But it does support withCredentials: true for cookies.
+    // Construct the correct path. 
+    // If apiBase already ends with /api, don't add it again.
+    const streamUrl = apiBase.endsWith('/api') 
+      ? `${apiBase}/notifications/stream` 
+      : `${apiBase}/api/notifications/stream`;
+
     eventSourceRef.current = new EventSource(
-      `${apiBase}/api/notifications/stream`,
+      streamUrl,
       { withCredentials: true }
     );
 

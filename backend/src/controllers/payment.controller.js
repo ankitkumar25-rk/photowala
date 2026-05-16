@@ -148,9 +148,22 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       throw createError('Payment record not found', 404);
     }
 
-    const orderData = orderType === 'ORDER'
-      ? await prisma.order.findUnique({ where: { id: orderId }, include: { user: true } })
-      : await prisma.serviceOrder.findUnique({ where: { id: orderId }, include: { user: true } });
+    let orderData;
+    if (orderType === 'ORDER') {
+      orderData = await prisma.order.findFirst({
+        where: {
+          OR: [{ id: orderId }, { orderNumber: orderId }]
+        },
+        include: { user: true }
+      });
+    } else {
+      orderData = await prisma.serviceOrder.findFirst({
+        where: {
+          OR: [{ id: orderId }, { orderNumber: orderId }]
+        },
+        include: { user: true }
+      });
+    }
 
     if (!orderData) {
       throw createError(`${orderType === 'ORDER' ? 'Order' : 'Service Order'} not found`, 404);
@@ -190,7 +203,7 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       }),
       orderType === 'ORDER' 
         ? prisma.order.update({
-            where: { id: orderId },
+            where: { id: orderData.id },
             data: { 
               status: 'CONFIRMED',
               paymentStatus: 'PAID', 
@@ -198,7 +211,7 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
             },
           })
         : prisma.serviceOrder.update({
-            where: { id: orderId },
+            where: { id: orderData.id },
             data: { 
               status: 'CONFIRMED',
               paymentStatus: 'PAID', 
