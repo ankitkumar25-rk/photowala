@@ -20,6 +20,8 @@ export const useAdminStore = create(
       logout: () => { 
         set({ user: null, isInitialized: true }); 
         adminFetchMePromise = null; 
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('admin-auth');
       },
       
@@ -114,39 +116,53 @@ function RequireAdmin({ children }) {
 
 export default function App() {
   useEffect(() => {
-    // Initial auth check on app mount (handles Google OAuth callback and page refresh)
-    useAdminStore.getState().fetchMe().catch((err) => {
-      console.error('Initial auth check failed:', err);
-    });
-  }, []); // Empty array: run only once on mount
+    const token = localStorage.getItem('token');
+    if (token) {
+      useAdminStore.getState().fetchMe().catch((err) => {
+        console.error('Initial auth check failed:', err);
+      });
+    } else {
+      useAdminStore.setState({ isInitialized: true });
+    }
+  }, []);
 
   useEffect(() => {
-    const readCookie = (name) => {
-      const cookie = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith(`${name}=`));
-      return cookie ? decodeURIComponent(cookie.split('=').slice(1).join('=')) : '';
+    // Proactive silent refresh every 13 minutes
+    const refreshSilently = async () => {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) return;
+      try {
+        const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+        const res = await api.post('/auth/refresh', { refreshToken });
+        const { accessToken, refreshToken: newRefreshToken } = res.data?.data || {};
+        if (accessToken) {
+          localStorage.setItem('token', accessToken);
+          if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+        }
+      } catch (err) {
+        console.error('Silent refresh failed:', err);
+      }
     };
 
-    const logoutOnExit = () => {
-      const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
-      const csrf = readCookie('csrf_token');
-      fetch(`${baseURL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-        keepalive: true,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(csrf ? { 'X-CSRF-Token': csrf } : {}),
-        },
-      }).catch(() => {});
-      useAdminStore.setState({ user: null });
-      localStorage.removeItem('admin-auth');
+    const interval = setInterval(refreshSilently, 13 * 60 * 1000);
+    
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        const token = localStorage.getItem('token');
+        const user = useAdminStore.getState().user;
+        // Only fetch if we have a token but no user (lost state)
+        if (token && !user) {
+          useAdminStore.getState().fetchMe().catch(() => {});
+        }
+      }
     };
 
-    // Removed aggressive logout on exit to prevent accidental logouts when switching tabs
-    // window.addEventListener('beforeunload', logoutOnExit);
-    // return () => window.removeEventListener('beforeunload', logoutOnExit);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   return (

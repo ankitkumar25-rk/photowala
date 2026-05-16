@@ -15,6 +15,7 @@ const api = axios.create({
 
 let csrfBootstrapPromise = null;
 let csrfTokenBuffer = null;
+let refreshPromise = null;
 
 async function refreshCsrf() {
   const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -42,10 +43,42 @@ async function ensureCsrfCookie() {
   return csrfBootstrapPromise;
 }
 
+async function doRefresh() {
+  try {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) throw new Error('No refresh token');
+
+    const baseURL = import.meta.env.VITE_API_BASE_URL || '/api';
+    const res = await axios.post(`${baseURL}/auth/refresh`, { refreshToken }, { withCredentials: true });
+    
+    const { accessToken, refreshToken: newRefreshToken } = res.data?.data || {};
+    if (accessToken) {
+      localStorage.setItem('token', accessToken);
+      if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+      return accessToken;
+    }
+    throw new Error('Refresh failed');
+  } catch (err) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('admin-auth');
+    throw err;
+  } finally {
+    refreshPromise = null;
+  }
+}
+
 api.interceptors.request.use((config) => {
   const method = String(config.method || 'get').toUpperCase();
   const unsafe = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
   
+  // Attach Access Token
+  const authToken = localStorage.getItem('token');
+  if (authToken) {
+    config.headers = config.headers || {};
+    config.headers['Authorization'] = `Bearer ${authToken}`;
+  }
+
   if (unsafe && !readCookie('csrf_token') && !csrfTokenBuffer) {
     return ensureCsrfCookie().then((token) => {
       if (token) {
@@ -83,6 +116,8 @@ api.interceptors.response.use(
 
       // Skip refresh for auth-related calls to avoid loops
       if (original.url.includes('/auth/me') || original.url.includes('/auth/refresh')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('admin-auth');
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
@@ -91,14 +126,23 @@ api.interceptors.response.use(
       }
 
       try {
+        if (!refreshPromise) {
+          refreshPromise = doRefresh();
+        }
         await refreshPromise;
         
         // Refresh CSRF as well
-        const freshCsrf = await refreshCsrf();
+        await refreshCsrf();
         
+        // Update headers of original request
+        const newToken = localStorage.getItem('token');
+        if (newToken) {
+          original.headers = original.headers || {};
+          original.headers['Authorization'] = `Bearer ${newToken}`;
+        }
+
         return api(original);
       } catch (refreshErr) {
-        localStorage.removeItem('admin-auth');
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
         }
@@ -111,3 +155,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+

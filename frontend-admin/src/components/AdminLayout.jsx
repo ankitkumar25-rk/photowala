@@ -10,6 +10,9 @@ import {
 import logo from '../assets/logo.png';
 import { NotificationBell } from './NotificationBell';
 import { useAdminSSE } from '../hooks/useAdminSSE';
+import toast from 'react-hot-toast';
+import api from '../api/client';
+import { useState } from 'react';
 
 const NAV = [
   { to: '/',          icon: LayoutDashboard, label: 'Dashboard' },
@@ -35,6 +38,78 @@ export default function AdminLayout() {
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname, setSidebarOpen]);
+
+  useEffect(() => {
+    let warningTimeout;
+    let logoutTimeout;
+
+    const startTimers = () => {
+      // 12 minutes warning
+      warningTimeout = setTimeout(() => {
+        toast.custom((t) => (
+          <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex ring-1 ring-black/5 border border-gray-100 overflow-hidden`}>
+            <div className="flex-1 w-0 p-5">
+              <div className="flex items-start">
+                <div className="flex-shrink-0 pt-0.5 text-2xl">⚠️</div>
+                <div className="ml-4 flex-1">
+                  <p className="text-sm font-bold text-gray-900 uppercase tracking-tight">Session Expiring</p>
+                  <p className="mt-1 text-xs font-medium text-gray-500 leading-relaxed">Your session will expire in 3 minutes for security. Would you like to stay logged in?</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex border-l border-gray-100">
+              <button
+                onClick={async () => {
+                  toast.dismiss(t.id);
+                  try {
+                    const refreshToken = localStorage.getItem('refreshToken');
+                    const res = await api.post('/auth/refresh', { refreshToken });
+                    const { accessToken, refreshToken: newRefreshToken } = res.data?.data || {};
+                    if (accessToken) {
+                      localStorage.setItem('token', accessToken);
+                      if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+                      resetTimers();
+                      toast.success('Session extended', { icon: '✨' });
+                    }
+                  } catch (err) {
+                    toast.error('Session expired');
+                    handleLogout();
+                  }
+                }}
+                className="w-full border border-transparent rounded-none rounded-r-2xl p-4 flex items-center justify-center text-[10px] font-black tracking-widest text-brand-primary hover:bg-brand-soft transition-colors focus:outline-none uppercase"
+              >
+                Stay In
+              </button>
+            </div>
+          </div>
+        ), { duration: 180000, position: 'bottom-right' });
+      }, 12 * 60 * 1000);
+
+      // 15 minutes hard logout
+      logoutTimeout = setTimeout(() => {
+        toast.error("You've been logged out for security. Please sign in again.", { 
+          duration: 10000,
+          style: { background: '#ef4444', color: '#fff', fontWeight: 'bold' }
+        });
+        handleLogout();
+      }, 15 * 60 * 1000);
+    };
+
+    const resetTimers = () => {
+      clearTimeout(warningTimeout);
+      clearTimeout(logoutTimeout);
+      startTimers();
+    };
+
+    if (user) {
+      startTimers();
+    }
+
+    return () => {
+      clearTimeout(warningTimeout);
+      clearTimeout(logoutTimeout);
+    };
+  }, [user]);
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
