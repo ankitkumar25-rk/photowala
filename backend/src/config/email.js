@@ -3,6 +3,31 @@ import { Resend } from 'resend';
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = 'Photowala Gift <onboarding@resend.dev>';
 
+const SHARED_FOOTER = `
+  <div style="
+    text-align: center;
+    padding: 24px 20px;
+    color: #888888;
+    font-size: 12px;
+    font-family: 'DM Sans', Arial, sans-serif;
+    border-top: 1px solid #f5e7d8;
+    margin-top: 24px;
+  ">
+    <p style="margin: 4px 0; color: #5b3f2f; font-weight: 600;">
+      PhotowalaGift
+    </p>
+    <p style="margin: 4px 0;">
+      Floor No. 04, Khasra No. 409, Kumawat Colony,
+    </p>
+    <p style="margin: 4px 0;">
+      Sithal Road, Jhunjhunu, Rajasthan — 333012
+    </p>
+    <p style="margin: 8px 0 4px 0;">
+      © ${new Date().getFullYear()} PhotowalaGift. All rights reserved.
+    </p>
+  </div>
+`;
+
 /**
  * Send a transactional email
  */
