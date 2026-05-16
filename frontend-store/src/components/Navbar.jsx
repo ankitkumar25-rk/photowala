@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, Search, Menu, X, User, Heart } from 'lucide-react';
+import { ShoppingCart, Menu, X, User, Heart } from 'lucide-react';
 import { useAuthStore, useCartStore } from '../store';
-import { productsApi } from '../api';
+
 import { brandAssets } from '../data/assets';
 import { useWishlist } from '../contexts/WishlistContext';
 
 export default function Navbar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
+
   const location = useLocation();
 
   const user = useAuthStore((s) => s.user);
@@ -28,22 +25,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  useEffect(() => {
-    if (!searchQuery.trim()) { setSearchResults([]); return; }
-    const timer = setTimeout(async () => {
-      setIsSearching(true);
-      try {
-        const { data } = await productsApi.search(searchQuery);
-        setSearchResults(data.data || []);
-      } catch (err) {
-        console.error('Search failed:', err);
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+
 
   const navLinks = [
     { to: '/products', label: 'Shop' },
@@ -110,88 +92,7 @@ export default function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            {/* Search */}
-            <div className="relative">
-              <button
-                onClick={() => setShowSearch(!showSearch)}
-                className={`btn-ghost p-2 transition-colors ${showSearch ? 'bg-brand-surface text-brand-secondary' : ''}`}
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-              
-              {showSearch && (
-                <>
-                  {/* Backdrop for mobile */}
-                  <div 
-                    className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-[90] md:hidden"
-                    onClick={() => setShowSearch(false)}
-                  />
-                  
-                  <div className="fixed md:absolute left-4 right-4 md:left-auto md:right-0 top-4 md:top-14 w-auto md:w-96 bg-cream-50 rounded-2xl shadow-[0_20px_50px_rgba(122,50,24,0.15)] border border-brand-primary/20 p-3 md:p-4 z-[100] animate-in fade-in zoom-in-95 slide-in-from-top-4 md:slide-in-from-top-2 duration-300 origin-top-right">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-secondary" />
-                        <input
-                          autoFocus
-                          type="text"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Search premium products..."
-                          className="input-field pl-11 text-sm bg-white"
-                        />
-                      </div>
-                      <button 
-                        onClick={() => setShowSearch(false)}
-                        className="md:hidden p-2 text-xs font-bold text-brand-secondary uppercase tracking-wider"
-                      >
-                        Close
-                      </button>
-                    </div>
 
-                    {isSearching && (
-                      <div className="flex items-center gap-2 px-2 py-4">
-                        <div className="w-4 h-4 border-2 border-brand-secondary border-t-transparent rounded-full animate-spin" />
-                        <p className="text-xs text-brand-secondary font-semibold">Searching premium collection...</p>
-                      </div>
-                    )}
-
-                    {!isSearching && searchQuery.trim() && searchResults.length === 0 && (
-                      <div className="px-2 py-6 text-center">
-                        <p className="text-sm text-gray-500 font-medium italic">No products found for "{searchQuery}"</p>
-                      </div>
-                    )}
-
-                    {searchResults.length > 0 && (
-                      <div className="space-y-1 max-h-[60vh] md:max-h-80 overflow-y-auto custom-scrollbar pr-1">
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-2">Products</p>
-                        {searchResults.map((p) => (
-                          <Link
-                            key={p.id}
-                            to={`/products/${p.slug}`}
-                            onClick={() => { setShowSearch(false); setSearchQuery(''); }}
-                            className="flex items-center gap-4 p-2 rounded-xl hover:bg-brand-surface transition-all duration-200 group border border-transparent hover:border-brand-primary/10"
-                          >
-                            <div className="relative shrink-0 overflow-hidden rounded-lg border border-cream-200">
-                              {p.images?.[0] ? (
-                                <img src={p.images[0].url} alt={p.name} className="w-12 h-12 object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
-                              ) : (
-                                <div className="w-12 h-12 bg-cream-100 flex items-center justify-center text-xl">📦</div>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-bold text-brand-primary truncate group-hover:text-brand-secondary transition-colors">{p.name}</p>
-                              <p className="text-xs text-brand-secondary font-bold mt-0.5">₹{p.price}</p>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-secondary group-hover:translate-x-1 transition-all" />
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
 
             {/* Wishlist */}
             {user && (
