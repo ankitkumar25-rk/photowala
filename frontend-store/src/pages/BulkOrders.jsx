@@ -2,8 +2,8 @@ import { Phone, MessageCircle, Mail, MapPin, Package, Percent, Clock, CheckCircl
 import { brandAssets } from '../data/assets';
 
 export default function BulkOrders() {
-  const whatsappNumber = "+919782570014"; // Replace with actual number
-  const phoneNumber = "+919782570014";    // Replace with actual number
+  const whatsappNumber = "+919602560933"; // Replace with actual number
+  const phoneNumber = "+918104937078";    // Replace with actual number
   const email = "photowalagiftphotowalagift@gmail.com";
 
   return (
@@ -11,10 +11,10 @@ export default function BulkOrders() {
       {/* Hero Section */}
       <div className="relative bg-[#3b1d16] text-white py-16 md:py-24 px-6 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-           <div className="absolute top-0 left-0 w-96 h-96 bg-brand-secondary rounded-full -translate-x-1/2 -translate-y-1/2 blur-[120px]" />
-           <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-primary rounded-full translate-x-1/2 translate-y-1/2 blur-[150px]" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-brand-secondary rounded-full -translate-x-1/2 -translate-y-1/2 blur-[120px]" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-brand-primary rounded-full translate-x-1/2 translate-y-1/2 blur-[150px]" />
         </div>
-        
+
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6 font-display leading-tight">
             Bulk Orders & Corporate Deals
@@ -28,14 +28,14 @@ export default function BulkOrders() {
       {/* Main Content Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-          
+
           {/* Left: Contact Options (Sticky on desktop) */}
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 h-fit">
             <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_20px_50px_rgba(59,29,22,0.08)] border border-brand-primary/5">
               <h2 className="text-2xl font-bold text-brand-primary mb-6">Get in Touch</h2>
-              
+
               <div className="space-y-4">
-                <a 
+                <a
                   href={`tel:${phoneNumber}`}
                   className="flex items-center gap-4 p-4 rounded-2xl bg-brand-primary text-white hover:bg-[#4a2b1f] transition-all shadow-lg active:scale-[0.98] group"
                 >
@@ -48,9 +48,9 @@ export default function BulkOrders() {
                   </div>
                 </a>
 
-                <a 
+                <a
                   href={`https://wa.me/${whatsappNumber.replace('+', '')}`}
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366] text-white hover:opacity-95 transition-all shadow-lg active:scale-[0.98] group"
                 >
@@ -81,33 +81,33 @@ export default function BulkOrders() {
             </div>
 
             <div className="bg-[#fff9f4] rounded-2xl p-6 border border-brand-secondary/15">
-               <div className="flex items-center gap-3 mb-3">
-                 <Clock className="w-5 h-5 text-brand-secondary" />
-                 <h3 className="font-bold text-brand-primary">Response Time</h3>
-               </div>
-               <p className="text-xs sm:text-sm text-brand-primary/70 leading-relaxed font-medium">
-                 Our bulk order experts typically respond within **2-4 business hours** for all inquiries.
-               </p>
+              <div className="flex items-center gap-3 mb-3">
+                <Clock className="w-5 h-5 text-brand-secondary" />
+                <h3 className="font-bold text-brand-primary">Response Time</h3>
+              </div>
+              <p className="text-xs sm:text-sm text-brand-primary/70 leading-relaxed font-medium">
+                Our bulk order experts typically respond within **2-4 business hours** for all inquiries.
+              </p>
             </div>
           </div>
 
           {/* Right: Benefits & Why Choose Us */}
           <div className="lg:col-span-8 space-y-10">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-               {[
-                 { icon: <Percent />, title: "Tiered Discounts", desc: "Save more as you order more. Custom pricing for quantities above 50 units." },
-                 { icon: <Package />, title: "Custom Branding", desc: "Complete personalization options including logo engraving and custom packaging." },
-                 { icon: <CheckCircle2 />, title: "Quality Check", desc: "Rigorous quality control for every single piece in your bulk shipment." },
-                 { icon: <Truck className="w-6 h-6" />, title: "Insured Shipping", desc: "Safe and insured doorstep delivery across India with real-time tracking." },
-               ].map((item, i) => (
-                 <div key={i} className="bg-white rounded-3xl p-6 border border-brand-primary/5 hover:border-brand-secondary/30 transition-all hover:shadow-xl group">
-                   <div className="w-14 h-14 bg-brand-surface text-brand-secondary rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                     {item.icon}
-                   </div>
-                   <h3 className="text-lg font-bold text-brand-primary mb-2">{item.title}</h3>
-                   <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
-                 </div>
-               ))}
+              {[
+                { icon: <Percent />, title: "Tiered Discounts", desc: "Save more as you order more. Custom pricing for quantities above 50 units." },
+                { icon: <Package />, title: "Custom Branding", desc: "Complete personalization options including logo engraving and custom packaging." },
+                { icon: <CheckCircle2 />, title: "Quality Check", desc: "Rigorous quality control for every single piece in your bulk shipment." },
+                { icon: <Truck className="w-6 h-6" />, title: "Insured Shipping", desc: "Safe and insured doorstep delivery across India with real-time tracking." },
+              ].map((item, i) => (
+                <div key={i} className="bg-white rounded-3xl p-6 border border-brand-primary/5 hover:border-brand-secondary/30 transition-all hover:shadow-xl group">
+                  <div className="w-14 h-14 bg-brand-surface text-brand-secondary rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-bold text-brand-primary mb-2">{item.title}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
             </div>
 
             <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-brand-primary/5 shadow-sm">
@@ -131,20 +131,20 @@ export default function BulkOrders() {
 
             <div className="relative overflow-hidden bg-brand-primary rounded-[2rem] p-8 md:p-12 text-white shadow-2xl">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
-              
+
               <div className="relative z-10 max-w-2xl">
                 <h3 className="text-2xl md:text-3xl font-bold mb-4 font-display italic">Have a specific requirement?</h3>
                 <p className="text-brand-soft/80 mb-8 leading-relaxed text-sm sm:text-base">
                   Tell us about your event, the product you're interested in, and the quantity you need. We'll get back to you with the best possible quote and a digital mock-up.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <button 
+                  <button
                     onClick={() => window.location.href = `mailto:${email}`}
                     className="bg-brand-secondary text-white px-8 py-3.5 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#d49e35] transition-colors shadow-lg active:scale-95"
                   >
                     Request a Quote
                   </button>
-                  <button 
+                  <button
                     onClick={() => window.location.href = `tel:${phoneNumber}`}
                     className="bg-white/10 backdrop-blur-md text-white px-8 py-3.5 rounded-full font-bold uppercase tracking-widest text-xs border border-white/20 hover:bg-white/20 transition-colors active:scale-95"
                   >
