@@ -75,8 +75,8 @@ export default function AdminOrders() {
                 </div>
                 <div>
                   <p className="text-[10px] font-black text-[#7a655c] uppercase tracking-widest">Payment</p>
-                  <span className={'text-[10px] font-black uppercase tracking-widest ' + (order.payment?.status === 'PAID' ? 'text-green-600' : 'text-amber-600')}>
-                    {order.payment?.status || 'Pending'}
+                  <span className={'text-[10px] font-black uppercase tracking-widest ' + (order.paymentStatus === 'PAID' ? 'text-green-600' : 'text-amber-600')}>
+                    {order.paymentStatus || 'Pending'}
                   </span>
                 </div>
                 <div>
@@ -141,8 +141,8 @@ export default function AdminOrders() {
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-[#5b3f2f]">₹{Number(order.total).toLocaleString('en-IN')}</td>
                   <td className="px-6 py-4">
-                    <span className={'badge-status ' + (order.payment?.status === 'PAID' ? 'delivered' : 'pending')}>
-                      {order.payment?.status || 'Pending'}
+                    <span className={'badge-status ' + (order.paymentStatus === 'PAID' ? 'delivered' : 'pending')}>
+                      {order.paymentStatus || 'Pending'}
                     </span>
                   </td>
                   <td className="px-6 py-4">

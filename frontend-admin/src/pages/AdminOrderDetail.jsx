@@ -158,8 +158,8 @@ export default function AdminOrderDetail() {
               </div>
               <div className="flex items-center justify-between mt-4 p-3 bg-[#fcf9f6] rounded-xl border border-[#5b3f2f]/5">
                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Payment Status</span>
-                 <span className={'px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ' + (order.payment?.status === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700')}>
-                    {order.payment?.status || 'Pending'}
+                 <span className={'px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ' + (order.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700')}>
+                    {order.paymentStatus || 'Pending'}
                  </span>
               </div>
             </div>
