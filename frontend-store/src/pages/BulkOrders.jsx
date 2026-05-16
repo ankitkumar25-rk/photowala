@@ -1,4 +1,4 @@
-import { Phone, MessageCircle, Mail, MapPin, Package, Percent, Clock, CheckCircle2 } from 'lucide-react';
+import { Phone, MessageCircle, Mail, MapPin, Package, Percent, Clock, CheckCircle2, Truck } from 'lucide-react';
 import { brandAssets } from '../data/assets';
 
 export default function BulkOrders() {
