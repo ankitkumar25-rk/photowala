@@ -132,10 +132,31 @@ export const createOrder = asyncHandler(async (req, res) => {
     type: 'ORDER',
   });
 
-  const user = { name: req.user.name || 'Customer', email: req.user.email };
-  const tpl = emailTemplates.orderConfirmation(order, user);
-  const adminTpl = emailTemplates.adminNewOrder(order, user);
-  sendEmail({ to: process.env.EMAIL_FROM, ...adminTpl }).catch(console.error);
+  // Send confirmation emails safely
+  try {
+    const user = { name: req.user.name || 'Customer', email: req.user.email };
+    const tpl = emailTemplates.orderConfirmation(order, user);
+    const adminTpl = emailTemplates.adminNewOrder(order, user);
+
+    // User confirmation
+    sendEmail({ 
+      to: user.email, 
+      subject: tpl.subject, 
+      html: tpl.html 
+    }).catch(err => console.error('[Email] Failed to send confirmation to user:', err.message));
+
+    // Admin alert
+    sendEmail({ 
+      to: process.env.EMAIL_FROM, 
+      subject: adminTpl.subject, 
+      html: adminTpl.html 
+    }).catch(err => console.error('[Email] Failed to send admin alert:', err.message));
+
+    console.log('[Email] Order notifications triggered for:', user.email);
+  } catch (emailErr) {
+    console.error('[Email] Failed to process email templates:', emailErr.message);
+    // Do NOT re-throw — order creation must still return 201
+  }
 
   res.status(201).json({ success: true, data: order });
 });

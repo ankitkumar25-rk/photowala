@@ -98,18 +98,17 @@ function Loader() {
 
 function RequireAdmin({ children }) {
   const user = useAdminStore((s) => s.user);
-  const isFetching = useAdminStore((s) => s.isFetching);
   const isInitialized = useAdminStore((s) => s.isInitialized);
 
-  // While fetching initial state and not initialized yet, show loader
-  if (!isInitialized && isFetching) return <Loader />;
+  // MUST wait for initialization (initial fetchMe) to complete
+  if (!isInitialized) return <Loader />;
   
   // If check is done and no user, or user is not admin, redirect
-  if (isInitialized && (!user || !['ADMIN', 'SUPER_ADMIN'].includes(user.role))) {
+  if (!user || !['ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
     return <Navigate to="/login" replace />;
   }
 
-  // If we have a user and they are an admin, proceed
+  // Authorized
   return children;
 }
 

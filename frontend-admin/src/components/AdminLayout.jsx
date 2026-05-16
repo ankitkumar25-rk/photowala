@@ -48,7 +48,7 @@ export default function AdminLayout() {
       >
         <div className="flex h-full flex-col luxury-grain">
           {/* Brand Header */}
-          <div className="flex h-24 items-center gap-4 px-6 border-b border-white/5 overflow-hidden">
+          <div className={`flex h-24 items-center gap-4 px-6 border-b border-white/5 overflow-hidden transition-all duration-500 ${!sidebarOpen ? 'justify-center px-0' : ''}`}>
              <div className="p-2 rounded-xl bg-white/10 border border-white/10 shrink-0 shadow-inner">
                <img src={logo} alt="Logo" className="h-8 w-8 object-contain brightness-0 invert opacity-90" />
              </div>
@@ -70,7 +70,7 @@ export default function AdminLayout() {
                 <Link
                   key={to}
                   to={to}
-                  className={`sidebar-link ${isActive ? 'active' : ''} group relative`}
+                  className={`sidebar-link ${isActive ? 'active' : ''} group relative ${!sidebarOpen ? 'justify-center px-0' : ''}`}
                 >
                   <Icon className={`h-5 w-5 shrink-0 transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-brand-secondary' : 'text-white/40 group-hover:text-white/80'}`} />
                   <span className={`transition-all duration-500 ${sidebarOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 invisible sm:hidden'}`}>
@@ -90,7 +90,7 @@ export default function AdminLayout() {
 
           {/* User Footer */}
           <div className="mt-auto p-4 border-t border-white/5 bg-black/20">
-            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 mb-4 group transition-colors hover:bg-white/10">
+            <div className={`flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 mb-4 group transition-colors hover:bg-white/10 ${!sidebarOpen ? 'justify-center px-0' : ''}`}>
               <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-brand-secondary to-brand-primary flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-white/10">
                 {user?.name?.[0]?.toUpperCase() || <User size={18} />}
               </div>

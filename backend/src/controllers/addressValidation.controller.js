@@ -27,12 +27,12 @@ export const validateAddress = async (req, res, next) => {
     const data = await response.json();
 
     if (data.error) {
-      // API error — don't block the user
+      // API error (disabled, quota, etc.) — don't block the user
       console.error('[Address Validation API Error]', data.error);
       return res.status(200).json({ 
         isValid: true, 
         hasIssues: false,
-        apiError: true 
+        apiUnavailable: true 
       });
     }
 
@@ -50,11 +50,12 @@ export const validateAddress = async (req, res, next) => {
     });
 
   } catch (err) {
-    // Never block address saving due to validation API failure
+    // Never block address saving due to validation API failure/exception
     console.error('[Address Validation Exception]', err.message);
     return res.status(200).json({ 
       isValid: true, 
-      hasIssues: false 
+      hasIssues: false,
+      apiUnavailable: true
     });
   }
 };

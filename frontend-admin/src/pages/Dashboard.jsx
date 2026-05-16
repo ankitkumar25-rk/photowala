@@ -14,27 +14,27 @@ import {
 // ── KPI Card ──────────────────────────────────────────────────
 function KPICard({ title, value, subtitle, icon: Icon, color = 'brand', trend }) {
   const configs = {
-    brand: { 
-      bg: 'bg-brand-soft', 
-      iconBg: 'bg-brand-primary/10', 
+    brand: {
+      bg: 'bg-brand-soft',
+      iconBg: 'bg-brand-primary/10',
       iconColor: 'text-brand-primary',
       shadow: 'shadow-brand-primary/5'
     },
-    accent: { 
-      bg: 'bg-orange-50', 
-      iconBg: 'bg-orange-100', 
+    accent: {
+      bg: 'bg-orange-50',
+      iconBg: 'bg-orange-100',
       iconColor: 'text-orange-600',
       shadow: 'shadow-orange-200/20'
     },
-    gold: { 
-      bg: 'bg-amber-50', 
-      iconBg: 'bg-amber-100', 
+    gold: {
+      bg: 'bg-amber-50',
+      iconBg: 'bg-amber-100',
       iconColor: 'text-amber-600',
       shadow: 'shadow-amber-200/20'
     },
-    red: { 
-      bg: 'bg-red-50', 
-      iconBg: 'bg-red-100', 
+    red: {
+      bg: 'bg-red-50',
+      iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
       shadow: 'shadow-red-200/20'
     },
@@ -45,12 +45,12 @@ function KPICard({ title, value, subtitle, icon: Icon, color = 'brand', trend })
       <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
         <Icon className="w-20 h-20 -mr-6 -mt-6 rotate-12" />
       </div>
-      
+
       <div className="relative z-10 flex flex-col gap-4">
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${configs.iconBg}`}>
           <Icon className={`w-6 h-6 ${configs.iconColor}`} />
         </div>
-        
+
         <div className="space-y-1">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">{title}</p>
           <h2 className="text-3xl font-display font-black text-brand-primary tracking-tight">{value}</h2>
@@ -105,14 +105,6 @@ export default function Dashboard() {
           </div>
           <h1 className="text-4xl font-display font-black text-brand-primary tracking-tight">Business Intelligence</h1>
           <p className="text-gray-400 mt-2 font-medium">Real-time insights for your Photowala ecosystem.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-100 text-xs font-bold text-gray-600 hover:border-brand-primary/20 transition-all shadow-sm">
-            <Calendar className="w-4 h-4" /> Last 30 Days
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-100 text-xs font-bold text-gray-600 hover:border-brand-primary/20 transition-all shadow-sm">
-            <Filter className="w-4 h-4" /> Filter
-          </button>
         </div>
       </div>
 
@@ -171,32 +163,32 @@ export default function Dashboard() {
               <div className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-secondary/30" /> Forecast</div>
             </div>
           </div>
-          
+
           <div className="h-[300px] w-full">
             {salesData && salesData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={salesData}>
                   <defs>
                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#5b3f2f" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#5b3f2f" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#5b3f2f" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#5b3f2f" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis 
-                    dataKey="date" 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey="date"
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }}
                     tickFormatter={(v) => new Date(v).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
                     tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }}
-                    tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`}
+                    tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
                   />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', fontSize: '12px' }}
                     formatter={(v) => [`₹${v.toLocaleString('en-IN')}`, 'Revenue']}
                   />
