@@ -9,10 +9,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../../../store';
 import { serviceAssets } from '../../../../data/assets';
 
-import { 
-  FaPenNib, FaNoteSticky, FaPrint, FaFileSignature, 
+import {
+  FaPenNib, FaNoteSticky, FaPrint, FaFileSignature,
   FaTag, FaFileInvoiceDollar, FaEnvelope
 } from 'react-icons/fa6';
+import ZoomableImage from '../../../../components/ZoomableImage';
 
 const SIDEBAR_LINKS = [
   { id: 'pen', icon: FaPenNib, label: 'Pen', to: '/services/custom-printing/pen', active: true },
@@ -32,7 +33,7 @@ const PEN_PRICES = {
 };
 
 const PEN_TYPES = Object.keys(PEN_PRICES).map(Number);
-const QTY_OPTIONS = [1, 10, 25, 50, 100, 250, 500];
+const QTY_OPTIONS = [10, 25, 50, 100, 250, 500];
 const GST_RATE = 0.18;
 
 export default function LaserPrintedPen() {
@@ -408,14 +409,16 @@ export default function LaserPrintedPen() {
 
               {/* Sample Gallery */}
               <div className="grid grid-cols-2 gap-3 p-4 bg-gray-900/40 border-b border-gray-800">
-                <div className="group relative overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
-                   <img src={serviceAssets.penSample1} alt="Pen Sample 1" className="w-full h-24 object-cover transition-transform duration-500 group-hover:scale-110" />
-                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                </div>
-                <div className="group relative overflow-hidden rounded-xl border border-gray-700 bg-gray-800">
-                   <img src={serviceAssets.penSample2} alt="Pen Sample 2" className="w-full h-24 object-cover transition-transform duration-500 group-hover:scale-110" />
-                   <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-                </div>
+                <ZoomableImage
+                  src={serviceAssets.penSample1}
+                  alt="Pen Sample 1"
+                  className="w-full h-24 rounded-xl border border-gray-700 bg-gray-800 shadow-inner"
+                />
+                <ZoomableImage
+                  src={serviceAssets.penSample2}
+                  alt="Pen Sample 2"
+                  className="w-full h-24 rounded-xl border border-gray-700 bg-gray-800 shadow-inner"
+                />
               </div>
 
               <div className="p-6">

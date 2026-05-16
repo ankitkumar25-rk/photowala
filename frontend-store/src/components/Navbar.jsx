@@ -51,6 +51,7 @@ export default function Navbar() {
     { to: '/categories/corporate-gifts', label: 'Corporate Gifts' },
     { to: '/categories/momentos', label: 'Momentos' },
     { to: '/services', label: 'Services' },
+    { to: '/bulk-orders', label: 'Bulk Deals', badge: 'New' },
   ];
 
   const headerClass = `sticky top-0 z-50 border-b transition-all duration-300 ${

@@ -47,6 +47,7 @@ const CNCRouterService = lazy(() => import('./pages/services/MachineServices/CNC
 const MyServiceOrders = lazy(() => import('./pages/MyServiceOrders'));
 const ServiceCheckout = lazy(() => import('./pages/ServiceCheckout'));
 const ComingSoon      = lazy(() => import('./pages/ComingSoon'));
+const BulkOrders    = lazy(() => import('./pages/BulkOrders'));
 const NotFound      = lazy(() => import('./pages/NotFound'));
 
 
@@ -123,6 +124,7 @@ export default function App() {
                 <Route path="products"      element={<Products />} />
                 <Route path="products/:slug" element={<ProductDetail />} />
                 <Route path="categories/:slug" element={<Category />} />
+                <Route path="bulk-orders"   element={<BulkOrders />} />
                 <Route path="cart"          element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                 <Route path="login"         element={<Login />} />
                 <Route path="register"      element={<Register />} />
