@@ -81,8 +81,8 @@ export const createOrder = asyncHandler(async (req, res) => {
       customizationImageUrl: item.customizationImageUrl || null,
     });
   }
-
-  const shippingCost = subtotal >= 1000 ? 0 : 49;
+  //  const shippingCost = subtotal >= 1000 ? 0 : 49;
+  const shippingCost = 0; // TEMPORARY: Free shipping for live mode testing
   const total = subtotal + shippingCost;
 
   const order = await prisma.$transaction(async (tx) => {
@@ -139,17 +139,17 @@ export const createOrder = asyncHandler(async (req, res) => {
     const adminTpl = emailTemplates.adminNewOrder(order, user);
 
     // User confirmation
-    sendEmail({ 
-      to: user.email, 
-      subject: tpl.subject, 
-      html: tpl.html 
+    sendEmail({
+      to: user.email,
+      subject: tpl.subject,
+      html: tpl.html
     }).catch(err => console.error('[Email] Failed to send confirmation to user:', err.message));
 
     // Admin alert
-    sendEmail({ 
-      to: process.env.EMAIL_FROM, 
-      subject: adminTpl.subject, 
-      html: adminTpl.html 
+    sendEmail({
+      to: process.env.EMAIL_FROM,
+      subject: adminTpl.subject,
+      html: adminTpl.html
     }).catch(err => console.error('[Email] Failed to send admin alert:', err.message));
 
     console.log('[Email] Order notifications triggered for:', user.email);
@@ -185,7 +185,7 @@ export const getUserOrders = asyncHandler(async (req, res) => {
 
 export const getOrder = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  
+
   // Try finding by ID (UUID) first
   let order = await prisma.order.findUnique({
     where: { id },
@@ -230,7 +230,7 @@ export const getAllOrders = asyncHandler(async (req, res) => {
   const pageNum = Math.max(1, parseInt(req.query.page) || 1);
   const limitNum = Math.max(1, parseInt(req.query.limit) || 20);
   const { status } = req.query;
-  
+
   const where = status ? { status } : {};
   const skip = (pageNum - 1) * limitNum;
 
@@ -240,27 +240,27 @@ export const getAllOrders = asyncHandler(async (req, res) => {
       skip,
       take: limitNum,
       orderBy: { createdAt: 'desc' },
-      include: { 
-        user: { select: { name: true, email: true } }, 
+      include: {
+        user: { select: { name: true, email: true } },
       },
     }),
     prisma.order.count({ where }),
   ]);
 
-  res.json({ 
-    success: true, 
-    data: orders || [], 
-    meta: { 
-      total: total || 0, 
+  res.json({
+    success: true,
+    data: orders || [],
+    meta: {
+      total: total || 0,
       page: pageNum,
       limit: limitNum
-    } 
+    }
   });
 });
 
 export const updateOrderStatus = asyncHandler(async (req, res) => {
-  const { status, trackingNumber } = z.object({ 
-    status: z.enum(['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED','REFUNDED']),
+  const { status, trackingNumber } = z.object({
+    status: z.enum(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']),
     trackingNumber: z.string().nullable().optional(),
   }).parse(req.body);
 
@@ -269,9 +269,9 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
     updateData.trackingNumber = trackingNumber;
   }
 
-  const order = await prisma.order.update({ 
-    where: { id: req.params.id }, 
-    data: updateData 
+  const order = await prisma.order.update({
+    where: { id: req.params.id },
+    data: updateData
   });
   res.json({ success: true, data: order });
 });

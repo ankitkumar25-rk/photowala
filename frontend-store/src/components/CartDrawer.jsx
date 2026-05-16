@@ -1,4 +1,4 @@
-﻿import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { X, ShoppingCart, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCartStore } from '../store';
 import { useEffect } from 'react';
@@ -13,8 +13,9 @@ export default function CartDrawer() {
     return () => window.removeEventListener('keydown', handler);
   }, [closeCart]);
 
-  const shipping = subtotal() >= 1000 ? 0 : 49;
-  const total    = subtotal() + shipping;
+  // const shipping = subtotal() >= 1000 ? 0 : 49;
+  const shipping = 0; // TEMPORARY: Free shipping for live mode testing
+  const total = subtotal() + shipping;
 
   return (
     <>
@@ -63,9 +64,9 @@ export default function CartDrawer() {
                   <div key={item.id} className="flex gap-3 p-4 hover:bg-[#f5e7d8]/55 transition-colors">
                     {/* Product image */}
                     <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#f0e3d7] shrink-0">
-                       {img ? (
-                         <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
-                       ) : (
+                      {img ? (
+                        <img src={img.url} alt={item.product?.name} className="w-full h-full object-cover" loading="lazy" width={64} height={64} />
+                      ) : (
                         <div className="w-full h-full flex items-center justify-center text-2xl">🏆</div>
                       )}
                     </div>
@@ -129,11 +130,9 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            {shipping > 0 && (
-              <p className="text-xs text-brand-secondary bg-brand-surface px-3 py-2 rounded-lg">
-                💡 Add ₹{(1000 - subtotal()).toFixed(0)} more for free shipping!
-              </p>
-            )}
+            <p className="text-xs text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-100 flex items-center gap-2">
+              <Tag className="w-3 h-3" /> Live Testing: Free Shipping Applied!
+            </p>
 
             <Link
               to="/checkout"

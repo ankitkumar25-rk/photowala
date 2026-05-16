@@ -169,7 +169,7 @@ export default function Cart() {
   const user      = useAuthStore((s) => s.user);
 
   const subtotal = subtotalFn();
-  const shipping = subtotal >= 1000 ? 0 : 49;
+  const shipping = 0; // TEMPORARY: Free shipping for live mode testing
   const total    = subtotal + shipping;
   const freeShipRemaining = 1000 - subtotal;
   const freeShipProgress  = Math.min((subtotal / 1000) * 100, 100);
@@ -275,15 +275,15 @@ export default function Cart() {
               {shipping > 0 && (
                 <div className="px-6 py-4 bg-linear-to-r from-brand-surface/40 to-transparent border-b-2 border-brand-secondary/20">
                   <div className="flex items-center justify-between text-sm mb-2.5">
-                    <span className="font-bold text-brand-secondary flex items-center gap-2">
-                      <Truck className="w-4 h-4" /> Add ₹{freeShipRemaining.toFixed(0)} for FREE shipping
+                    <span className="font-bold text-green-600 flex items-center gap-2">
+                      <Truck className="w-4 h-4" /> FREE Shipping Unlocked
                     </span>
-                    <span className="text-brand-secondary font-bold text-xs bg-brand-surface px-2.5 py-1 rounded-full">{Math.round(freeShipProgress)}%</span>
+                    <span className="text-green-600 font-bold text-xs bg-green-50 px-2.5 py-1 rounded-full">100%</span>
                   </div>
                   <div className="h-2.5 bg-cream-200 rounded-full overflow-hidden shadow-inner">
                     <div
-                      className="h-full bg-linear-to-r from-brand-secondary to-brand-primary rounded-full transition-all duration-500"
-                      style={{ width: `${freeShipProgress}%` }}
+                      className="h-full bg-green-500 rounded-full transition-all duration-500"
+                      style={{ width: '100%' }}
                     />
                   </div>
                 </div>
@@ -359,12 +359,10 @@ export default function Cart() {
                   </div>
                 </div>
 
-                {shipping > 0 && (
-                  <div className="mt-4 p-4 bg-linear-to-r from-brand-surface/60 to-transparent rounded-2xl text-xs text-brand-secondary font-bold flex items-center gap-2 border-2 border-brand-secondary/20">
+                  <div className="mt-4 p-4 bg-green-50 rounded-2xl text-xs text-green-700 font-bold flex items-center gap-2 border-2 border-green-100">
                     <Tag className="w-4 h-4 shrink-0" />
-                    <span>Add ₹{freeShipRemaining.toFixed(0)} more to unlock FREE shipping</span>
+                    <span>Live Testing: Free shipping applied to all orders</span>
                   </div>
-                )}
 
                 {/* CTA */}
                 {user ? (
