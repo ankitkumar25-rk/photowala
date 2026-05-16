@@ -1,4 +1,4 @@
-import { Phone, MessageCircle, Mail, MapPin, Package, Percent, Clock, CheckCircle2, Truck } from 'lucide-react';
+import { Phone, MessageCircle, Mail, MapPin, Package, Percent, Clock, CheckCircle2, Truck, Building2, Heart, Trophy, Rocket } from 'lucide-react';
 import { brandAssets } from '../data/assets';
 
 export default function BulkOrders() {
@@ -110,20 +110,34 @@ export default function BulkOrders() {
               ))}
             </div>
 
-            <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-brand-primary/5 shadow-sm">
-              <h2 className="text-2xl font-bold text-brand-primary mb-10 text-center">Perfect For All Occasions</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-12">
+            <div className="bg-white rounded-[2rem] p-8 md:p-12 border border-brand-primary/10 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-secondary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="text-center mb-10 space-y-2">
+                <h2 className="text-3xl font-bold text-brand-primary">Perfect For All <span className="text-brand-secondary">Occasions</span></h2>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="h-0.5 w-8 bg-brand-secondary/30" />
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tailored Solutions</p>
+                  <div className="h-0.5 w-8 bg-brand-secondary/30" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8">
                 {[
-                  { label: 'Corporate Events', icon: '🏢' },
-                  { label: 'Weddings', icon: '💍' },
-                  { label: 'School Awards', icon: '🏆' },
-                  { label: 'Brand Launches', icon: '🚀' }
+                  { label: 'Corporate Events', icon: <Building2 className="w-8 h-8" /> },
+                  { label: 'Weddings', icon: <Heart className="w-8 h-8" /> },
+                  { label: 'School Awards', icon: <Trophy className="w-8 h-8" /> },
+                  { label: 'Brand Launches', icon: <Rocket className="w-8 h-8" /> }
                 ].map((item) => (
                   <div key={item.label} className="text-center group">
-                    <div className="w-20 h-20 mx-auto bg-cream-50 rounded-[1.5rem] flex items-center justify-center mb-4 group-hover:bg-brand-surface transition-all duration-300 border border-brand-primary/5 group-hover:-translate-y-2 group-hover:rotate-3 shadow-sm">
-                      <span className="text-3xl">{item.icon}</span>
+                    <div className="w-20 h-20 mx-auto bg-brand-surface rounded-3xl flex items-center justify-center mb-4 group-hover:bg-brand-primary group-hover:shadow-xl group-hover:shadow-brand-primary/20 transition-all duration-500 border border-brand-primary/5 group-hover:-translate-y-2">
+                      <div className="text-brand-primary group-hover:text-white transition-colors duration-500">
+                        {item.icon}
+                      </div>
                     </div>
-                    <p className="text-xs sm:text-sm font-bold text-brand-primary leading-tight px-2">{item.label}</p>
+                    <p className="text-xs sm:text-sm font-bold text-brand-primary leading-tight px-2 group-hover:text-brand-secondary transition-colors uppercase tracking-wider">
+                      {item.label}
+                    </p>
                   </div>
                 ))}
               </div>
