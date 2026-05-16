@@ -227,17 +227,28 @@ export const verifyPayment = asyncHandler(async (req, res, next) => {
       ] : [])
     ]);
 
-    // Send confirmation email
+    // Send confirmation emails
     try {
+      const adminEmail = process.env.COMPANY_EMAIL || process.env.EMAIL_FROM;
       if (orderType === 'ORDER') {
+        // User confirmation
         const tpl = emailTemplates.orderConfirmation(orderData, orderData.user);
         sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
+        
+        // Admin notification
+        const adminTpl = emailTemplates.adminNewOrder(orderData, orderData.user);
+        sendEmail({ to: adminEmail, ...adminTpl }).catch(console.error);
       } else {
+        // User service request update
         const tpl = emailTemplates.serviceRequestStatusUpdate(orderData, orderData.user, 'NEW');
         sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
+
+        // Admin notification for service request
+        const adminTpl = emailTemplates.adminNewServiceRequest(orderData, orderData.user);
+        sendEmail({ to: adminEmail, ...adminTpl }).catch(console.error);
       }
     } catch (err) {
-      console.error('[payment] Failed to send confirmation email:', err.message);
+      console.error('[payment] Failed to send confirmation emails:', err.message);
     }
 
     res.json({
@@ -314,6 +325,27 @@ export const confirmCOD = asyncHandler(async (req, res) => {
       })
     ] : [])
   ]);
+
+  // Send notifications
+  try {
+    const adminEmail = process.env.COMPANY_EMAIL || process.env.EMAIL_FROM;
+    const user = { name: req.user.name || 'Customer', email: req.user.email };
+    
+    if (orderType === 'ORDER') {
+      const order = await prisma.order.findUnique({ where: { id: internalOrderId } });
+      const tpl = emailTemplates.orderConfirmation(order, user);
+      const adminTpl = emailTemplates.adminNewOrder(order, user);
+      
+      sendEmail({ to: user.email, ...tpl }).catch(console.error);
+      sendEmail({ to: adminEmail, ...adminTpl }).catch(console.error);
+    } else {
+      const serviceOrder = await prisma.serviceOrder.findUnique({ where: { id: internalOrderId } });
+      const adminTpl = emailTemplates.adminNewServiceRequest(serviceOrder, user);
+      sendEmail({ to: adminEmail, ...adminTpl }).catch(console.error);
+    }
+  } catch (err) {
+    console.error('[payment] Failed to send COD notification:', err.message);
+  }
 
   res.json({
     success: true,
@@ -410,10 +442,19 @@ export const razorpayWebhook = asyncHandler(async (req, res) => {
           : await prisma.serviceOrder.findUnique({ where: { id: updatedPayment.internalOrderId }, include: { user: true } });
 
         if (orderData?.user?.email) {
-          const tpl = updatedPayment.orderType === 'ORDER'
-            ? emailTemplates.orderConfirmation(orderData, orderData.user)
-            : emailTemplates.serviceRequestStatusUpdate(orderData, orderData.user, 'NEW');
-          sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
+          const adminEmail = process.env.COMPANY_EMAIL || process.env.EMAIL_FROM;
+          
+          if (updatedPayment.orderType === 'ORDER') {
+            const tpl = emailTemplates.orderConfirmation(orderData, orderData.user);
+            const adminTpl = emailTemplates.adminNewOrder(orderData, orderData.user);
+            sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
+            sendEmail({ to: adminEmail, ...adminTpl }).catch(console.error);
+          } else {
+            const tpl = emailTemplates.serviceRequestStatusUpdate(orderData, orderData.user, 'NEW');
+            const adminTpl = emailTemplates.adminNewServiceRequest(orderData, orderData.user);
+            sendEmail({ to: orderData.user.email, ...tpl }).catch(console.error);
+            sendEmail({ to: adminEmail, ...adminTpl }).catch(console.error);
+          }
         }
       } catch (err) {
         console.error('[webhook] Background email failed:', err.message);

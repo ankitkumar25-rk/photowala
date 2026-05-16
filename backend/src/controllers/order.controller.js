@@ -146,8 +146,9 @@ export const createOrder = asyncHandler(async (req, res) => {
     }).catch(err => console.error('[Email] Failed to send confirmation to user:', err.message));
 
     // Admin alert
+    const adminEmail = process.env.COMPANY_EMAIL || process.env.EMAIL_FROM;
     sendEmail({
-      to: process.env.EMAIL_FROM,
+      to: adminEmail,
       subject: adminTpl.subject,
       html: adminTpl.html
     }).catch(err => console.error('[Email] Failed to send admin alert:', err.message));
